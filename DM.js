@@ -210,33 +210,25 @@ function Table({ columns, data }) {
 }
 
 
-const fieldsMenu = (
-    <Menu size="small" onClick={() => {}}>
-      <Menu.ItemGroup title="Tasks">
-        <Menu.Item key="1">ID</Menu.Item>
-        <Menu.Item key="2">Status</Menu.Item>
-        <Menu.Item key="3"><Switch defaultChecked /> Source</Menu.Item>
-        <Menu.Item key="3"><Switch defaultChecked /> Created On</Menu.Item>
-      </Menu.ItemGroup>
-
-      <Menu.ItemGroup title="Annotations">
-        <Menu.Item key="1">ID</Menu.Item>
-        <Menu.Item key="2">Status</Menu.Item>
-        <Menu.Item key="3"><Switch defaultChecked /> Created On</Menu.Item>
-        <Menu.Item key="4"><Switch defaultChecked /> Updated On</Menu.Item>
-        <Menu.Item key="5"><Switch defaultChecked /> Author</Menu.Item>
-        <Menu.Item key="6"><Switch defaultChecked /> Regions #</Menu.Item>
-      </Menu.ItemGroup>
-      
-      <Menu.ItemGroup title="Input">
-        <Menu.Item key="4">image_url</Menu.Item>
-      </Menu.ItemGroup>
-
-      <Menu.ItemGroup title="v2: Results">
-        <Menu.Item key="5">class</Menu.Item>
-      </Menu.ItemGroup>
-  </Menu>
-);
+const FieldsMenu = observer(({ item, store }) => {
+    const menuItem = (f) => 
+          <Menu.Item key={f.key}>
+            { f.canToggle ? <Switch defaultChecked /> : null }
+            { f.title }
+          </Menu.Item>;
+    
+    return (
+        <Menu size="small" onClick={() => {}}>
+          <Menu.ItemGroup title="Tasks">{ item.fieldsSource('tasks').map(menuItem) }</Menu.ItemGroup>
+          <Menu.ItemGroup title="Annotations">{ item.fieldsSource('annotations').map(menuItem) }</Menu.ItemGroup>
+          <Menu.ItemGroup title="Input">{ item.fieldsSource('inputs').map(menuItem) }</Menu.ItemGroup>
+          
+          <Menu.ItemGroup title="v2: Results">
+            <Menu.Item key="5">class</Menu.Item>
+          </Menu.ItemGroup>
+        </Menu>
+    );
+});
 
 const actionsMenu = (
     <Menu onClick={() => {}}>
@@ -254,8 +246,8 @@ const DmPanel = observer(({ item }) => {
             <Button disabled={item.target === 'tasks'} onClick={() => item.setTarget('tasks')}>Tasks</Button>
             <Button disabled={item.target === 'annotations'} onClick={() => item.setTarget('annotations')}>Annotations</Button>
             &nbsp;&nbsp;
-            <Dropdown overlay={fieldsMenu}><Button><EyeOutlined /> Fields <CaretDownOutlined /></Button></Dropdown>&nbsp;
-            <Button><FilterOutlined /> Filters </Button>&nbsp;
+            <Dropdown overlay={<FieldsMenu item={item} />}><Button><EyeOutlined /> Fields <CaretDownOutlined /></Button></Dropdown>&nbsp;
+            <Button type={item.filters ? "primary" : ""} onClick={() => item.toggleFilters()}><FilterOutlined /> Filters </Button>&nbsp;
           </div>
           <div>
             <Button><PlayCircleOutlined />Label All</Button>&nbsp;
@@ -293,40 +285,44 @@ function DmTabPane(title) {
 }
 
 const DmPaneContent = inject("store")(observer(({ item, store }) => {
-    const columns = React.useMemo(() => [
-        {
-            Header: 'ID',
-            accessor: 'id',
-            Filter: NumberRangeColumnFilter,
-            filter: 'between',
-            // Filter: DefaultColumnFilter,
-        },
+    const columns = item.fieldsAsColumns;
+
+    console.log(columns);
+    
+    // const columns = React.useMemo(() => [
+    //     {
+    //         Header: 'ID',
+    //         accessor: 'id',
+    //         Filter: NumberRangeColumnFilter,
+    //         filter: 'between',
+    //         // Filter: DefaultColumnFilter,
+    //     },
         
-        {
-            Header: 'Status',
-            accessor: 'status',
-            Filter: SelectColumnFilter,
-            filter: 'includes',
-        },
-        {
-            Header: 'Annotations',
-            accessor: 'annotations_num',
-            Filter: SliderColumnFilter,
-            filter: filterGreaterThan,
-        },
-        {
-            Header: 'Source',
-            accessor: 'source',
-            disableFilters: true,
-        },
-        {
-            Header: 'Created On',
-            accessor: 'created_on',
-            disableFilters: true,
-            // Filter: SliderColumnFilter,
-            // filter: filterGreaterThan,
-        },
-    ], []);
+    //     {
+    //         Header: 'Status',
+    //         accessor: 'status',
+    //         Filter: SelectColumnFilter,
+    //         filter: 'includes',
+    //     },
+    //     {
+    //         Header: 'Annotations',
+    //         accessor: 'annotations_num',
+    //         Filter: SliderColumnFilter,
+    //         filter: filterGreaterThan,
+    //     },
+    //     {
+    //         Header: 'Source',
+    //         accessor: 'source',
+    //         disableFilters: true,
+    //     },
+    //     {
+    //         Header: 'Created On',
+    //         accessor: 'created_on',
+    //         disableFilters: true,
+    //         // Filter: SliderColumnFilter,
+    //         // filter: filterGreaterThan,
+    //     },
+    // ], []);
 
     // const data = React.useMemo(() => makeData(100000), [])
     const data = [
@@ -441,7 +437,23 @@ class DmTabs extends React.Component {
 function App() {
     const app = AppStore.create({
         viewsStore: {
-            views: [{}]
+            views: [{
+                fields: [
+                    // tasks
+                    { title: "ID", accessor: 'id', source: "tasks", enabled: true },
+                    { title: "Status", accessor: 'status', source: "tasks", enabled: true },
+                    
+                    // annotations
+                    { title: "ID", source: "annotations", enabled: true, canToggle: false },
+                    { title: "Status", source: "annotations", enabled: true, canToggle: false },
+                    { title: "Created On", source: "annotations", enabled: true },
+                    { title: "Updated On", source: "annotations", enabled: true },
+                    { title: "Author", source: "annotations", enabled: true },
+                    { title: "Regions #", source: "annotations", enabled: true },
+                    
+                    // add some file fields
+                ]
+            }]
         }
     });
     

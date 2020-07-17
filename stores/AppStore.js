@@ -1,24 +1,63 @@
 
 import { types, getEnv } from "mobx-state-tree";
 
-const Fields = types
+const Field = types
       .model("Fields", {
+          title: "",
+          accessor: "",
           
-      })
+          enabled: true,
+          canToggle: false,
+          
+          source: types.optional(types.enumeration(["tasks", "annotations", "inputs"]), "tasks"),
+
+          
+      }).views(self => ({
+          get key() { return self.source + "_" + self.title }
+      }))
 
 const View = types
       .model("View", {
-          title: types.optional(types.string, "Panel"),
-          closable: types.optional(types.boolean, false),
+          title: "Panel",
+          closable: false,
           
           type: types.optional(types.enumeration(["list", "grid"]), "list"),
           target: types.optional(types.enumeration(["tasks", "annotations"]), "tasks"),
           
-          fields: types.maybeNull(Fields),
+          fields: types.array(Field),
           
-          filters: types.optional(types.boolean, false)
+          filters: false
       }).views(self => ({
-          get key() { return self.title }
+          get key() { return self.title },
+
+          fieldsSource(source) {
+              return self.fields.filter(f => f.source === source);
+          },
+
+          // get fields formatted as columns structure for react-table
+          get fieldsAsColumns() {
+              const lst = (self.target === "tasks") ?
+                    self.fields.filter(f => f.source !== 'annotations') :
+                    self.fields.filter(f => f.source !== 'tasks') ;
+
+              return lst.map(f => {
+                  const cols = {
+                      Header: f.title,
+                      accessor: f.accessor,
+                      disableFilters: true
+                  }
+
+                  if (self.filters === true) {
+                      cols["disableFilters"] = false;
+                      cols["Filter"] = f.filterClass;
+                      
+                      if (f.filterType) 
+                          cols["filter"] = f.filterType
+                  }
+
+                  return cols;
+              })
+          }
       })).actions(self => ({
           setType(type) {
               self.type = type;
@@ -26,7 +65,11 @@ const View = types
 
           setTarget(target) {
               self.target = target;
-          }
+          },
+
+          toggleFilters() {
+              self.filters = ! self.filters;
+          } 
       }))
 
 const ViewsStore = types
