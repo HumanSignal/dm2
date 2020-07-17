@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { observer, inject, Provider } from "mobx-react";
 
 import styled from 'styled-components';
 import { Pagination, Switch, Menu, Dropdown, Tabs, Button } from 'antd';
@@ -15,6 +16,8 @@ import matchSorter from 'match-sorter';
 import { GlobalFilter, DefaultColumnFilter, SelectColumnFilter,
          SliderColumnFilter, NumberRangeColumnFilter,
          fuzzyTextFilterFn, filterGreaterThan } from "./GlobalFilter";
+
+import AppStore from './stores/AppStore';
 
 const { TabPane } = Tabs;
 
@@ -241,15 +244,15 @@ const actionsMenu = (
     </Menu>
 );
 
-function DmPanel () {
+const DmPanel = observer(({ item }) => {
     return (
         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "1em", marginBottom: "1em" }}>
           <div>
-            <Button><BarsOutlined />List</Button>
-            <Button><AppstoreOutlined />Grid</Button>
+            <Button disabled={item.type === 'list'} onClick={() => item.setType('list')}><BarsOutlined />List</Button>
+            <Button disabled={item.type === 'grid'} onClick={() => item.setType('grid')}><AppstoreOutlined />Grid</Button>
             &nbsp;&nbsp;
-            <Button>Tasks</Button>
-            <Button>Completions</Button>
+            <Button disabled={item.target === 'tasks'} onClick={() => item.setTarget('tasks')}>Tasks</Button>
+            <Button disabled={item.target === 'annotations'} onClick={() => item.setTarget('annotations')}>Annotations</Button>
             &nbsp;&nbsp;
             <Dropdown overlay={fieldsMenu}><Button><EyeOutlined /> Fields <CaretDownOutlined /></Button></Dropdown>&nbsp;
             <Button><FilterOutlined /> Filters </Button>&nbsp;
@@ -260,8 +263,8 @@ function DmPanel () {
           </div>
         </div>
     );
-}
-
+});
+ 
 const DmPaneMenu = (
     <Menu>
       <Menu.Item key="0">
@@ -289,7 +292,7 @@ function DmTabPane(title) {
     );
 }
 
-function DmPaneContent () {
+const DmPaneContent = inject("store")(observer(({ item, store }) => {
     const columns = React.useMemo(() => [
         {
             Header: 'ID',
@@ -350,7 +353,9 @@ function DmPaneContent () {
         
     return (
         <div>
-          <div style={{background: "white"}}><DmPanel /></div>
+          <div style={{background: "white"}}>
+            <DmPanel item={item} />
+          </div>
           <div style={{background: "#f1f1f1"}}>
             <Table columns={columns} data={data} 
                    skipPageReset={skipPageReset} />
@@ -358,20 +363,26 @@ function DmPaneContent () {
           <Pagination defaultCurrent={1} total={50} />
         </div>
     );
-}
+}));
 
+const DmTabs = inject("store")(
+  observer(
 
 class DmTabs extends React.Component {
     constructor(props) {
         super(props);
         this.newTabIndex = 0;
-        const panes = [
-            { title: 'Tab 1', content: <DmPaneContent/>, key: '1', closable: false },
-            { title: 'Tab 2', content: 'Content of Tab 2', key: '2' },
-        ];
+
+        const store = this.props.store;
+
+        const panes = store.viewsStore.all.map(c => {
+            c['content'] = <DmPaneContent item={c} store={store} />;
+            return c;
+        });
+        
         this.state = {
             activeKey: panes[0].key,
-            panes,
+            panes: panes,
         };
     }
 
@@ -425,10 +436,22 @@ class DmTabs extends React.Component {
             </Tabs>
         );
     }
-}
+}));
 
 function App() {
-    return <Styles><DmTabs /></Styles>;
+    const app = AppStore.create({
+        viewsStore: {
+            views: [{}]
+        }
+    });
+    
+    return (
+        <Provider store={app}>
+          <Styles>
+            <DmTabs />
+          </Styles>
+        </Provider>
+    );
 }
 
 export default App;
