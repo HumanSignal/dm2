@@ -1,7 +1,12 @@
+import React from "react";
+import ReactDOM from "react-dom";
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.scss';
-import App from './DM';
+import AppStore from "./stores/AppStore";
+import App from "./components/App";
+import views from "./data/views";
 
-ReactDOM.render(<App />, document.getElementById('app'));
+import "./index.scss";
+
+const app = AppStore.create({ viewsStore: { views } });
+
+ReactDOM.render(<App app={app} />, document.getElementById("app"));
