@@ -1,0 +1,38 @@
+{
+  "name": "htx-frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "antd": "^4.2.5",
+    "babel-preset-react": "^6.24.1",
+    "less": "2",
+    "less-loader": "^6.1.0",
+    "match-sorter": "^4.2.0",
+    "mobx-state-tree": "^3.15.0",
+    "namor": "^2.0.2",
+    "parcel": "^1.12.4",
+    "react": ">= 16.8.0",
+    "react-dom": ">= 16.8.0",
+    "react-is": ">= 16.8.0",
+    "react-table": "^7.0.0",
+    "styled-components": "^5.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.7",
+    "@babel/preset-env": "^7.8.7",
+    "@babel/preset-react": "^7.8.3",
+    "@types/react": "^15.0.0 || ^16.0.0",
+    "babel-plugin-import": "^1.13.0",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-preset-env": "^1.7.0",
+    "react-hot-loader": "^4.12.20",
+    "sass": "^1.26.3"
+  }
+}
