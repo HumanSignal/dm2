@@ -18,8 +18,6 @@ import { GlobalFilter, DefaultColumnFilter, SelectColumnFilter,
 
 const { TabPane } = Tabs;
 
-import makeData from './makeData';
-
 const Styles = styled.div`
   padding: 1rem;
 
@@ -82,7 +80,7 @@ const IndeterminateCheckbox = React.forwardRef(({ indeterminate, ...rest }, ref)
     );
 });
 
-function Table({ columns, data, updateMyData }) {
+function Table({ columns, data }) {
     const filterTypes = React.useMemo(
         () => ({
             // Add a new fuzzyTextFilterFn filter type.
@@ -119,8 +117,7 @@ function Table({ columns, data, updateMyData }) {
     } = useTable(
         {
             columns,
-            data,
-            updateMyData
+            data            
         },
         useFilters, // useFilters!
         useResizeColumns,
@@ -296,65 +293,66 @@ function DmPaneContent () {
     const columns = React.useMemo(() => [
         {
             Header: 'ID',
-            accessor: 'firstName',
-            Filter: DefaultColumnFilter,
+            accessor: 'id',
+            Filter: NumberRangeColumnFilter,
+            filter: 'between',
+            // Filter: DefaultColumnFilter,
         },
         
         {
-            Header: 'Annotators',
-            accessor: 'lastName',
+            Header: 'Status',
+            accessor: 'status',
+            Filter: SelectColumnFilter,
+            filter: 'includes',
+        },
+        {
+            Header: 'Annotations',
+            accessor: 'annotations_num',
+            Filter: SliderColumnFilter,
+            filter: filterGreaterThan,
+        },
+        {
+            Header: 'Source',
+            accessor: 'source',
             disableFilters: true,
         },
         {
-            Header: 'Agreement',
-            accessor: 'age',
-            Filter: NumberRangeColumnFilter,
-            filter: 'between',
-        },
-        {
-            Header: 'Prediction',
-            accessor: 'visits',
-            disableFilters: true,
-        },
-        {
-            Header: 'Completions',
-            accessor: 'progress',
+            Header: 'Created On',
+            accessor: 'created_on',
             
             Filter: SliderColumnFilter,
-            filter: filterGreaterThan,              
+            filter: filterGreaterThan,
         },
-        {
-            Header: 'Comments',
-            accessor: 'comments',
-            disableFilters: true,
-        },      
     ], []);
 
     // const data = React.useMemo(() => makeData(100000), [])
-    const [data, setData] = React.useState(() => makeData(10, 3));
+    const data = [
+        {
+            'id': 1,
+            'status': 'ready',
+            'annotations': [{ }, {}, {}],
+            'annotations_num': 3,
+            'source': 'file.csv',
+            'created_on': 'Fri 8'
+        },
+        {
+            'id': 2,
+            'status': 'ready',
+            'annotations': [{ }, {}, {}],
+            'annotations_num': 3,
+            'source': 'file2.csv',
+            'created_on': 'Fri 9'
+        }
+    ];
+    
     const [originalData] = React.useState(data);
     const [skipPageReset, setSkipPageReset] = React.useState(false);
-    
-    const updateMyData = (rowIndex, columnId, value) => {
-        // We also turn on the flag to not reset the page
-        setSkipPageReset(true);
-        setData(old => old.map((row, index) => {
-            if (index === rowIndex) {
-                return {
-                    ...old[rowIndex],
-                    [columnId]: value,
-                };
-            }
-            
-            return row;
-        }));
-    };
-    
+        
     return (
         <div>
           <div style={{background: "white"}}><DmPanel /></div>
           <div style={{background: "#f1f1f1"}}>
-            <Table columns={columns} data={data} updateMyData={updateMyData}
+            <Table columns={columns} data={data} 
                    skipPageReset={skipPageReset} />
           </div>
           <Pagination defaultCurrent={1} total={50} />
