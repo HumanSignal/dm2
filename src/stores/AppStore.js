@@ -1,5 +1,6 @@
 
 import { types, getEnv } from "mobx-state-tree";
+import FilterMap from "../utils/FilterMap";
 
 const Field = types
       .model("Fields", {
@@ -13,7 +14,9 @@ const Field = types
 
           
       }).views(self => ({
-          get key() { return self.source + "_" + self.title }
+          get key() { return self.source + "_" + self.title },
+          get filterClass() { return FilterMap.findClass(self) },
+          get filterType() { return FilterMap.findType(self) }
       }))
 
 const View = types
@@ -48,11 +51,14 @@ const View = types
                   }
 
                   if (self.filters === true) {
-                      cols["disableFilters"] = false;
-                      cols["Filter"] = f.filterClass;
+                      if (f.filterClass)
+                          cols["Filter"] = f.filterClass;
                       
                       if (f.filterType) 
                           cols["filter"] = f.filterType
+
+                      if (f.filterType || f.filterClass)
+                          cols["disableFilters"] = false;
                   }
 
                   return cols;

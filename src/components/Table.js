@@ -7,7 +7,7 @@ import {
   useResizeColumns,
 } from "react-table";
 
-import { fuzzyTextFilterFn } from "./GlobalFilter";
+import { fuzzyTextFilterFn } from "./Filters";
 
 const IndeterminateCheckbox = React.forwardRef(
   ({ indeterminate, ...rest }, ref) => {
