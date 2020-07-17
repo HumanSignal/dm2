@@ -319,9 +319,9 @@ function DmPaneContent () {
         {
             Header: 'Created On',
             accessor: 'created_on',
-            
-            Filter: SliderColumnFilter,
-            filter: filterGreaterThan,
+            disableFilters: true,
+            // Filter: SliderColumnFilter,
+            // filter: filterGreaterThan,
         },
     ], []);
 
