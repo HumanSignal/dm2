@@ -229,13 +229,12 @@ const DmTabs = inject('store')(observer(({ store }) => {
       
     return (
         <Tabs
-          tabBarStyle={{ margin: 0, height: "40px" }}
           onChange={(key) => {
               store.viewsStore.setSelected(key);
           }}
           activeKey={store.viewsStore.selected.key}
           type="editable-card"
-          // onEdit={this.onEdit}
+          onEdit={store.viewsStore.addView}
           
         >
           {panes.map((pane) => (

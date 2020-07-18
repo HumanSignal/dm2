@@ -24,7 +24,7 @@ const View = types
       .model("View", {
           id: types.optional(types.identifier, () => { return guidGenerator(5) }),
           
-          title: "Panel",
+          title: "Tasks",
           
           type: types.optional(types.enumeration(["list", "grid"]), "list"),
           target: types.optional(types.enumeration(["tasks", "annotations"]), "tasks"),
@@ -117,6 +117,17 @@ const ViewsStore = types
               
               if (needsNewSelected)
                   self.setSelected(self.views[0]);              
+          },
+
+          addView() {
+              const dupView = getSnapshot(self.views[0]);
+              const newView = View.create({
+                  fields: dupView.fields
+              });
+
+              self.views.push(newView);
+
+              return newView;
           },
           
           duplicateView(view) {
