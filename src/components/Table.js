@@ -1,10 +1,10 @@
 import React from "react";
-
+import { Pagination } from "antd";
 import {
   useTable,
   useRowSelect,
   useFilters,
-  useResizeColumns,
+  usePagination,
 } from "react-table";
 
 import { observer, inject } from "mobx-react";
@@ -54,7 +54,7 @@ const Table = observer(({ columns, data, item }) => {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    page,
     prepareRow,
     state,
     visibleColumns,
@@ -62,37 +62,43 @@ const Table = observer(({ columns, data, item }) => {
     preGlobalFilteredRows,
     setGlobalFilter,
     state: { selectedRowIds },
+
+    gotoPage,
+    setPageSize,
+    state: { pageIndex, pageSize },
   } = useTable(
     {
       columns,
       data,
+      initialState: { pageSize: 20 },
     },
     useFilters, // useFilters!
-    useResizeColumns,
     // maybe?
     // useGlobalFilter, // useGlobalFilter!
     useRowSelect,
+    usePagination,
     (hooks) => {
       hooks.visibleColumns.push((columns) => [
         // Let's make a column for selection
         {
-          id: "selection",
+          ...columns[0],
+          // id: "selection",
           // The header can use the table's getToggleAllRowsSelectedProps method
           // to render a checkbox
           Header: ({ getToggleAllRowsSelectedProps }) => (
             <div>
-              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} /> ID
             </div>
           ),
           // The cell can use the individual row's getToggleRowSelectedProps method
           // to the render a checkbox
-          Cell: ({ row }) => (
+          Cell: ({ row, value }) => (
             <div>
-              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} /> {value}
             </div>
           ),
         },
-        ...columns,
+        ...columns.slice(1),
       ]);
     }
   );
@@ -120,7 +126,7 @@ const Table = observer(({ columns, data, item }) => {
               }
 
               <div className="grid">
-                {rows.map((row, i) => {
+                {page.map((row, i) => {
                     prepareRow(row);
                     return (
                         <div {...row.getRowProps()}>
@@ -138,62 +144,68 @@ const Table = observer(({ columns, data, item }) => {
     };
 
     const listView = () => {
-        return (
-            <>
-              <table {...getTableProps()} style={{ width: "100%" }}>
-                <thead>
-                  {headerGroups.map((headerGroup) => (
-                      <tr
-                        {...headerGroup.getHeaderGroupProps()}
-                        style={{ background: "#ccc" }}
-                      >
-                        {headerGroup.headers.map((column) => (
-                            <th {...column.getHeaderProps()}>
-                              {column.render("Header")}
-                              <div>{column.canFilter ? column.render("Filter") : null}</div>
-
-                              {/* this is resize the column code which we may need  */}
-                              {/* <div */}
-                              {/*   {...column.getResizerProps()} */}
-                              {/*   className={`resizer ${column.isResizing ? "isResizing" : ""}`} */}
-                              {/* /> */}
-                            </th>
-                        ))}
-                      </tr>
+      return (
+        <>
+          <table {...getTableProps()} style={{ width: "100%" }}>
+            <thead>
+              {headerGroups.map((headerGroup) => (
+                <tr
+                  {...headerGroup.getHeaderGroupProps()}
+                  style={{ background: "#ccc" }}
+                >
+                  {headerGroup.headers.map((column) => (
+                    <th {...column.getHeaderProps()}>
+                      {column.render("Header")}
+                      <div>{column.canFilter ? column.render("Filter") : null}</div>
+    
+                      {/* this is resize the column code which we may need  */}
+                      {/* <div */}
+                      {/*   {...column.getResizerProps()} */}
+                      {/*   className={`resizer ${column.isResizing ? "isResizing" : ""}`} */}
+                      {/* /> */}
+                    </th>
                   ))}
-
-                  {/* <tr> */}
-                  {/*   <th colSpan={visibleColumns.length} */}
-                  {/*     style={{ */}
-                  {/*       textAlign: 'left', */}
-                  {/*     }}> */}
-
-                  {/* maybe we show that on Ctrl+f? */}
-                  {/* <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} */}
-                  {/*                   globalFilter={state.globalFilter} */}
-                  {/*                   setGlobalFilter={setGlobalFilter} */}
-                  {/* /> */}
-                  {/* </th> */}
-                  {/*     </tr> */}
-                </thead>
-                <tbody {...getTableBodyProps()}>
-                  {rows.map((row, i) => {
-                      prepareRow(row);
+                </tr>
+              ))}
+    
+              {/* <tr> */}
+              {/*   <th colSpan={visibleColumns.length} */}
+              {/*     style={{ */}
+              {/*       textAlign: 'left', */}
+              {/*     }}> */}
+    
+              {/* maybe we show that on Ctrl+f? */}
+              {/* <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} */}
+              {/*                   globalFilter={state.globalFilter} */}
+              {/*                   setGlobalFilter={setGlobalFilter} */}
+              {/* /> */}
+              {/* </th> */}
+              {/*     </tr> */}
+            </thead>
+            <tbody {...getTableBodyProps()}>
+              {page.map((row, i) => {
+                prepareRow(row);
+                return (
+                  <tr {...row.getRowProps()}>
+                    {row.cells.map((cell) => {
                       return (
-                          <tr {...row.getRowProps()}>
-                            {row.cells.map((cell) => {
-                                return (
-                                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                                );
-                            })}
-                          </tr>
+                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
                       );
-                  })}
-                </tbody>
-              </table>
-              <p>Selected Completions: {Object.keys(selectedRowIds).length}</p>
-            </>
-        );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <Pagination
+            current={pageIndex}
+            total={data.length}
+            pageSize={pageSize}
+            onChange={(page, size) => { gotoPage(page); setPageSize(size); }}
+          />
+          <p>Selected Completions: {Object.keys(selectedRowIds).length}</p>
+        </>
+      );
     };
     
   // Render the UI for your table

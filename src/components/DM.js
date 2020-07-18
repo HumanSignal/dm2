@@ -14,6 +14,8 @@ import {
 import FieldsMenu from "./FieldsMenu";
 import Table from "./Table";
 
+import data from '../data/tasks.json';
+
 const { TabPane } = Tabs;
 
 const actionsMenu = (
@@ -183,26 +185,7 @@ const DmPaneContent = inject("store")(
     // ], []);
 
     // const data = React.useMemo(() => makeData(100000), [])
-    const data = [
-      {
-        id: 1,
-        status: "ready",
-        annotations: [{}, {}, {}],
-        annotations_num: 3,
-        source: "file.csv",
-        created_on: "Fri 8",
-      },
-      {
-        id: 2,
-        status: "ready",
-        annotations: [{}, {}, {}],
-        annotations_num: 3,
-        source: "file2.csv",
-        created_on: "Fri 9",
-      },
-    ];
 
-    const [originalData] = React.useState(data);
     const [skipPageReset, setSkipPageReset] = React.useState(false);
 
     return (
@@ -213,7 +196,6 @@ const DmPaneContent = inject("store")(
         <div style={{ background: "#f1f1f1" }}>
           <Table columns={columns} data={data} item={item} skipPageReset={skipPageReset} />
         </div>
-        <Pagination defaultCurrent={1} total={50} />
       </div>
     );
   })

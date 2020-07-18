@@ -2,11 +2,11 @@
 import { types, getEnv, getParent, clone, getSnapshot, destroy } from "mobx-state-tree";
 import FilterMap from "../utils/FilterMap";
 import { guidGenerator } from "../utils/random";
+import fields from "../data/fields";
 
 const Field = types
       .model("Fields", {
-          title: "",
-          accessor: "",
+          field: types.string,
           
           enabled: true,
           canToggle: false,
@@ -18,6 +18,11 @@ const Field = types
           get key() { return self.source + "_" + self.title },
           get filterClass() { return FilterMap.findClass(self) },
           get filterType() { return FilterMap.findType(self) }
+      }))
+      .actions(self => ({
+          toggle () {
+              self.enabled = !self.enabled;
+          },
       }))
 
 const View = types
@@ -48,12 +53,16 @@ const View = types
                     self.fields.filter(f => f.source !== 'annotations') :
                     self.fields.filter(f => f.source !== 'tasks') ;
 
-              return lst.map(f => {
+              return lst.filter(f => f.enabled).map(f => {
+                  const field = fields[f.field];
+                  const { accessor, Cell } = field;
                   const cols = {
-                      Header: f.title,
-                      accessor: f.accessor,
+                      Header: field.title,
+                      accessor,
                       disableFilters: true
                   }
+
+                  if (Cell) cols.Cell = Cell;
 
                   if (self.filters === true) {
                       if (f.filterClass)
