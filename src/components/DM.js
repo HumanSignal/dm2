@@ -213,7 +213,6 @@ const DmPaneContent = inject("store")(
         <div style={{ background: "#f1f1f1" }}>
           <Table columns={columns} data={data} item={item} skipPageReset={skipPageReset} />
         </div>
-        <Pagination defaultCurrent={1} total={50} />
       </div>
     );
   })
