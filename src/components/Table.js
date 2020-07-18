@@ -87,16 +87,17 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
           // to render a checkbox
           Header: ({ getToggleAllRowsSelectedProps }) => (
             <div>
-              <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} /> ID
+              { item.root.mode === "dm" ? <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} /> : null } ID
             </div>
           ),
           // The cell can use the individual row's getToggleRowSelectedProps method
           // to the render a checkbox
           Cell: ({ row, value }) => (
             <div>
-              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
-              &nbsp;
-              <span style={{ cursor: 'pointer' }} onClick={() => onSelectRow && onSelectRow(row.original)}>{value}</span>
+              {item.root.mode === "dm"
+                ? <><IndeterminateCheckbox {...row.getToggleRowSelectedProps()} /> {value}</>
+                : <span style={{ cursor: 'pointer' }} onClick={() => onSelectRow && onSelectRow(row.original)}>{value}</span>
+              }
             </div>
           ),
         },
@@ -158,8 +159,7 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
                   {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()}>
                       {column.render("Header")}
-                      <div>{column.canFilter ? column.render("Filter") : null}</div>
-    
+                      <div>{column.canFilter && item.root.mode === "dm" ? column.render("Filter") : null}</div>
                       {/* this is resize the column code which we may need  */}
                       {/* <div */}
                       {/*   {...column.getResizerProps()} */}
