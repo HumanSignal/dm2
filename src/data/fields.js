@@ -1,8 +1,28 @@
+
+import {
+    GlobalFilter,
+    DefaultColumnFilter,
+    SelectColumnFilter,
+    SliderColumnFilter,
+    NumberRangeColumnFilter,
+    fuzzyTextFilterFn,
+    filterGreaterThan
+} from "../components/Filters";
+
 const formatter = new Intl.DateTimeFormat(undefined, { month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric' });
 
 const fields = {
-  id: { title: "ID", accessor: 'id' },
-  task_status: { title: "Status", accessor: 'status' },
+    id: { title: "ID",
+          accessor: 'id',
+          filterClass: SliderColumnFilter,
+          filterType: filterGreaterThan
+        },
+    task_status: {
+        title: "Status",
+        accessor: 'status',
+        filterClass: SelectColumnFilter,
+        filterType: 'includes'
+    },
   annotations: {
     title: "Annotations",
     accessor: t => t.completions.length + t.predictions.length,

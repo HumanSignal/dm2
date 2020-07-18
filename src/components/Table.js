@@ -115,7 +115,7 @@ const Table = observer(({ columns, data, item }) => {
                       >
                         {headerGroup.headers.map((column) => (
                             <div {...column.getHeaderProps()}>
-                              {column.render("Header")}
+                              {column.render("Header")}                              
                               <div>{column.canFilter ? column.render("Filter") : null}</div>
                             </div>
                         ))}
@@ -180,7 +180,7 @@ const Table = observer(({ columns, data, item }) => {
               {/*                   setGlobalFilter={setGlobalFilter} */}
               {/* /> */}
               {/* </th> */}
-              {/*     </tr> */}
+              {/*     </tr> */}              
             </thead>
             <tbody {...getTableBodyProps()}>
               {page.map((row, i) => {

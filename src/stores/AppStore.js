@@ -1,6 +1,5 @@
 
 import { types, getEnv, getParent, clone, getSnapshot, destroy } from "mobx-state-tree";
-import FilterMap from "../utils/FilterMap";
 import { guidGenerator } from "../utils/random";
 import fields from "../data/fields";
 
@@ -16,8 +15,6 @@ const Field = types
           
       }).views(self => ({
           get key() { return self.source + "_" + self.title },
-          get filterClass() { return FilterMap.findClass(self) },
-          get filterType() { return FilterMap.findType(self) }
       }))
       .actions(self => ({
           toggle () {
@@ -55,7 +52,7 @@ const View = types
 
               return lst.filter(f => f.enabled).map(f => {
                   const field = fields[f.field];
-                  const { accessor, Cell } = field;
+                  const { accessor, Cell, filterClass, filterType } = field;
                   const cols = {
                       Header: field.title,
                       accessor,
@@ -65,14 +62,14 @@ const View = types
                   if (Cell) cols.Cell = Cell;
 
                   if (self.filters === true) {
-                      if (f.filterClass)
-                          cols["Filter"] = f.filterClass;
+                      if (filterClass !== undefined)
+                          cols["Filter"] = filterClass;
                       
-                      if (f.filterType) 
-                          cols["filter"] = f.filterType
+                      if (filterType !== undefined) 
+                          cols["filter"] = filterType
 
-                      if (f.filterType || f.filterClass)
-                          cols["disableFilters"] = false;
+                      if (filterType || filterClass)
+                          cols["disableFilters"] = false;                      
                   }
 
                   return cols;
