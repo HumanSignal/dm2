@@ -78,7 +78,7 @@ const DmPanel = observer(({ item }) => {
         &nbsp;
       </div>
       <div>
-        <Button>
+        <Button onClick={() => item.root.setMode('label') }>
           <PlayCircleOutlined />
           Label All
         </Button>

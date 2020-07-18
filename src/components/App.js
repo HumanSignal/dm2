@@ -1,18 +1,20 @@
 
 import React from 'react';
-import { Provider } from "mobx-react";
+import { observer, Provider } from "mobx-react";
 
 import DmTabs from './DM';
+import DmLabel from './Label';
+
 import Styles from './Table.styles';
 
-function App({ app }) {
+const App = (observer(({ app }) => {
     return (
         <Provider store={app}>
           <Styles>
-            <DmTabs />
+            { app.mode === 'dm' ? <DmTabs /> : <DmLabel /> }
           </Styles>
         </Provider>
     );
-}
+}));
 
 export default App;

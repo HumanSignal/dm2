@@ -1,5 +1,5 @@
 
-import { types, getEnv, getParent, clone, getSnapshot, destroy } from "mobx-state-tree";
+import { types, getEnv, getParent, clone, getSnapshot, destroy, getRoot } from "mobx-state-tree";
 import { guidGenerator } from "../utils/random";
 import fields from "../data/fields";
 
@@ -17,7 +17,7 @@ const Field = types
           get key() { return self.source + "_" + self.title },
       }))
       .actions(self => ({
-          toggle () {
+          toggle() {
               self.enabled = !self.enabled;
           },
       }))
@@ -38,8 +38,10 @@ const View = types
       }).views(self => ({
           get key() { return self.id },
 
-          get parent() { return getParent(getParent(self)) },
+          get root() { return getRoot(self) },
           
+          get parent() { return getParent(getParent(self)) },
+
           fieldsSource(source) {
               return self.fields.filter(f => f.source === source);
           },
@@ -159,7 +161,13 @@ const ViewsStore = types
 
 export default types
     .model("dmAppStore", {
+        mode: types.optional(types.enumeration(["dm", "label"]), "dm"),
+        
         viewsStore: types.optional(ViewsStore, {
             views: []            
         }),        
-    })
+    }).actions(self => ({
+        setMode(mode) {
+            self.mode = mode;
+        }
+    }))
