@@ -14,6 +14,12 @@ const Styles = styled.div`
     margin-right: 1em;
   }
 
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 1em;
+  }
+
   table {
     border-spacing: 0;
     border: 1px solid black;

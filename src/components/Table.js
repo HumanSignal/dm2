@@ -211,7 +211,11 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
     };
     
   // Render the UI for your table
-    return (item.type === "list") ? listView() : gridView(); 
+    return (item.root.mode === "dm") ?
+        (item.type === "list") ?
+          listView() :
+          gridView()
+        : listView(); 
 });
 
 export default Table;
