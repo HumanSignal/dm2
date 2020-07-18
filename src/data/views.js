@@ -1,4 +1,5 @@
 export default [{
+    title: "Tasks",
   fields: [
       // tasks
       { title: "ID", accessor: 'id', source: "tasks", enabled: true },

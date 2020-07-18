@@ -134,7 +134,6 @@ const ViewsStore = types
 
           afterCreate() {
               if (! self.selected) {
-                  console.log('fix selected');
                   self.setSelected(self.views[0]);
               }
           }
