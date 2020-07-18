@@ -3,6 +3,17 @@ import styled from 'styled-components';
 const Styles = styled.div`
   padding: 1rem;
 
+  .grid {
+    display: flex;
+  }
+
+  .grid > div {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 1em;
+    margin-right: 1em;
+  }
+
   table {
     border-spacing: 0;
     border: 1px solid black;

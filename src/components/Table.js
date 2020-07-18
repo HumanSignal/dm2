@@ -7,6 +7,8 @@ import {
   useResizeColumns,
 } from "react-table";
 
+import { observer, inject } from "mobx-react";
+
 import { fuzzyTextFilterFn } from "./Filters";
 
 const IndeterminateCheckbox = React.forwardRef(
@@ -26,7 +28,7 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 );
 
-function Table({ columns, data }) {
+const Table = observer(({ columns, data, item }) => {
   const filterTypes = React.useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -95,63 +97,107 @@ function Table({ columns, data }) {
     }
   );
 
-  // Render the UI for your table
-  return (
-    <>
-      <table {...getTableProps()} style={{ width: "100%" }}>
-        <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr
-              {...headerGroup.getHeaderGroupProps()}
-              style={{ background: "#ccc" }}
-            >
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps()}>
-                  {column.render("Header")}
-                  <div>{column.canFilter ? column.render("Filter") : null}</div>
+    const gridView = () => {
+        return (
+            <>
+              { item.filters === true ?
+                <div>
+                  {headerGroups.map((headerGroup) => (
+                      <div
+                        {...headerGroup.getHeaderGroupProps()}
+                        style={{ background: "#ccc" }}
+                      >
+                        {headerGroup.headers.map((column) => (
+                            <div {...column.getHeaderProps()}>
+                              {column.render("Header")}
+                              <div>{column.canFilter ? column.render("Filter") : null}</div>
+                            </div>
+                        ))}
+                      </div>
+                  ))}
 
-                  {/* this is resize the column code which we may need  */}
-                  {/* <div */}
-                  {/*   {...column.getResizerProps()} */}
-                  {/*   className={`resizer ${column.isResizing ? "isResizing" : ""}`} */}
-                  {/* /> */}
-                </th>
-              ))}
-            </tr>
-          ))}
+                </div> : null
+              }
 
-          {/* <tr> */}
-          {/*   <th colSpan={visibleColumns.length} */}
-          {/*     style={{ */}
-          {/*       textAlign: 'left', */}
-          {/*     }}> */}
-
-          {/* maybe we show that on Ctrl+f? */}
-          {/* <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} */}
-          {/*                   globalFilter={state.globalFilter} */}
-          {/*                   setGlobalFilter={setGlobalFilter} */}
-          {/* /> */}
-          {/* </th> */}
-          {/*     </tr> */}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row, i) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                  );
+              <div className="grid">
+                {rows.map((row, i) => {
+                    prepareRow(row);
+                    return (
+                        <div {...row.getRowProps()}>
+                          {row.cells.map((cell) => {
+                              return (
+                                  <div {...cell.getCellProps()}>{cell.render("Cell")}</div>
+                              );
+                          })}
+                        </div>
+                    );
                 })}
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-      <p>Selected Completions: {Object.keys(selectedRowIds).length}</p>
-    </>
-  );
-}
+              </div>
+            </>
+        );
+    };
+
+    const listView = () => {
+        return (
+            <>
+              <table {...getTableProps()} style={{ width: "100%" }}>
+                <thead>
+                  {headerGroups.map((headerGroup) => (
+                      <tr
+                        {...headerGroup.getHeaderGroupProps()}
+                        style={{ background: "#ccc" }}
+                      >
+                        {headerGroup.headers.map((column) => (
+                            <th {...column.getHeaderProps()}>
+                              {column.render("Header")}
+                              <div>{column.canFilter ? column.render("Filter") : null}</div>
+
+                              {/* this is resize the column code which we may need  */}
+                              {/* <div */}
+                              {/*   {...column.getResizerProps()} */}
+                              {/*   className={`resizer ${column.isResizing ? "isResizing" : ""}`} */}
+                              {/* /> */}
+                            </th>
+                        ))}
+                      </tr>
+                  ))}
+
+                  {/* <tr> */}
+                  {/*   <th colSpan={visibleColumns.length} */}
+                  {/*     style={{ */}
+                  {/*       textAlign: 'left', */}
+                  {/*     }}> */}
+
+                  {/* maybe we show that on Ctrl+f? */}
+                  {/* <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} */}
+                  {/*                   globalFilter={state.globalFilter} */}
+                  {/*                   setGlobalFilter={setGlobalFilter} */}
+                  {/* /> */}
+                  {/* </th> */}
+                  {/*     </tr> */}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                  {rows.map((row, i) => {
+                      prepareRow(row);
+                      return (
+                          <tr {...row.getRowProps()}>
+                            {row.cells.map((cell) => {
+                                return (
+                                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                                );
+                            })}
+                          </tr>
+                      );
+                  })}
+                </tbody>
+              </table>
+              <p>Selected Completions: {Object.keys(selectedRowIds).length}</p>
+            </>
+        );
+    };
+    
+  // Render the UI for your table
+    return (item.type === "list") ? listView() : gridView(); 
+});
 
 export default Table;

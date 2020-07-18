@@ -211,14 +211,13 @@ const DmPaneContent = inject("store")(
           <DmPanel item={item} />
         </div>
         <div style={{ background: "#f1f1f1" }}>
-          <Table columns={columns} data={data} skipPageReset={skipPageReset} />
+          <Table columns={columns} data={data} item={item} skipPageReset={skipPageReset} />
         </div>
         <Pagination defaultCurrent={1} total={50} />
       </div>
     );
   })
 );
-
 
 
 const DmTabs = inject('store')(observer(({ store }) => {
@@ -234,8 +233,7 @@ const DmTabs = inject('store')(observer(({ store }) => {
           }}
           activeKey={store.viewsStore.selected.key}
           type="editable-card"
-          onEdit={store.viewsStore.addView}
-          
+          onEdit={store.viewsStore.addView}          
         >
           {panes.map((pane) => (
               <TabPane
