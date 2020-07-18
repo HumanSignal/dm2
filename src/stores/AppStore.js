@@ -3,6 +3,9 @@ import { types, getEnv, getParent, clone, getSnapshot, destroy, getRoot } from "
 import { guidGenerator } from "../utils/random";
 import fields from "../data/fields";
 
+import { StringFilter, NumberFilter, 
+    BetweenNumberFilter } from "./FiltersStore";
+
 const Field = types
       .model("Fields", {
           field: types.string,
@@ -11,8 +14,8 @@ const Field = types
           canToggle: false,
           
           source: types.optional(types.enumeration(["tasks", "annotations", "inputs"]), "tasks"),
-
           
+          filterState: types.maybeNull(types.union({ eager: false }, StringFilter, NumberFilter, BetweenNumberFilter))
       }).views(self => ({
           get key() { return self.source + "_" + self.title },
       }))
@@ -20,7 +23,7 @@ const Field = types
           toggle() {
               self.enabled = !self.enabled;
           },
-      }))
+      }));
 
 const View = types
       .model("View", {
@@ -59,6 +62,7 @@ const View = types
                       Header: field.title,
                       accessor,
                       disableFilters: true,
+                      _filterState: f.filterState
                   };
 
                   if (Cell) cols.Cell = Cell;

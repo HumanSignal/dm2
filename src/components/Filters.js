@@ -38,14 +38,15 @@ import matchSorter from 'match-sorter';
 
 // Define a default UI for filtering
 function DefaultColumnFilter({
-  column: { filterValue, preFilteredRows, setFilter },
+  column: { filterValue, _filterState, preFilteredRows, setFilter },
 }) {
     const count = preFilteredRows.length;
 
   return (
     <input
-      value={filterValue || ''}
+      value={filterValue || _filterState.stringValue || ''}
       onChange={e => {
+          _filterState.update(e.target.value);
           setFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
       }}
       placeholder={`Search ${count} records...`}
@@ -56,7 +57,7 @@ function DefaultColumnFilter({
 // This is a custom filter UI for selecting
 // a unique option from a list
 function SelectColumnFilter({
-  column: { filterValue, setFilter, preFilteredRows, id },
+    column: { filterValue, _filterState, setFilter, preFilteredRows, id },
 }) {
   // Calculate the options for filtering
   // using the preFilteredRows
@@ -71,8 +72,9 @@ function SelectColumnFilter({
   // Render a multi-select box
   return (
     <select
-      value={filterValue}
+      value={filterValue || _filterState.stringValue}
       onChange={e => {
+          _filterState.update(e.target.value);
           setFilter(e.target.value || undefined);
       }}
     >
@@ -90,7 +92,7 @@ function SelectColumnFilter({
 // slider to set the filter value between a column's
 // min and max values
 function SliderColumnFilter({
-        column: { filterValue, setFilter, preFilteredRows, id },
+    column: { filterValue, _filterState, setFilter, preFilteredRows, id },
     }) {
   // Calculate the min and max
   // using the preFilteredRows
@@ -111,9 +113,11 @@ function SliderColumnFilter({
         type="range"
         min={min}
         max={max}
-        value={filterValue || min}
+        value={filterValue || _filterState.value || min}
         onChange={e => {
-            setFilter(parseInt(e.target.value, 10));
+            const val = parseInt(e.target.value, 10);
+            _filterState.update(val);
+            setFilter(val);
         }}
       />
       <button onClick={() => setFilter(undefined)}>Off</button>
@@ -125,7 +129,7 @@ function SliderColumnFilter({
 // filter. It uses two number boxes and filters rows to
 // ones that have values between the two
 function NumberRangeColumnFilter({
-  column: { filterValue = [], preFilteredRows, setFilter, id },
+    column: { filterValue = [], _filterState, preFilteredRows, setFilter, id },
 }) {
   const [min, max] = React.useMemo(() => {
       let min = preFilteredRows.length ? preFilteredRows[0].values[id] : 0;
@@ -144,11 +148,14 @@ function NumberRangeColumnFilter({
       }}
     >
       <input
-        value={filterValue[0] || ''}
+        value={filterValue[0] || _filterState.startNum || ''}
         type="number"
         onChange={e => {
             const val = e.target.value;
-            setFilter((old = []) => [val ? parseInt(val, 10) : undefined, old[1]]);
+            const num = parseInt(val, 10);
+            
+            _filterState.update([num, null]);
+            setFilter((old = []) => [val ? num : undefined, old[1]]);
         }}
         placeholder={`Min (${min})`}
         style={{
@@ -158,11 +165,14 @@ function NumberRangeColumnFilter({
       />
       to
       <input
-        value={filterValue[1] || ''}
+        value={filterValue[1] || _filterState.endNum || ''}
         type="number"
         onChange={e => {
             const val = e.target.value;
-            setFilter((old = []) => [old[0], val ? parseInt(val, 10) : undefined]);
+            const num = parseInt(val, 10);
+
+            _filterState.update([null, num]);
+            setFilter((old = []) => [old[0], val ? num : undefined]);
         }}
         placeholder={`Max (${max})`}
         style={{
