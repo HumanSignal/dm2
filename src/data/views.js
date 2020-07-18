@@ -2,16 +2,18 @@ export default [{
     title: "Tasks",
   fields: [
       // tasks
-      { title: "ID", accessor: 'id', source: "tasks", enabled: true },
-      { title: "Status", accessor: 'status', source: "tasks", enabled: true },
+      { field: "id", source: "tasks", enabled: true },
+      { field: "task_status", source: "tasks", enabled: true, canToggle: true },
+      { field: "annotations", source: "tasks", enabled: true, canToggle: true },
+      { field: "created", source: "tasks", enabled: true, canToggle: true },
       
       // annotations
-      { title: "ID", source: "annotations", enabled: true, canToggle: false },
-      { title: "Status", source: "annotations", enabled: true, canToggle: false },
-      { title: "Created On", source: "annotations", enabled: true },
-      { title: "Updated On", source: "annotations", enabled: true },
-      { title: "Author", source: "annotations", enabled: true },
-      { title: "Regions #", source: "annotations", enabled: true },
+      { field: "id", source: "annotations", enabled: true, canToggle: false },
+      { field: "annotation_status", source: "annotations", enabled: true, canToggle: false },
+      { field: "created", source: "annotations", enabled: true, canToggle: true },
+      { field: "updated", source: "annotations", enabled: true },
+      { field: "author", source: "annotations", enabled: true },
+      { field: "regions", source: "annotations", enabled: true },
       
       // add some file fields
   ]

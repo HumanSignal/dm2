@@ -1,13 +1,15 @@
 import React from "react";
 import { observer } from "mobx-react";
-
 import { Switch, Menu } from "antd";
+
+import fields from "../data/fields";
+import styles from "./Table.scss";
 
 const FieldsMenu = observer(({ item, store }) => {
   const menuItem = (f) => (
-    <Menu.Item key={f.key}>
-      {f.canToggle ? <Switch defaultChecked /> : null}
-      {f.title}
+    <Menu.Item key={f.source + f.field} onClick={f.toggle} className={"fields-menu-item"}>
+      {fields[f.field].title}
+      {f.canToggle ? <Switch checked={f.enabled} size="small" /> : null}
     </Menu.Item>
   );
 
