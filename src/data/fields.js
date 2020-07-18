@@ -1,6 +1,5 @@
 
 import {
-    GlobalFilter,
     DefaultColumnFilter,
     SelectColumnFilter,
     SliderColumnFilter,

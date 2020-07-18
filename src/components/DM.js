@@ -70,7 +70,7 @@ const DmPanel = observer(({ item }) => {
         </Dropdown>
         &nbsp;
         <Button
-          type={item.filters ? "primary" : ""}
+          type={item.enableFilters ? "primary" : ""}
           onClick={() => item.toggleFilters()}
         >
           <FilterOutlined /> Filters{" "}

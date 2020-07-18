@@ -106,7 +106,7 @@ const Table = observer(({ columns, data, item }) => {
     const gridView = () => {
         return (
             <>
-              { item.filters === true ?
+              { item.enableFilters === true ?
                 <div>
                   {headerGroups.map((headerGroup) => (
                       <div

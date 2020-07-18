@@ -33,7 +33,7 @@ const View = types
           
           fields: types.array(Field),
           
-          filters: false,
+          enableFilters: false,
           renameMode: false,
       }).views(self => ({
           get key() { return self.id },
@@ -58,12 +58,12 @@ const View = types
                   const cols = {
                       Header: field.title,
                       accessor,
-                      disableFilters: true
-                  }
+                      disableFilters: true,
+                  };
 
                   if (Cell) cols.Cell = Cell;
 
-                  if (self.filters === true) {
+                  if (self.enableFilters === true) {
                       if (filterClass !== undefined)
                           cols["Filter"] = filterClass;
                       
@@ -95,7 +95,7 @@ const View = types
           },
           
           toggleFilters() {
-              self.filters = ! self.filters;
+              self.enableFilters = ! self.enableFilters;
           },
       }))
 
@@ -103,6 +103,8 @@ const ViewsStore = types
       .model("ViewsStore", {
           selected: types.safeReference(View),
           views: types.array(View),
+          
+          labelingView: types.maybeNull(View)
       }).views(self => ({
           get all() {
               return self.views;
@@ -114,6 +116,17 @@ const ViewsStore = types
       })).actions(self => ({
           setSelected(view) {
               self.selected = view;
+          },
+
+          updateLabelingView() {
+              const dupView = getSnapshot(self.selected);
+              const fields = dupView.fields.slice(0,2);
+              
+              self.labelingView = View.create({
+                  ...dupView,
+                  id: guidGenerator(5),
+                  fields: fields
+              });
           },
 
           deleteView(view) {
@@ -148,7 +161,6 @@ const ViewsStore = types
               });
               
               self.views.push(newView);
-
               self.setSelected(self.views[self.views.length - 1]);
           },
 
@@ -169,5 +181,8 @@ export default types
     }).actions(self => ({
         setMode(mode) {
             self.mode = mode;
+            
+            if (mode === "label")
+                self.viewsStore.updateLabelingView();            
         }
-    }))
+    }));
