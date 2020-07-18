@@ -1,6 +1,7 @@
 
-import { types, getEnv } from "mobx-state-tree";
+import { types, getEnv, getParent, clone, getSnapshot, destroy } from "mobx-state-tree";
 import FilterMap from "../utils/FilterMap";
+import { guidGenerator } from "../utils/random";
 
 const Field = types
       .model("Fields", {
@@ -21,18 +22,22 @@ const Field = types
 
 const View = types
       .model("View", {
+          id: types.optional(types.identifier, () => { return guidGenerator(5) }),
+          
           title: "Panel",
-          closable: false,
           
           type: types.optional(types.enumeration(["list", "grid"]), "list"),
           target: types.optional(types.enumeration(["tasks", "annotations"]), "tasks"),
           
           fields: types.array(Field),
           
-          filters: false
+          filters: false,
+          renameMode: false,
       }).views(self => ({
-          get key() { return self.title },
+          get key() { return self.id },
 
+          get parent() { return getParent(getParent(self)) },
+          
           fieldsSource(source) {
               return self.fields.filter(f => f.source === source);
           },
@@ -72,20 +77,68 @@ const View = types
           setTarget(target) {
               self.target = target;
           },
+          
+          setTitle(title) {
+              self.title = title;
+          },
 
+          setRenameMode(mode) {
+              self.renameMode = mode;
+          },
+          
           toggleFilters() {
               self.filters = ! self.filters;
-          } 
+          },
       }))
 
 const ViewsStore = types
       .model("ViewsStore", {
+          selected: types.safeReference(View),
           views: types.array(View),
       }).views(self => ({
           get all() {
               return self.views;
+          },
+
+          get canClose() {
+              return self.all.length > 1;
           }
-      }));
+      })).actions(self => ({
+          setSelected(view) {
+              self.selected = view;
+          },
+
+          deleteView(view) {
+              let needsNewSelected = false;
+              if (self.selected === view)
+                  needsNewSelected = true;
+              
+              destroy(view);
+              
+              if (needsNewSelected)
+                  self.setSelected(self.views[0]);              
+          },
+          
+          duplicateView(view) {
+              const dupView = getSnapshot(view);
+              const newView = View.create({
+                  ...dupView,
+                  id: guidGenerator(5),
+                  title: dupView.title + " copy"
+              });
+              
+              self.views.push(newView);
+
+              self.setSelected(self.views[self.views.length - 1]);
+          },
+
+          afterCreate() {
+              if (! self.selected) {
+                  console.log('fix selected');
+                  self.setSelected(self.views[0]);
+              }
+          }
+    }));
 
 export default types
     .model("dmAppStore", {
