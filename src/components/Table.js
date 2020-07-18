@@ -28,7 +28,7 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 );
 
-const Table = observer(({ columns, data, item }) => {
+const Table = observer(({ columns, data, item, onSelectRow }) => {
   const filterTypes = React.useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -94,7 +94,9 @@ const Table = observer(({ columns, data, item }) => {
           // to the render a checkbox
           Cell: ({ row, value }) => (
             <div>
-              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} /> {value}
+              <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />
+              &nbsp;
+              <span style={{ cursor: 'pointer' }} onClick={() => onSelectRow && onSelectRow(row.original)}>{value}</span>
             </div>
           ),
         },

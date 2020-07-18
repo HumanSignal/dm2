@@ -40,7 +40,9 @@ const DmLabel = inject('store')(observer(({ store }) => {
           </Button>
 
           <div style={{ display: "flex" }}>
-            <div style={{ flex: "200px 0 0", marginRight: "1em" }}><Table columns={columns} data={data} item={item} /></div>
+            <div style={{ flex: "200px 0 0", marginRight: "1em" }}>
+              <Table columns={columns} data={data} item={item} onSelectRow={runLS} />
+            </div>
             <div>
               <div id="label-studio"></div>
             </div>
