@@ -8,7 +8,8 @@ export default [{
       { field: "created", source: "tasks", enabled: true, canToggle: true },
       
       // annotations
-      { field: "id", source: "annotations", enabled: true, canToggle: false },
+      { field: "annotation_id", source: "annotations", enabled: true, canToggle: false },
+      { field: "task_id", source: "annotations", enabled: true, canToggle: false },
       { field: "annotation_status", source: "annotations", enabled: true, canToggle: false },
       { field: "created", source: "annotations", enabled: true, canToggle: true },
       { field: "updated", source: "annotations", enabled: true },

@@ -76,7 +76,7 @@ const DmPanel = observer(({ item }) => {
         &nbsp;
       </div>
       <div>
-        <Button onClick={() => item.root.setMode('label') }>
+        <Button disabled={item.target === 'annotations'} onClick={() => item.root.setMode('label') }>
           <PlayCircleOutlined />
           Label All
         </Button>
@@ -146,7 +146,9 @@ const DmTabPane = observer(({ item }) => {
 const DmPaneContent = inject("store")(
   observer(({ item, store }) => {
     const columns = item.fieldsAsColumns;
-      const data = store.tasksStore.getData();
+      const data = (store.viewsStore.selected.target === 'annotations') ?
+            store.tasksStore.getAnnotationData() :
+            store.tasksStore.getData() ;
 
     const [skipPageReset, setSkipPageReset] = React.useState(false);
 

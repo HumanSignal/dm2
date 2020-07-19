@@ -56,10 +56,11 @@ const View = types
               const lst = (self.target === "tasks") ?
                     self.fields.filter(f => f.source !== 'annotations') :
                     self.fields.filter(f => f.source !== 'tasks') ;
-
+              
               return lst.filter(f => f.enabled).map(f => {
                   const field = fields[f.field];
                   const { accessor, Cell, filterClass, filterType } = field;
+                  
                   const cols = {
                       Header: field.title,
                       accessor,

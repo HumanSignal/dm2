@@ -175,6 +175,20 @@ const _convertTask = function(task) {
   return task;
 };
 
+const _convertCompletionBack = function(c) {
+    // convert the completion back from LS to server format
+    // TODO I think we can get that info back from the server
+    if (! c) return;
+    
+    return {
+        id: c.pk,
+        created_ago: c.createdAgo,
+        created_username: c.createdBy,
+        created_at: '2019-08-06T19:27:29.289566Z',
+        lead_time: c.leadTime,
+    };
+};
+
 export default function(elid, config, task, cbs) {
     const cbCall = function (name, ...params) {
         if (name in cbs)
@@ -234,9 +248,10 @@ export default function(elid, config, task, cbs) {
         httpres.json().then(function(res) {
           if (res && res.id) {
               c.updatePersonalKey(res.id.toString());
+              cbCall('onSubmitCompletion', ls, _convertCompletionBack(c), res);
               addHistory(ls, ls.task.id, res.id);
           }
-
+            
           if (task) {
             ls.setFlags({ isLoading: false });
           } else {
@@ -245,8 +260,6 @@ export default function(elid, config, task, cbs) {
         });
       });
 
-        cbCall('onSubmitCompletion', ls, c);
-        
       return true;
     },
 
@@ -280,22 +293,24 @@ export default function(elid, config, task, cbs) {
 
       req.then(function(httpres) {
         ls.setFlags({ isLoading: false });
-        // refresh task from server
-        loadTask(ls, ls.task.id, ls.completionStore.selected.id);
-      });
+          // refresh task from server
 
-        cbCall('onUpdateCompletion', ls, c);
+          httpres.json().then(function(res) {
+              cbCall('onUpdateCompletion', ls, c, res);
+          });
+          
+          loadTask(ls, ls.task.id, ls.completionStore.selected.id);
+      });
     },
 
     onDeleteCompletion: function(ls, c) {
       ls.setFlags({ isLoading: true });
 
       const req = Requests.remover(`${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/${c.pk}/`);
-      req.then(function(httpres) {
+        req.then(function(httpres) {
+        cbCall('onDeleteCompletion', ls, c);    
         ls.setFlags({ isLoading: false });
       });
-
-        cbCall('onDeleteCompletion', ls, c);
     },
 
     onSkipTask: function(ls) {
