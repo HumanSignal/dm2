@@ -24,8 +24,8 @@ const fields = {
     },
   annotations: {
     title: "Annotations",
-    accessor: t => t.completions.length + t.predictions.length,
-    Cell: ({ row: { original } }) => `${original.completions.length} / ${original.predictions.length}`,
+      accessor: t => t.completions ? t.completions.length + t.predictions.length : 0,
+      Cell: ({ row: { original } }) => original.completions ? `${original.completions.length} / ${original.predictions.length}` : ``,
   },
   annotation_status: { title: "Status" },
   created: { title: "Created On", accessor: 'created_at', Cell: ({ value }) => formatter.format(new Date(value)) },

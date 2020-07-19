@@ -14,8 +14,6 @@ import {
 import FieldsMenu from "./FieldsMenu";
 import Table from "./Table";
 
-import data from '../data/tasks.json';
-
 const { TabPane } = Tabs;
 
 const actionsMenu = (
@@ -194,7 +192,7 @@ const DmPaneContent = inject("store")(
           <DmPanel item={item} />
         </div>
         <div style={{ background: "#f1f1f1" }}>
-          <Table columns={columns} data={data} item={item} skipPageReset={skipPageReset} />
+          <Table columns={columns} data={store._data} item={item} skipPageReset={skipPageReset} />
         </div>
       </div>
     );

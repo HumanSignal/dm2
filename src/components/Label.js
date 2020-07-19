@@ -4,9 +4,7 @@ import { observer, inject } from "mobx-react";
 import { Button } from "antd";
 
 import Table from "./Table";
-
-import data from '../data/tasks.json';
-import config from '../data/config';
+import LSF from "../utils/lsf";
 
 const user = { pk: 1, firstName: "James", lastName: "Dean" };
 const interfaces = [
@@ -23,11 +21,22 @@ const interfaces = [
 const DmLabel = inject('store')(observer(({ store }) => {
     const item = store.viewsStore.labelingView;
     const columns = item.fieldsAsColumns;
-
-    const runLS = React.useCallback(task => {
-      if (!window.LabelStudio) return setTimeout(() => runLS(task), 100);
-      new window.LabelStudio('label-studio', { config, interfaces, user, task });
-    }, []);
+    const data = store._data;
+    const config = store._config;
+    
+    const runLS = store._mode === 'dev' ?
+          React.useCallback(task => {
+              if (!window.LabelStudio) return setTimeout(() => runLS(task), 100);
+              return new window.LabelStudio('label-studio', { config, interfaces, user, task });
+          }, []) :
+          React.useCallback(task => {
+              LSF('label-studio', config, task);
+          });
+    
+    // const runLS = React.useCallback(task => {
+    //   if (!window.LabelStudio) return setTimeout(() => runLS(task), 100);
+    //     new window.LabelStudio('label-studio', { config, interfaces, user, task });
+    // }, []);
 
     React.useEffect(() => runLS(data[0]), [runLS]);
     
