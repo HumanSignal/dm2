@@ -175,10 +175,13 @@ const _convertTask = function(task) {
   return task;
 };
 
-export default function(elid, config, task) {
-
+export default function(elid, config, task, cbs) {
+    const cbCall = function (name, ...params) {
+        if (name in cbs)
+            return cbs[name].apply(null, params);
+    };
+    
   const showHistory = task === null;  // show history buttons only if label stream mode, not for task explorer
-    console.log(task === null);
 
   const _prepData = function(c, includeId) {
     var completion = {
@@ -242,6 +245,8 @@ export default function(elid, config, task) {
         });
       });
 
+        cbCall('onSubmitCompletion', ls, c);
+        
       return true;
     },
 
@@ -278,15 +283,19 @@ export default function(elid, config, task) {
         // refresh task from server
         loadTask(ls, ls.task.id, ls.completionStore.selected.id);
       });
+
+        cbCall('onUpdateCompletion', ls, c);
     },
 
-    onDeleteCompletion: function(ls, completion) {
+    onDeleteCompletion: function(ls, c) {
       ls.setFlags({ isLoading: true });
 
-      const req = Requests.remover(`${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/${completion.pk}/`);
+      const req = Requests.remover(`${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/${c.pk}/`);
       req.then(function(httpres) {
         ls.setFlags({ isLoading: false });
       });
+
+        cbCall('onDeleteCompletion', ls, c);
     },
 
     onSkipTask: function(ls) {
@@ -314,6 +323,8 @@ export default function(elid, config, task) {
         })
       });
 
+        cbCall('onDeleteCompletion', ls, c);
+        
       return true;
     },
 

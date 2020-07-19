@@ -21,16 +21,19 @@ const interfaces = [
 const DmLabel = inject('store')(observer(({ store }) => {
     const item = store.viewsStore.labelingView;
     const columns = item.fieldsAsColumns;
-    const data = store._data;
+    const data = store.tasksStore.getData();
     const config = store._config;
     
     const runLS = store._mode === 'dev' ?
           React.useCallback(task => {
+              store.tasksStore.setTask(task);
               if (!window.LabelStudio) return setTimeout(() => runLS(task), 100);
-              return new window.LabelStudio('label-studio', { config, interfaces, user, task });
+              new window.LabelStudio('label-studio', { config, interfaces, user, task });
           }, []) :
           React.useCallback(task => {
-              LSF('label-studio', config, task);
+              store.tasksStore.setTask(task);
+              LSF('label-studio', config, task,
+                  store.tasksStore.buildLSFCallbacks());
           });
     
     // const runLS = React.useCallback(task => {

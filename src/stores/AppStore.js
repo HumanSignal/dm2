@@ -1,5 +1,7 @@
 
 import { types, getEnv, getParent, clone, getSnapshot, destroy, getRoot } from "mobx-state-tree";
+
+import TasksStore from "./TasksStore";
 import { guidGenerator } from "../utils/random";
 import fields from "../data/fields";
 
@@ -178,6 +180,8 @@ const ViewsStore = types
 export default types
     .model("dmAppStore", {
         mode: types.optional(types.enumeration(["dm", "label"]), "dm"),
+
+        tasksStore: types.optional(TasksStore, {}),
         
         viewsStore: types.optional(ViewsStore, {
             views: []            

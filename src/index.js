@@ -12,11 +12,13 @@ import "./index.scss";
 
 const app = AppStore.create({
     viewsStore: {  views: window.LS_VIEWS || views }
-    
 });
 
-app._data = window.LS_DATA || data;
+app.tasksStore.setData(window.LS_DATA || data)
+
 app._config = window.LS_CONFIG || config;
 app._mode = window.LS_MODE || 'dev';
+
+window.DM = app;
 
 ReactDOM.render(<App app={app} />, document.getElementById("app"));

@@ -146,43 +146,7 @@ const DmTabPane = observer(({ item }) => {
 const DmPaneContent = inject("store")(
   observer(({ item, store }) => {
     const columns = item.fieldsAsColumns;
-
-    // const columns = React.useMemo(() => [
-    //     {
-    //         Header: 'ID',
-    //         accessor: 'id',
-    //         Filter: NumberRangeColumnFilter,
-    //         filter: 'between',
-    //         // Filter: DefaultColumnFilter,
-    //     },
-
-    //     {
-    //         Header: 'Status',
-    //         accessor: 'status',
-    //         Filter: SelectColumnFilter,
-    //         filter: 'includes',
-    //     },
-    //     {
-    //         Header: 'Annotations',
-    //         accessor: 'annotations_num',
-    //         Filter: SliderColumnFilter,
-    //         filter: filterGreaterThan,
-    //     },
-    //     {
-    //         Header: 'Source',
-    //         accessor: 'source',
-    //         disableFilters: true,
-    //     },
-    //     {
-    //         Header: 'Created On',
-    //         accessor: 'created_on',
-    //         disableFilters: true,
-    //         // Filter: SliderColumnFilter,
-    //         // filter: filterGreaterThan,
-    //     },
-    // ], []);
-
-    // const data = React.useMemo(() => makeData(100000), [])
+      const data = store.tasksStore.getData();
 
     const [skipPageReset, setSkipPageReset] = React.useState(false);
 
@@ -192,7 +156,7 @@ const DmPaneContent = inject("store")(
           <DmPanel item={item} />
         </div>
         <div style={{ background: "#f1f1f1" }}>
-          <Table columns={columns} data={store._data} item={item} skipPageReset={skipPageReset} />
+          <Table columns={columns} data={data} item={item} skipPageReset={skipPageReset} />
         </div>
       </div>
     );
