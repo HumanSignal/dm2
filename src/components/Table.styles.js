@@ -11,7 +11,6 @@ const Styles = styled.div`
     border: 1px solid #ccc;
     border-radius: 5px;
     padding: 1em;
-    margin-right: 1em;
   }
 
   .grid {
@@ -22,13 +21,16 @@ const Styles = styled.div`
 
   table {
     border-spacing: 0;
-    border: 1px solid black;
+    border: none;
+    margin-bottom: 1em;
+
+    thead {
+      background: #fafafa;
+    }
 
     tr {
-      :last-child {
-        td {
-          border-bottom: 0;
-        }
+      :hover td {
+        background: #fafafa;
       }
     }
 
@@ -36,12 +38,7 @@ const Styles = styled.div`
     td {
       margin: 0;
       padding: 0.5rem;
-      border-bottom: 1px solid black;
-      border-right: 1px solid black;
-
-      :last-child {
-        border-right: 0;
-      }
+      border-bottom: 1px solid #f0f0f0;
 
       .resizer {
         display: inline-block;

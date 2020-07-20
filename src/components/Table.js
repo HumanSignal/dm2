@@ -163,7 +163,6 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
               {headerGroups.map((headerGroup) => (
                 <tr
                   {...headerGroup.getHeaderGroupProps()}
-                  style={{ background: "#ccc" }}
                 >
                   {headerGroup.headers.map((column) => (
                     <th {...column.getHeaderProps()}>

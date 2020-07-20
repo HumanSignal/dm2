@@ -1,7 +1,7 @@
 import React from "react";
 import { observer, inject } from "mobx-react";
 
-import { Pagination, Menu, Dropdown, Tabs, Button } from "antd";
+import { Pagination, Menu, Dropdown, Tabs, Button, Radio, Space } from "antd";
 import {
   DownOutlined,
   PlayCircleOutlined,
@@ -32,61 +32,42 @@ const DmPanel = observer(({ item }) => {
         marginBottom: "1em",
       }}
     >
-      <div>
-        <Button
-          disabled={item.type === "list"}
-          onClick={() => item.setType("list")}
-        >
-          <BarsOutlined />
-          List
-        </Button>
-        <Button
-          disabled={item.type === "grid"}
-          onClick={() => item.setType("grid")}
-        >
-          <AppstoreOutlined />
-          Grid
-        </Button>
-        &nbsp;&nbsp;
-        <Button
-          disabled={item.target === "tasks"}
-          onClick={() => item.setTarget("tasks")}
-        >
-          Tasks
-        </Button>
-        <Button
-          disabled={item.target === "annotations"}
-          onClick={() => item.setTarget("annotations")}
-        >
-          Annotations
-        </Button>
-        &nbsp;&nbsp;
+      <Space size="middle">
+        <Radio.Group value={item.type} onChange={e => item.setType(e.target.value)}>
+          <Radio.Button value="list"><BarsOutlined /> List</Radio.Button>
+          <Radio.Button value="grid"><AppstoreOutlined /> Grid</Radio.Button>
+        </Radio.Group>
+
+        <Radio.Group value={item.target} onChange={e => item.setTarget(e.target.value)}>
+          <Radio.Button value="tasks">Tasks</Radio.Button>
+          <Radio.Button value="annotations">Annotations</Radio.Button>
+        </Radio.Group>
+
         <Dropdown overlay={<FieldsMenu item={item} />}>
           <Button>
             <EyeOutlined /> Fields <CaretDownOutlined />
           </Button>
         </Dropdown>
-        &nbsp;
+
         <Button
           type={item.enableFilters ? "primary" : ""}
           onClick={() => item.toggleFilters()}
         >
           <FilterOutlined /> Filters{" "}
         </Button>
-        &nbsp;
-      </div>
-      <div>
+      </Space>
+
+      <Space size="middle">
         <Button disabled={item.target === 'annotations'} onClick={() => item.root.setMode('label') }>
           <PlayCircleOutlined />
           Label All
         </Button>
-        &nbsp;
         <Dropdown overlay={actionsMenu}>
           <Button>
             Actions <CaretDownOutlined />
           </Button>
         </Dropdown>
-      </div>
+      </Space>
     </div>
   );
 });
@@ -154,12 +135,8 @@ const DmPaneContent = inject("store")(
 
     return (
       <div>
-        <div style={{ background: "white" }}>
           <DmPanel item={item} />
-        </div>
-        <div style={{ background: "#f1f1f1" }}>
           <Table columns={columns} data={data} item={item} skipPageReset={skipPageReset} />
-        </div>
       </div>
     );
   })
