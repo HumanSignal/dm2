@@ -167,11 +167,6 @@ const DmPaneContent = inject("store")(
 
 
 const DmTabs = inject('store')(observer(({ store }) => {
-    const panes = store.viewsStore.all.map((c) => {
-        c["content"] = <DmPaneContent item={c} store={store} />;
-        return c;
-    });
-      
     return (
         <Tabs
           onChange={(key) => {
@@ -181,13 +176,13 @@ const DmTabs = inject('store')(observer(({ store }) => {
           type="editable-card"
           onEdit={store.viewsStore.addView}          
         >
-          {panes.map((pane) => (
+          {store.viewsStore.all.map((pane) => (
               <TabPane
                 tab={<DmTabPane item={pane} />}
                 key={pane.key}
                 closable={false}                
               >
-                {pane.content}
+                <DmPaneContent item={pane} />
               </TabPane>
           ))}
         </Tabs>

@@ -19,11 +19,12 @@ const fields = {
         },
     task_status: {
         title: "Status",
-        accessor: 'status',
+        accessor: 'updated_at',
         filterClass: SelectColumnFilter,
         filterType: 'includes'
     },
     annotations: {
+        id: 'annotations',
         title: "Annotations",
         accessor: t => t.completions ? t.completions.length + t.predictions.length : 0,
         Cell: ({ row: { original } }) => original.completions ? `${original.completions.length} / ${original.predictions.length}` : ``,
@@ -40,6 +41,8 @@ const fields = {
     created: { title: "Created On", accessor: 'created_at', Cell: ({ value }) => formatter.format(new Date(value)) },
     updated: { title: "Updated On" },
 };
+
+export const labelingFields = ['id', 'task_status'];
 
 function lookup(name) {
     return (name in fields) ?

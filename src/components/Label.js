@@ -19,7 +19,7 @@ const interfaces = [
 ];
 
 const DmLabel = inject('store')(observer(({ store }) => {
-    const item = store.viewsStore.labelingView;
+    const item = store.viewsStore.selected;
     const columns = item.fieldsAsColumns;
     const data = store.tasksStore.getData();
     const config = store._config;

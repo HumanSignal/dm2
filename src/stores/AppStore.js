@@ -3,7 +3,7 @@ import { types, getEnv, getParent, clone, getSnapshot, destroy, getRoot } from "
 
 import TasksStore from "./TasksStore";
 import { guidGenerator } from "../utils/random";
-import fields from "../data/fields";
+import fields, { labelingFields } from "../data/fields";
 
 import { StringFilter, NumberFilter, 
     BetweenNumberFilter } from "./FiltersStore";
@@ -57,11 +57,15 @@ const View = types
 
           // get fields formatted as columns structure for react-table
           get fieldsAsColumns() {
-              const lst = (self.target === "tasks") ?
-                    self.fields.filter(f => f.source !== 'annotations') :
-                    self.fields.filter(f => f.source !== 'tasks') ;
-              
-              return lst.filter(f => f.enabled).map(f => {
+              let lst
+              // if (self.root.mode === "label") lst = self.fields.filter(f => f.source === 'label');
+              // else
+              if (self.target === "tasks") lst = self.fields.filter(f => f.source === 'tasks');
+              else lst = self.fields.filter(f => f.source === 'annotations') ;
+
+              return lst
+                .filter(f => f.enabled && (self.root.mode !== "label" || labelingFields.includes(f.field)))
+                .map(f => {
                   const field = fields(f.field);
                   const { accessor, Cell, filterClass, filterType } = field;
                   
@@ -134,8 +138,6 @@ const ViewsStore = types
       .model("ViewsStore", {
           selected: types.safeReference(View),
           views: types.array(View),
-          
-          labelingView: types.maybeNull(View)
       }).views(self => ({
           get all() {
               return self.views;
@@ -147,17 +149,6 @@ const ViewsStore = types
       })).actions(self => ({
           setSelected(view) {
               self.selected = view;
-          },
-
-          updateLabelingView() {
-              const dupView = getSnapshot(self.selected);
-              const fields = dupView.fields.slice(0,2);
-              
-              self.labelingView = View.create({
-                  ...dupView,
-                  id: guidGenerator(5),
-                  fields: fields
-              });
           },
 
           deleteView(view) {
@@ -214,8 +205,5 @@ export default types
     }).actions(self => ({
         setMode(mode) {
             self.mode = mode;
-            
-            if (mode === "label")
-                self.viewsStore.updateLabelingView();            
         }
     }));

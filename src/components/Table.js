@@ -74,6 +74,9 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
       data,
       initialState: {
         pageSize: 20,
+        filters: columns
+          .filter(c => c._filterState)
+          .map(c => ({ id: c.id || c.accessor, value: c._filterState.value })),
         sortBy: [{ id: 'id', desc: false }],
       },
     },
