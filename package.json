@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "react-scripts build",
     "start": "react-scripts start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
