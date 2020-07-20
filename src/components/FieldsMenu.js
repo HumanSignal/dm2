@@ -25,9 +25,9 @@ const FieldsMenu = observer(({ item, store }) => {
         {item.fieldsSource("inputs").map(menuItem)}
       </Menu.ItemGroup>
 
-      <Menu.ItemGroup title="v2: Results">
-        <Menu.Item key="5">class</Menu.Item>
-      </Menu.ItemGroup>
+      {/* <Menu.ItemGroup title="v2: Results"> */}
+      {/*   <Menu.Item key="5">class</Menu.Item> */}
+      {/* </Menu.ItemGroup> */}
     </Menu>
   );
 });
