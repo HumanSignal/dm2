@@ -47,6 +47,7 @@ export default types
                     t.completions.map(c => {
                         c['annotation_id'] = c.id;
                         c['task_id'] = t.id;
+                        c['data'] = t.data;
 
                         return c;
                      }) : [];
