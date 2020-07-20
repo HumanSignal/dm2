@@ -47,12 +47,15 @@ const DmLabel = inject('store')(observer(({ store }) => {
         <div>
           <link href="https://unpkg.com/label-studio@0.7.3/build/static/css/main.09b8161e.css" rel="stylesheet" />
 
-          <Button onClick={() => store.setMode('dm') }>
-            Back to Table
-          </Button>
-
+          
           <div style={{ display: "flex" }}>
+
             <div style={{ flex: "200px 0 0", marginRight: "1em" }}>
+              <div style={{ paddingBottom: "2.2em" }}>
+                <Button onClick={() => store.setMode('dm') }>
+                  Back to Table
+                </Button>
+              </div>
               <Table columns={columns} data={data} item={item} onSelectRow={runLS} />
             </div>
         <div style={{ width: "100%" }}>
