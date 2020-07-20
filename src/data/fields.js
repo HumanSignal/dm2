@@ -18,8 +18,9 @@ const fields = {
           filterType: filterGreaterThan
         },
     task_status: {
+        id: "status",
         title: "Status",
-        accessor: 'updated_at',
+        accessor: () => "",
         filterClass: SelectColumnFilter,
         filterType: 'includes'
     },
@@ -48,6 +49,7 @@ function lookup(name) {
     return (name in fields) ?
         fields[name] :
         {
+            id: name,
             title: name,
             accessor: t => t['data'][name]
         } ;

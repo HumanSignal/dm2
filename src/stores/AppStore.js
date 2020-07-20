@@ -60,8 +60,8 @@ const View = types
               let lst
               // if (self.root.mode === "label") lst = self.fields.filter(f => f.source === 'label');
               // else
-              if (self.target === "tasks") lst = self.fields.filter(f => f.source === 'tasks');
-              else lst = self.fields.filter(f => f.source === 'annotations') ;
+              if (self.target === "tasks") lst = self.fields.filter(f => f.source !== 'annotations');
+              else lst = self.fields.filter(f => f.source !== 'tasks') ;
 
               return lst
                 .filter(f => f.enabled && (self.root.mode !== "label" || labelingFields.includes(f.field)))
