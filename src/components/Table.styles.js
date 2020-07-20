@@ -40,6 +40,8 @@ const Styles = styled.div`
       padding: 0.5rem;
       border-bottom: 1px solid #f0f0f0;
 
+      vertical-align: top;
+
       .resizer {
         display: inline-block;
         background: blue;

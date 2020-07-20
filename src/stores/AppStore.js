@@ -47,8 +47,12 @@ const View = types
           
           get parent() { return getParent(getParent(self)) },
 
+          get dataFields() {
+            return self.fields.filter(f => f.source === "inputs").map(f => f.field);
+          },
+
           get hasDataFields() {
-              return self.fields.filter(f => f.source === 'inputs').length > 0;
+              return self.dataFields.length > 0;
           },
           
           fieldsSource(source) {
@@ -60,14 +64,14 @@ const View = types
               let lst
               // if (self.root.mode === "label") lst = self.fields.filter(f => f.source === 'label');
               // else
-              if (self.target === "tasks") lst = self.fields.filter(f => f.source !== 'annotations');
-              else lst = self.fields.filter(f => f.source !== 'tasks') ;
+              if (self.target === "tasks") lst = self.fields.filter(f => f.source !== "annotations");
+              else lst = self.fields.filter(f => f.source !== "tasks");
 
               return lst
-                .filter(f => f.enabled && (self.root.mode !== "label" || labelingFields.includes(f.field)))
+                .filter(f => f.enabled && (self.root.mode !== "label" || labelingFields.includes(f.field) || f.source === "inputs"))
                 .map(f => {
                   const field = fields(f.field);
-                  const { accessor, Cell, filterClass, filterType } = field;
+                  const { id, accessor, Cell, filterClass, filterType } = field;
                   
                   const cols = {
                       Header: field.title,
@@ -77,6 +81,7 @@ const View = types
                   };
 
                   if (Cell) cols.Cell = Cell;
+                  if (id) cols.id = id;
 
                   if (self.enableFilters === true) {
                       if (filterClass !== undefined)
