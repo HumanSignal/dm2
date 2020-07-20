@@ -15,12 +15,12 @@ const FieldsMenu = observer(({ item, store }) => {
 
   return (
     <Menu size="small" onClick={() => {}}>
-      <Menu.ItemGroup title="Tasks">
+      {item.target === 'tasks' && (<Menu.ItemGroup title="Tasks">
         {item.fieldsSource("tasks").map(menuItem)}
-      </Menu.ItemGroup>
-      <Menu.ItemGroup title="Annotations">
+      </Menu.ItemGroup>)}
+      {item.target === 'annotations' && (<Menu.ItemGroup title="Annotations">
         {item.fieldsSource("annotations").map(menuItem)}
-      </Menu.ItemGroup>
+      </Menu.ItemGroup>)}
       <Menu.ItemGroup title="Input">
         {item.fieldsSource("inputs").map(menuItem)}
       </Menu.ItemGroup>
