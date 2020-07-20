@@ -40,7 +40,7 @@ export default types
         
         function setData(val) { data = val }
         function getData() { return data }
-
+        
         function getAnnotationData() {
             return data.map(t => {
                 return (t.completions) ?
@@ -52,6 +52,10 @@ export default types
                      }) : [];
             }).flat();
         }
+
+        function getDataFields() {
+            return Object.keys(data[0]['data'] || {});
+        }
         
         function setTask(val) { task = val }
         function getTask() { return task }
@@ -59,6 +63,7 @@ export default types
         return {
             setData,
             getData,
+            getDataFields,
             getAnnotationData,
             setTask,
             getTask

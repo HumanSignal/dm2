@@ -19,7 +19,7 @@ const Field = types
           
           filterState: types.maybeNull(types.union({ eager: false }, StringFilter, NumberFilter, BetweenNumberFilter))
       }).views(self => ({
-          get key() { return self.source + "_" + self.title },
+          get key() { return self.source + "_" + self.field; },
       }))
       .actions(self => ({
           toggle() {
@@ -47,6 +47,10 @@ const View = types
           
           get parent() { return getParent(getParent(self)) },
 
+          get hasDataFields() {
+              return self.fields.filter(f => f.source === 'inputs').length > 0;
+          },
+          
           fieldsSource(source) {
               return self.fields.filter(f => f.source === source);
           },
@@ -58,7 +62,7 @@ const View = types
                     self.fields.filter(f => f.source !== 'tasks') ;
               
               return lst.filter(f => f.enabled).map(f => {
-                  const field = fields[f.field];
+                  const field = fields(f.field);
                   const { accessor, Cell, filterClass, filterType } = field;
                   
                   const cols = {
@@ -104,6 +108,26 @@ const View = types
           toggleFilters() {
               self.enableFilters = ! self.enableFilters;
           },
+
+          afterAttach() {
+              if (! self.hasDataFields) {
+                  // create data fields if they were not initialized
+                  const fields = self.root.tasksStore.getDataFields();
+                  
+                  self.fields = [
+                      ...self.fields,
+                      ...fields.map(f => {
+                          return Field.create({
+                              field: f,
+                              canToggle: true,
+                              enabled: false,
+                              source: 'inputs',
+                              filterState: { stringValue: "" }
+                          });
+                      })
+                  ];
+              }
+          }
       }))
 
 const ViewsStore = types

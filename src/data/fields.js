@@ -38,7 +38,16 @@ const fields = {
     
     // general fields
     created: { title: "Created On", accessor: 'created_at', Cell: ({ value }) => formatter.format(new Date(value)) },
-    updated: { title: "Updated On" },    
+    updated: { title: "Updated On" },
 };
 
-export default fields;
+function lookup(name) {
+    return (name in fields) ?
+        fields[name] :
+        {
+            title: name,
+            accessor: t => t['data'][name]
+        } ;
+}
+
+export default lookup;
