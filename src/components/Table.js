@@ -5,6 +5,7 @@ import {
   useRowSelect,
   useFilters,
   usePagination,
+  useSortBy,
 } from "react-table";
 
 import { observer, inject } from "mobx-react";
@@ -65,16 +66,21 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
 
     gotoPage,
     setPageSize,
+    pageCount,
     state: { pageIndex, pageSize },
   } = useTable(
     {
       columns,
       data,
-      initialState: { pageSize: 20 },
+      initialState: {
+        pageSize: 20,
+        sortBy: [{ id: 'id', desc: false }],
+      },
     },
     useFilters, // useFilters!
     // maybe?
     // useGlobalFilter, // useGlobalFilter!
+    useSortBy,
     useRowSelect,
     usePagination,
     (hooks) => {
@@ -201,7 +207,7 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
           </table>
           <Pagination
             current={pageIndex}
-            total={data.length}
+            total={pageCount * pageSize}
             pageSize={pageSize}
             onChange={(page, size) => { gotoPage(page); setPageSize(size); }}
           />
