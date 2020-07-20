@@ -51,7 +51,9 @@ function lookup(name) {
         {
             id: name,
             title: name,
-            accessor: t => t['data'][name]
+            accessor: t => t['data'][name],
+            filterClass: DefaultColumnFilter,
+            filterType: fuzzyTextFilterFn
         } ;
 }
 
