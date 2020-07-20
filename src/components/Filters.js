@@ -1,9 +1,11 @@
 
 import React from 'react';
-import styled from 'styled-components';
-import { useTable, useFilters, useGlobalFilter, useAsyncDebounce } from 'react-table';
+import { CloseCircleOutlined } from "@ant-design/icons";
+import { Button, Slider, Input, Select } from 'antd';
 // A great library for fuzzy filtering/sorting items
 import matchSorter from 'match-sorter';
+
+const { Option } = Select;
 
 // Define a default UI for filtering
 // function GlobalFilter({
@@ -43,7 +45,9 @@ function DefaultColumnFilter({
     const count = preFilteredRows.length;
 
   return (
-    <input
+    <Input
+      allowClear
+      style={{ maxWidth: "300px" }}
       value={filterValue || _filterState.stringValue || ''}
       onChange={e => {
           _filterState.update(e.target.value);
@@ -71,20 +75,21 @@ function SelectColumnFilter({
 
   // Render a multi-select box
   return (
-    <select
+    <Select
+      style={{ width: "100%", maxWidth: "300px" }}
       value={filterValue || _filterState.stringValue}
-      onChange={e => {
-          _filterState.update(e.target.value);
-          setFilter(e.target.value || undefined);
+      onChange={value => {
+          _filterState.update(value);
+          setFilter(value || undefined);
       }}
     >
-      <option value="">All</option>
+      <Option value="">All</Option>
       {options.map((option, i) => (
-        <option key={i} value={option}>
+        <Option key={i} value={option}>
           {option}
-        </option>
+        </Option>
       ))}
-    </select>
+    </Select>
   );
 }
 
@@ -108,20 +113,24 @@ function SliderColumnFilter({
   }, [id, preFilteredRows]);
 
   return (
-    <>
-      <input
-        type="range"
+    <div style={{ display: "flex", width: "100%" }}>
+      <Slider
+        style={{ flex: "auto 1 0" }}
         min={min}
         max={max}
         value={filterValue || _filterState.value || min}
-        onChange={e => {
-            const val = parseInt(e.target.value, 10);
+        onChange={value => {
+            const val = parseInt(value, 10);
             _filterState.update(val);
             setFilter(val);
         }}
       />
-      <button onClick={() => setFilter(undefined)}>Off</button>
-    </>
+      <Button
+        type="text"
+        icon={<CloseCircleOutlined />}
+        onClick={() => { _filterState.update(min); setFilter(min)}}
+      />
+    </div>
   );
 }
 
