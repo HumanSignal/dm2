@@ -58,7 +58,7 @@ const DmPanel = observer(({ item }) => {
       </Space>
 
       <Space size="middle">
-        <Button disabled={item.target === 'annotations'} onClick={() => item.root.setMode('label') }>
+        <Button disabled={item.target === 'annotations'} onClick={() => item.root.setMode('label-ops') }>
           <PlayCircleOutlined />
           Label All
         </Button>

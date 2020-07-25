@@ -2,6 +2,7 @@
 import { types, getEnv, getParent, clone, getSnapshot, destroy, getRoot } from "mobx-state-tree";
 
 import TasksStore from "./TasksStore";
+import LabelOpsStore from "./LabelOpsStore";
 import { guidGenerator } from "../utils/random";
 import fields, { labelingFields } from "../data/fields";
 
@@ -200,13 +201,35 @@ const ViewsStore = types
 
 export default types
     .model("dmAppStore", {
-        mode: types.optional(types.enumeration(["dm", "label"]), "dm"),
-
+        mode: types.optional(types.enumeration(["dm", "label-table", "label-ops"]), "dm"),
+        
         tasksStore: types.optional(TasksStore, {}),
         
         viewsStore: types.optional(ViewsStore, {
             views: []            
-        }),        
+        }),
+
+        operationsStore: types.optional(LabelOpsStore, {
+          operations: [{
+              lf: "Hello",
+              lopFactor: "[B]like",
+              lopLabel: "Feature Request",
+              conflict: 0.0,
+              coverage: 0.1,
+              source: "labeling",
+              type: "current"
+          },
+                       {
+              lf: "Hello",
+              lopFactor: "[B]like",
+              lopLabel: "Feature Request",
+              conflict: 0.0,
+              coverage: 0.1,
+              source: "labeling",
+              type: "current"
+          }
+                      ]
+      }),
     }).actions(self => ({
         setMode(mode) {
             self.mode = mode;

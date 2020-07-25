@@ -1,0 +1,22 @@
+
+.title {
+  display: flex;
+  align-items: center;
+  color: #1890ff;
+  font-weight: bold;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.titlespace {
+  justify-content: space-between;
+}
+
+.confbadge {
+    background-color: #f1f1f1;
+    border-radius: 2px;
+    padding-left: 5px;
+    padding-right: 5px;
+}

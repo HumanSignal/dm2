@@ -4,6 +4,10 @@ import { observer, inject } from "mobx-react";
 import { Button } from "antd";
 
 import Table from "./Table";
+import LabelOps from "./LabelOps/LabelOps";
+
+import { LeftOutlined } from "@ant-design/icons";
+
 import LSF from "../utils/lsf";
 
 const user = { pk: 1, firstName: "James", lastName: "Dean" };
@@ -51,14 +55,26 @@ const DmLabel = inject('store')(observer(({ store }) => {
           <div style={{ display: "flex" }}>
 
             <div style={{ flex: "200px 0 0", marginRight: "1em" }}>
-              <div style={{ paddingBottom: "2.2em" }}>
-                <Button onClick={() => store.setMode('dm') }>
-                  Back to Table
-                </Button>
+              <div style={{ paddingBottom: "2.2em", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                <a href="" onClick={ev => { ev.preventDefault(); store.setMode('dm'); return false; } }>
+                  <LeftOutlined /> Back 
+                </a>
+                </div>
+                <div>
+                  <Button type={store.mode === "label-table" ? "primary" : ""} onClick={ev => store.setMode('label-table') }>Tasks</Button> &nbsp;
+                  <Button type={store.mode === "label-ops" ? "primary" : ""} onClick={ev => store.setMode('label-ops') }>LabelOps</Button>
+                </div>
               </div>
-              <Table columns={columns} data={data} item={item} onSelectRow={runLS} />
+              <div style={{ minWidth: "330px" }}>
+                { store.mode === "label-table" ? <Table columns={columns} data={data} item={item} onSelectRow={runLS} /> : null }
+                { store.mode === "label-ops" ? <LabelOps store={store} /> : null }
+              </div>
             </div>
-        <div style={{ width: "100%" }}>
+            
+              
+            
+            <div style={{ width: "100%" }}>
               <div id="label-studio"></div>
             </div>
           </div>
