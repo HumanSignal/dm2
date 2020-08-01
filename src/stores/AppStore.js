@@ -211,72 +211,71 @@ export default types
         }),
 
         operationsStore: types.optional(LabelOpsStore, {
-            operations: [{
-                id: 0,
-                lopFactor: "",
-                lopLabel: "",
-          
-                conflicts: 0,
-                coverage: 0, 
-          
-                type: "current",
-                source: "heartex",
-          
-                selected: false
-            },
-
-                        {
-                id: 0,
-                lopFactor: "",
-                lopLabel: "",
-          
-                conflicts: 0,
-                coverage: 0, 
-          
-                type: "current",
-                source: "heartex",
-          
-                selected: false
-                        },
-                        {
-                id: 0,
-                lopFactor: "",
-                lopLabel: "",
-          
-                conflicts: 0,
-                coverage: 0, 
-          
-                type: "current",
-                source: "heartex",
-          
-                selected: false
-                        }
-                         ,{
-                id: 0,
-                lopFactor: "",
-                lopLabel: "",
-          
-                conflicts: 0,
-                coverage: 0, 
-          
-                type: "current",
-                source: "heartex",
-          
-                selected: false
-                         },
-                        {
-                id: 0,
-                lopFactor: "",
-                lopLabel: "",
-          
-                conflicts: 0,
-                coverage: 0, 
-          
-                type: "current",
-                source: "heartex",
-          
-                selected: false
-            }]
+            operations: [
+                      {
+                          "conflicts": 0,
+                          "coverage": 0,
+                          "lopFactor": "[project...Feature Request]",
+                          "id": 0,
+                          "lopLabel": "Feature Request",
+                          "source": "heartex",
+                          "type": "current"
+                      },
+                      {
+                          "conflicts": 0,
+                          "coverage": 0,
+                          "lopFactor": "[the coordinates...Feature Request]",
+                          "id": 1,
+                          "lopLabel": "Feature Request",
+                          "source": "heartex",
+                          "type": "current"
+                      },
+                      {
+                          "conflicts": 0,
+                          "coverage": 0,
+                          "lopFactor": "[coordinates...Feature Request]",
+                          "id": 2,
+                          "lopLabel": "Feature Request",
+                          "source": "heartex",
+                          "type": "current"
+                      },
+                      {
+                          "conflicts": 0,
+                          "coverage": 0,
+                          "lopFactor": "[to the...Issue]",
+                          "id": 3,
+                          "lopLabel": "Issue",
+                          "source": "heartex",
+                          "type": "current"
+                      },
+                      {
+                          "conflicts": 0,
+                          "coverage": 0,
+                          "lopFactor": "[happened the screen...Issue]",
+                          "id": 4,
+                          "lopLabel": "Issue",
+                          "source": "heartex",
+                          "type": "current"
+                      },
+                      {
+                          "conflicts": 0,
+                          "coverage": 0,
+                          "lopFactor": "[SYM] \"It would be great if the coordinates in the saved XML were relative, so that resizing the Image doesn't require to adjust the coordinates of the bounding boxes\"",
+                          "id": 9,
+                          "lopLabel": "Feature Request",
+                          "source": "labeling",
+                          "type": "current"
+                      },
+                      {
+                          "conflicts": 0,
+                          "coverage": 0,
+                          "lopFactor": "[SYM] \"Also it would be useful, if the paths were relative either to the Annotation or to a defineable location (like the project root directory of the developing project\"",
+                          "id": 10,
+                          "lopLabel": "Feature Request",
+                          "source": "labeling",
+                          "type": "current"
+                      }
+                  ]
       }),
     }).actions(self => ({
         setMode(mode) {
