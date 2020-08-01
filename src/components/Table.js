@@ -29,7 +29,7 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 );
 
-const Table = observer(({ columns, data, item, onSelectRow }) => {
+const Table = inject('store')(observer(({ store, columns, data, item, onSelectRow }) => {
   const filterTypes = React.useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -78,7 +78,7 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
         filters: columns
           .filter(c => c._filterState)
           .map(c => ({ id: c.id || c.accessor, value: c._filterState.value })),
-        sortBy: [{ id: 'id', desc: false }],
+        // sortBy: [{ id: 'id', desc: false }],
       },
     },
     useFilters, // useFilters!
@@ -91,7 +91,7 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
       hooks.visibleColumns.push((columns) => [
         // Let's make a column for selection
         {
-          ...columns[0],
+            ...columns[0],
           // id: "selection",
           // The header can use the table's getToggleAllRowsSelectedProps method
           // to render a checkbox
@@ -103,10 +103,11 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
           // The cell can use the individual row's getToggleRowSelectedProps method
           // to the render a checkbox
           Cell: ({ row, value }) => (
-            <div>
+              <div>
               {item.root.mode === "dm"
-                ? <><IndeterminateCheckbox {...row.getToggleRowSelectedProps()} /> {value}</>
-                : <span style={{ cursor: 'pointer' }} onClick={() => onSelectRow && onSelectRow(row.original)}>{value}</span>
+               ? <><span style={{ position: "relative", top: "1px" }}><IndeterminateCheckbox {...row.getToggleRowSelectedProps()} /></span> {value}</>
+               : <span style={{ cursor: 'pointer', color: "rgb(18, 129, 239)", borderBottom: "1px dashed rgb(18, 129, 239)" }}
+                       onClick={() => onSelectRow && onSelectRow(row.original)}>{value}</span>
               }
             </div>
           ),
@@ -159,16 +160,14 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
     const listView = () => {
       return (
         <>
-          <table {...getTableProps()} style={{ width: "100%" }}>
+          <table {...getTableProps()} style={{ width: "100%", borderTop: "1px solid #f0f0f0", borderRight: "1px solid #f0f0f0", borderRadiusRight: "2px" }}>
             <thead>
               {headerGroups.map((headerGroup) => (
-                <tr
-                  {...headerGroup.getHeaderGroupProps()}
-                >
+                <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => (
-                    <th {...column.getHeaderProps()}>
-                      {column.render("Header")}
-                      <div>{column.canFilter && item.root.mode === "dm" ? column.render("Filter") : null}</div>
+                      <th {...column.getHeaderProps()}>
+                        {column.render("Header")}
+                        <div>{column.canFilter && item.root.mode === "dm" ? column.render("Filter") : null}</div>
                       {/* this is resize the column code which we may need  */}
                       {/* <div */}
                       {/*   {...column.getResizerProps()} */}
@@ -195,9 +194,11 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
             </thead>
             <tbody {...getTableBodyProps()}>
               {page.map((row, i) => {
-                prepareRow(row);
+                  prepareRow(row);
+                  const style = (store && store.mode !== "dm" && store.tasksStore.selectedTaskID === row.values.id) ?
+                        { background: "#ffffb8" } : null;
                 return (
-                  <tr {...row.getRowProps()}>
+                  <tr {...row.getRowProps()} style={style}>
                     {row.cells.map((cell) => {
                       return (
                         <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
@@ -212,9 +213,13 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
             current={pageIndex}
             total={pageCount * pageSize}
             pageSize={pageSize}
+            size="small"
             onChange={(page, size) => { gotoPage(page); setPageSize(size); }}
           />
-          <p>Selected Completions: {Object.keys(selectedRowIds).length}</p>
+          { store.mode === "dm" ?
+            <p>Selected Completions: {Object.keys(selectedRowIds).length}</p>
+            : null
+          }
         </>
       );
     };
@@ -225,6 +230,6 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
           listView() :
           gridView()
         : listView(); 
-});
+}));
 
 export default Table;

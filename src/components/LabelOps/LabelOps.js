@@ -15,13 +15,13 @@ export default observer(({ store, completion }) => {
     
     const badge = (num) =>
           <span className={styles.confbadge}>
-            {num.toFixed(2)}
+            {num ? num.toFixed(2) : 0}
           </span>;
 
     let title = (
         <div className={styles.title + " " + styles.titlespace}>
           <div style={{ display: "flex", alignItems: "center" }}>
-            <h3>Labeling Operations</h3>
+            <h3>LabelOps</h3>
           </div>
         </div>
     );
@@ -46,7 +46,7 @@ export default observer(({ store, completion }) => {
             description={
                 <div>
                   <span>Coverage: {badge(item.coverage)}</span>&nbsp;
-                  <span>Conflict: {badge(item.conflict)}</span>
+                  <span>Conflict: {badge(item.conflicts)}</span>
                 </div>
             }
           />
@@ -62,15 +62,23 @@ export default observer(({ store, completion }) => {
         <div>
           <Card title={title} size="small" bodyStyle={{ padding: "0", paddingTop: "1px" }}>
             <Collapse defaultActiveKey={['current']}>
-              <Panel header={"Previous (" + ops.previousSelectedNum + "/" + prevOps.length + ")"} key="previous">
-                <List itemLayout="horizontal"
+              
+              <Panel header={"Previous (" + ops.previousSelectedNum + "/" + prevOps.length + ")"} key="previous" size="small" style={{ padding: 0}}>
+              <div className={styles.lopslist}>  
+                <List size="small"
+                      itemLayout="horizontal"
                       dataSource={prevOps}
-                      renderItem={itemRender} />
-              </Panel>
-              <Panel header={"Current (" + ops.currentSelectedNum + "/" + currOps.length + ")"} key="current">
-                <List itemLayout="horizontal"
+        renderItem={itemRender} />
+        </div>
+        </Panel>
+        
+              <Panel header={"Current (" + ops.currentSelectedNum + "/" + currOps.length + ")"} key="current" size="small">
+                <div className={styles.lopslist}>
+                <List size="small"
+                      itemLayout="horizontal"
                       dataSource={currOps}
-                      renderItem={itemRender} />
+        renderItem={itemRender} />
+                </div>
               </Panel>
 
             </Collapse>

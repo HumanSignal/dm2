@@ -86,7 +86,7 @@ const Requests = (function(window) {
   };
 })(window);
 
-const _loadTask = function(ls, url, completionID) {
+const _loadTask = function(ls, url, completionID, cb) {
     try {
         const req = Requests.fetcher(url);
 
@@ -133,6 +133,7 @@ const _loadTask = function(ls, url, completionID) {
                 ls.setFlags({ isLoading: false });
 
                 ls.onTaskLoad(ls, ls.task);
+                cb && cb(response);
             })
         });
     } catch (err) {
@@ -145,9 +146,9 @@ const loadNext = function(ls) {
     return _loadTask(ls, url);
 };
 
-const loadTask = function(ls, taskID, completionID) {
+const loadTask = function(ls, taskID, completionID, cb) {
   var url = `${API_URL.MAIN}${API_URL.TASKS}/${taskID}`;
-    return _loadTask(ls, url, completionID);
+    return _loadTask(ls, url, completionID, cb);
 };
 
 const _convertTask = function(task) {
@@ -189,18 +190,23 @@ const _convertCompletionBack = function(c) {
     };
 };
 
-export default function(elid, config, task, cbs) {
+export default function(elid, config, taskID, cbs) {
     const cbCall = function (name, ...params) {
         if (name in cbs)
             return cbs[name].apply(null, params);
     };
     
-  const showHistory = task === null;  // show history buttons only if label stream mode, not for task explorer
+  const showHistory = taskID === null;  // show history buttons only if label stream mode, not for task explorer
 
-  const _prepData = function(c, includeId) {
+    const _prepData = function(c, includeId, lops) {
+        var res = c.serializeCompletion();
+        if (! Array.isArray(res))
+            res = [];        
+        
     var completion = {
       lead_time: (new Date() - c.loadedDate) / 1000,  // task execution time
-      result: c.serializeCompletion()
+        result: res,
+        lops: lops
     };
     if (includeId) {
         completion.id = parseInt(c.id);
@@ -224,7 +230,7 @@ export default function(elid, config, task, cbs) {
     config: config,
     user: { pk: 1, firstName: "Awesome", lastName: "User" },
 
-    task: _convertTask(task),
+    // task: _convertTask(task),
     interfaces: [
       "basic",
       "panel", // undo, redo, reset panel
@@ -241,8 +247,11 @@ export default function(elid, config, task, cbs) {
     ],
 
     onSubmitCompletion: function(ls, c) {
-      ls.setFlags({ isLoading: true });
-      const req = Requests.poster(`${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/`, _prepData(c));
+        ls.setFlags({ isLoading: true });
+
+        const lops = cbCall('beforeSubmitCompletion', ls);
+        
+        const req = Requests.poster(`${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/`, _prepData(c, false, lops));
 
       req.then(function(httpres) {
         httpres.json().then(function(res) {
@@ -252,7 +261,7 @@ export default function(elid, config, task, cbs) {
               addHistory(ls, ls.task.id, res.id);
           }
             
-          if (task) {
+          if (taskID) {
             ls.setFlags({ isLoading: false });
           } else {
             loadNext(ls);
@@ -280,15 +289,18 @@ export default function(elid, config, task, cbs) {
       //                ' onclick="window.LSF_SDK._sdk.nextButtonClick()">' +
       //                'Next <i class="ui icon fa-angle-right"></i></button>');
       //   firstBlock.after(block);
-      // }
+        // }        
     },
 
     onUpdateCompletion: function(ls, c) {
       ls.setFlags({ isLoading: true });
 
+        const lops = cbCall('beforeUpdateCompletion', ls);
+        
+        
       const req = Requests.patch(
         `${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/${c.pk}/`,
-        _prepData(c)
+          _prepData(c, false, lops)
       );
 
       req.then(function(httpres) {
@@ -328,7 +340,7 @@ export default function(elid, config, task, cbs) {
             addHistory(ls, ls.task.id, res.id);
           }
 
-          if (task) {
+          if (taskID) {
             ls.setFlags({ isLoading: false });
             // refresh task from server
             loadTask(ls, ls.task.id, res.id);
@@ -356,22 +368,24 @@ export default function(elid, config, task, cbs) {
       ls.onPrevButton = this.onPrevButton; // FIXME: remove it in future
       initHistory(ls);
 
-      if (!task) {
+      if (!taskID) {
         ls.setFlags({ isLoading: true });
         loadNext(ls);
       } else {
-          if (! task || ! task.completions || task.completions.length === 0) {
-              var c = ls.completionStore.addCompletion({ userGenerate: true });
-              ls.completionStore.selectCompletion(c.id);
-          }
+          ls.setFlags({ isLoading: true });
       }
     }
-  });
-
+  });    
+    
     // TODO WIP here, we will move that code to the SDK
     var sdk = {
         "loadNext": function () { loadNext(LS) },
-        "loadTask": function (taskID) { loadTask(LS, taskID) },
+        "loadTask": function (taskID) {
+            loadTask(LS, taskID, undefined, function (rawData) {
+                cbCall('onTaskLoad', LS, rawData);
+            });
+            
+        },
         'prevButtonClick': function() {
             LS.taskHistoryCurrent--;
             let prev = LS.taskHistoryIds[LS.taskHistoryCurrent];
@@ -390,6 +404,8 @@ export default function(elid, config, task, cbs) {
     };
     
     LS._sdk = sdk;
+
+    sdk.loadTask(taskID);
     
     return LS;
 };

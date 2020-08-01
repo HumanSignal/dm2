@@ -28,8 +28,10 @@ const DmPanel = observer(({ item }) => {
       style={{
         display: "flex",
         justifyContent: "space-between",
-        marginTop: "1em",
-        marginBottom: "1em",
+        marginTop: "0em",
+          marginBottom: "1em",
+          marginLeft: "1em",
+          marginRight: "1em"
       }}
     >
       <Space size="middle">
@@ -58,7 +60,7 @@ const DmPanel = observer(({ item }) => {
       </Space>
 
       <Space size="middle">
-        <Button disabled={item.target === 'annotations'} onClick={() => item.root.setMode('label-ops') }>
+        <Button disabled={item.target === 'annotations'} onClick={() => item.root.setMode('label-table') } style={{ backgroundColor: "#87d068" }}>
           <PlayCircleOutlined />
           Label All
         </Button>
@@ -99,7 +101,7 @@ const DmPaneMenu = observer(({ item }) => {
 
 const DmTabPane = observer(({ item }) => {
   return (
-    <span>
+      <div>
       {
           item.renameMode ?
               <input type="text" value={item.title}
@@ -114,13 +116,13 @@ const DmTabPane = observer(({ item }) => {
                      }} /> :
               item.title
       }
-      &nbsp;&nbsp;&nbsp;&nbsp;
+      &nbsp;&nbsp;&nbsp;
       <Dropdown overlay={<DmPaneMenu item={item} />} trigger={["click"]}>
         <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
           <DownOutlined />
         </a>
       </Dropdown>
-    </span>
+    </div>
   );
 });
 
@@ -136,7 +138,7 @@ const DmPaneContent = inject("store")(
     return (
       <div>
           <DmPanel item={item} />
-          <Table columns={columns} data={data} item={item} skipPageReset={skipPageReset} />
+        <Table columns={columns} data={data} item={item} skipPageReset={skipPageReset} />
       </div>
     );
   })
@@ -145,26 +147,22 @@ const DmPaneContent = inject("store")(
 
 const DmTabs = inject('store')(observer(({ store }) => {
     return (
-        <Tabs
-          onChange={(key) => {
-              store.viewsStore.setSelected(key);
-          }}
-          activeKey={store.viewsStore.selected.key}
-          type="editable-card"
-          onEdit={store.viewsStore.addView}          
-        >
+        <Tabs onChange={(key) => { store.viewsStore.setSelected(key); }}
+              activeKey={store.viewsStore.selected.key}
+              type="editable-card"
+              tabBarExtraContent={<span>&nbsp;&nbsp;</span>}
+              tabBarStyle={{ paddingLeft: "0.5em" }}
+              onEdit={store.viewsStore.addView}>
           {store.viewsStore.all.map((pane) => (
-              <TabPane
-                tab={<DmTabPane item={pane} />}
-                key={pane.key}
-                closable={false}                
+              <TabPane tab={<DmTabPane item={pane} />}
+                       key={pane.key}
+                       closable={false}
               >
                 <DmPaneContent item={pane} />
               </TabPane>
           ))}
         </Tabs>
-    );
-        
+    );        
 }));
     
     

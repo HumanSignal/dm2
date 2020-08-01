@@ -1,4 +1,7 @@
 
+import React from 'react';
+import { Tag } from "antd";
+
 import {
     DefaultColumnFilter,
     SelectColumnFilter,
@@ -21,14 +24,17 @@ const fields = {
         id: "status",
         title: "Status",
         accessor: () => "",
+        maxWidth: 500,
+        width: 500,
+        Cell: ({ row: { original } }) => <Tag>{original.status}</Tag>,
         filterClass: SelectColumnFilter,
         filterType: 'includes'
     },
     annotations: {
         id: 'annotations',
         title: "Annotations",
-        accessor: t => t.completions ? t.completions.length + t.predictions.length : 0,
-        Cell: ({ row: { original } }) => original.completions ? `${original.completions.length} / ${original.predictions.length}` : ``,
+        accessor: t => t.completions && t.predictions ? t.completions.length + t.predictions.length : 0,
+        Cell: ({ row: { original } }) => original.completions && original.predictions ? `${original.completions.length} / ${original.predictions.length}` : ``,
     },
 
     // annotations related fields

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 const Styles = styled.div`
-  padding: 1rem;
+  padding-top: 2rem;
 
   .grid {
     display: flex;
@@ -20,6 +20,28 @@ const Styles = styled.div`
   }
 
   table {
+     display: inline-grid;
+     grid-template-areas: "head-fixed" "body-scrollable";
+
+     thead {
+       grid-area: head-fixed;
+
+       th, td { width: calc(100vh) }
+     }
+
+     tbody {
+       grid-area: body-scrollable;
+       overflow: auto;
+       height: calc(100vh - 250px);
+
+       th, td { width: calc(100vh) }
+     }
+
+     
+  }
+
+
+  table {
     border-spacing: 0;
     border: none;
     margin-bottom: 1em;
@@ -33,6 +55,8 @@ const Styles = styled.div`
         background: #fafafa;
       }
     }
+
+    
 
     th,
     td {

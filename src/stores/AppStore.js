@@ -1,4 +1,5 @@
 
+import keymaster from "keymaster";
 import { types, getEnv, getParent, clone, getSnapshot, destroy, getRoot } from "mobx-state-tree";
 
 import TasksStore from "./TasksStore";
@@ -210,28 +211,98 @@ export default types
         }),
 
         operationsStore: types.optional(LabelOpsStore, {
-          operations: [{
-              lf: "Hello",
-              lopFactor: "[B]like",
-              lopLabel: "Feature Request",
-              conflict: 0.0,
-              coverage: 0.1,
-              source: "labeling",
-              type: "current"
-          },
-                       {
-              lf: "Hello",
-              lopFactor: "[B]like",
-              lopLabel: "Feature Request",
-              conflict: 0.0,
-              coverage: 0.1,
-              source: "labeling",
-              type: "current"
-          }
-                      ]
+            operations: [{
+                id: 0,
+                lopFactor: "",
+                lopLabel: "",
+          
+                conflicts: 0,
+                coverage: 0, 
+          
+                type: "current",
+                source: "heartex",
+          
+                selected: false
+            },
+
+                        {
+                id: 0,
+                lopFactor: "",
+                lopLabel: "",
+          
+                conflicts: 0,
+                coverage: 0, 
+          
+                type: "current",
+                source: "heartex",
+          
+                selected: false
+                        },
+                        {
+                id: 0,
+                lopFactor: "",
+                lopLabel: "",
+          
+                conflicts: 0,
+                coverage: 0, 
+          
+                type: "current",
+                source: "heartex",
+          
+                selected: false
+                        }
+                         ,{
+                id: 0,
+                lopFactor: "",
+                lopLabel: "",
+          
+                conflicts: 0,
+                coverage: 0, 
+          
+                type: "current",
+                source: "heartex",
+          
+                selected: false
+                         },
+                        {
+                id: 0,
+                lopFactor: "",
+                lopLabel: "",
+          
+                conflicts: 0,
+                coverage: 0, 
+          
+                type: "current",
+                source: "heartex",
+          
+                selected: false
+            }]
       }),
     }).actions(self => ({
         setMode(mode) {
             self.mode = mode;
+            keymaster.setScope(mode);
+        },
+
+        initHotkeys() {
+            keymaster('l', 'label-table', function () {
+                self.setMode('label-ops');
+            });
+
+            keymaster('shift+down', 'label-table', function () {
+                self.taskStore.nextTask();
+            });
+
+            keymaster('shift+up', 'label-table', function () {
+                self.taskStore.prevTask();
+            });
+            
+            keymaster('t', 'label-ops', function () {
+                self.setMode('label-table');
+            });
+        },
+
+        afterCreate() {
+            self.initHotkeys();
         }
     }));

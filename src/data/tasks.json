@@ -55,7 +55,8 @@
     "data": {
       "text": "We can tinfoil hat yes, but the price did normalize so it worked to soothe traders (for now)."
     },
-    "meta": {},
+      "meta": {},
+      "status": "NOT STARTED",
     "accuracy": null,
     "created_at": "2019-08-06T19:27:29.289566Z",
     "updated_at": "2020-07-08T14:07:49.521057Z",
