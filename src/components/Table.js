@@ -210,11 +210,11 @@ const Table = inject('store')(observer(({ store, columns, data, item, onSelectRo
             </tbody>
           </table>
           <Pagination
-            current={pageIndex}
+            current={pageIndex + 1}
             total={pageCount * pageSize}
             pageSize={pageSize}
             size="small"
-            onChange={(page, size) => { gotoPage(page); setPageSize(size); }}
+            onChange={(page, size) => { gotoPage(page - 1); setPageSize(size); }}
           />
           { store.mode === "dm" ?
             <p>Selected Completions: {Object.keys(selectedRowIds).length}</p>
