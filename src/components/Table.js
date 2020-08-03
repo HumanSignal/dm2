@@ -78,7 +78,7 @@ const Table = inject('store')(observer(({ store, columns, data, item, onSelectRo
         filters: columns
           .filter(c => c._filterState)
           .map(c => ({ id: c.id || c.accessor, value: c._filterState.value })),
-        // sortBy: [{ id: 'id', desc: false }],
+        sortBy: [{ id: 'id', desc: false }],
       },
     },
     useFilters, // useFilters!
