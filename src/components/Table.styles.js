@@ -4,10 +4,14 @@ const Styles = styled.div`
   padding-top: 2rem;
 
   /*** scrollable table with sticky header ***/
-  height: ${props => props.height || '100vh'};
+  height: ${props => props.height || '100%'};
+
+  .ant-tabs {
+    height: 100%;
+  }
 
   .ant-tabs-content {
-    height: ${props => `calc(${props.height || '100vh'} - 56px)`};
+    height: calc(100% - 56px);
   }
 
   .ant-tabs-tabpane {
