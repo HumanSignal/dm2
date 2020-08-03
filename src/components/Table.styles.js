@@ -6,8 +6,11 @@ const Styles = styled.div`
   /*** scrollable table with sticky header ***/
   height: ${props => props.height || '100vh'};
 
-  .ant-tabs,
   .ant-tabs-content {
+    height: ${props => `calc(${props.height || '100vh'} - 56px)`};
+  }
+
+  .ant-tabs-tabpane {
     height: 100%;
   }
 
