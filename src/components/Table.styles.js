@@ -3,6 +3,38 @@ import styled from 'styled-components';
 const Styles = styled.div`
   padding-top: 2rem;
 
+  /*** scrollable table with sticky header ***/
+  height: ${props => props.height || '100vh'};
+
+  .ant-tabs,
+  .ant-tabs-content {
+    height: 100%;
+  }
+
+  .table-container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  table {
+    /* hack to make table scrollable and don't break table layout */
+    display: inline-block;
+    overflow: auto;
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #fafafa;
+      /* border styling for sticky header with borders collapsed doesn't work :( */
+      box-shadow: 0 1px 0 #f0f0f0;
+      z-index: 1;
+
+      /* hack to make the table wide, table width 100% doesn't work */
+      width: 100vw;
+    }
+  }
+
   .grid {
     display: flex;
   }
@@ -20,43 +52,13 @@ const Styles = styled.div`
   }
 
   table {
-     display: inline-grid;
-     grid-template-areas: "head-fixed" "body-scrollable";
-
-     thead {
-       grid-area: head-fixed;
-
-       th, td { width: calc(100vh) }
-     }
-
-     tbody {
-       grid-area: body-scrollable;
-       overflow: auto;
-       height: calc(100vh - 250px);
-
-       th, td { width: calc(100vh) }
-     }
-
-     
-  }
-
-
-  table {
     border-spacing: 0;
     border: none;
     margin-bottom: 1em;
 
-    thead {
+    tr:hover td {
       background: #fafafa;
     }
-
-    tr {
-      :hover td {
-        background: #fafafa;
-      }
-    }
-
-    
 
     th,
     td {

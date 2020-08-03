@@ -136,7 +136,7 @@ const DmPaneContent = inject("store")(
     const [skipPageReset, setSkipPageReset] = React.useState(false);
 
     return (
-      <div>
+      <div className="table-container">
           <DmPanel item={item} />
         <Table columns={columns} data={data} item={item} skipPageReset={skipPageReset} />
       </div>

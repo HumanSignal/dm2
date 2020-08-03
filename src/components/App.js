@@ -7,10 +7,10 @@ import DmLabel from './Label';
 
 import Styles from './Table.styles';
 
-const App = (observer(({ app }) => {
+const App = (observer(({ app, height = '100vh' }) => {
     return (
         <Provider store={app}>
-          <Styles>
+          <Styles height={height}>
             { app.mode === 'dm' ? <DmTabs /> : <DmLabel /> }
           </Styles>
         </Provider>
