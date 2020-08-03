@@ -6,7 +6,8 @@
   "scripts": {
     "build": "react-scripts build",
     "start": "react-scripts start",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prettier": "echo \"Error: prettier was not configured yet\"",
+    "test": "echo \"Error: no test specified\""
   },
   "author": "",
   "license": "ISC",
