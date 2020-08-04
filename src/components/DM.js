@@ -22,7 +22,7 @@ const actionsMenu = (
   </Menu>
 );
 
-const DmPanel = observer(({ item }) => {
+const DmPanel = inject("store")(observer(({ store, item }) => {
   return (
     <div
       style={{
@@ -60,6 +60,7 @@ const DmPanel = observer(({ item }) => {
       </Space>
 
       <Space size="middle">
+        {store.selectedCount ? `Selected: ${store.selectedCount}` : ''}
         <Button disabled={item.target === 'annotations'} onClick={() => item.root.setMode('label-table') } style={{ backgroundColor: "#87d068" }}>
           <PlayCircleOutlined />
           Label All
@@ -72,7 +73,7 @@ const DmPanel = observer(({ item }) => {
       </Space>
     </div>
   );
-});
+}));
 
 const DmPaneMenu = observer(({ item }) => {
     return (

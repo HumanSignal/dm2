@@ -203,6 +203,7 @@ const ViewsStore = types
 export default types
     .model("dmAppStore", {
         mode: types.optional(types.enumeration(["dm", "label-table", "label-ops"]), "dm"),
+        selectedCount: 0,
         
         tasksStore: types.optional(TasksStore, {}),
         
@@ -281,6 +282,10 @@ export default types
         setMode(mode) {
             self.mode = mode;
             keymaster.setScope(mode);
+        },
+
+        setSelectedCount(count) {
+            self.selectedCount = count;
         },
 
         initHotkeys() {

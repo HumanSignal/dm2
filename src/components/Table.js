@@ -117,6 +117,9 @@ const Table = inject('store')(observer(({ store, columns, data, item, onSelectRo
     }
   );
 
+  const count = Object.keys(selectedRowIds).length;
+  if (count !== store.selectedCount) store.setSelectedCount(count);
+
     const gridView = () => {
         return (
             <>
@@ -216,10 +219,6 @@ const Table = inject('store')(observer(({ store, columns, data, item, onSelectRo
             size="small"
             onChange={(page, size) => { gotoPage(page - 1); setPageSize(size); }}
           />
-          { store.mode === "dm" ?
-            <p>Selected Completions: {Object.keys(selectedRowIds).length}</p>
-            : null
-          }
         </>
       );
     };
