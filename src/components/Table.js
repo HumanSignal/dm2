@@ -177,7 +177,9 @@ const Table = inject('store')(observer(({ store, columns, data, item, onSelectRo
                               : ' ↑'
                             : ''}
                         </span>
-                        <div>{column.canFilter && item.root.mode === "dm" ? column.render("Filter") : null}</div>
+                        <div onClick={e => e.stopPropagation()}>
+                          {column.canFilter && item.root.mode === "dm" ? column.render("Filter") : null}
+                        </div>
                       {/* this is resize the column code which we may need  */}
                       {/* <div */}
                       {/*   {...column.getResizerProps()} */}
