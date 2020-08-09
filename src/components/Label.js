@@ -66,9 +66,9 @@ const DmLabel = inject('store')(observer(({ store }) => {
         <div>
           <link href="https://unpkg.com/label-studio@0.7.3/build/static/css/main.09b8161e.css" rel="stylesheet" />
 
-          <div style={{ display: "flex" }}>
+          <div style={{ display: "flex", height: "100%" }}>
 
-            <div style={{ flex: "200px 0 0", marginRight: "1em" }}>
+            <div style={{ flex: "1 0 400px", marginRight: "1em", display: "flex", flexDirection: "column", height: "100%" }}>
               <div style={{ paddingBottom: "2.2em", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ paddingLeft: "1em" }}>
                   <a href="" onClick={ev => { ev.preventDefault(); store.setMode('dm'); return false; } }>
@@ -86,8 +86,8 @@ const DmLabel = inject('store')(observer(({ store }) => {
                   </Button>
                 </div>
               </div>
-              <div style={{ minWidth: "330px" }}>
-                <div style={{ display: (store.mode === "label-table") ? "block": "none" }}><Table columns={columns} data={data} item={item} onSelectRow={runLS} /></div>
+              <div style={{ minWidth: "330px", minHeight: "1px" }}>
+                <div style={{ display: (store.mode === "label-table") ? "flex": "none", flexDirection: "column", height: "100%" }}><Table columns={columns} data={data} item={item} onSelectRow={runLS} /></div>
                 <div style={{ display: (store.mode === "label-ops") ? "block": "none" }}><LabelOps store={store} /></div>
               </div>
             </div>

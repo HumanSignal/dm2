@@ -6,6 +6,7 @@ const Styles = styled.div`
   /*** scrollable table with sticky header ***/
   height: ${props => props.height || '100%'};
 
+  & > div,
   .ant-tabs {
     height: 100%;
   }

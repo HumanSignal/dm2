@@ -67,6 +67,15 @@ td[role=cell] input, th input {
   margin-left: 3px;
 }
 
+.ant-tabs-bar {
+  margin: 0;
+}
+
+.ant-tabs .ant-tabs-top-content {
+  padding-top: 1em;
+  background: white;
+}
+
 .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab, .ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
   padding: 6px 11px;
 }
