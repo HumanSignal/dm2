@@ -64,6 +64,7 @@ body {
 
 td[role=cell] input, th input {
   margin-right: 6px;
+  margin-left: 3px;
 }
 
 .ant-tabs-card > .ant-tabs-nav .ant-tabs-tab, .ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
@@ -75,5 +76,5 @@ td[role=cell] input, th input {
 }
 
 .ant-pagination {
-  margin: 1px 11px;
+  margin: 11px;
 }

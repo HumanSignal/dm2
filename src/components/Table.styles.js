@@ -73,6 +73,10 @@ const Styles = styled.div`
       padding: 0.5rem;
       border-bottom: 1px solid #f0f0f0;
 
+      :not(:first-child) {
+        border-left: 1px solid #f0f0f0;
+      }
+
       vertical-align: top;
 
       .resizer {
