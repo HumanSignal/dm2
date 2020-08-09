@@ -27,3 +27,53 @@ body {
 .selected, .tags{
   float: right;
 }
+
+.ant-space .ant-radio-group .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+  border: 1px solid #c2c2c2;
+  border-right-color: #c2c2c2;
+  border-left-color: #c2c2c2;
+  background-color: #e8f0f8;
+}
+
+.ant-tabs-top > .ant-tabs-nav {
+  margin-bottom: 11px;
+}
+
+.ant-space-item > * {
+  margin-right: 3px;
+}
+
+.ant-space .ant-btn {
+  border-radius: 3px;
+}
+
+.ant-radio-button-wrapper:not(:first-child)::before {
+  width: 0;
+}
+
+.label-all {
+  font-weight: 600;
+  background-color: #F18A4A !important;
+  border-color: #F18A4A !important;
+  padding-left: 11px;
+}
+
+.label-all:hover {
+  opacity: 0.8;
+}
+
+td[role=cell] input, th input {
+  margin-right: 6px;
+}
+
+.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab, .ant-tabs-card > div > .ant-tabs-nav .ant-tabs-tab {
+  padding: 6px 11px;
+}
+
+.ant-tabs-card.ant-tabs-top > .ant-tabs-nav .ant-tabs-tab-active {
+  border-top: 2px solid #000;
+}
+
+.ant-pagination {
+  margin: 1px 11px;
+}

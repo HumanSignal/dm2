@@ -4,7 +4,7 @@ import { observer, inject } from "mobx-react";
 import { Pagination, Menu, Dropdown, Tabs, Button, Radio, Space } from "antd";
 import {
   DownOutlined,
-  PlayCircleOutlined,
+  CaretRightOutlined,
   EyeOutlined,
   FilterOutlined,
   AppstoreOutlined,
@@ -29,12 +29,12 @@ const DmPanel = inject("store")(observer(({ store, item }) => {
         display: "flex",
         justifyContent: "space-between",
         marginTop: "0em",
-          marginBottom: "1em",
-          marginLeft: "1em",
-          marginRight: "1em"
+        marginBottom: "0.8em",
+        marginLeft: "0.8em",
+        marginRight: "0.8em",
       }}
     >
-      <Space size="middle">
+      <Space size="small">
         <Radio.Group value={item.type} onChange={e => item.setType(e.target.value)}>
           <Radio.Button value="list"><BarsOutlined /> List</Radio.Button>
           <Radio.Button value="grid"><AppstoreOutlined /> Grid</Radio.Button>
@@ -59,10 +59,18 @@ const DmPanel = inject("store")(observer(({ store, item }) => {
         </Button>
       </Space>
 
-      <Space size="middle">
-        {store.selectedCount ? `Selected: ${store.selectedCount}` : ''}
-        <Button disabled={item.target === 'annotations'} onClick={() => item.root.setMode('label-table') } style={{ backgroundColor: "#87d068" }}>
-          <PlayCircleOutlined />
+      <Space size="small">
+        {store.selectedCount
+          ? `Selected ${store.selectedCount} ${item.target === 'annotations' ? "annotations" : "tasks"}`
+          : ''
+        }
+        <Button
+          type="primary"
+          className="label-all"
+          disabled={item.target === 'annotations'}
+          onClick={() => item.root.setMode('label-table') }
+        >
+          <CaretRightOutlined />
           Label All
         </Button>
         <Dropdown overlay={actionsMenu}>
@@ -152,7 +160,7 @@ const DmTabs = inject('store')(observer(({ store }) => {
               activeKey={store.viewsStore.selected.key}
               type="editable-card"
               tabBarExtraContent={<span>&nbsp;&nbsp;</span>}
-              tabBarStyle={{ paddingLeft: "0.5em" }}
+              tabBarStyle={{ paddingLeft: "11px" }}
               onEdit={store.viewsStore.addView}>
           {store.viewsStore.all.map((pane) => (
               <TabPane tab={<DmTabPane item={pane} />}

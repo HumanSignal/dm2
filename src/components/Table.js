@@ -216,7 +216,6 @@ const Table = inject('store')(observer(({ store, columns, data, item, onSelectRo
             current={pageIndex + 1}
             total={pageCount * pageSize}
             pageSize={pageSize}
-            size="small"
             onChange={(page, size) => { gotoPage(page - 1); setPageSize(size); }}
           />
         </>
