@@ -96,9 +96,9 @@ const Table = inject('store')(observer(({ store, columns, data, item, onSelectRo
           // The header can use the table's getToggleAllRowsSelectedProps method
           // to render a checkbox
           Header: ({ getToggleAllRowsSelectedProps }) => (
-            <div>
+            <>
               { item.root.mode === "dm" ? <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} /> : null } ID
-            </div>
+            </>
           ),
           // The cell can use the individual row's getToggleRowSelectedProps method
           // to the render a checkbox
@@ -168,8 +168,15 @@ const Table = inject('store')(observer(({ store, columns, data, item, onSelectRo
               {headerGroups.map((headerGroup) => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => (
-                      <th {...column.getHeaderProps()}>
+                      <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                         {column.render("Header")}
+                        <span style={{ float: "right" }}>
+                          {column.isSorted
+                            ? column.isSortedDesc
+                              ? ' ↓'
+                              : ' ↑'
+                            : ''}
+                        </span>
                         <div>{column.canFilter && item.root.mode === "dm" ? column.render("Filter") : null}</div>
                       {/* this is resize the column code which we may need  */}
                       {/* <div */}
