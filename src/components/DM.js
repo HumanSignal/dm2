@@ -1,18 +1,17 @@
-import React from "react";
-import { observer, inject } from "mobx-react";
-
-import { Pagination, Menu, Dropdown, Tabs, Button, Radio, Space } from "antd";
 import {
-  DownOutlined,
-  PlayCircleOutlined,
-  EyeOutlined,
-  FilterOutlined,
   AppstoreOutlined,
   BarsOutlined,
   CaretDownOutlined,
+  DownOutlined,
+  EyeOutlined,
+  FilterOutlined,
+  PlayCircleOutlined,
 } from "@ant-design/icons";
+import { Button, Dropdown, Menu, Radio, Space, Tabs } from "antd";
+import { inject, observer } from "mobx-react";
+import React from "react";
 import FieldsMenu from "./FieldsMenu";
-import Table from "./Table";
+import Table from "./Table/Table";
 
 const { TabPane } = Tabs;
 
@@ -33,12 +32,22 @@ const DmPanel = observer(({ item }) => {
       }}
     >
       <Space size="middle">
-        <Radio.Group value={item.type} onChange={e => item.setType(e.target.value)}>
-          <Radio.Button value="list"><BarsOutlined /> List</Radio.Button>
-          <Radio.Button value="grid"><AppstoreOutlined /> Grid</Radio.Button>
+        <Radio.Group
+          value={item.type}
+          onChange={(e) => item.setType(e.target.value)}
+        >
+          <Radio.Button value="list">
+            <BarsOutlined /> List
+          </Radio.Button>
+          <Radio.Button value="grid">
+            <AppstoreOutlined /> Grid
+          </Radio.Button>
         </Radio.Group>
 
-        <Radio.Group value={item.target} onChange={e => item.setTarget(e.target.value)}>
+        <Radio.Group
+          value={item.target}
+          onChange={(e) => item.setTarget(e.target.value)}
+        >
           <Radio.Button value="tasks">Tasks</Radio.Button>
           <Radio.Button value="annotations">Annotations</Radio.Button>
         </Radio.Group>
@@ -58,7 +67,10 @@ const DmPanel = observer(({ item }) => {
       </Space>
 
       <Space size="middle">
-        <Button disabled={item.target === 'annotations'} onClick={() => item.root.setMode('label') }>
+        <Button
+          disabled={item.target === "annotations"}
+          onClick={() => item.root.setMode("label")}
+        >
           <PlayCircleOutlined />
           Label All
         </Button>
@@ -73,50 +85,74 @@ const DmPanel = observer(({ item }) => {
 });
 
 const DmPaneMenu = observer(({ item }) => {
-    return (
-        <Menu>
-          <Menu.Item key="0">
-            <a href="" onClick={(ev) => {
-                ev.preventDefault();
-                item.setRenameMode(true);
-                return false;
-            }}>Rename</a>
-          </Menu.Item>
-          <Menu.Item key="1">
-            <a href="" onClick={(ev) => {
-                ev.preventDefault();
-                item.parent.duplicateView(item);
-                return false;
-            }}>Duplicate</a>
-          </Menu.Item>
-          <Menu.Divider />
-        { item.parent.canClose ? <Menu.Item key="2" onClick={() => {
-              item.parent.deleteView(item);
-        }}>Close</Menu.Item> : null }
-        </Menu>
-    );
+  return (
+    <Menu>
+      <Menu.Item key="0">
+        <a
+          href="#rename"
+          onClick={(ev) => {
+            ev.preventDefault();
+            item.setRenameMode(true);
+            return false;
+          }}
+        >
+          Rename
+        </a>
+      </Menu.Item>
+      <Menu.Item key="1">
+        <a
+          href="#duplicate"
+          onClick={(ev) => {
+            ev.preventDefault();
+            item.parent.duplicateView(item);
+            return false;
+          }}
+        >
+          Duplicate
+        </a>
+      </Menu.Item>
+      <Menu.Divider />
+      {item.parent.canClose ? (
+        <Menu.Item
+          key="2"
+          onClick={() => {
+            item.parent.deleteView(item);
+          }}
+        >
+          Close
+        </Menu.Item>
+      ) : null}
+    </Menu>
+  );
 });
 
 const DmTabPane = observer(({ item }) => {
   return (
     <span>
-      {
-          item.renameMode ?
-              <input type="text" value={item.title}
-                     onKeyPress={(ev) => {
-                         if (ev.key === 'Enter') {
-                             item.setRenameMode(false);
-                             return;
-                         }
-                     }}
-                     onChange={(ev) => {
-                         item.setTitle(ev.target.value);
-                     }} /> :
-              item.title
-      }
+      {item.renameMode ? (
+        <input
+          type="text"
+          value={item.title}
+          onKeyPress={(ev) => {
+            if (ev.key === "Enter") {
+              item.setRenameMode(false);
+              return;
+            }
+          }}
+          onChange={(ev) => {
+            item.setTitle(ev.target.value);
+          }}
+        />
+      ) : (
+        item.title
+      )}
       &nbsp;&nbsp;&nbsp;&nbsp;
       <Dropdown overlay={<DmPaneMenu item={item} />} trigger={["click"]}>
-        <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
+        <a
+          href="#down"
+          className="ant-dropdown-link"
+          onClick={(e) => e.preventDefault()}
+        >
           <DownOutlined />
         </a>
       </Dropdown>
@@ -127,47 +163,52 @@ const DmTabPane = observer(({ item }) => {
 const DmPaneContent = inject("store")(
   observer(({ item, store }) => {
     const columns = item.fieldsAsColumns;
-      const data = (store.viewsStore.selected.target === 'annotations') ?
-            store.tasksStore.getAnnotationData() :
-            store.tasksStore.getData() ;
+    const data =
+      store.viewsStore.selected.target === "annotations"
+        ? store.tasksStore.getAnnotationData()
+        : store.tasksStore.getData();
 
     const [skipPageReset, setSkipPageReset] = React.useState(false);
 
     return (
       <div>
-          <DmPanel item={item} />
-          <Table columns={columns} data={data} item={item} skipPageReset={skipPageReset} />
+        <DmPanel item={item} />
+        <Table
+          columns={columns}
+          data={data}
+          item={item}
+          skipPageReset={skipPageReset}
+        />
       </div>
     );
   })
 );
 
-
-const DmTabs = inject('store')(observer(({ store }) => {
+const DmTabs = inject("store")(
+  observer(({ store }) => {
     return (
-        <Tabs
-          onChange={(key) => {
-              store.viewsStore.setSelected(key);
-          }}
-          activeKey={store.viewsStore.selected.key}
-          type="editable-card"
-          onEdit={store.viewsStore.addView}          
-        >
-          {store.viewsStore.all.map((pane) => (
-              <TabPane
-                tab={<DmTabPane item={pane} />}
-                key={pane.key}
-                closable={false}                
-              >
-                <DmPaneContent item={pane} />
-              </TabPane>
-          ))}
-        </Tabs>
+      <Tabs
+        onChange={(key) => {
+          store.viewsStore.setSelected(key);
+        }}
+        activeKey={store.viewsStore.selected.key}
+        type="editable-card"
+        onEdit={store.viewsStore.addView}
+      >
+        {store.viewsStore.all.map((pane) => (
+          <TabPane
+            tab={<DmTabPane item={pane} />}
+            key={pane.key}
+            closable={false}
+          >
+            <DmPaneContent item={pane} />
+          </TabPane>
+        ))}
+      </Tabs>
     );
-        
-}));
-    
-    
+  })
+);
+
 //   class DmTabs extends React.Component {
 //     constructor(props) {
 //       super(props);
@@ -179,7 +220,7 @@ const DmTabs = inject('store')(observer(({ store }) => {
 //         c["content"] = <DmPaneContent item={c} store={store} />;
 //         return c;
 //       });
-        
+
 //       this.state = {
 //         activeKey: panes[0].key,
 //         panes: panes,
@@ -232,7 +273,7 @@ const DmTabs = inject('store')(observer(({ store }) => {
 //           activeKey={this.state.activeKey}
 //           type="editable-card"
 //           onEdit={this.onEdit}
-          
+
 //         >
 //           {this.state.panes.map((pane) => (
 //             <TabPane

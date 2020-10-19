@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 const Styles = styled.div`
   padding: 1rem;
@@ -52,7 +52,7 @@ const Styles = styled.div`
         top: 0;
         transform: translateX(50%);
         z-index: 1;
-        ${'' /* prevents from scrolling while dragging on touch devices */}
+        ${"" /* prevents from scrolling while dragging on touch devices */}
         touch-action:none;
 
         &.isResizing {

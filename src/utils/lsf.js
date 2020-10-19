@@ -11,11 +11,11 @@ const API_URL = {
   CANCEL: "/cancel",
   PROJECTS: "/projects",
   NEXT: "/next/",
-  EXPERT_INSTRUCTIONS: "/expert_instruction"
+  EXPERT_INSTRUCTIONS: "/expert_instruction",
 };
 
-const Requests = (function(window) {
-  const handleResponse = res => {
+const Requests = (function (window) {
+  const handleResponse = (res) => {
     if (res.status !== 200 || res.status !== 201) {
       return res;
     } else {
@@ -31,10 +31,10 @@ const Requests = (function(window) {
         credentials: "include",
         body: body,
       })
-      .then(response => handleResponse(response));
+      .then((response) => handleResponse(response));
   };
 
-  const fetcher = url => {
+  const fetcher = (url) => {
     return wrapperRequest(url, "GET", { Accept: "application/json" });
   };
 
@@ -52,7 +52,12 @@ const Requests = (function(window) {
   };
 
   const poster = (url, body) => {
-    return wrapperRequest(url, "POST", { Accept: "application/json", "Content-Type": "application/json" }, body);
+    return wrapperRequest(
+      url,
+      "POST",
+      { Accept: "application/json", "Content-Type": "application/json" },
+      body
+    );
   };
 
   const patch = (url, body) => {
@@ -63,7 +68,7 @@ const Requests = (function(window) {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body,
+      body
     );
   };
 
@@ -74,7 +79,7 @@ const Requests = (function(window) {
       {
         "Content-Type": "application/json",
       },
-      body,
+      body
     );
   };
 
@@ -86,71 +91,69 @@ const Requests = (function(window) {
   };
 })(window);
 
-const _loadTask = function(ls, url, completionID) {
-    try {
-        const req = Requests.fetcher(url);
+const _loadTask = function (ls, url, completionID) {
+  try {
+    const req = Requests.fetcher(url);
 
-        req.then(function(loadedTask) {
-            if (loadedTask instanceof Response && loadedTask.status === 404) {
-                ls.setFlags({ isLoading: false, noTask: true });
-                return;
-            }
+    req.then(function (loadedTask) {
+      if (loadedTask instanceof Response && loadedTask.status === 404) {
+        ls.setFlags({ isLoading: false, noTask: true });
+        return;
+      }
 
-            if (loadedTask instanceof Response && loadedTask.status === 403) {
-                ls.setFlags({ isLoading: false, noAccess: true });
-                return;
-            }
+      if (loadedTask instanceof Response && loadedTask.status === 403) {
+        ls.setFlags({ isLoading: false, noAccess: true });
+        return;
+      }
 
-            loadedTask.json().then(response => {
-                /**
-                 * Convert received data to string for MST support
-                 */
-                response.data = JSON.stringify(response.data);
+      loadedTask.json().then((response) => {
+        /**
+         * Convert received data to string for MST support
+         */
+        response.data = JSON.stringify(response.data);
 
-                /**
-                 * Add new data from received task
-                 */
-                ls.resetState();
-                ls.assignTask(response);
-                ls.initializeStore(_convertTask(response));
-                let cs = ls.completionStore;
-                let c;
-                if (cs.predictions.length > 0) {
-                    c = ls.completionStore.addCompletionFromPrediction(cs.predictions[0]);
-                }
+        /**
+         * Add new data from received task
+         */
+        ls.resetState();
+        ls.assignTask(response);
+        ls.initializeStore(_convertTask(response));
+        let cs = ls.completionStore;
+        let c;
+        if (cs.predictions.length > 0) {
+          c = ls.completionStore.addCompletionFromPrediction(cs.predictions[0]);
+        }
 
-                // we are on history item, take completion id from history
-                else if (ls.completionStore.completions.length > 0 && completionID) {
-                    c = {id: completionID};
-                }
+        // we are on history item, take completion id from history
+        else if (ls.completionStore.completions.length > 0 && completionID) {
+          c = { id: completionID };
+        } else {
+          c = ls.completionStore.addCompletion({ userGenerate: true });
+        }
 
-                else {
-                    c = ls.completionStore.addCompletion({ userGenerate: true });
-                }
+        if (c.id) cs.selectCompletion(c.id);
 
-                if (c.id) cs.selectCompletion(c.id);
+        ls.setFlags({ isLoading: false });
 
-                ls.setFlags({ isLoading: false });
-
-                ls.onTaskLoad(ls, ls.task);
-            })
-        });
-    } catch (err) {
-        console.error("Failed to load next task ", err);
-    }
+        ls.onTaskLoad(ls, ls.task);
+      });
+    });
+  } catch (err) {
+    console.error("Failed to load next task ", err);
+  }
 };
 
-const loadNext = function(ls) {
+const loadNext = function (ls) {
   var url = `${API_URL.MAIN}${API_URL.PROJECTS}/1${API_URL.NEXT}`;
-    return _loadTask(ls, url);
+  return _loadTask(ls, url);
 };
 
-const loadTask = function(ls, taskID, completionID) {
+const loadTask = function (ls, taskID, completionID) {
   var url = `${API_URL.MAIN}${API_URL.TASKS}/${taskID}`;
-    return _loadTask(ls, url, completionID);
+  return _loadTask(ls, url, completionID);
 };
 
-const _convertTask = function(task) {
+const _convertTask = function (task) {
   // converts the task from the server format to the format
   // supported by the LS frontend
   if (!task) return;
@@ -175,49 +178,48 @@ const _convertTask = function(task) {
   return task;
 };
 
-const _convertCompletionBack = function(c) {
-    // convert the completion back from LS to server format
-    // TODO I think we can get that info back from the server
-    if (! c) return;
-    
-    return {
-        id: c.pk,
-        created_ago: c.createdAgo,
-        created_username: c.createdBy,
-        created_at: '2019-08-06T19:27:29.289566Z',
-        lead_time: c.leadTime,
-    };
+const _convertCompletionBack = function (c) {
+  // convert the completion back from LS to server format
+  // TODO I think we can get that info back from the server
+  if (!c) return;
+
+  return {
+    id: c.pk,
+    created_ago: c.createdAgo,
+    created_username: c.createdBy,
+    created_at: "2019-08-06T19:27:29.289566Z",
+    lead_time: c.leadTime,
+  };
 };
 
-export default function(elid, config, task, cbs) {
-    const cbCall = function (name, ...params) {
-        if (name in cbs)
-            return cbs[name].apply(null, params);
-    };
-    
-  const showHistory = task === null;  // show history buttons only if label stream mode, not for task explorer
+export default function (elid, config, task, cbs) {
+  const cbCall = function (name, ...params) {
+    if (name in cbs) return cbs[name].apply(null, params);
+  };
 
-  const _prepData = function(c, includeId) {
+  const showHistory = task === null; // show history buttons only if label stream mode, not for task explorer
+
+  const _prepData = function (c, includeId) {
     var completion = {
-      lead_time: (new Date() - c.loadedDate) / 1000,  // task execution time
-      result: c.serializeCompletion()
+      lead_time: (new Date() - c.loadedDate) / 1000, // task execution time
+      result: c.serializeCompletion(),
     };
     if (includeId) {
-        completion.id = parseInt(c.id);
+      completion.id = parseInt(c.id);
     }
     const body = JSON.stringify(completion);
     return body;
   };
 
   function initHistory(ls) {
-      if (!ls.taskHistoryIds) {
-          ls.taskHistoryIds = [];
-          ls.taskHistoryCurrent = -1;
-      }
+    if (!ls.taskHistoryIds) {
+      ls.taskHistoryIds = [];
+      ls.taskHistoryCurrent = -1;
+    }
   }
   function addHistory(ls, task_id, completion_id) {
-      ls.taskHistoryIds.push({task_id: task_id, completion_id: completion_id});
-      ls.taskHistoryCurrent = ls.taskHistoryIds.length;
+    ls.taskHistoryIds.push({ task_id: task_id, completion_id: completion_id });
+    ls.taskHistoryCurrent = ls.taskHistoryIds.length;
   }
 
   var LS = new window.LabelStudio(elid, {
@@ -237,21 +239,24 @@ export default function(elid, config, task, cbs) {
       "completions:add-new",
       "completions:delete",
       "side-column", // entity
-      "skip"
+      "skip",
     ],
 
-    onSubmitCompletion: function(ls, c) {
+    onSubmitCompletion: function (ls, c) {
       ls.setFlags({ isLoading: true });
-      const req = Requests.poster(`${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/`, _prepData(c));
+      const req = Requests.poster(
+        `${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/`,
+        _prepData(c)
+      );
 
-      req.then(function(httpres) {
-        httpres.json().then(function(res) {
+      req.then(function (httpres) {
+        httpres.json().then(function (res) {
           if (res && res.id) {
-              c.updatePersonalKey(res.id.toString());
-              cbCall('onSubmitCompletion', ls, _convertCompletionBack(c), res);
-              addHistory(ls, ls.task.id, res.id);
+            c.updatePersonalKey(res.id.toString());
+            cbCall("onSubmitCompletion", ls, _convertCompletionBack(c), res);
+            addHistory(ls, ls.task.id, res.id);
           }
-            
+
           if (task) {
             ls.setFlags({ isLoading: false });
           } else {
@@ -263,7 +268,7 @@ export default function(elid, config, task, cbs) {
       return true;
     },
 
-    onTaskLoad: function(ls) {
+    onTaskLoad: function (ls) {
       // render back & next buttons if there are history
       // if (showHistory && ls.taskHistoryIds && ls.taskHistoryIds.length > 0) {
       //   var firstBlock = $('[class^=Panel_container]').children().first();
@@ -283,7 +288,7 @@ export default function(elid, config, task, cbs) {
       // }
     },
 
-    onUpdateCompletion: function(ls, c) {
+    onUpdateCompletion: function (ls, c) {
       ls.setFlags({ isLoading: true });
 
       const req = Requests.patch(
@@ -291,29 +296,31 @@ export default function(elid, config, task, cbs) {
         _prepData(c)
       );
 
-      req.then(function(httpres) {
+      req.then(function (httpres) {
         ls.setFlags({ isLoading: false });
-          // refresh task from server
+        // refresh task from server
 
-          httpres.json().then(function(res) {
-              cbCall('onUpdateCompletion', ls, c, res);
-          });
-          
-          loadTask(ls, ls.task.id, ls.completionStore.selected.id);
+        httpres.json().then(function (res) {
+          cbCall("onUpdateCompletion", ls, c, res);
+        });
+
+        loadTask(ls, ls.task.id, ls.completionStore.selected.id);
       });
     },
 
-    onDeleteCompletion: function(ls, c) {
+    onDeleteCompletion: function (ls, c) {
       ls.setFlags({ isLoading: true });
 
-      const req = Requests.remover(`${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/${c.pk}/`);
-        req.then(function(httpres) {
-        cbCall('onDeleteCompletion', ls, c);    
+      const req = Requests.remover(
+        `${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/${c.pk}/`
+      );
+      req.then(function (httpres) {
+        cbCall("onDeleteCompletion", ls, c);
         ls.setFlags({ isLoading: false });
       });
     },
 
-    onSkipTask: function(ls) {
+    onSkipTask: function (ls) {
       ls.setFlags({ loading: true });
       var c = ls.completionStore.selected;
       var completion = _prepData(c, true);
@@ -321,7 +328,7 @@ export default function(elid, config, task, cbs) {
       Requests.poster(
         `${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.CANCEL}`,
         completion
-      ).then(function(response) {
+      ).then(function (response) {
         response.json().then(function (res) {
           if (res && res.id) {
             c.updatePersonalKey(res.id.toString());
@@ -335,24 +342,24 @@ export default function(elid, config, task, cbs) {
           } else {
             loadNext(ls);
           }
-        })
+        });
       });
 
-        cbCall('onDeleteCompletion', ls, c);
-        
+      cbCall("onDeleteCompletion", ls, c);
+
       return true;
     },
 
-    onGroundTruth: function(ls, c, value) {
+    onGroundTruth: function (ls, c, value) {
       Requests.patch(
         `${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/${c.pk}/`,
         JSON.stringify({ honeypot: value })
       );
     },
 
-    onLabelStudioLoad: function(ls) {
+    onLabelStudioLoad: function (ls) {
       var self = ls;
-      ls.onTaskLoad = this.onTaskLoad;  // FIXME: make it inside of LSF
+      ls.onTaskLoad = this.onTaskLoad; // FIXME: make it inside of LSF
       ls.onPrevButton = this.onPrevButton; // FIXME: remove it in future
       initHistory(ls);
 
@@ -360,36 +367,39 @@ export default function(elid, config, task, cbs) {
         ls.setFlags({ isLoading: true });
         loadNext(ls);
       } else {
-          if (! task || ! task.completions || task.completions.length === 0) {
-              var c = ls.completionStore.addCompletion({ userGenerate: true });
-              ls.completionStore.selectCompletion(c.id);
-          }
+        if (!task || !task.completions || task.completions.length === 0) {
+          var c = ls.completionStore.addCompletion({ userGenerate: true });
+          ls.completionStore.selectCompletion(c.id);
+        }
       }
-    }
+    },
   });
 
-    // TODO WIP here, we will move that code to the SDK
-    var sdk = {
-        "loadNext": function () { loadNext(LS) },
-        "loadTask": function (taskID) { loadTask(LS, taskID) },
-        'prevButtonClick': function() {
-            LS.taskHistoryCurrent--;
-            let prev = LS.taskHistoryIds[LS.taskHistoryCurrent];
-            loadTask(LS, prev.task_id, prev.completion_id);
-        },
-        'nextButtonClick': function() {
-            LS.taskHistoryCurrent++;
-            if (LS.taskHistoryCurrent < LS.taskHistoryIds.length) {
-              let prev = LS.taskHistoryIds[LS.taskHistoryCurrent];
-              loadTask(LS, prev.task_id, prev.completion_id);
-            }
-            else {
-              loadNext(LS);  // new task
-            }
-        }
-    };
-    
-    LS._sdk = sdk;
-    
-    return LS;
-};
+  // TODO WIP here, we will move that code to the SDK
+  var sdk = {
+    loadNext: function () {
+      loadNext(LS);
+    },
+    loadTask: function (taskID) {
+      loadTask(LS, taskID);
+    },
+    prevButtonClick: function () {
+      LS.taskHistoryCurrent--;
+      let prev = LS.taskHistoryIds[LS.taskHistoryCurrent];
+      loadTask(LS, prev.task_id, prev.completion_id);
+    },
+    nextButtonClick: function () {
+      LS.taskHistoryCurrent++;
+      if (LS.taskHistoryCurrent < LS.taskHistoryIds.length) {
+        let prev = LS.taskHistoryIds[LS.taskHistoryCurrent];
+        loadTask(LS, prev.task_id, prev.completion_id);
+      } else {
+        loadNext(LS); // new task
+      }
+    },
+  };
+
+  LS._sdk = sdk;
+
+  return LS;
+}
