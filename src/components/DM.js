@@ -160,134 +160,58 @@ const DmTabPane = observer(({ item }) => {
   );
 });
 
-const DmPaneContent = inject("store")(
-  observer(({ item, store }) => {
-    const columns = item.fieldsAsColumns;
-    const data =
-      store.viewsStore.selected.target === "annotations"
-        ? store.tasksStore.getAnnotationData()
-        : store.tasksStore.getData();
+const DmPaneContent = observer(({ item, data }) => {
+  const columns = item.fieldsAsColumns;
 
-    const [skipPageReset, setSkipPageReset] = React.useState(false);
+  const [skipPageReset, setSkipPageReset] = React.useState(false);
 
-    return (
-      <div>
-        <DmPanel item={item} />
-        <Table
-          columns={columns}
-          data={data}
-          item={item}
-          skipPageReset={skipPageReset}
-        />
-      </div>
-    );
-  })
-);
+  return (
+    <div>
+      <DmPanel item={item} />
+      <Table
+        columns={columns}
+        data={data}
+        item={item}
+        skipPageReset={skipPageReset}
+      />
+    </div>
+  );
+});
 
-const DmTabs = inject("store")(
-  observer(({ store }) => {
-    return (
-      <Tabs
-        onChange={(key) => {
-          store.viewsStore.setSelected(key);
-        }}
-        activeKey={store.viewsStore.selected.key}
-        type="editable-card"
-        onEdit={store.viewsStore.addView}
-      >
-        {store.viewsStore.all.map((pane) => (
-          <TabPane
-            tab={<DmTabPane item={pane} />}
-            key={pane.key}
-            closable={false}
-          >
-            <DmPaneContent item={pane} />
-          </TabPane>
-        ))}
-      </Tabs>
-    );
-  })
-);
+const DmTabPaneWrapper = observer(({ store, data }) => {
+  return (
+    <Tabs
+      onChange={(key) => {
+        store.viewsStore.setSelected(key);
+      }}
+      activeKey={store.viewsStore.selected.key}
+      type="editable-card"
+      onEdit={store.viewsStore.addView}
+    >
+      {store.viewsStore.all.map((pane) => (
+        <TabPane
+          key={pane.key}
+          closable={false}
+          tab={<DmTabPane item={pane} data={data} />}
+        >
+          <DmPaneContent item={pane} data={data} />
+        </TabPane>
+      ))}
+    </Tabs>
+  );
+});
 
-//   class DmTabs extends React.Component {
-//     constructor(props) {
-//       super(props);
-//       this.newTabIndex = 0;
+const DmTabs = observer(({ store }) => {
+  const mode = store.viewsStore.selected.target;
+  const tasks = store.tasksStore;
+  const data = mode === "annotations" ? tasks.annotationsData : tasks.data;
+  return (
+    <DmTabPaneWrapper
+      store={store}
+      data={Array.from(data)}
+      mode={store.viewsStore.selected.target}
+    />
+  );
+});
 
-//       const store = this.props.store;
-
-//       const panes = store.viewsStore.all.map((c) => {
-//         c["content"] = <DmPaneContent item={c} store={store} />;
-//         return c;
-//       });
-
-//       this.state = {
-//         activeKey: panes[0].key,
-//         panes: panes,
-//       };
-//     }
-
-//     onChange = (activeKey) => {
-//       this.setState({ activeKey });
-//     };
-
-//     onEdit = (targetKey, action) => {
-//       this[action](targetKey);
-//     };
-
-//     add = () => {
-//       const { panes } = this.state;
-//       const activeKey = `newTab${this.newTabIndex++}`;
-//       panes.push({
-//         title: "New Tab",
-//         content: "Content of new Tab",
-//         key: activeKey,
-//       });
-//       this.setState({ panes, activeKey });
-//     };
-
-//     remove = (targetKey) => {
-//       let { activeKey } = this.state;
-//       let lastIndex;
-//       this.state.panes.forEach((pane, i) => {
-//         if (pane.key === targetKey) {
-//           lastIndex = i - 1;
-//         }
-//       });
-//       const panes = this.state.panes.filter((pane) => pane.key !== targetKey);
-//       if (panes.length && activeKey === targetKey) {
-//         if (lastIndex >= 0) {
-//           activeKey = panes[lastIndex].key;
-//         } else {
-//           activeKey = panes[0].key;
-//         }
-//       }
-//       this.setState({ panes, activeKey });
-//     };
-
-//     render() {
-//       return (
-//         <Tabs
-//           tabBarStyle={{ margin: 0, height: "40px" }}
-//           onChange={this.onChange}
-//           activeKey={this.state.activeKey}
-//           type="editable-card"
-//           onEdit={this.onEdit}
-
-//         >
-//           {this.state.panes.map((pane) => (
-//             <TabPane
-//               tab={<DmTabPane item={pane} />}
-//               key={pane.key}
-//               closable={false}
-//             >
-//               {pane.content}
-//             </TabPane>
-//           ))}
-//         </Tabs>
-//       );
-//     }
-//   }
-// ));
-
-export default DmTabs;
+export default inject("store")(DmTabs);

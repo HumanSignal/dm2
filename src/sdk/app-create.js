@@ -5,6 +5,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "../components/App/App";
+import views from "../data/views";
 import AppStore from "../stores/AppStore";
 
 /**
@@ -12,16 +13,10 @@ import AppStore from "../stores/AppStore";
  * @param {HTMLElement} rootNode
  * @param {AppOptions} options
  */
-export const createApp = (
-  rootNode,
-  { api, config, views, data, mode } = {}
-) => {
-  console.log(views);
+export const createApp = (rootNode, { api, config, mode } = {}) => {
   const appStore = AppStore.create({
     viewsStore: { views: views },
   });
-
-  appStore.tasksStore.setData(data);
 
   appStore._api = api;
   appStore._config = config;

@@ -22,20 +22,32 @@
 
 import config from "./data/config";
 import data from "./data/tasks.json";
-import views from "./data/views";
 import { DataManager } from "./sdk";
 
 /** @param {import('./sdk/dm').DMConfig} config */
 const DM = (config) => new DataManager(config);
 
-if (process.env.NODE_ENV === "development") {
+if (process.env.NODE_ENV === "development" && !process.env.BUILD_MODULE) {
   DM({
     root: document.getElementById("app"),
     api: {
-      gateway: "/",
+      gateway: "/api",
       endpoints: {
-        tasks: "/tasks.json",
-        completion: "/completions",
+        tasks: {
+          path: "/tasks",
+          mock(url, request) {
+            const { page, page_size } = request.data;
+            const offset = (page - 1) * page_size;
+            return data.slice(offset, page_size);
+          },
+        },
+        completions: {
+          path: "/tasks/:id/completions",
+          method: "post",
+          mock() {
+            return data[0].completions;
+          },
+        },
         cancel: "/cancel",
         projects: "/projects",
         next: "/next",
@@ -44,8 +56,6 @@ if (process.env.NODE_ENV === "development") {
     },
     settings: {
       config,
-      data,
-      views,
     },
   });
 }

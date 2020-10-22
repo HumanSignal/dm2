@@ -20,7 +20,7 @@ const DmLabel = inject("store")(
   observer(({ store }) => {
     const item = store.viewsStore.selected;
     const columns = item.fieldsAsColumns;
-    const data = store.tasksStore.getData();
+    const data = store.tasksStore.data;
     const config = store._config;
 
     const runLS =

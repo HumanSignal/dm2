@@ -10,6 +10,25 @@ import {
 } from "react-table";
 import { fuzzyTextFilterFn } from "../Filters";
 
+const COLUMN_WIDTHS = new Map([
+  ["selection", 50],
+  ["id", 100],
+  ["status", 100],
+  ["annotations", 150],
+]);
+
+const getPropsForColumnCell = (cell) => {
+  const props = {};
+
+  if (COLUMN_WIDTHS.has(cell.column.id)) {
+    props.style = {
+      width: COLUMN_WIDTHS.get(cell.column.id),
+    };
+  }
+
+  return props;
+};
+
 const IndeterminateCheckbox = React.forwardRef(
   ({ indeterminate, ...rest }, ref) => {
     const defaultRef = React.useRef();
@@ -21,7 +40,12 @@ const IndeterminateCheckbox = React.forwardRef(
 
     return (
       <>
-        <input type="checkbox" ref={resolvedRef} {...rest} />
+        <input
+          type="checkbox"
+          ref={resolvedRef}
+          {...rest}
+          onClick={(e) => e.stopPropagation()}
+        />
       </>
     );
   }
@@ -89,43 +113,42 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
     usePagination,
     useRowSelect,
     (hooks) => {
-      hooks.visibleColumns.push((columns) => [
-        // Let's make a column for selection
-        {
-          ...columns[0],
-          // id: "selection",
-          // The header can use the table's getToggleAllRowsSelectedProps method
-          // to render a checkbox
-          Header: ({ getToggleAllRowsSelectedProps }) => (
-            <div>
-              {item.root.mode === "dm" ? (
-                <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-              ) : null}{" "}
-              ID
-            </div>
-          ),
-          // The cell can use the individual row's getToggleRowSelectedProps method
-          // to the render a checkbox
-          Cell: ({ row, value }) => (
-            <div>
-              {item.root.mode === "dm" ? (
-                <>
-                  <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />{" "}
-                  {value}
-                </>
-              ) : (
-                <span
-                  style={{ cursor: "pointer" }}
-                  onClick={() => onSelectRow && onSelectRow(row.original)}
-                >
-                  {value}
-                </span>
-              )}
-            </div>
-          ),
-        },
-        ...columns.slice(1),
-      ]);
+      hooks.visibleColumns.push((columns) => {
+        return [
+          // Let's make a column for selection
+          {
+            id: "selection",
+            // The header can use the table's getToggleAllRowsSelectedProps method
+            // to render a checkbox
+            Header: ({ getToggleAllRowsSelectedProps }) => (
+              <div>
+                {item.root.mode === "dm" ? (
+                  <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+                ) : null}
+              </div>
+            ),
+            // The cell can use the individual row's getToggleRowSelectedProps method
+            // to the render a checkbox
+            Cell: ({ row, value }) => (
+              <div>
+                {item.root.mode === "dm" ? (
+                  <>
+                    <IndeterminateCheckbox
+                      {...row.getToggleRowSelectedProps()}
+                    />{" "}
+                  </>
+                ) : (
+                  <span
+                    style={{ cursor: "pointer" }}
+                    onClick={() => onSelectRow && onSelectRow(row.original)}
+                  ></span>
+                )}
+              </div>
+            ),
+          },
+          ...columns,
+        ];
+      });
     }
   );
 
@@ -213,10 +236,15 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
             {page.map((row, i) => {
               prepareRow(row);
               return (
-                <tr {...row.getRowProps()}>
+                <tr
+                  {...row.getRowProps()}
+                  onClick={() => console.log("Open LSF")}
+                >
                   {row.cells.map((cell) => {
                     return (
-                      <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                      <td {...cell.getCellProps(getPropsForColumnCell(cell))}>
+                        {cell.render("Cell")}
+                      </td>
                     );
                   })}
                 </tr>

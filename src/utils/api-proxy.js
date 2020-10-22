@@ -15,7 +15,7 @@
 
 /**
  * @typedef {{
- * gateway: string,
+ * gateway: string | URL,
  * endpoints: Dict<EndpointConfig>,
  * commonHeaders: Dict<string>,
  * }} APIProxyOptions
@@ -40,10 +40,30 @@ export class APIProxy {
    */
   constructor(options) {
     this.commonHeaders = options.commonHeaders ?? {};
-    this.gateway = options.gateway;
+    this.gateway = this.buildGateway(options.gateway);
     this.endpoints = new Map(Object.entries(options.endpoints));
+    console.log(`API gateway: ${this.gateway}`);
 
     this.buildMethods();
+  }
+
+  /**
+   *
+   */
+  buildGateway(url) {
+    if (url instanceof URL) {
+      console.log("Gateway built from URL");
+      return url.toString();
+    }
+
+    try {
+      return new URL(url).toString();
+    } catch {
+      console.log("Gateway built from location");
+      const gateway = new URL(window.location.href);
+      gateway.pathname = url;
+      return gateway.toString();
+    }
   }
 
   /**
@@ -66,9 +86,12 @@ export class APIProxy {
       try {
         const methodSettings = this.getSettings(settings);
         const requestMethod = (methodSettings.method ?? "get").toUpperCase();
-        const apiCallURL = this.createUrl(methodSettings.path, params.data);
+        const apiCallURL = this.createUrl(
+          methodSettings.path,
+          params?.data ?? {}
+        );
 
-        const request = new Request({
+        const request = new Request(apiCallURL, {
           method: requestMethod,
           headers: Object.assign({}, methodSettings.headers ?? {}),
         });
@@ -78,8 +101,8 @@ export class APIProxy {
         }
 
         const rawResponse = await (methodSettings.mock
-          ? methodSettings.mock(apiCallURL, request)
-          : fetch(apiCallURL, request));
+          ? this.mockRequest(apiCallURL, params, methodSettings)
+          : fetch(request));
 
         if (rawResponse.ok) {
           const responseData = await rawResponse.json();
@@ -104,6 +127,8 @@ export class APIProxy {
       return {
         path: settings,
         method: "get",
+        mock: undefined,
+        convert: undefined,
       };
     }
 
@@ -118,13 +143,21 @@ export class APIProxy {
    */
   createUrl(path, data = {}) {
     const url = new URL(this.gateway);
-    url.pathname = path;
+    const processedPath = path.replace(/:([^/]+)/g, (...res) => {
+      const key = res[1];
+      return data[key] ?? `[can't find key \`${key}\` in data]`;
+    });
+
+    url.pathname += processedPath;
 
     if (data && typeof data === "object") {
       Object.entries(data).forEach(([key, value]) => {
         url.searchParams.set(key, value);
+        console.log(`Set ${key}:${value}`);
       });
     }
+
+    console.log({ url, path, processedPath, data });
 
     return url.toString();
   }
@@ -161,5 +194,22 @@ export class APIProxy {
   generateException(exception) {
     console.error(exception);
     return { error: exception.message };
+  }
+
+  /**
+   *
+   * @param {string} url
+   * @param {Request} request
+   * @param {EndpointConfig} settings
+   */
+  mockRequest(url, request, settings) {
+    console.log(`Mock ${url}`);
+    const response = settings.mock(url, request);
+    return Promise.resolve({
+      ok: true,
+      json() {
+        return Promise.resolve(response);
+      },
+    });
   }
 }

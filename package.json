@@ -1,17 +1,18 @@
 {
-  "name": "htx-frontend",
+  "name": "htx-data-manager",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./build/static/js/main.js",
   "scripts": {
     "build-bundle": "npm run build:final",
     "build-notsourcemap": "GENERATE_SOURCEMAP=false npm run build",
     "build:final": "BUILD_NO_CHUNKS=true npm run build",
     "build:no-hash": "BUILD_NO_HASH=true BUILD_NO_CHUNKS=true npm run build",
+    "build:module": "BUILD_NO_HASH=true BUILD_NO_CHUNKS=true BUILD_MODULE=true npm run build",
     "prettier-styles": "prettier --write src/**/*.scss",
     "prettier": "prettier --write src/**/*.js",
-    "build": "react-scripts build",
-    "start": "react-scripts start",
+    "build": "react-app-rewired build",
+    "start": "react-app-rewired start",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "author": "",
