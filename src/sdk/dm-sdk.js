@@ -12,7 +12,7 @@
 
 import { APIProxy } from "../utils/api-proxy";
 import { createApp } from "./app-create";
-import { LSFWrapper } from "./lsf";
+import { LSFWrapper } from "./lsf-sdk";
 
 export class DataManager {
   /** @type {HTMLElement} */
@@ -21,7 +21,7 @@ export class DataManager {
   /** @type {APIProxy} */
   api = null;
 
-  /** @type {import("./lsf").LSFWrapper} */
+  /** @type {import("./lsf-sdk").LSFWrapper} */
   lsf = null;
 
   /** @type {Dict} */
@@ -110,7 +110,7 @@ export class DataManager {
    * Initialize LSF or use already initialized instance.
    * Render LSF interface and load task for labeling.
    * @param {HTMLElement} element Root element LSF will be rendered into
-   * @param {import("../stores/TasksStore").TaskModel} task
+   * @param {import("../stores/Tasks").TaskModel} task
    */
   startLabeling(element, task) {
     console.log({ element, task });

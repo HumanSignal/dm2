@@ -1,6 +1,6 @@
 import { types } from "mobx-state-tree";
-import { TasksStore } from "./TasksStore";
-import { ViewsStore } from "./ViewsStore";
+import { TasksStore } from "./Tasks";
+import { ViewsStore } from "./Views";
 
 export default types
   .model("dmAppStore", {

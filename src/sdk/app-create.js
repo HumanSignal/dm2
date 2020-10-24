@@ -11,7 +11,7 @@ import AppStore from "../stores/AppStore";
 /**
  * Create DM React app
  * @param {HTMLElement} rootNode
- * @param {import("./dm").DataManager} dataManager
+ * @param {import("./dm-sdk").DataManager} dataManager
  */
 export const createApp = (rootNode, dataManager) => {
   const appStore = AppStore.create({

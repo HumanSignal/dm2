@@ -11,7 +11,7 @@ export class LSFWrapper {
   /** @type {HTMLElement} */
   root = null;
 
-  /** @type {import("./dm").DataManager} */
+  /** @type {import("./dm-sdk").DataManager} */
   datamanager = null;
 
   /**
@@ -115,7 +115,7 @@ export class LSFWrapper {
 
   /**
    * Converts the task from the server format to the format supported by the LS frontend
-   * @param {import("../stores/TasksStore").TaskModel} task
+   * @param {import("../stores/Tasks").TaskModel} task
    * @private
    * @returns {Dict|undefined}
    */
