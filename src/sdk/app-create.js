@@ -11,16 +11,14 @@ import AppStore from "../stores/AppStore";
 /**
  * Create DM React app
  * @param {HTMLElement} rootNode
- * @param {AppOptions} options
+ * @param {import("./dm").DataManager} dataManager
  */
-export const createApp = (rootNode, { api, config, mode } = {}) => {
+export const createApp = (rootNode, dataManager) => {
   const appStore = AppStore.create({
     viewsStore: { views: views },
   });
 
-  appStore._api = api;
-  appStore._config = config;
-  appStore._mode = mode || process.env.NODE_ENV;
+  appStore._sdk = dataManager;
 
   window.DM = appStore;
 

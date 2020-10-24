@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import TasksStore from "./TasksStore";
+import { TasksStore } from "./TasksStore";
 import { ViewsStore } from "./ViewsStore";
 
 export default types
@@ -13,8 +13,12 @@ export default types
     }),
   })
   .views((self) => ({
+    get SDK() {
+      return self._sdk;
+    },
+
     get API() {
-      return self._api;
+      return self.SDK.api;
     },
   }))
   .actions((self) => ({

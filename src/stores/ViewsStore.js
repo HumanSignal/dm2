@@ -7,11 +7,7 @@ import {
 } from "mobx-state-tree";
 import fields, { labelingFields } from "../data/fields";
 import { guidGenerator } from "../utils/random";
-import {
-  BetweenNumberFilter,
-  NumberFilter,
-  StringFilter,
-} from "./FiltersStore";
+import { NumberFilter, RangeNumberFilter, StringFilter } from "./FiltersStore";
 
 export const Field = types
   .model("Fields", {
@@ -30,7 +26,7 @@ export const Field = types
         { eager: false },
         StringFilter,
         NumberFilter,
-        BetweenNumberFilter
+        RangeNumberFilter
       )
     ),
   })

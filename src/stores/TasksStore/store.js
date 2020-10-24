@@ -1,34 +1,7 @@
 import { flow, getRoot, types } from "mobx-state-tree";
+import { TaskModel } from "./model";
 
-const Dictionary = types.custom({
-  name: "Dictionary",
-  toSnapshot(value) {
-    return JSON.stringify(value);
-  },
-  fromSnapshot(value) {
-    try {
-      return JSON.parse(value);
-    } catch {
-      return value;
-    }
-  },
-  isTargetType(value) {
-    return typeof value === "object";
-  },
-});
-
-const TaskModel = types.model("TaskModel", {
-  id: types.identifierNumber,
-  data: types.optional(Dictionary, {}),
-  accuracy: types.maybeNull(types.integer),
-  is_labeled: types.optional(types.boolean, false),
-  created_at: types.optional(types.maybeNull(types.string), null),
-  updated_at: types.optional(types.maybeNull(types.string), null),
-  overlap: types.optional(types.maybeNull(types.integer), null),
-  project: types.optional(types.maybeNull(types.integer), null),
-});
-
-export default types
+export const TasksStore = types
   .model("TasksStore", {
     data: types.optional(types.array(TaskModel), []),
     task: types.maybeNull(types.safeReference(TaskModel)),
@@ -112,11 +85,16 @@ export default types
       self.task = val;
     };
 
+    const unsetTask = () => {
+      self.task = undefined;
+    };
+
     return {
       afterAttach,
       fetchTasks,
       setData,
       getDataFields,
       setTask,
+      unsetTask,
     };
   });

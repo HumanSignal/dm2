@@ -21,14 +21,16 @@ const CheckboxItem = ({ canToggle, enabled }) => {
 const menuItems = ({ title, group }) => {
   const menuItem = (f) => {
     return (
-      <Menu.Item
-        key={f.source + f.field}
-        icon={<CheckboxItem enabled={f.enabled} canToggle={f.canToggle} />}
-        onClick={f.toggle}
-        className={"fields-menu-item"}
-      >
-        {fields(f.field).title}
-      </Menu.Item>
+      f.canToggle && (
+        <Menu.Item
+          key={f.source + f.field}
+          icon={<CheckboxItem enabled={f.enabled} canToggle={f.canToggle} />}
+          onClick={f.toggle}
+          className={"fields-menu-item"}
+        >
+          {fields(f.field).title}
+        </Menu.Item>
+      )
     );
   };
 

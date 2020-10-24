@@ -8,7 +8,7 @@ import "./index.scss";
 const App = observer(({ app }) => {
   return (
     <Provider store={app}>
-      <Styles>{app.mode === "dm" ? <DmTabs /> : <DmLabel />}</Styles>
+      <Styles>{app.tasksStore.task ? <DmLabel /> : <DmTabs />}</Styles>
     </Provider>
   );
 });

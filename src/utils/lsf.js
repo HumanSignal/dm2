@@ -217,6 +217,7 @@ export default function (elid, config, task, cbs) {
       ls.taskHistoryCurrent = -1;
     }
   }
+
   function addHistory(ls, task_id, completion_id) {
     ls.taskHistoryIds.push({ task_id: task_id, completion_id: completion_id });
     ls.taskHistoryCurrent = ls.taskHistoryIds.length;

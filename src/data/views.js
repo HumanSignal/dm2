@@ -16,8 +16,18 @@ export default [
         canToggle: true,
         filterState: { stringValue: "" },
       },
-      { field: "annotations", source: "tasks", enabled: true, canToggle: true },
-      { field: "created", source: "tasks", enabled: true, canToggle: true },
+      {
+        field: "annotations",
+        source: "tasks",
+        enabled: true,
+        canToggle: true,
+      },
+      {
+        field: "created",
+        source: "tasks",
+        enabled: true,
+        canToggle: true,
+      },
 
       // annotations
       {
@@ -44,11 +54,21 @@ export default [
         enabled: true,
         canToggle: true,
       },
-      { field: "updated", source: "annotations", enabled: true },
-      { field: "author", source: "annotations", enabled: true },
-      { field: "regions", source: "annotations", enabled: true },
-
-      // add some file fields
+      {
+        field: "updated",
+        source: "annotations",
+        enabled: true,
+      },
+      {
+        field: "author",
+        source: "annotations",
+        enabled: true,
+      },
+      {
+        field: "regions",
+        source: "annotations",
+        enabled: true,
+      },
     ],
   },
 ];

@@ -1,5 +1,6 @@
 import { Pagination } from "antd";
 import { observer } from "mobx-react";
+import { getRoot } from "mobx-state-tree";
 import React from "react";
 import {
   useFilters,
@@ -238,7 +239,11 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
               return (
                 <tr
                   {...row.getRowProps()}
-                  onClick={() => console.log("Open LSF")}
+                  onClick={() => {
+                    const task = row.original;
+                    getRoot(item).tasksStore.setTask(task);
+                    console.log("Loading task");
+                  }}
                 >
                   {row.cells.map((cell) => {
                     return (

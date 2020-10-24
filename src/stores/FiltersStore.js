@@ -31,8 +31,8 @@ const NumberFilter = types
     },
   }));
 
-const BetweenNumberFilter = types
-  .model("BetweenNumberFilter", {
+const RangeNumberFilter = types
+  .model("RangeNumberFilter", {
     startNum: types.number,
     endNum: types.number,
   })
@@ -49,4 +49,4 @@ const BetweenNumberFilter = types
     },
   }));
 
-export { StringFilter, NumberFilter, BetweenNumberFilter };
+export { StringFilter, NumberFilter, RangeNumberFilter };
