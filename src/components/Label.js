@@ -4,7 +4,7 @@ import { Button } from "antd";
 import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
 import React from "react";
-import Table from "./Table/Table";
+import { Table } from "./Table/Table";
 
 const DmLabel = inject("store")(
   observer(({ store }) => {

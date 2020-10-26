@@ -52,7 +52,7 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 );
 
-const Table = observer(({ columns, data, item, onSelectRow }) => {
+export const Table = observer(({ columns, data, item, onSelectRow }) => {
   const filterTypes = React.useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -72,6 +72,15 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
     }),
     []
   );
+
+  // const initialFilters = columns
+  //   .filter((c) => c._filterState)
+  //   .map((c) => ({
+  //     id: c.id ?? c.accessor,
+  //     value: c._filterState.value,
+  //   }));
+
+  // console.log({initialFilters});
 
   // Use the state and functions returned from useTable to build your UI
   const {
@@ -98,12 +107,7 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
       initialState: {
         pageSize: 20,
         hiddenColumns: item.root.mode === "dm" ? [] : item.dataFields,
-        filters: columns
-          .filter((c) => c._filterState)
-          .map((c) => ({
-            id: c.id || c.accessor,
-            value: c._filterState.value,
-          })),
+        // filters: initialFilters,
         sortBy: [{ id: "id", desc: false }],
       },
     },
@@ -242,7 +246,6 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
                   onClick={() => {
                     const task = row.original;
                     getRoot(item).tasksStore.setTask(task);
-                    console.log("Loading task");
                   }}
                 >
                   {row.cells.map((cell) => {
@@ -258,8 +261,8 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
           </tbody>
         </table>
         <Pagination
+          total={data.length}
           current={pageIndex}
-          total={pageCount * pageSize}
           pageSize={pageSize}
           onChange={(page, size) => {
             gotoPage(page);
@@ -278,5 +281,3 @@ const Table = observer(({ columns, data, item, onSelectRow }) => {
       : gridView()
     : listView();
 });
-
-export default Table;

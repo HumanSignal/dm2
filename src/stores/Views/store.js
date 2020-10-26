@@ -18,21 +18,30 @@ export const ViewsStore = types
   }))
   .actions((self) => ({
     setSelected(view) {
+      console.log(view);
       self.selected = view;
     },
 
     deleteView(view) {
-      let needsNewSelected = false;
-      if (self.selected === view) needsNewSelected = true;
+      if (self.selected === view) {
+        console.log("Deleting currently active view");
+        const index = self.views.indexOf(view);
+        console.log("New selected view", index);
+        const newView =
+          index === 0 ? self.views[index + 1] : self.views[index - 1];
+        console.log(newView === view);
+        self.setSelected(newView.key);
+        console.log(self.selected);
+      }
 
       destroy(view);
-
-      if (needsNewSelected) self.setSelected(self.views[0]);
     },
 
     addView() {
       const dupView = getSnapshot(self.views[0]);
+
       const newView = View.create({
+        title: `${dupView.title} ${self.views.length}`,
         fields: dupView.fields,
       });
 

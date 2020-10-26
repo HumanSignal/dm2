@@ -1,7 +1,8 @@
 export const initDevApp = async (DataManager) => {
   console.log("Running in development");
 
-  const data = Object.values(await import("./data/tasks.json"));
+  const task = await import("./data/image_bbox");
+  const data = task.tasks;
 
   const datamanager = new DataManager({
     root: document.getElementById("app"),
@@ -38,7 +39,7 @@ export const initDevApp = async (DataManager) => {
       },
     },
     labelStudio: {
-      config: (await import("./data/config")).default,
+      config: task.config,
       user: {
         pk: 1,
         firstName: "James",

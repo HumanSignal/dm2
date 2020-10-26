@@ -1,0 +1,20 @@
+[
+  {
+    "data": {
+      "image": "http://localhost:8081/static/samples/sample.jpg"
+    },
+    "id": 1
+  },
+  {
+    "data": {
+      "image": "http://localhost:8081/static/samples/sample.jpg"
+    },
+    "id": 2
+  },
+  {
+    "data": {
+      "image": "http://localhost:8081/static/samples/sample.jpg"
+    },
+    "id": 3
+  }
+]

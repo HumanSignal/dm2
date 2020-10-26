@@ -1,8 +1,8 @@
-import React from "react";
 import { CloseCircleOutlined } from "@ant-design/icons";
-import { Button, Slider, Input, Select } from "antd";
+import { Button, Input, Select, Slider } from "antd";
 // A great library for fuzzy filtering/sorting items
 import matchSorter from "match-sorter";
+import React from "react";
 
 const { Option } = Select;
 
@@ -111,6 +111,8 @@ function SliderColumnFilter({
     return [min, max];
   }, [id, preFilteredRows]);
 
+  console.log({ min, max });
+
   return (
     <div style={{ display: "flex", width: "100%" }}>
       <Slider
@@ -217,7 +219,6 @@ function filterGreaterThan(rows, id, filterValue) {
 filterGreaterThan.autoRemove = (val) => typeof val !== "number";
 
 export {
-  // GlobalFilter,
   DefaultColumnFilter,
   SelectColumnFilter,
   SliderColumnFilter,

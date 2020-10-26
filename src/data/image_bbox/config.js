@@ -1,0 +1,15 @@
+export default `
+<View>
+
+  <Header value="Select label and start to click on image"/>
+  <Image name="image" value="$image"/>
+
+  <PolygonLabels name="label" toName="image"
+                 strokeWidth="3" pointSize="small"
+                 opacity="0.9">
+    <Label value="Airplane" background="red"/>
+    <Label value="Car" background="blue"/>
+  </PolygonLabels>
+
+</View>
+`;

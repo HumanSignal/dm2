@@ -106,7 +106,10 @@ export class APIProxy {
 
         if (rawResponse.ok) {
           const responseData = await rawResponse.json();
-          return methodSettings.convert?.(responseData) ?? responseData;
+          const converted =
+            methodSettings.convert?.(responseData) ?? responseData;
+          console.log({ converted });
+          return converted;
         } else {
           return this.generateError(rawResponse);
         }
