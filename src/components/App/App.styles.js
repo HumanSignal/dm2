@@ -1,7 +1,9 @@
 import styled from "styled-components";
 
 const Styles = styled.div`
+  height: 100%;
   padding: 1rem;
+  box-sizing: border-box;
 
   .grid {
     display: flex;

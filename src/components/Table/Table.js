@@ -1,14 +1,7 @@
-import { Pagination } from "antd";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
-import {
-  useFilters,
-  usePagination,
-  useRowSelect,
-  useSortBy,
-  useTable,
-} from "react-table";
+import { useFilters, useRowSelect, useSortBy, useTable } from "react-table";
 import { fuzzyTextFilterFn } from "../Filters";
 
 const COLUMN_WIDTHS = new Map([
@@ -53,6 +46,9 @@ const IndeterminateCheckbox = React.forwardRef(
 );
 
 export const Table = observer(({ columns, data, item, onSelectRow }) => {
+  const tasks = getRoot(item).tasksStore;
+  const { totalTasks, pageSize, loading } = tasks;
+  let currentScroll = 0;
   const filterTypes = React.useMemo(
     () => ({
       // Add a new fuzzyTextFilterFn filter type.
@@ -73,6 +69,22 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
     []
   );
 
+  const loadNextPage = (e) => {
+    if (loading) return;
+
+    const { scrollTop, scrollHeight, clientHeight } = e.target;
+
+    if (scrollTop > currentScroll) {
+      const endReached = scrollHeight - clientHeight - scrollTop < 100;
+
+      if (endReached) {
+        tasks.fetchTasks();
+      }
+    }
+
+    currentScroll = scrollTop;
+  };
+
   // const initialFilters = columns
   //   .filter((c) => c._filterState)
   //   .map((c) => ({
@@ -87,7 +99,7 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    page,
+    rows,
     prepareRow,
     state,
     visibleColumns,
@@ -95,17 +107,11 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
     preGlobalFilteredRows,
     setGlobalFilter,
     state: { selectedRowIds },
-
-    gotoPage,
-    setPageSize,
-    pageCount,
-    state: { pageIndex, pageSize },
   } = useTable(
     {
       columns,
       data,
       initialState: {
-        pageSize: 20,
         hiddenColumns: item.root.mode === "dm" ? [] : item.dataFields,
         // filters: initialFilters,
         sortBy: [{ id: "id", desc: false }],
@@ -115,7 +121,6 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
     // maybe?
     // useGlobalFilter, // useGlobalFilter!
     useSortBy,
-    usePagination,
     useRowSelect,
     (hooks) => {
       hooks.visibleColumns.push((columns) => {
@@ -125,31 +130,23 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
             id: "selection",
             // The header can use the table's getToggleAllRowsSelectedProps method
             // to render a checkbox
-            Header: ({ getToggleAllRowsSelectedProps }) => (
-              <div>
-                {item.root.mode === "dm" ? (
-                  <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-                ) : null}
-              </div>
-            ),
+            Header: ({ getToggleAllRowsSelectedProps }) =>
+              item.root.mode === "dm" ? (
+                <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+              ) : null,
             // The cell can use the individual row's getToggleRowSelectedProps method
             // to the render a checkbox
-            Cell: ({ row, value }) => (
-              <div>
-                {item.root.mode === "dm" ? (
-                  <>
-                    <IndeterminateCheckbox
-                      {...row.getToggleRowSelectedProps()}
-                    />{" "}
-                  </>
-                ) : (
-                  <span
-                    style={{ cursor: "pointer" }}
-                    onClick={() => onSelectRow && onSelectRow(row.original)}
-                  ></span>
-                )}
-              </div>
-            ),
+            Cell: ({ row, value }) =>
+              item.root.mode === "dm" ? (
+                <>
+                  <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />{" "}
+                </>
+              ) : (
+                <span
+                  style={{ cursor: "pointer" }}
+                  onClick={() => onSelectRow && onSelectRow(row.original)}
+                ></span>
+              ),
           },
           ...columns,
         ];
@@ -181,7 +178,7 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
         ) : null}
 
         <div className="grid">
-          {page.map((row, i) => {
+          {rows.map((row, i) => {
             prepareRow(row);
             return (
               <div {...row.getRowProps()}>
@@ -234,50 +231,52 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
             {/*                   globalFilter={state.globalFilter} */}
             {/*                   setGlobalFilter={setGlobalFilter} */}
             {/* /> */}
-            {/* </th> */}
-            {/*     </tr> */}
+            {/*   </th> */}
+            {/* </tr> */}
           </thead>
-          <tbody {...getTableBodyProps()}>
-            {page.map((row, i) => {
-              prepareRow(row);
-              return (
-                <tr
-                  {...row.getRowProps()}
-                  onClick={() => {
-                    const task = row.original;
-                    getRoot(item).tasksStore.setTask(task);
-                  }}
-                >
-                  {row.cells.map((cell) => {
-                    return (
-                      <td {...cell.getCellProps(getPropsForColumnCell(cell))}>
-                        {cell.render("Cell")}
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
         </table>
-        <Pagination
-          total={data.length}
-          current={pageIndex}
-          pageSize={pageSize}
-          onChange={(page, size) => {
-            gotoPage(page);
-            setPageSize(size);
-          }}
-        />
-        <p>Selected Completions: {Object.keys(selectedRowIds).length}</p>
+        <div style={{ flex: 1, overflow: "auto" }} onScroll={loadNextPage}>
+          <table style={{ width: "100%" }}>
+            <tbody {...getTableBodyProps()}>
+              {rows.map((row, i) => {
+                prepareRow(row);
+                return (
+                  <tr
+                    {...row.getRowProps()}
+                    onClick={() => {
+                      const task = row.original;
+                      getRoot(item).tasksStore.setTask(task);
+                    }}
+                  >
+                    {row.cells.map((cell) => {
+                      return (
+                        <td {...cell.getCellProps(getPropsForColumnCell(cell))}>
+                          {cell.render("Cell")}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </>
     );
   };
 
   // Render the UI for your table
-  return item.root.mode === "dm"
-    ? item.type === "list"
-      ? listView()
-      : gridView()
-    : listView();
+  return item.root.mode === "dm" ? (
+    <>
+      {item.type === "list" ? listView() : gridView()}
+
+      <div style={{ display: "flex", alignItems: "center", paddingTop: 10 }}>
+        <div>
+          Selected {Object.keys(selectedRowIds).length} of {totalTasks} tasks
+        </div>
+      </div>
+    </>
+  ) : (
+    listView()
+  );
 });

@@ -14,7 +14,12 @@ export const initDevApp = async (DataManager) => {
           mock(url, request) {
             const { page, page_size } = request.data;
             const offset = (page - 1) * page_size;
-            return data.slice(offset, page_size);
+
+            console.log({ offset, page_size });
+            return {
+              tasks: data.slice(offset, offset + page_size),
+              total: data.length,
+            };
           },
         },
         task: {

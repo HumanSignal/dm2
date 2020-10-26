@@ -6,17 +6,10 @@ import { TablePanel } from "./tabs-panel";
 export const TabContent = observer(({ item, data }) => {
   const columns = item.fieldsAsColumns;
 
-  const [skipPageReset, setSkipPageReset] = React.useState(false);
-
   return (
-    <div>
+    <>
       <TablePanel item={item} />
-      <Table
-        columns={columns}
-        data={data}
-        item={item}
-        skipPageReset={skipPageReset}
-      />
-    </div>
+      <Table item={item} columns={columns} data={Array.from(data)} />
+    </>
   );
 });

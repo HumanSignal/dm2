@@ -7,6 +7,8 @@ export const TasksStore = types
     task: types.maybeNull(types.safeReference(TaskModel)),
     page: types.optional(types.integer, 1),
     pageSize: types.optional(types.integer, 20),
+    totalTasks: types.optional(types.integer, 0),
+    loading: types.optional(types.boolean, false),
   })
   .views((self) => ({
     buildLSFCallbacks() {
@@ -59,21 +61,33 @@ export const TasksStore = types
     };
 
     const fetchTasks = flow(function* () {
-      self.setData(
-        yield getRoot(self).API.tasks({
-          data: {
-            page: self.page,
-            page_size: self.pageSize,
-          },
-        })
-      );
+      self.loading = true;
 
-      self.page += 1;
+      const data = yield getRoot(self).API.tasks({
+        data: {
+          page: self.page,
+          page_size: self.pageSize,
+        },
+      });
+
+      console.log({ fetched: data });
+
+      const loaded = self.setData(data);
+
+      if (loaded) self.page += 1;
+
+      self.loading = false;
       getRoot(self).viewsStore.selected.afterAttach();
     });
 
-    const setData = (val) => {
-      self.data.push(...(val ?? []));
+    const setData = ({ tasks, total }) => {
+      if (tasks.length > 0) {
+        self.totalTasks = total;
+        self.data.push(...(tasks ?? []));
+        console.log({ data: self.data });
+        return true;
+      }
+      return false;
     };
 
     const getDataFields = () => {
