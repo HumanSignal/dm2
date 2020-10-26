@@ -60,6 +60,29 @@ export const TasksStore = types
       self.fetchTasks();
     };
 
+    const loadTask = flow(function* (id) {
+      let remoteTask;
+      const api = getRoot(self).API;
+
+      if (id) {
+        remoteTask = yield api.task({ data: { id: id } });
+      } else {
+        remoteTask = yield api.next();
+        id = remoteTask.id;
+      }
+
+      let task = self.data.find((t) => t.id === id);
+
+      if (task) {
+        task.update(remoteTask);
+      } else {
+        task = TaskModel.create(remoteTask);
+        self.data.push(task);
+      }
+
+      return task;
+    });
+
     const fetchTasks = flow(function* () {
       self.loading = true;
 
@@ -106,6 +129,7 @@ export const TasksStore = types
     return {
       afterAttach,
       fetchTasks,
+      loadTask,
       setData,
       getDataFields,
       setTask,

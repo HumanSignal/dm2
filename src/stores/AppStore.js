@@ -1,5 +1,6 @@
-import { types } from "mobx-state-tree";
+import { flow, types } from "mobx-state-tree";
 import { TasksStore } from "./Tasks";
+import { CustomJSON } from "./types";
 import { ViewsStore } from "./Views";
 
 export default types
@@ -11,6 +12,8 @@ export default types
     viewsStore: types.optional(ViewsStore, {
       views: [],
     }),
+
+    project: types.optional(CustomJSON, {}),
   })
   .views((self) => ({
     get SDK() {
@@ -25,4 +28,8 @@ export default types
     setMode(mode) {
       self.mode = mode;
     },
+
+    fetchProject: flow(function* () {
+      self.project = yield self.API.project();
+    }),
   }));

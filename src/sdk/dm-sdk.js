@@ -112,13 +112,14 @@ export class DataManager {
    * @param {HTMLElement} element Root element LSF will be rendered into
    * @param {import("../stores/Tasks").TaskModel} task
    */
-  startLabeling(element, task) {
+  startLabeling(element, task, config) {
     console.log({ element, task });
 
     if (!this.lsf) {
       this.lsf = new LSFWrapper(this, element, {
         ...this.labelStudioOptions,
         task,
+        config,
       });
       this.lsf.setCompletion();
 

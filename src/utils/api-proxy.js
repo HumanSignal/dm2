@@ -108,7 +108,6 @@ export class APIProxy {
           const responseData = await rawResponse.json();
           const converted =
             methodSettings.convert?.(responseData) ?? responseData;
-          console.log({ converted });
           return converted;
         } else {
           return this.generateError(rawResponse);
@@ -127,15 +126,17 @@ export class APIProxy {
    */
   getSettings(settings) {
     if (typeof settings === "string") {
-      return {
+      settings = {
         path: settings,
-        method: "get",
-        mock: undefined,
-        convert: undefined,
       };
     }
 
-    return settings;
+    return {
+      method: "GET",
+      mock: undefined,
+      convert: undefined,
+      ...settings,
+    };
   }
 
   /**
@@ -146,17 +147,23 @@ export class APIProxy {
    */
   createUrl(path, data = {}) {
     const url = new URL(this.gateway);
+    const usedKeys = [];
+
     const processedPath = path.replace(/:([^/]+)/g, (...res) => {
       const key = res[1];
+      usedKeys.push(key);
       return data[key] ?? `[can't find key \`${key}\` in data]`;
     });
 
     url.pathname += processedPath;
+    console.log({ usedKeys });
 
     if (data && typeof data === "object") {
       Object.entries(data).forEach(([key, value]) => {
-        url.searchParams.set(key, value);
-        console.log(`Set ${key}:${value}`);
+        if (!usedKeys.includes(key)) {
+          url.searchParams.set(key, value);
+          console.log(`Set ${key}:${value}`);
+        }
       });
     }
 
@@ -206,7 +213,7 @@ export class APIProxy {
    * @param {EndpointConfig} settings
    */
   mockRequest(url, request, settings) {
-    console.log(`Mock ${url}`);
+    console.log(`Mock [${settings.method.toUpperCase()}: ${url}]`);
     const response = settings.mock(url, request);
     return Promise.resolve({
       ok: true,

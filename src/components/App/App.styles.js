@@ -3,6 +3,7 @@ import styled from "styled-components";
 const Styles = styled.div`
   height: 100%;
   padding: 1rem;
+  min-height: 500px;
   box-sizing: border-box;
 
   .grid {

@@ -1,4 +1,4 @@
-import { flow, getRoot, types } from "mobx-state-tree";
+import { types } from "mobx-state-tree";
 import { CustomJSON } from "../types";
 
 export const TaskModel = types
@@ -17,16 +17,8 @@ export const TaskModel = types
     predictions: types.optional(types.array(CustomJSON), []),
   })
   .actions((self) => ({
-    updateFromServer: flow(function* () {
-      const remoteTask = yield getRoot(self).API.task({
-        data: { id: self.id },
-      });
-      console.log({ remoteTask });
-
-      for (let key in remoteTask) {
-        self[key] = remoteTask[key];
-      }
-
+    update(newData) {
+      for (let key in newData) self[key] = newData[key];
       return self;
-    }),
+    },
   }));

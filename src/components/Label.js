@@ -15,7 +15,11 @@ const DmLabel = inject("store")(
 
     const runLS = () => {
       if (store.tasksStore.task) {
-        store.SDK.startLabeling(lsfRef.current, store.tasksStore.task);
+        store.SDK.startLabeling(
+          lsfRef.current,
+          store.tasksStore.task,
+          store.project.label_config_line
+        );
       }
     };
 
@@ -27,10 +31,10 @@ const DmLabel = inject("store")(
     React.useEffect(runLS, [store.tasksStore.task]);
 
     return (
-      <div>
+      <>
         <Button onClick={closeLabeling}>Back to Table</Button>
 
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex", alignItems: "stretch" }}>
           <div style={{ flex: "200px 0 0", marginRight: "1em" }}>
             <Table
               columns={columns}
@@ -39,11 +43,11 @@ const DmLabel = inject("store")(
               onSelectRow={() => {}}
             />
           </div>
-          <div key="lsf-root" style={{ width: "100%" }}>
+          <div key="lsf-root" style={{ width: "100%", overflow: "auto" }}>
             <div id="label-studio" ref={lsfRef}></div>
           </div>
         </div>
-      </div>
+      </>
     );
   })
 );

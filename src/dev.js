@@ -29,6 +29,15 @@ export const initDevApp = async (DataManager) => {
             return data.find((t) => t.id === id);
           },
         },
+        next: {
+          path: "/next",
+          method: "get",
+          mock() {
+            const [min, max] = [0, data.length - 1];
+            const index = Math.floor(Math.random() * (max - min + 1)) + min;
+            return data[index];
+          },
+        },
         completions: {
           path: "/tasks/:id/completions",
           method: "post",
@@ -37,14 +46,28 @@ export const initDevApp = async (DataManager) => {
             return data.find((t) => t.id === id)?.completions;
           },
         },
+        submitCompletion: {
+          path: "/tasks/:id/completions",
+          method: "post",
+          mock(url, request) {
+            console.log(request.body);
+          },
+        },
+        project: {
+          path: "/project",
+          mock() {
+            return {
+              label_config_line: task.config,
+              tasks_count: data.length,
+            };
+          },
+        },
         cancel: "/cancel",
         projects: "/projects",
-        next: "/next",
         expertInstructions: "/expert_instruction",
       },
     },
     labelStudio: {
-      config: task.config,
       user: {
         pk: 1,
         firstName: "James",

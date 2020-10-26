@@ -6,6 +6,8 @@
  * }} LSFOptions */
 
 import { LabelStudio } from "label-studio";
+import { getRoot } from "mobx-state-tree";
+import { completionToServer, convertToLSF } from "./lsf-utils";
 
 export class LSFWrapper {
   /** @type {HTMLElement} */
@@ -13,6 +15,8 @@ export class LSFWrapper {
 
   /** @type {import("./dm-sdk").DataManager} */
   datamanager = null;
+
+  task = null;
 
   /**
    *
@@ -23,10 +27,11 @@ export class LSFWrapper {
 
     this.datamanager = dm;
     this.root = element;
+    this.task = options.task;
 
     const lsfSettings = {
       user: options.user,
-      task: this.convertTask(options.task),
+      task: convertToLSF(this.task),
       config: options.config,
       interfaces: this.buildInterfaces(options.interfaces),
     };
@@ -44,42 +49,16 @@ export class LSFWrapper {
     });
   }
 
-  reset() {
-    this.lsf.resetState();
-  }
-
-  setTask(task) {
-    this.lsf.assignTask(task);
-    this.lsf.initializeStore(task);
-  }
-
-  setCompletion(id) {
-    let { completionStore } = this.lsf;
-    let completion;
-
-    if (completionStore.predictions.length > 0) {
-      completion = this.lsf.completionStore.addCompletionFromPrediction(
-        completionStore.predictions[0]
-      );
-    } else if (this.lsf.completionStore.completions.length > 0 && id) {
-      // we are on history item, take completion id from history
-      completion = { id };
-    } else {
-      completion = this.lsf.completionStore.addCompletion({
-        userGenerate: true,
-      });
-    }
-
-    if (completion.id) completionStore.selectCompletion(completion.id);
-  }
-
   async loadTask(task, completionID) {
     if (!this.lsf)
       return console.error("Make sure that LSF was properly initialized");
 
     this.lsf.setFlags({ isLoading: true });
+    this.task = task;
 
-    const updatedTask = this.convertTask(await task.updateFromServer());
+    const tasks = getRoot(task).tasksStore;
+    const updatedTask = convertToLSF(await tasks.loadTask(completionID));
+
     console.log({ updatedTask });
 
     /**
@@ -91,6 +70,35 @@ export class LSFWrapper {
 
     this.lsf.setFlags({ isLoading: false });
     // this.lsf.onTaskLoad(this.lsf, this.lsf.task);
+  }
+
+  reset() {
+    this.lsf.resetState();
+  }
+
+  setTask(task) {
+    this.lsf.assignTask(task);
+    this.lsf.initializeStore(task);
+  }
+
+  setCompletion(id) {
+    let {
+      completionStore,
+      completionStore: { completions, predictions },
+    } = this.lsf;
+
+    let completion;
+
+    if (predictions.length > 0) {
+      completion = completionStore.addCompletionFromPrediction(predictions[0]);
+    } else if (completions.length > 0 && id) {
+      // we are on history item, take completion id from history
+      completion = { id };
+    } else {
+      completion = completionStore.addCompletion({ userGenerate: true });
+    }
+
+    if (completion.id) completionStore.selectCompletion(completion.id);
   }
 
   /** @private */
@@ -113,40 +121,40 @@ export class LSFWrapper {
         ];
   }
 
-  /**
-   * Converts the task from the server format to the format supported by the LS frontend
-   * @param {import("../stores/Tasks").TaskModel} task
-   * @private
-   * @returns {Dict|undefined}
-   */
-  convertTask(task) {
-    if (!task) return;
+  onSubmitCompletion = async (ls, completion) => {
+    this.lsf.setFlags({ isLoading: true });
 
+    const result = await this.datamanager.api.submitCompletion({
+      data: { id: this.task.id },
+      body: this.prepareData(completion),
+    });
+
+    if (result && result.id) {
+      completion.updatePersonalKey(result.id.toString());
+      this.datamanager.invoke(
+        "submitCompletion",
+        ls,
+        completionToServer(completion),
+        result
+      );
+      this.addHistory(ls, ls.task.id, result.id);
+    }
+
+    if (!this.task) await this.loadTask(ls);
+
+    ls.setFlags({ isLoading: false });
+  };
+
+  prepareData(completion, includeId) {
     const result = {
-      completion: [],
-      predictions: [],
-      ...task,
-      createdAt: task.createdAt,
-      isLabeled: task.is_labeled,
+      lead_time: (new Date() - completion.loadedDate) / 1000, // task execution time
+      result: completion.serializeCompletion(),
     };
 
-    if (task.completions) {
-      result.completions = task.completions.map((completion) => ({
-        ...completion,
-        createdAgo: completion.created_ago,
-        createdBy: completion.created_username,
-        leadTime: completion.lead_time,
-      }));
+    if (includeId) {
+      result.id = parseInt(completion.id);
     }
 
-    if (task.predictions) {
-      result.predictions = task.predictions.map((prediction) => ({
-        ...prediction,
-        createdAgo: prediction.created_ago,
-        createdBy: prediction.created_by,
-      }));
-    }
-
-    return result;
+    return JSON.stringify(result);
   }
 }

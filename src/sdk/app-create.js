@@ -19,6 +19,7 @@ export const createApp = (rootNode, dataManager) => {
   });
 
   appStore._sdk = dataManager;
+  appStore.fetchProject();
 
   window.DM = appStore;
 
