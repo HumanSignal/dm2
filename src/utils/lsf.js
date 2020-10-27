@@ -315,6 +315,7 @@ export default function (elid, config, task, cbs) {
       const req = Requests.remover(
         `${API_URL.MAIN}${API_URL.TASKS}/${ls.task.id}${API_URL.COMPLETIONS}/${c.pk}/`
       );
+
       req.then(function (httpres) {
         cbCall("onDeleteCompletion", ls, c);
         ls.setFlags({ isLoading: false });

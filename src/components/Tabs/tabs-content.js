@@ -3,7 +3,10 @@ import React from "react";
 import { Table } from "../Table/Table";
 import { TablePanel } from "./tabs-panel";
 
-export const TabContent = observer(({ item, data }) => {
+/**
+ * @param {{data: any[]}} param1
+ */
+const TabContentComponent = ({ item, data }) => {
   const columns = item.fieldsAsColumns;
 
   return (
@@ -12,4 +15,6 @@ export const TabContent = observer(({ item, data }) => {
       <Table item={item} columns={columns} data={Array.from(data)} />
     </>
   );
-});
+};
+
+export const TabContent = observer(TabContentComponent);

@@ -82,27 +82,45 @@ export class APIProxy {
    * @private
    */
   createApiCallExecutor(settings) {
-    return async (params) => {
+    return async (urlParams, { headers, body } = {}) => {
       try {
         const methodSettings = this.getSettings(settings);
         const requestMethod = (methodSettings.method ?? "get").toUpperCase();
-        const apiCallURL = this.createUrl(
-          methodSettings.path,
-          params?.data ?? {}
-        );
+        const apiCallURL = this.createUrl(methodSettings.path, urlParams ?? {});
 
         const request = new Request(apiCallURL, {
           method: requestMethod,
-          headers: Object.assign({}, methodSettings.headers ?? {}),
+          headers: Object.assign(
+            {},
+            methodSettings.headers ?? {},
+            headers ?? {}
+          ),
         });
 
         if (requestMethod !== "GET") {
-          request.body = this.createRequestBody(params.body);
+          const contentType = request.headers["ContentType"];
+
+          if (contentType === "multipart/form-data") {
+            request.body = this.createRequestBody(body);
+          } else if (contentType === "application/json") {
+            request.body = JSON.stringify(body);
+          } else {
+            request.body = body;
+          }
         }
 
-        const rawResponse = await (methodSettings.mock
-          ? this.mockRequest(apiCallURL, params, methodSettings)
-          : fetch(request));
+        let rawResponse;
+
+        if (methodSettings.mock && process.env.NODE_ENV === "development") {
+          rawResponse = await this.mockRequest(
+            apiCallURL,
+            urlParams,
+            request,
+            methodSettings
+          );
+        } else {
+          rawResponse = await fetch(request);
+        }
 
         if (rawResponse.ok) {
           const responseData = await rawResponse.json();
@@ -156,7 +174,6 @@ export class APIProxy {
     });
 
     url.pathname += processedPath;
-    console.log({ usedKeys });
 
     if (data && typeof data === "object") {
       Object.entries(data).forEach(([key, value]) => {
@@ -166,8 +183,6 @@ export class APIProxy {
         }
       });
     }
-
-    console.log({ url, path, processedPath, data });
 
     return url.toString();
   }
@@ -207,19 +222,36 @@ export class APIProxy {
   }
 
   /**
-   *
+   * Emulate server call
    * @param {string} url
-   * @param {Request} request
+   * @param {Request} params
    * @param {EndpointConfig} settings
    */
-  mockRequest(url, request, settings) {
-    console.log(`Mock [${settings.method.toUpperCase()}: ${url}]`);
-    const response = settings.mock(url, request);
-    return Promise.resolve({
-      ok: true,
-      json() {
-        return Promise.resolve(response);
-      },
+  mockRequest(url, params, request, settings) {
+    return new Promise((resolve) => {
+      let response = null;
+      let ok = true;
+
+      const groupName = `Mock [${settings.method.toUpperCase()}: ${url}]`;
+      console.groupCollapsed(groupName);
+
+      try {
+        response = settings.mock(url, params ?? {}, request);
+      } catch {
+        ok = false;
+      }
+      console.log("Response:", response);
+
+      console.groupEnd(groupName);
+
+      setTimeout(() => {
+        resolve({
+          ok,
+          json() {
+            return Promise.resolve(response);
+          },
+        });
+      }, 200);
     });
   }
 }

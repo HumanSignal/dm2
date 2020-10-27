@@ -11,13 +11,24 @@ export const TaskModel = types
     updated_at: types.optional(types.maybeNull(types.string), null),
     overlap: types.optional(types.maybeNull(types.integer), null),
     project: types.optional(types.maybeNull(types.integer), null),
+    source: types.string,
 
     /* TODO: might have need to be converted to a store at some point */
     completions: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
   })
+  .views((self) => ({
+    get lastCompletion() {
+      return self.completions[self.completions.length - 1];
+    },
+
+    get lastPrediction() {
+      return self.predictions[self.predictions.length - 1];
+    },
+  }))
   .actions((self) => ({
     update(newData) {
+      console.log({ newData });
       for (let key in newData) self[key] = newData[key];
       return self;
     },

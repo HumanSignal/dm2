@@ -1,25 +1,48 @@
+/** @typedef {import("../stores/Tasks").TaskModel} Task */
+/** @typedef {import("label-studio").LabelStudio} LabelStudio */
+/** @typedef {import("./dm-sdk").DataManager} DataManager */
 /** @typedef {{
  * user: Dict
  * config: string,
  * interfaces: string[],
- * task: Dict
+ * task: Task
  * }} LSFOptions */
 
 import { LabelStudio } from "label-studio";
-import { getRoot } from "mobx-state-tree";
-import { completionToServer, convertToLSF } from "./lsf-utils";
+import { completionToServer, taskToLSFormat } from "./lsf-utils";
+
+const DEFAULT_INTERFACES = [
+  "basic",
+  "panel", // undo, redo, reset panel
+  "controls", // all control buttons: skip, submit, update
+  "submit", // submit button on controls
+  "update", // update button on controls
+  "predictions",
+  "predictions:menu", // right menu with prediction items
+  "completions:menu", // right menu with completion items
+  "completions:add-new",
+  "completions:delete",
+  "side-column", // entity
+  "skip",
+];
 
 export class LSFWrapper {
   /** @type {HTMLElement} */
   root = null;
 
-  /** @type {import("./dm-sdk").DataManager} */
+  /** @type {DataManager} */
   datamanager = null;
 
+  /** @type {Task} */
   task = null;
+
+  /** @type {LabelStudio} */
+  lsf = null;
 
   /**
    *
+   * @param {DataManager} dm
+   * @param {HTMLElement} element
    * @param {LSFOptions} options
    */
   constructor(dm, element, options) {
@@ -31,12 +54,11 @@ export class LSFWrapper {
 
     const lsfSettings = {
       user: options.user,
-      task: convertToLSF(this.task),
-      config: options.config,
+      task: taskToLSFormat(this.task),
+      config: this.projectConfig,
       interfaces: this.buildInterfaces(options.interfaces),
     };
 
-    console.log({ lsfSettings, options });
     this.lsf = new LabelStudio(this.root, {
       ...lsfSettings,
       onSubmitCompletion: this.onSubmitCompletion,
@@ -49,85 +71,85 @@ export class LSFWrapper {
     });
   }
 
-  async loadTask(task, completionID) {
+  /** @private */
+  async loadTask(taskID, completionID) {
     if (!this.lsf)
       return console.error("Make sure that LSF was properly initialized");
 
-    this.lsf.setFlags({ isLoading: true });
-    this.task = task;
+    if (!taskID) console.info("Load next task");
 
-    const tasks = getRoot(task).tasksStore;
-    const updatedTask = convertToLSF(await tasks.loadTask(completionID));
+    this.setLoading(true);
+    const tasks = this.datamanager.store.tasksStore;
+    const newTask = await tasks.loadTask(taskID);
 
-    console.log({ updatedTask });
+    this.task = newTask;
 
     /**
      * Add new data from received task
      */
     this.reset();
-    this.setTask(updatedTask);
+    this.setTask(newTask);
     this.setCompletion(completionID);
 
-    this.lsf.setFlags({ isLoading: false });
+    this.setLoading(false);
     // this.lsf.onTaskLoad(this.lsf, this.lsf.task);
   }
 
+  /** @private */
   reset() {
     this.lsf.resetState();
   }
 
+  /** @private */
   setTask(task) {
+    console.log("The store is being re-initiailized", { task });
     this.lsf.assignTask(task);
-    this.lsf.initializeStore(task);
+    this.lsf.initializeStore(taskToLSFormat(task));
   }
 
+  /** @private */
   setCompletion(id) {
-    let {
-      completionStore,
-      completionStore: { completions, predictions },
-    } = this.lsf;
-
+    let { completionStore: cs } = this.lsf;
     let completion;
 
-    if (predictions.length > 0) {
-      completion = completionStore.addCompletionFromPrediction(predictions[0]);
-    } else if (completions.length > 0 && id) {
+    console.log({
+      id,
+      completions: this.completions,
+      l: this.completions.length,
+    });
+
+    if (this.predictions.length > 0) {
+      console.log("Added from prediction");
+      completion = cs.addCompletionFromPrediction(this.predictions[0]);
+    } else if (this.completions.length > 0 && id !== undefined) {
+      console.log("Existing ID taken");
       // we are on history item, take completion id from history
       completion = { id };
     } else {
-      completion = completionStore.addCompletion({ userGenerate: true });
+      console.log("Completion generated");
+      completion = cs.addCompletion({ userGenerate: true });
     }
 
-    if (completion.id) completionStore.selectCompletion(completion.id);
+    if (completion.id) cs.selectCompletion(completion.id);
   }
 
   /** @private */
   buildInterfaces(interfaces) {
-    return interfaces
-      ? interfaces
-      : [
-          "basic",
-          "panel", // undo, redo, reset panel
-          "controls", // all control buttons: skip, submit, update
-          "submit", // submit button on controls
-          "update", // update button on controls
-          "predictions",
-          "predictions:menu", // right menu with prediction items
-          "completions:menu", // right menu with completion items
-          "completions:add-new",
-          "completions:delete",
-          "side-column", // entity
-          "skip",
-        ];
+    return interfaces ? interfaces : DEFAULT_INTERFACES;
   }
 
+  /** @private */
   onSubmitCompletion = async (ls, completion) => {
-    this.lsf.setFlags({ isLoading: true });
+    this.setLoading(true);
 
-    const result = await this.datamanager.api.submitCompletion({
-      data: { id: this.task.id },
-      body: this.prepareData(completion),
-    });
+    const body = this.prepareData(completion);
+
+    const result = await this.datamanager.api.submitCompletion(
+      {
+        taskID: this.task.id,
+      },
+      { body }
+    );
 
     if (result && result.id) {
       completion.updatePersonalKey(result.id.toString());
@@ -140,11 +162,40 @@ export class LSFWrapper {
       this.addHistory(ls, ls.task.id, result.id);
     }
 
-    if (!this.task) await this.loadTask(ls);
+    await this.loadTask(this.task.id);
 
-    ls.setFlags({ isLoading: false });
+    this.setLoading(false);
   };
 
+  /** @private */
+  onUpdateCompletion = async (ls, completion) => {
+    this.setLoading(true);
+
+    const result = await this.datamanager.api.updateCompletion(
+      {
+        taskID: this.task.id,
+        completionID: completion.id,
+      },
+      {
+        body: this.prepareData(completion),
+      }
+    );
+
+    this.datamanager.invoke("updateCompletion", ls, completion, result);
+
+    console.log({
+      taskID: this.task.id,
+      completionID: this.currentCompletion.id,
+    });
+    await this.loadTask(this.task.id, this.currentCompletion.id);
+
+    this.setLoading(false);
+  };
+
+  /** @private */
+  addHistory() {}
+
+  /** @private */
   prepareData(completion, includeId) {
     const result = {
       lead_time: (new Date() - completion.loadedDate) / 1000, // task execution time
@@ -155,6 +206,27 @@ export class LSFWrapper {
       result.id = parseInt(completion.id);
     }
 
-    return JSON.stringify(result);
+    return result;
+  }
+
+  /** @private */
+  setLoading(loading) {
+    this.lsf.setFlags({ loading });
+  }
+
+  get currentCompletion() {
+    return this.lsf.completionStore.selected;
+  }
+
+  get completions() {
+    return this.lsf.completionStore.completions;
+  }
+
+  get predictions() {
+    return this.lsf.completionStore.predictions;
+  }
+
+  get projectConfig() {
+    return this.datamanager.store.project.label_config_line;
   }
 }

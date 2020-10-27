@@ -11,12 +11,12 @@ const COLUMN_WIDTHS = new Map([
   ["annotations", 150],
 ]);
 
-const getPropsForColumnCell = (cell) => {
+const getPropsForColumnCell = (column) => {
   const props = {};
 
-  if (COLUMN_WIDTHS.has(cell.column.id)) {
+  if (COLUMN_WIDTHS.has(column.id)) {
     props.style = {
-      width: COLUMN_WIDTHS.get(cell.column.id),
+      width: COLUMN_WIDTHS.get(column.id),
     };
   }
 
@@ -47,7 +47,7 @@ const IndeterminateCheckbox = React.forwardRef(
 
 export const Table = observer(({ columns, data, item, onSelectRow }) => {
   const tasks = getRoot(item).tasksStore;
-  const { totalTasks, pageSize, loading } = tasks;
+  const { totalTasks, task, loading } = tasks;
   let currentScroll = 0;
   const filterTypes = React.useMemo(
     () => ({
@@ -203,7 +203,7 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
             {headerGroups.map((headerGroup) => (
               <tr {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
-                  <th {...column.getHeaderProps()}>
+                  <th {...column.getHeaderProps(getPropsForColumnCell(column))}>
                     {column.render("Header")}
                     <div>
                       {column.canFilter && item.root.mode === "dm"
@@ -240,17 +240,24 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
             <tbody {...getTableBodyProps()}>
               {rows.map((row, i) => {
                 prepareRow(row);
+                const currentTask = row.original;
+                const isCurrent = currentTask === task;
                 return (
                   <tr
                     {...row.getRowProps()}
                     onClick={() => {
-                      const task = row.original;
-                      getRoot(item).tasksStore.setTask(task);
+                      if (!isCurrent)
+                        getRoot(item).tasksStore.setTask(currentTask);
                     }}
+                    style={{ background: isCurrent ? "#efefef" : "none" }}
                   >
                     {row.cells.map((cell) => {
                       return (
-                        <td {...cell.getCellProps(getPropsForColumnCell(cell))}>
+                        <td
+                          {...cell.getCellProps(
+                            getPropsForColumnCell(cell.column)
+                          )}
+                        >
                           {cell.render("Cell")}
                         </td>
                       );

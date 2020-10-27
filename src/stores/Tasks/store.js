@@ -56,22 +56,27 @@ export const TasksStore = types
     },
   }))
   .actions((self) => {
+    const api = getRoot(self).API;
+
     const afterAttach = () => {
       self.fetchTasks();
     };
 
-    const loadTask = flow(function* (id) {
+    const loadTask = flow(function* (taskID) {
       let remoteTask;
-      const api = getRoot(self).API;
 
-      if (id) {
-        remoteTask = yield api.task({ data: { id: id } });
+      if (taskID !== undefined) {
+        remoteTask = yield api.task({ taskID });
+        console.log({ remoteTask });
       } else {
-        remoteTask = yield api.next();
-        id = remoteTask.id;
+        remoteTask = yield api.nextTask({
+          projectID: getRoot(self).project.id,
+        });
       }
 
-      let task = self.data.find((t) => t.id === id);
+      taskID = taskID ?? remoteTask.id;
+
+      let task = self.data[taskID];
 
       if (task) {
         task.update(remoteTask);
@@ -80,17 +85,17 @@ export const TasksStore = types
         self.data.push(task);
       }
 
+      self.setTask(task.id);
+
       return task;
     });
 
     const fetchTasks = flow(function* () {
       self.loading = true;
 
-      const data = yield getRoot(self).API.tasks({
-        data: {
-          page: self.page,
-          page_size: self.pageSize,
-        },
+      const data = yield api.tasks({
+        page: self.page,
+        page_size: self.pageSize,
       });
 
       console.log({ fetched: data });
@@ -100,14 +105,18 @@ export const TasksStore = types
       if (loaded) self.page += 1;
 
       self.loading = false;
+
       getRoot(self).viewsStore.selected.afterAttach();
     });
 
     const setData = ({ tasks, total }) => {
       if (tasks.length > 0) {
+        const newTasks = tasks.map((t) => ({
+          ...t,
+          source: JSON.stringify(t),
+        }));
         self.totalTasks = total;
-        self.data.push(...(tasks ?? []));
-        console.log({ data: self.data });
+        self.data.push(...newTasks);
         return true;
       }
       return false;

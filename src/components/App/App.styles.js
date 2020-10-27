@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const Styles = styled.div`
   height: 100%;
-  padding: 1rem;
+  padding: ${(props) => (props.fullScreen ? "0" : "1rem")};
   min-height: 500px;
   box-sizing: border-box;
 
@@ -25,7 +25,6 @@ const Styles = styled.div`
   table {
     border-spacing: 0;
     border: none;
-    margin-bottom: 1em;
 
     thead {
       background: #fafafa;

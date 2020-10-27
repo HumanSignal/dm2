@@ -1,14 +1,17 @@
 import { observer, Provider } from "mobx-react";
 import React from "react";
-import DmLabel from "../Label";
+import DmLabel from "../Label/Label";
 import { TabsWrapper } from "../Tabs/tabs";
 import Styles from "./App.styles";
 import "./index.scss";
 
 const App = observer(({ app }) => {
+  const labeling = app.tasksStore.task !== undefined;
   return (
     <Provider store={app}>
-      <Styles>{app.tasksStore.task ? <DmLabel /> : <TabsWrapper />}</Styles>
+      <Styles fullScreen={labeling}>
+        {labeling ? <DmLabel /> : <TabsWrapper />}
+      </Styles>
     </Provider>
   );
 });

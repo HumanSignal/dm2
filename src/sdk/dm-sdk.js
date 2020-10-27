@@ -27,8 +27,8 @@ export class DataManager {
   /** @type {Dict} */
   settings = {};
 
-  /** @type {DataManagerApp} */
-  dataManager = null;
+  /** @type {import("../stores/AppStore").AppStore} */
+  store = null;
 
   /** @type {Dict<any>} */
   labelStudioOptions = {};
@@ -87,7 +87,7 @@ export class DataManager {
    * @param {string} eventName
    * @param {any[]} args
    */
-  invoke(eventName, args) {
+  async invoke(eventName, args) {
     this.getEventCallbacks(eventName).forEach((callback) =>
       callback.apply(this, args)
     );
@@ -103,7 +103,7 @@ export class DataManager {
 
   /** @private */
   initApp() {
-    this.dataManager = createApp(this.root, this);
+    this.store = createApp(this.root, this);
   }
 
   /**
@@ -112,21 +112,20 @@ export class DataManager {
    * @param {HTMLElement} element Root element LSF will be rendered into
    * @param {import("../stores/Tasks").TaskModel} task
    */
-  startLabeling(element, task, config) {
-    console.log({ element, task });
-
+  startLabeling(element, task) {
     if (!this.lsf) {
       this.lsf = new LSFWrapper(this, element, {
         ...this.labelStudioOptions,
         task,
-        config,
       });
       this.lsf.setCompletion();
 
       return;
     }
 
-    this.lsf.loadTask(task);
+    console.log({ task: task.toJSON() });
+    const completionID = task.lastCompletion?.id;
+    this.lsf.loadTask(task.id, completionID);
   }
 
   destroyLSF() {

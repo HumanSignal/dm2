@@ -4,7 +4,8 @@ import { Button } from "antd";
 import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
 import React from "react";
-import { Table } from "./Table/Table";
+import { Table } from "../Table/Table";
+import { Styles } from "./Label.styles";
 
 const DmLabel = inject("store")(
   observer(({ store }) => {
@@ -15,11 +16,7 @@ const DmLabel = inject("store")(
 
     const runLS = () => {
       if (store.tasksStore.task) {
-        store.SDK.startLabeling(
-          lsfRef.current,
-          store.tasksStore.task,
-          store.project.label_config_line
-        );
+        store.SDK.startLabeling(lsfRef.current, store.tasksStore.task);
       }
     };
 
@@ -31,11 +28,11 @@ const DmLabel = inject("store")(
     React.useEffect(runLS, [store.tasksStore.task]);
 
     return (
-      <>
+      <Styles>
         <Button onClick={closeLabeling}>Back to Table</Button>
 
-        <div style={{ display: "flex", alignItems: "stretch" }}>
-          <div style={{ flex: "200px 0 0", marginRight: "1em" }}>
+        <div className="wrapper">
+          <div className="table">
             <Table
               columns={columns}
               data={data}
@@ -43,11 +40,11 @@ const DmLabel = inject("store")(
               onSelectRow={() => {}}
             />
           </div>
-          <div key="lsf-root" style={{ width: "100%", overflow: "auto" }}>
+          <div key="lsf-root" className="label-studio">
             <div id="label-studio" ref={lsfRef}></div>
           </div>
         </div>
-      </>
+      </Styles>
     );
   })
 );

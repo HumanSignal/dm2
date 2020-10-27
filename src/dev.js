@@ -1,8 +1,12 @@
+import { guidGenerator } from "./utils/random";
+
 export const initDevApp = async (DataManager) => {
   console.log("Running in development");
 
-  const task = await import("./data/image_bbox");
-  const data = task.tasks;
+  const { tasks, config } = await import("./data/image_bbox");
+
+  // unlock objects for modification
+  const data = tasks.map((d) => JSON.parse(JSON.stringify(d)));
 
   const datamanager = new DataManager({
     root: document.getElementById("app"),
@@ -11,8 +15,8 @@ export const initDevApp = async (DataManager) => {
       endpoints: {
         tasks: {
           path: "/tasks",
-          mock(url, request) {
-            const { page, page_size } = request.data;
+          mock(url, urlParams) {
+            const { page = 1, page_size = 20 } = urlParams;
             const offset = (page - 1) * page_size;
 
             console.log({ offset, page_size });
@@ -22,15 +26,23 @@ export const initDevApp = async (DataManager) => {
             };
           },
         },
-        task: {
-          path: "/task/:id",
-          mock(url, request) {
-            const { id } = request.data;
-            return data.find((t) => t.id === id);
+        completions: {
+          path: "/tasks/:taskId/completions",
+          method: "post",
+          mock(url, urlParams) {
+            const { id } = urlParams;
+            return data.find((t) => t.id === id)?.completions;
           },
         },
-        next: {
-          path: "/next",
+        task: {
+          path: "/tasks/:taskID",
+          mock(url, urlParams) {
+            const { taskID } = urlParams;
+            return data.find((t) => t.id === taskID);
+          },
+        },
+        nextTask: {
+          path: "/projects/:projectID/next",
           method: "get",
           mock() {
             const [min, max] = [0, data.length - 1];
@@ -38,26 +50,65 @@ export const initDevApp = async (DataManager) => {
             return data[index];
           },
         },
-        completions: {
-          path: "/tasks/:id/completions",
+        submitCompletion: {
+          path: "/tasks/:taskID/completions",
           method: "post",
-          mock(url, request) {
-            const { id } = request.data;
-            return data.find((t) => t.id === id)?.completions;
+          headers: {
+            ContentType: "application/json",
+          },
+          mock(url, urlParams, request) {
+            const taskIndex = data.findIndex((t) => t.id === urlParams.taskID);
+
+            const newCompletion = {
+              ...request.body,
+              id: guidGenerator(),
+              updated_at: new Date().toISOString(),
+              created_at: new Date().toISOString(),
+              review_result: false,
+              ground_truth: null,
+              completed_by: 1,
+            };
+
+            const task = data[taskIndex];
+
+            data[taskIndex] = {
+              ...data[taskIndex],
+              completions: [...(task.completions ?? []), newCompletion],
+            };
+
+            console.log(urlParams, request.body);
+            return { id: newCompletion.id };
           },
         },
-        submitCompletion: {
-          path: "/tasks/:id/completions",
+        updateCompletion: {
+          path: "/tasks/:taskID/completions/:completionID",
           method: "post",
-          mock(url, request) {
-            console.log(request.body);
+          headers: {
+            ContentType: "application/json",
+          },
+          mock(url, urlParams, request) {
+            const { taskID, completionID } = urlParams;
+            const completion = data
+              .find((t) => t.id === taskID)
+              ?.completions?.find((c) => c.id === completionID);
+
+            if (completion) {
+              Object.assign(completion, {
+                ...request.body,
+                id: completion.id,
+                updated_at: new Date().toISOString(),
+              });
+            }
+
+            return {};
           },
         },
         project: {
           path: "/project",
           mock() {
             return {
-              label_config_line: task.config,
+              id: 1,
+              label_config_line: config,
               tasks_count: data.length,
             };
           },
@@ -85,4 +136,11 @@ export const initDevApp = async (DataManager) => {
       ],
     },
   });
+
+  datamanager.on("submitCompletion", (...args) =>
+    console.log("submitCompletion", args)
+  );
+  datamanager.on("updateCompletion", (...args) =>
+    console.log("updateCompletion", args)
+  );
 };

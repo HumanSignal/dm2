@@ -3,7 +3,7 @@ import { TasksStore } from "./Tasks";
 import { CustomJSON } from "./types";
 import { ViewsStore } from "./Views";
 
-export default types
+export const AppStore = types
   .model("dmAppStore", {
     mode: types.optional(types.enumeration(["dm", "label"]), "dm"),
 
