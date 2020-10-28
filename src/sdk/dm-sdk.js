@@ -5,8 +5,9 @@
  * root: HTMLElement,
  * api: import("../utils/api-proxy").APIProxyOptions,
  * settings: Dict<any>,
- * labelStudio: Dict<any>
- * mode: "development" | "production"
+ * labelStudio: Dict<any>,
+ * env: "development" | "production",
+ * mode: "labelstream" | "explorer",
  * }} DMConfig
  */
 
@@ -34,7 +35,10 @@ export class DataManager {
   labelStudioOptions = {};
 
   /** @type {"development" | "production"} */
-  mode = "development";
+  env = "development";
+
+  /** @type {"explorer" | "labelstream"} */
+  mode = "explorer";
 
   /**
    * @private
@@ -51,9 +55,18 @@ export class DataManager {
     this.api = new APIProxy(config.api);
     this.settings = config.settings;
     this.labelStudioOptions = config.labelStudio;
-    this.mode = config.mode ?? process.env.NODE_ENV;
+    this.env = config.env ?? process.env.NODE_ENV ?? this.env;
+    this.mode = this.mode ?? config.mode;
 
     this.initApp();
+  }
+
+  get isExplorer() {
+    return this.mode === "explorer";
+  }
+
+  get isLabelStream() {
+    return this.mode === "labelstream";
   }
 
   /**
@@ -102,8 +115,8 @@ export class DataManager {
   }
 
   /** @private */
-  initApp() {
-    this.store = createApp(this.root, this);
+  async initApp() {
+    this.store = await createApp(this.root, this);
   }
 
   /**
@@ -118,14 +131,14 @@ export class DataManager {
         ...this.labelStudioOptions,
         task,
       });
-      this.lsf.setCompletion();
 
       return;
     }
 
-    console.log({ task: task.toJSON() });
-    const completionID = task.lastCompletion?.id;
-    this.lsf.loadTask(task.id, completionID);
+    if (this.lsf.task !== task) {
+      const completionID = task.lastCompletion?.id;
+      this.lsf.loadTask(task.id, completionID);
+    }
   }
 
   destroyLSF() {

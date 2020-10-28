@@ -9,6 +9,7 @@ const COLUMN_WIDTHS = new Map([
   ["id", 100],
   ["status", 100],
   ["annotations", 150],
+  ["created_on", 100],
 ]);
 
 const getPropsForColumnCell = (column) => {
@@ -112,7 +113,7 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
       columns,
       data,
       initialState: {
-        hiddenColumns: item.root.mode === "dm" ? [] : item.dataFields,
+        hiddenColumns: item.root.isLabeling ? [] : item.dataFields,
         // filters: initialFilters,
         sortBy: [{ id: "id", desc: false }],
       },
@@ -131,13 +132,13 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
             // The header can use the table's getToggleAllRowsSelectedProps method
             // to render a checkbox
             Header: ({ getToggleAllRowsSelectedProps }) =>
-              item.root.mode === "dm" ? (
+              !item.root.isLabeling ? (
                 <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
               ) : null,
             // The cell can use the individual row's getToggleRowSelectedProps method
             // to the render a checkbox
             Cell: ({ row, value }) =>
-              item.root.mode === "dm" ? (
+              !item.root.isLabeling ? (
                 <>
                   <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />{" "}
                 </>
@@ -206,7 +207,7 @@ export const Table = observer(({ columns, data, item, onSelectRow }) => {
                   <th {...column.getHeaderProps(getPropsForColumnCell(column))}>
                     {column.render("Header")}
                     <div>
-                      {column.canFilter && item.root.mode === "dm"
+                      {column.canFilter && !item.root.isLabeling
                         ? column.render("Filter")
                         : null}
                     </div>

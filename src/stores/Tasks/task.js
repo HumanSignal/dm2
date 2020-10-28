@@ -28,7 +28,6 @@ export const TaskModel = types
   }))
   .actions((self) => ({
     update(newData) {
-      console.log({ newData });
       for (let key in newData) self[key] = newData[key];
       return self;
     },

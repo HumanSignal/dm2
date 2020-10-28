@@ -1,5 +1,5 @@
 import { flow, getRoot, types } from "mobx-state-tree";
-import { TaskModel } from "./model";
+import { TaskModel } from "./task";
 
 export const TasksStore = types
   .model("TasksStore", {
@@ -11,34 +11,6 @@ export const TasksStore = types
     loading: types.optional(types.boolean, false),
   })
   .views((self) => ({
-    buildLSFCallbacks() {
-      return {
-        onSubmitCompletion: function (ls, c, res) {
-          const { task } = self;
-
-          if (task) {
-            if ("completions" in task) task.completions.push(c);
-            else task.completions = [c];
-          }
-        },
-        onTaskLoad: function (ls) {},
-        onUpdateCompletion: function (ls, c) {
-          // TODO needs to update the update date
-        },
-        onDeleteCompletion: function (ls, c) {
-          const { task } = self;
-          if (task && task.completions) {
-            const cidx = task.completions.findIndex((tc) => tc.id === c.id);
-            task.completions.splice(cidx, 1);
-          }
-        },
-        onSkipTask: function (ls) {
-          // TODO need to update the task status
-        },
-        onLabelStudioLoad: function (ls) {},
-      };
-    },
-
     get annotationsData() {
       return self.data
         .map((t) => {
@@ -58,16 +30,11 @@ export const TasksStore = types
   .actions((self) => {
     const api = getRoot(self).API;
 
-    const afterAttach = () => {
-      self.fetchTasks();
-    };
-
     const loadTask = flow(function* (taskID) {
       let remoteTask;
 
       if (taskID !== undefined) {
         remoteTask = yield api.task({ taskID });
-        console.log({ remoteTask });
       } else {
         remoteTask = yield api.nextTask({
           projectID: getRoot(self).project.id,
@@ -77,11 +44,12 @@ export const TasksStore = types
       taskID = taskID ?? remoteTask.id;
 
       let task = self.data[taskID];
+      const taskData = { ...remoteTask, source: JSON.stringify(remoteTask) };
 
       if (task) {
-        task.update(remoteTask);
+        task.update(taskData);
       } else {
-        task = TaskModel.create(remoteTask);
+        task = TaskModel.create(taskData);
         self.data.push(task);
       }
 
@@ -98,7 +66,7 @@ export const TasksStore = types
         page_size: self.pageSize,
       });
 
-      console.log({ fetched: data });
+      console.table(data.tasks);
 
       const loaded = self.setData(data);
 
@@ -136,7 +104,6 @@ export const TasksStore = types
     };
 
     return {
-      afterAttach,
       fetchTasks,
       loadTask,
       setData,

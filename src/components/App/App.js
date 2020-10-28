@@ -5,8 +5,14 @@ import { TabsWrapper } from "../Tabs/tabs";
 import Styles from "./App.styles";
 import "./index.scss";
 
-const App = observer(({ app }) => {
-  const labeling = app.tasksStore.task !== undefined;
+/** @typedef {import("../../stores/AppStore").AppStore} AppStore */
+
+/**
+ * Main Component
+ * @param {{app: AppStore} param0
+ */
+const AppComponent = ({ app }) => {
+  const labeling = app.isLabelStreamMode || app.tasksStore.task !== undefined;
   return (
     <Provider store={app}>
       <Styles fullScreen={labeling}>
@@ -14,6 +20,6 @@ const App = observer(({ app }) => {
       </Styles>
     </Provider>
   );
-});
+};
 
-export default App;
+export const App = observer(AppComponent);

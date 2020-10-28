@@ -15,9 +15,7 @@ const DmLabel = inject("store")(
     const data = store.tasksStore.data;
 
     const runLS = () => {
-      if (store.tasksStore.task) {
-        store.SDK.startLabeling(lsfRef.current, store.tasksStore.task);
-      }
+      store.SDK.startLabeling(lsfRef.current, store.tasksStore.task);
     };
 
     const closeLabeling = () => {
@@ -29,17 +27,23 @@ const DmLabel = inject("store")(
 
     return (
       <Styles>
-        <Button onClick={closeLabeling}>Back to Table</Button>
+        {store.isExplorerMode && (
+          <div className="navigation">
+            <Button onClick={closeLabeling}>Back to Table</Button>
+          </div>
+        )}
 
         <div className="wrapper">
-          <div className="table">
-            <Table
-              columns={columns}
-              data={data}
-              item={item}
-              onSelectRow={() => {}}
-            />
-          </div>
+          {store.isExplorerMode && (
+            <div className="table">
+              <Table
+                columns={columns}
+                data={data}
+                item={item}
+                onSelectRow={() => {}}
+              />
+            </div>
+          )}
           <div key="lsf-root" className="label-studio">
             <div id="label-studio" ref={lsfRef}></div>
           </div>

@@ -124,9 +124,12 @@ export class APIProxy {
 
         if (rawResponse.ok) {
           const responseData = await rawResponse.json();
-          const converted =
-            methodSettings.convert?.(responseData) ?? responseData;
-          return converted;
+
+          if (methodSettings.convert instanceof Function) {
+            return await methodSettings.convert(responseData);
+          }
+
+          return responseData;
         } else {
           return this.generateError(rawResponse);
         }
@@ -179,7 +182,6 @@ export class APIProxy {
       Object.entries(data).forEach(([key, value]) => {
         if (!usedKeys.includes(key)) {
           url.searchParams.set(key, value);
-          console.log(`Set ${key}:${value}`);
         }
       });
     }

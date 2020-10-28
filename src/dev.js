@@ -10,6 +10,7 @@ export const initDevApp = async (DataManager) => {
 
   const datamanager = new DataManager({
     root: document.getElementById("app"),
+    // mode: "labelstream",
     api: {
       gateway: "/api",
       endpoints: {

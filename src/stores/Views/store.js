@@ -18,20 +18,15 @@ export const ViewsStore = types
   }))
   .actions((self) => ({
     setSelected(view) {
-      console.log(view);
       self.selected = view;
     },
 
     deleteView(view) {
       if (self.selected === view) {
-        console.log("Deleting currently active view");
         const index = self.views.indexOf(view);
-        console.log("New selected view", index);
         const newView =
           index === 0 ? self.views[index + 1] : self.views[index - 1];
-        console.log(newView === view);
         self.setSelected(newView.key);
-        console.log(self.selected);
       }
 
       destroy(view);

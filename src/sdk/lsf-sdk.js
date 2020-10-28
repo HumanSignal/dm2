@@ -52,23 +52,26 @@ export class LSFWrapper {
     this.root = element;
     this.task = options.task;
 
-    const lsfSettings = {
+    const lsfProperties = {
       user: options.user,
-      task: taskToLSFormat(this.task),
       config: this.projectConfig,
+      task: taskToLSFormat(this.task),
       interfaces: this.buildInterfaces(options.interfaces),
-    };
-
-    this.lsf = new LabelStudio(this.root, {
-      ...lsfSettings,
-      onSubmitCompletion: this.onSubmitCompletion,
+      onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
+      onSubmitCompletion: this.onSubmitCompletion,
       onUpdateCompletion: this.onUpdateCompletion,
       onDeleteCompletion: this.onDeleteCompletion,
       onSkipTask: this.onSkipTask,
       onGroundTruth: this.onGroundTruth,
-      onLabelStudioLoad: this.onLabelStudioLoad,
-    });
+    };
+
+    try {
+      new LabelStudio(this.root, lsfProperties);
+    } catch (err) {
+      console.error("Failed to initialize LabelStudio", lsfProperties);
+      console.error(err);
+    }
   }
 
   /** @private */
@@ -76,7 +79,8 @@ export class LSFWrapper {
     if (!this.lsf)
       return console.error("Make sure that LSF was properly initialized");
 
-    if (!taskID) console.info("Load next task");
+    if (taskID === undefined) console.info("Load next task");
+    else console.info(`Reloading task ${taskID}`);
 
     this.setLoading(true);
     const tasks = this.datamanager.store.tasksStore;
@@ -87,16 +91,19 @@ export class LSFWrapper {
     /**
      * Add new data from received task
      */
-    this.reset();
-    this.setTask(newTask);
-    this.setCompletion(completionID);
+    try {
+      this.resetLabelStudio();
+      this.setTask(newTask);
+      this.setCompletion(completionID);
+    } catch (err) {
+      console.error("Failed to attach new task", err);
+    }
 
     this.setLoading(false);
-    // this.lsf.onTaskLoad(this.lsf, this.lsf.task);
   }
 
   /** @private */
-  reset() {
+  resetLabelStudio() {
     this.lsf.resetState();
   }
 
@@ -111,12 +118,6 @@ export class LSFWrapper {
   setCompletion(id) {
     let { completionStore: cs } = this.lsf;
     let completion;
-
-    console.log({
-      id,
-      completions: this.completions,
-      l: this.completions.length,
-    });
 
     if (this.predictions.length > 0) {
       console.log("Added from prediction");
@@ -138,20 +139,31 @@ export class LSFWrapper {
     return interfaces ? interfaces : DEFAULT_INTERFACES;
   }
 
+  onLabelStudioLoad = async (ls) => {
+    this.lsf = ls;
+    this.setLoading(true);
+
+    if (this.datamanager.mode === "labelstream") {
+      await this.loadTask();
+    } else {
+      this.setCompletion(this.task.lastCompletion?.id);
+    }
+
+    this.setLoading(false);
+  };
+
   /** @private */
   onSubmitCompletion = async (ls, completion) => {
     this.setLoading(true);
 
+    const taskID = this.task.id;
     const body = this.prepareData(completion);
-
     const result = await this.datamanager.api.submitCompletion(
-      {
-        taskID: this.task.id,
-      },
+      { taskID },
       { body }
     );
 
-    if (result && result.id) {
+    if (result && result.id !== undefined) {
       completion.updatePersonalKey(result.id.toString());
       this.datamanager.invoke(
         "submitCompletion",
@@ -162,7 +174,13 @@ export class LSFWrapper {
       this.addHistory(ls, ls.task.id, result.id);
     }
 
-    await this.loadTask(this.task.id);
+    if (this.datamanager.isExplorer) {
+      console.log(`Reload task ${taskID} as DataManager is in Explorer mode`);
+      await this.loadTask(taskID, completion.id);
+    } else {
+      console.log(`Load next task as DataManager is in LabelStream mode`);
+      await this.loadTask();
+    }
 
     this.setLoading(false);
   };
@@ -183,11 +201,7 @@ export class LSFWrapper {
 
     this.datamanager.invoke("updateCompletion", ls, completion, result);
 
-    console.log({
-      taskID: this.task.id,
-      completionID: this.currentCompletion.id,
-    });
-    await this.loadTask(this.task.id, this.currentCompletion.id);
+    await this.loadTask(this.task.id, completion.id);
 
     this.setLoading(false);
   };

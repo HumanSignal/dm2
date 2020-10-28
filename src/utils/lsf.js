@@ -197,7 +197,8 @@ export default function (elid, config, task, cbs) {
     if (name in cbs) return cbs[name].apply(null, params);
   };
 
-  const showHistory = task === null; // show history buttons only if label stream mode, not for task explorer
+  // show history buttons only if label stream mode, not for task explorer
+  const showHistory = task === null;
 
   const _prepData = function (c, includeId) {
     var completion = {
