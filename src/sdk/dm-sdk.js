@@ -56,7 +56,7 @@ export class DataManager {
     this.settings = config.settings;
     this.labelStudioOptions = config.labelStudio;
     this.env = config.env ?? process.env.NODE_ENV ?? this.env;
-    this.mode = this.mode ?? config.mode;
+    this.mode = config.mode ?? this.mode;
 
     this.initApp();
   }

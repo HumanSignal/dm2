@@ -9,6 +9,7 @@
  * }} LSFOptions */
 
 import { LabelStudio } from "label-studio";
+import { LSFHistory } from "./lsf-history";
 import { completionToServer, taskToLSFormat } from "./lsf-utils";
 
 const DEFAULT_INTERFACES = [
@@ -39,6 +40,9 @@ export class LSFWrapper {
   /** @type {LabelStudio} */
   lsf = null;
 
+  /** @type {LSFHistory} */
+  history = null;
+
   /**
    *
    * @param {DataManager} dm
@@ -51,6 +55,7 @@ export class LSFWrapper {
     this.datamanager = dm;
     this.root = element;
     this.task = options.task;
+    this.history = new LSFHistory(this);
 
     const lsfProperties = {
       user: options.user,
@@ -136,7 +141,11 @@ export class LSFWrapper {
 
   /** @private */
   buildInterfaces(interfaces) {
-    return interfaces ? interfaces : DEFAULT_INTERFACES;
+    const result = interfaces ? interfaces : DEFAULT_INTERFACES;
+
+    if (this.datamanager.isLabelStream) result.push("skip");
+
+    return result;
   }
 
   onLabelStudioLoad = async (ls) => {
@@ -154,35 +163,9 @@ export class LSFWrapper {
 
   /** @private */
   onSubmitCompletion = async (ls, completion) => {
-    this.setLoading(true);
-
-    const taskID = this.task.id;
-    const body = this.prepareData(completion);
-    const result = await this.datamanager.api.submitCompletion(
-      { taskID },
-      { body }
+    await this.submitCurrentCompletion("submitCompletion", (data, body) =>
+      this.datamanager.api.submitCompletion(data, body)
     );
-
-    if (result && result.id !== undefined) {
-      completion.updatePersonalKey(result.id.toString());
-      this.datamanager.invoke(
-        "submitCompletion",
-        ls,
-        completionToServer(completion),
-        result
-      );
-      this.addHistory(ls, ls.task.id, result.id);
-    }
-
-    if (this.datamanager.isExplorer) {
-      console.log(`Reload task ${taskID} as DataManager is in Explorer mode`);
-      await this.loadTask(taskID, completion.id);
-    } else {
-      console.log(`Load next task as DataManager is in LabelStream mode`);
-      await this.loadTask();
-    }
-
-    this.setLoading(false);
   };
 
   /** @private */
@@ -192,7 +175,7 @@ export class LSFWrapper {
     const result = await this.datamanager.api.updateCompletion(
       {
         taskID: this.task.id,
-        completionID: completion.id,
+        completionID: completion.pk,
       },
       {
         body: this.prepareData(completion),
@@ -201,13 +184,59 @@ export class LSFWrapper {
 
     this.datamanager.invoke("updateCompletion", ls, completion, result);
 
-    await this.loadTask(this.task.id, completion.id);
+    await this.loadTask(this.task.id, completion.pk);
 
     this.setLoading(false);
   };
 
-  /** @private */
-  addHistory() {}
+  /**@private */
+  onDeleteCompletion = async (ls, completion) => {
+    this.setLoading(true);
+
+    const { task } = this;
+
+    const response = await this.datamanager.api.deleteCompletion({
+      taskID: task.id,
+      completionID: completion.pk,
+    });
+
+    task.update(response);
+    await this.loadTask(task.id, task.lastCompletion?.id);
+
+    this.setLoading(false);
+  };
+
+  onSkipTask = async (ls) => {
+    await this.submitCurrentCompletion("skipTask", (taskID, body) =>
+      this.datamanager.api.skipTask({ taskID }, { body })
+    );
+  };
+
+  async submitCurrentCompletion(eventName, submit) {
+    this.setLoading(true);
+
+    const { taskID, currentCompletion } = this;
+    const result = await submit(taskID, this.prepareData(currentCompletion));
+
+    if (result && result.id !== undefined) {
+      currentCompletion.updatePersonalKey(result.id.toString());
+
+      const eventData = completionToServer(currentCompletion);
+      this.datamanager.invoke(eventName, this.lsf, eventData, result);
+
+      this.history.add(taskID, currentCompletion.pk);
+    }
+
+    if (this.datamanager.isExplorer) {
+      console.log(`Reload task ${taskID} as DataManager is in Explorer mode`);
+      await this.loadTask(taskID, currentCompletion.pk);
+    } else {
+      console.log(`Load next task as DataManager is in LabelStream mode`);
+      await this.loadTask();
+    }
+
+    this.setLoading(false);
+  }
 
   /** @private */
   prepareData(completion, includeId) {
@@ -226,6 +255,10 @@ export class LSFWrapper {
   /** @private */
   setLoading(loading) {
     this.lsf.setFlags({ loading });
+  }
+
+  get taskID() {
+    return this.task.id;
   }
 
   get currentCompletion() {

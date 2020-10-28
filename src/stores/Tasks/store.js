@@ -43,10 +43,13 @@ export const TasksStore = types
 
       taskID = taskID ?? remoteTask.id;
 
-      let task = self.data[taskID];
       const taskData = { ...remoteTask, source: JSON.stringify(remoteTask) };
+      let task = self.data.find((t) => t.id === taskID);
+
+      console.log({ remoteTask, task, ids: self.data.map((t) => t.id) });
 
       if (task) {
+        console.log("Updating existing task", task);
         task.update(taskData);
       } else {
         task = TaskModel.create(taskData);
