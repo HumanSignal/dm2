@@ -1,4 +1,4 @@
-export default [
+const views = [
   {
     title: "Tasks",
     fields: [
@@ -7,14 +7,12 @@ export default [
         field: "id",
         source: "tasks",
         enabled: true,
-        filterState: { numValue: 0 },
       },
       {
         field: "task_status",
         source: "tasks",
         enabled: true,
         canToggle: true,
-        filterState: { stringValue: "" },
       },
       {
         field: "annotations",
@@ -72,3 +70,5 @@ export default [
     ],
   },
 ];
+
+export default views;

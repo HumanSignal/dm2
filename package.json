@@ -32,7 +32,7 @@
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
     "react-is": "^16.8.0",
-    "react-scripts": "^3.4.1",
+    "react-scripts": "^4.0.0",
     "react-table": "^7.0.0",
     "styled-components": "^5.0.1"
   },

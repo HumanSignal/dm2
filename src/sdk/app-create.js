@@ -5,7 +5,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { App } from "../components/App/App";
-import views from "../data/views";
 import { AppStore } from "../stores/AppStore";
 
 /**
@@ -17,7 +16,7 @@ import { AppStore } from "../stores/AppStore";
 export const createApp = async (rootNode, datamanager) => {
   console.log(`DataManager is loading in ${datamanager.mode} mode`);
   const appStore = AppStore.create({
-    viewsStore: { views: views },
+    viewsStore: { views: [] },
     mode: datamanager.mode,
   });
 

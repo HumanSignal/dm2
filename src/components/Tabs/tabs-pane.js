@@ -12,7 +12,6 @@ export const TabTitle = observer(({ item }) => {
           type="text"
           value={item.title}
           onKeyPress={(ev) => {
-            console.log(ev.key);
             if (ev.key === "Enter") {
               item.setRenameMode(false);
               return;

@@ -24,7 +24,7 @@ const Styles = styled.div`
 
   table {
     border-spacing: 0;
-    border: none;
+    border-collapse: collapse;
 
     thead {
       background: #fafafa;
@@ -40,7 +40,7 @@ const Styles = styled.div`
     td {
       margin: 0;
       padding: 0.5rem;
-      border-bottom: 1px solid #f0f0f0;
+      border: 1px solid #f0f0f0;
 
       vertical-align: top;
 

@@ -142,7 +142,7 @@ export class DataManager {
   }
 
   destroyLSF() {
-    this.lsf.reset();
+    this.lsf.resetLabelStudio();
     this.lsf = undefined;
   }
 }

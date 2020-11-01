@@ -1,4 +1,4 @@
-export default `
+const config = `
 <View>
 
   <Header value="Select label and start to click on image"/>
@@ -13,3 +13,5 @@ export default `
 
 </View>
 `;
+
+export default config;

@@ -76,7 +76,7 @@ const LabelingComponent = observer(({ store }) => {
             <Table
               columns={columns}
               data={data}
-              item={item}
+              view={item}
               onSelectRow={() => {}}
             />
           </div>

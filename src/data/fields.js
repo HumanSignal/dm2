@@ -1,12 +1,3 @@
-import {
-  DefaultColumnFilter,
-  SelectColumnFilter,
-  SliderColumnFilter,
-  NumberRangeColumnFilter,
-  fuzzyTextFilterFn,
-  filterGreaterThan,
-} from "../components/Filters";
-
 const formatter = new Intl.DateTimeFormat(undefined, {
   month: "numeric",
   day: "numeric",
@@ -19,15 +10,11 @@ const fields = {
   id: {
     title: "ID",
     accessor: "id",
-    filterClass: SliderColumnFilter,
-    filterType: filterGreaterThan,
   },
   task_status: {
     id: "status",
     title: "Status",
     accessor: () => "",
-    filterClass: SelectColumnFilter,
-    filterType: "includes",
   },
   annotations: {
     id: "annotations",
@@ -65,8 +52,6 @@ function lookup(name) {
         id: name,
         title: name,
         accessor: (t) => t["data"][name],
-        filterClass: DefaultColumnFilter,
-        filterType: fuzzyTextFilterFn,
       };
 }
 

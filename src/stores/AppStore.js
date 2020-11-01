@@ -17,6 +17,8 @@ export const AppStore = types
     }),
 
     project: types.optional(CustomJSON, {}),
+
+    loading: types.optional(types.boolean, false),
   })
   .views((self) => ({
     get SDK() {
@@ -49,13 +51,14 @@ export const AppStore = types
     }),
 
     fetchData: flow(function* () {
-      console.log("Fetching initial data");
+      self.loading = true;
+
       yield self.fetchProject();
-      console.log("Project fetched");
-      if (!self.isLabelStreamMode) {
-        yield self.tasksStore.fetchTasks();
-        console.log("Tasks loaded");
-      }
-      console.log("Fetch finished");
+      yield self.viewsStore.fetchColumns();
+      yield self.viewsStore.fetchFilters();
+      yield self.viewsStore.fetchViews();
+      yield self.tasksStore.fetchTasks();
+
+      self.loading = false;
     }),
   }));

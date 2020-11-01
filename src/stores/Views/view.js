@@ -1,32 +1,33 @@
 import { getParent, getRoot, types } from "mobx-state-tree";
-import fields, { labelingFields } from "../../data/fields";
 import { guidGenerator } from "../../utils/random";
-import { Field } from "./field";
+import { ViewColumn } from "./view_column";
+import { ViewFilter } from "./view_filter";
 
 export const View = types
   .model("View", {
-    id: types.optional(types.identifier, () => {
-      return guidGenerator(5);
-    }),
+    id: types.identifierNumber,
 
     title: "Tasks",
 
+    key: types.optional(types.string, guidGenerator),
+
     type: types.optional(types.enumeration(["list", "grid"]), "list"),
+
     target: types.optional(
       types.enumeration(["tasks", "annotations"]),
       "tasks"
     ),
 
-    fields: types.array(Field),
+    filters: types.optional(types.array(ViewFilter), []),
+
+    hiddenColumns: types.maybeNull(
+      types.array(types.late(() => types.reference(ViewColumn)))
+    ),
 
     enableFilters: false,
     renameMode: false,
   })
   .views((self) => ({
-    get key() {
-      return self.id;
-    },
-
     get root() {
       return getRoot(self);
     },
@@ -45,51 +46,32 @@ export const View = types
       return self.dataFields.length > 0;
     },
 
-    fieldsSource(source) {
-      return self.fields.filter((f) => f.source === source);
+    get columns() {
+      return getRoot(self).viewsStore.columns;
+    },
+
+    get visibleColumns() {
+      return self.columns.filter((c) => !c.hidden);
+    },
+
+    get columnsVisibility() {
+      return self.columns.reduce((res, col) => {
+        return [...res, [col.key, !col.isHidden]];
+      }, []);
     },
 
     // get fields formatted as columns structure for react-table
     get fieldsAsColumns() {
-      let lst;
-      // if (self.root.mode === "label") lst = self.fields.filter(f => f.source === 'label');
-      // else
-      if (self.target === "tasks")
-        lst = self.fields.filter((f) => f.source !== "annotations");
-      else lst = self.fields.filter((f) => f.source !== "tasks");
+      return self.visibleColumns.reduce((res, column) => {
+        if (!column.parent) {
+          res.push(column.asField);
+        }
+        return res;
+      }, []);
+    },
 
-      return lst
-        .filter(
-          (f) =>
-            f.enabled &&
-            (self.root.mode !== "label" ||
-              labelingFields.includes(f.field) ||
-              f.source === "inputs")
-        )
-        .map((f) => {
-          const field = fields(f.field);
-          const { id, accessor, Cell, filterClass, filterType } = field;
-
-          const cols = {
-            Header: field.title,
-            accessor,
-            disableFilters: true,
-            _filterState: f.filterState,
-          };
-
-          if (Cell) cols.Cell = Cell;
-          if (id) cols.id = id;
-
-          if (self.enableFilters === true) {
-            if (filterClass !== undefined) cols["Filter"] = filterClass;
-
-            if (filterType !== undefined) cols["filter"] = filterType;
-
-            if (filterType || filterClass) cols["disableFilters"] = false;
-          }
-
-          return cols;
-        });
+    fieldsSource(source) {
+      return self.fields.filter((f) => f.source === source);
     },
   }))
   .actions((self) => ({
@@ -113,23 +95,11 @@ export const View = types
       self.enableFilters = !self.enableFilters;
     },
 
-    afterAttach() {
-      if (!self.hasDataFields) {
-        // create data fields if they were not initialized
-        const fields = self.root.tasksStore.getDataFields();
-
-        self.fields = [
-          ...self.fields,
-          ...fields.map((f) => {
-            return Field.create({
-              field: f,
-              canToggle: true,
-              enabled: false,
-              source: "inputs",
-              filterState: { stringValue: "" },
-            });
-          }),
-        ];
+    toggleColumn(column) {
+      if (self.hiddenColumns.includes(column)) {
+        self.hiddenColumns = self.hiddenColumns.filter((c) => c !== column);
+      } else {
+        self.hiddenColumns = [...self.hiddenColumns, column];
       }
     },
   }));

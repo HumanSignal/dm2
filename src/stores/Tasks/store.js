@@ -6,7 +6,7 @@ export const TasksStore = types
     data: types.optional(types.array(TaskModel), []),
     task: types.maybeNull(types.safeReference(TaskModel)),
     page: types.optional(types.integer, 1),
-    pageSize: types.optional(types.integer, 20),
+    pageSize: types.optional(types.integer, 120),
     totalTasks: types.optional(types.integer, 0),
     loading: types.optional(types.boolean, false),
   })
@@ -69,15 +69,11 @@ export const TasksStore = types
         page_size: self.pageSize,
       });
 
-      console.table(data.tasks);
-
       const loaded = self.setData(data);
 
       if (loaded) self.page += 1;
 
       self.loading = false;
-
-      getRoot(self).viewsStore.selected.afterAttach();
     });
 
     const setData = ({ tasks, total }) => {

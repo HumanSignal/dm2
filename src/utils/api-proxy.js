@@ -230,7 +230,7 @@ export class APIProxy {
    * @param {EndpointConfig} settings
    */
   mockRequest(url, params, request, settings) {
-    return new Promise((resolve) => {
+    return new Promise(async (resolve) => {
       let response = null;
       let ok = true;
 
@@ -238,7 +238,7 @@ export class APIProxy {
       console.groupCollapsed(groupName);
 
       try {
-        response = settings.mock(url, params ?? {}, request);
+        response = await settings.mock(url, params ?? {}, request);
       } catch {
         ok = false;
       }

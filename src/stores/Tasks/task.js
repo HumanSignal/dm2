@@ -5,7 +5,10 @@ export const TaskModel = types
   .model("TaskModel", {
     id: types.identifierNumber,
     data: types.optional(CustomJSON, {}),
+    extra: types.optional(CustomJSON, {}),
     accuracy: types.maybeNull(types.integer),
+    agreement: types.optional(types.integer, 0),
+    finished: types.optional(types.boolean, false),
     is_labeled: types.optional(types.boolean, false),
     created_at: types.optional(types.maybeNull(types.string), null),
     updated_at: types.optional(types.maybeNull(types.string), null),

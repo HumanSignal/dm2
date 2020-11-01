@@ -1,11 +1,14 @@
-import { destroy, getSnapshot, types } from "mobx-state-tree";
-import { guidGenerator } from "../../utils/random";
+import { destroy, flow, getParent, getSnapshot, types } from "mobx-state-tree";
 import { View } from "./view";
+import { ViewColumn } from "./view_column";
+import { ViewFilterType } from "./view_filter_type";
 
 export const ViewsStore = types
   .model("ViewsStore", {
     selected: types.safeReference(View),
-    views: types.array(View),
+    views: types.optional(types.array(View), []),
+    availableFilters: types.optional(types.array(ViewFilterType), []),
+    columns: types.optional(types.array(ViewColumn), []),
   })
   .views((self) => ({
     get all() {
@@ -18,7 +21,11 @@ export const ViewsStore = types
   }))
   .actions((self) => ({
     setSelected(view) {
-      self.selected = view;
+      if (typeof view === "string") {
+        self.selected = self.views.find((v) => v.key === view);
+      } else {
+        self.selected = view;
+      }
     },
 
     deleteView(view) {
@@ -32,12 +39,13 @@ export const ViewsStore = types
       destroy(view);
     },
 
-    addView() {
-      const dupView = getSnapshot(self.views[0]);
+    addView(viewSnapshot) {
+      const lastView = self.views[self.views.length - 1];
 
-      const newView = View.create({
-        title: `${dupView.title} ${self.views.length}`,
-        fields: dupView.fields,
+      const newView = self.createView({
+        ...(viewSnapshot ?? {}),
+        id: lastView.id + 1,
+        title: `${lastView.title} ${self.views.length}`,
       });
 
       self.views.push(newView);
@@ -47,20 +55,40 @@ export const ViewsStore = types
     },
 
     duplicateView(view) {
-      const dupView = getSnapshot(view);
-      const newView = View.create({
-        ...dupView,
-        id: guidGenerator(5),
-        title: dupView.title + " copy",
-      });
-
-      self.views.push(newView);
-      self.setSelected(self.views[self.views.length - 1]);
+      self.addView(getSnapshot(view));
     },
 
-    afterCreate() {
-      if (!self.selected) {
-        self.setSelected(self.views[0]);
+    createView(viewSnapshot) {
+      const snapshot = viewSnapshot ?? {};
+
+      if (!snapshot.hiddenColumns) {
+        const hiddenColumns = self.columns
+          .filter((c) => c.defaultHidden)
+          .map((c) => c.id);
+        console.log(hiddenColumns);
+        snapshot.hiddenColumns = hiddenColumns;
       }
+
+      const newView = View.create(snapshot);
+      console.log({ snapshot, newView });
+
+      return newView;
     },
+
+    fetchColumns: flow(function* () {
+      const { columns } = yield getParent(self).API.columns();
+      self.columns.push(...columns);
+    }),
+
+    fetchFilters: flow(function* () {
+      const result = yield getParent(self).API.filters();
+      self.availableFilters.push(...result);
+    }),
+
+    fetchViews: flow(function* () {
+      const { tabs } = yield getParent(self).API.tabs();
+
+      self.views.push(...tabs.map(self.createView));
+      self.setSelected(self.views[0]);
+    }),
   }));

@@ -1,5 +1,4 @@
 import { types } from "mobx-state-tree";
-import { NumberFilter, RangeNumberFilter, StringFilter } from "../Filters";
 
 export const Field = types
   .model("Fields", {
@@ -11,15 +10,6 @@ export const Field = types
     source: types.optional(
       types.enumeration(["tasks", "annotations", "inputs"]),
       "tasks"
-    ),
-
-    filterState: types.maybeNull(
-      types.union(
-        { eager: false },
-        StringFilter,
-        NumberFilter,
-        RangeNumberFilter
-      )
     ),
   })
   .views((self) => ({

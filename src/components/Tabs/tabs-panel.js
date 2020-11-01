@@ -9,7 +9,8 @@ import {
 import { Button, Dropdown, Menu, Radio, Space } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
-import FieldsMenu from "../FieldsMenu";
+import { Filters } from "../Filters/Filters";
+import TabFieldsMenu from "./tab-fields-menu";
 
 const actionsMenu = (
   <Menu onClick={() => {}}>
@@ -17,20 +18,13 @@ const actionsMenu = (
   </Menu>
 );
 
-export const TablePanel = observer(({ item }) => {
+export const TablePanel = observer(({ view }) => {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        marginTop: "1em",
-        marginBottom: "1em",
-      }}
-    >
+    <div className="tab-panel">
       <Space size="middle">
         <Radio.Group
-          value={item.type}
-          onChange={(e) => item.setType(e.target.value)}
+          value={view.type}
+          onChange={(e) => view.setType(e.target.value)}
         >
           <Radio.Button value="list">
             <BarsOutlined /> List
@@ -41,31 +35,30 @@ export const TablePanel = observer(({ item }) => {
         </Radio.Group>
 
         <Radio.Group
-          value={item.target}
-          onChange={(e) => item.setTarget(e.target.value)}
+          value={view.target}
+          onChange={(e) => view.setTarget(e.target.value)}
         >
           <Radio.Button value="tasks">Tasks</Radio.Button>
           <Radio.Button value="annotations">Annotations</Radio.Button>
         </Radio.Group>
 
-        <Dropdown overlay={<FieldsMenu item={item} />}>
+        <Dropdown overlay={<TabFieldsMenu view={view} />}>
           <Button>
             <EyeOutlined /> Fields <CaretDownOutlined />
           </Button>
         </Dropdown>
 
-        <Button
-          type={item.enableFilters ? "primary" : ""}
-          onClick={() => item.toggleFilters()}
-        >
-          <FilterOutlined /> Filters{" "}
-        </Button>
+        <Dropdown overlay={<Filters />} trigger="click">
+          <Button type={view.enableFilters ? "primary" : ""}>
+            <FilterOutlined /> Filters{" "}
+          </Button>
+        </Dropdown>
       </Space>
 
       <Space size="middle">
         <Button
-          disabled={item.target === "annotations"}
-          onClick={() => item.root.setMode("label")}
+          disabled={view.target === "annotations"}
+          onClick={() => view.root.setMode("label")}
         >
           <PlayCircleOutlined />
           Label All

@@ -1,7 +1,7 @@
-import { Checkbox, Menu } from "antd";
+import { Checkbox, Menu, Switch } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
-import fields from "../data/fields";
+import fields from "../../data/fields";
 
 const CheckboxItem = ({ canToggle, enabled }) => {
   return (
@@ -37,19 +37,34 @@ const menuItems = ({ title, group }) => {
   return <Menu.ItemGroup title={title}>{group.map(menuItem)}</Menu.ItemGroup>;
 };
 
-const FieldsMenu = observer(({ item, store }) => {
+const TabFieldsMenu = observer(({ view }) => {
+  const menuItem = (col) => (
+    <Menu.Item
+      key={col.key}
+      icon={<Switch checked={!col.hidden} size="small" />}
+      onClick={col.toggleVisibility}
+    >
+      {col.title}
+    </Menu.Item>
+  );
+
   return (
     <Menu size="small" onClick={() => {}}>
-      {item.target === "tasks" &&
-        menuItems({ title: "Tasks", group: item.fieldsSource("tasks") })}
-      {item.target === "annotations" &&
-        menuItems({
-          title: "Annotations",
-          group: item.fieldsSource("annotations"),
-        })}
-      {menuItems({ title: "Input", group: item.fieldsSource("inputs") })}
+      {view.columns.map((col) => {
+        if (col.children) {
+          return (
+            <Menu.ItemGroup key={col.key} title={col.title}>
+              {col.children.map(menuItem)}
+            </Menu.ItemGroup>
+          );
+        } else if (!col.parent) {
+          return menuItem(col);
+        }
+
+        return null;
+      })}
     </Menu>
   );
 });
 
-export default FieldsMenu;
+export default TabFieldsMenu;

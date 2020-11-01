@@ -55,7 +55,7 @@ export class LSFWrapper {
     this.datamanager = dm;
     this.root = element;
     this.task = options.task;
-    this.history = new LSFHistory(this);
+    this.history = this.datamanager.isLabelStream ? new LSFHistory(this) : null;
 
     const lsfProperties = {
       user: options.user,
@@ -163,8 +163,8 @@ export class LSFWrapper {
 
   /** @private */
   onSubmitCompletion = async (ls, completion) => {
-    await this.submitCurrentCompletion("submitCompletion", (data, body) =>
-      this.datamanager.api.submitCompletion(data, body)
+    await this.submitCurrentCompletion("submitCompletion", (taskID, body) =>
+      this.datamanager.api.skipTask({ taskID }, { body })
     );
   };
 
@@ -216,6 +216,7 @@ export class LSFWrapper {
     this.setLoading(true);
 
     const { taskID, currentCompletion } = this;
+    console.log({ taskID, currentCompletion });
     const result = await submit(taskID, this.prepareData(currentCompletion));
 
     if (result && result.id !== undefined) {
@@ -224,7 +225,7 @@ export class LSFWrapper {
       const eventData = completionToServer(currentCompletion);
       this.datamanager.invoke(eventName, this.lsf, eventData, result);
 
-      this.history.add(taskID, currentCompletion.pk);
+      this.history?.add(taskID, currentCompletion.pk);
     }
 
     if (this.datamanager.isExplorer) {

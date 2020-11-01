@@ -44,7 +44,7 @@ export const initDevApp = async (DataManager) => {
 
   const datamanager = new DataManager({
     root: document.getElementById("app"),
-    mode: "labelstream",
+    // mode: "labelstream",
     api: {
       gateway: "/api",
       endpoints: {
@@ -150,12 +150,44 @@ export const initDevApp = async (DataManager) => {
         },
         project: {
           path: "/project",
-          mock() {
+          async mock() {
             return {
               id: 1,
               label_config_line: config,
               tasks_count: tasks.length,
             };
+          },
+        },
+        columns: {
+          path: "/project/columns",
+          async mock() {
+            return {
+              columns: (await import("./data/columns")).default(
+                {
+                  image: "Image",
+                  value: "Hello",
+                },
+                {
+                  key: "Value",
+                }
+              ),
+            };
+          },
+        },
+        tabs: {
+          path: "/project/tabs",
+          async mock() {
+            return {
+              tabs: (await import("./data/tabs")).default,
+            };
+          },
+        },
+        filters: {
+          path: "/filters",
+          async mock() {
+            const { filters } = await import("./data/filters");
+            console.log({ availableFilters: filters });
+            return filters(tasks);
           },
         },
         cancel: "/cancel",

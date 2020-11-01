@@ -13,10 +13,17 @@ import "./index.scss";
  */
 const AppComponent = ({ app }) => {
   const labeling = app.isLabelStreamMode || app.tasksStore.task !== undefined;
+  const { loading } = app;
   return (
     <Provider store={app}>
       <Styles fullScreen={labeling}>
-        {labeling ? <Labeling /> : <TabsWrapper />}
+        {loading ? (
+          <div>Loading...</div>
+        ) : labeling ? (
+          <Labeling />
+        ) : (
+          <TabsWrapper />
+        )}
       </Styles>
     </Provider>
   );
