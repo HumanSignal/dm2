@@ -17,3 +17,9 @@ export const all = (boolArray, check) => {
 export const any = (boolArray, check) => {
   return boolArray.find((value) => !!check(value)) || false;
 };
+
+export const randomDate = (start, end) => {
+  return new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+  );
+};

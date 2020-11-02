@@ -1,9 +1,27 @@
 import { guidGenerator } from "./utils/random";
+import { randomDate } from "./utils/utils";
 
 export const initDevApp = async (DataManager) => {
   console.log("Running in development");
 
   const { tasks, config } = await import("./data/image_bbox");
+
+  tasks.forEach((t) => {
+    Object.assign(t, {
+      agreement: Math.random(),
+      finished: !!Math.round(Math.random()),
+      created_at: randomDate(
+        new Date("2018-01-01"),
+        new Date("2020-09-31")
+      ).toISOString(),
+      updated_at: randomDate(
+        new Date("2018-01-01"),
+        new Date("2020-09-31")
+      ).toISOString(),
+      data: { ...t.data, value: guidGenerator() },
+      extra: { key: guidGenerator() },
+    });
+  });
 
   const findTask = (id) => tasks.find((t) => t.id === id);
 
@@ -54,7 +72,6 @@ export const initDevApp = async (DataManager) => {
             const { page = 1, page_size = 20 } = urlParams;
             const offset = (page - 1) * page_size;
 
-            console.log({ offset, page_size });
             return {
               tasks: tasks.slice(offset, offset + page_size),
               total: tasks.length,
@@ -163,6 +180,7 @@ export const initDevApp = async (DataManager) => {
           async mock() {
             return {
               columns: (await import("./data/columns")).default(
+                tasks,
                 {
                   image: "Image",
                   value: "Hello",

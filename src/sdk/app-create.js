@@ -21,7 +21,7 @@ export const createApp = async (rootNode, datamanager) => {
   });
 
   appStore._sdk = datamanager;
-  await appStore.fetchData();
+  appStore.fetchData();
 
   window.DM = appStore;
 

@@ -2,10 +2,12 @@ import { Select } from "antd";
 import React from "react";
 import { Common } from "./Common";
 
-const VariantSelect = ({ variants, onChange }) => {
+const VariantSelect = ({ variants: schema, onChange }) => {
+  const { items } = schema;
+
   return (
-    <Select defaultValue={variants[0].value} onChange={onChange}>
-      {variants.map((variant) => (
+    <Select defaultValue={items[0].value} onChange={onChange}>
+      {items.map((variant) => (
         <Select.Option key={variant.value} value={variant.value}>
           {variant.label}
         </Select.Option>
@@ -14,7 +16,7 @@ const VariantSelect = ({ variants, onChange }) => {
   );
 };
 
-export const List = [
+export const ListFilter = [
   {
     key: "equal",
     label: "is...",

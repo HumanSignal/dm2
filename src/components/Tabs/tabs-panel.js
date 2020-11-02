@@ -42,7 +42,7 @@ export const TablePanel = observer(({ view }) => {
           <Radio.Button value="annotations">Annotations</Radio.Button>
         </Radio.Group>
 
-        <Dropdown overlay={<TabFieldsMenu view={view} />}>
+        <Dropdown overlay={<TabFieldsMenu view={view} />} transitionName={""}>
           <Button>
             <EyeOutlined /> Fields <CaretDownOutlined />
           </Button>

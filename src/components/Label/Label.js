@@ -44,8 +44,8 @@ const History = ({ root, history }) => {
  */
 const LabelingComponent = observer(({ store }) => {
   const lsfRef = React.createRef();
-  const item = store.viewsStore.selected;
-  const columns = item.fieldsAsColumns;
+  const view = store.viewsStore.selected;
+  const columns = view.fieldsAsColumns;
   const data = store.tasksStore.data;
   const history = store.SDK.lsf?.history;
 
@@ -74,10 +74,10 @@ const LabelingComponent = observer(({ store }) => {
         {store.isExplorerMode && (
           <div className="table">
             <Table
-              columns={columns}
               data={data}
-              view={item}
-              onSelectRow={() => {}}
+              view={view}
+              columns={columns}
+              hiddenColumns={view.hiddenColumnsList}
             />
           </div>
         )}

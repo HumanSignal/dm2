@@ -1,4 +1,6 @@
-export { Date } from "./Date";
-export { List } from "./List";
-export { Number } from "./Number";
-export { String } from "./String";
+export { BooleanFilter as Boolean } from "./Boolean";
+export { DateFilter as Date } from "./Date";
+export { DatetimeFilter as Datetime } from "./Datetime";
+export { ListFilter as List } from "./List";
+export { NumberFilter as Number } from "./Number";
+export { StringFilter as Image, StringFilter as String } from "./String";

@@ -1,7 +1,7 @@
 import { destroy, flow, getParent, getSnapshot, types } from "mobx-state-tree";
 import { View } from "./view";
 import { ViewColumn } from "./view_column";
-import { ViewFilterType } from "./view_filter_type";
+import { FilterSchema, ViewFilterType } from "./view_filter_type";
 
 export const ViewsStore = types
   .model("ViewsStore", {
@@ -77,7 +77,27 @@ export const ViewsStore = types
 
     fetchColumns: flow(function* () {
       const { columns } = yield getParent(self).API.columns();
-      self.columns.push(...columns);
+
+      columns.forEach((c) => {
+        const column = ViewColumn.create({
+          ...c,
+          filters: c.filters ?? [],
+        });
+
+        self.columns.push(column);
+
+        if (!c.children) {
+          if (c.id === "agreement") {
+            console.log(c.schema, FilterSchema.create(c.schema));
+          }
+          self.availableFilters.push({
+            id: `${c.id}-filter`,
+            type: c.type,
+            field: column.id,
+            schema: c.schema ?? null,
+          });
+        }
+      });
     }),
 
     fetchFilters: flow(function* () {

@@ -16,7 +16,12 @@ const getTabPaneProps = (view, data) => ({
 const createTab = (data) => (view) => (
   <Tabs.TabPane {...getTabPaneProps(view, data)}>
     <TablePanel view={view} />
-    <Table view={view} columns={view.fieldsAsColumns} data={Array.from(data)} />
+    <Table
+      view={view}
+      data={Array.from(data)}
+      columns={view.fieldsAsColumns}
+      hiddenColumns={view.hiddenColumnsList}
+    />
   </Tabs.TabPane>
 );
 

@@ -28,7 +28,6 @@ export const ViewColumn = types
       if (self.children) {
         return all(self.children, (c) => c.hidden);
       } else {
-        console.log(self.parentView);
         return self.parentView?.hiddenColumns.includes(self) ?? false;
       }
     },
@@ -76,9 +75,11 @@ export const ViewColumn = types
     get asField() {
       const result = {
         ...self,
+        id: self.key,
         Header: self.title,
         Cell: self.renderer,
         accessor: self.accessor,
+        hidden: self.hidden,
       };
 
       if (self.children) {
@@ -86,11 +87,6 @@ export const ViewColumn = types
       }
 
       return result;
-    },
-  }))
-  .volatile((self) => ({
-    get isHidden() {
-      return self.defaultHidden || self.hidden;
     },
   }))
   .actions((self) => ({

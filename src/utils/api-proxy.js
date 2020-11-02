@@ -34,6 +34,9 @@ export class APIProxy {
   /** @type {Dict<string>} */
   commonHeaders = {};
 
+  /** @type {number} */
+  mockDelay = 0;
+
   /**
    * Constructor
    * @param {APIProxyOptions} options
@@ -42,6 +45,7 @@ export class APIProxy {
     this.commonHeaders = options.commonHeaders ?? {};
     this.gateway = this.buildGateway(options.gateway);
     this.endpoints = new Map(Object.entries(options.endpoints));
+    this.mockDelay = options.mockDelay ?? 0;
     console.log(`API gateway: ${this.gateway}`);
 
     this.buildMethods();
@@ -253,7 +257,7 @@ export class APIProxy {
             return Promise.resolve(response);
           },
         });
-      }, 200);
+      }, this.mockDelay);
     });
   }
 }

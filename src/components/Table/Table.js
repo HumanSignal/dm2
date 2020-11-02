@@ -1,7 +1,9 @@
+import { Checkbox } from "antd";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { useFilters, useRowSelect, useSortBy, useTable } from "react-table";
+import { ListView } from "./ListView";
 import { TableStyles } from "./Table.styles";
 
 const COLUMN_WIDTHS = new Map([
@@ -35,8 +37,7 @@ const IndeterminateCheckbox = React.forwardRef(
 
     return (
       <>
-        <input
-          type="checkbox"
+        <Checkbox
           ref={resolvedRef}
           {...rest}
           onClick={(e) => e.stopPropagation()}
@@ -46,190 +47,139 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 );
 
-export const Table = observer(({ data, columns, view, onSelectRow }) => {
-  const tasks = getRoot(view).tasksStore;
-  const tableHead = React.createRef();
-  const table = React.createRef();
-  const { totalTasks, task, loading } = tasks;
-  let currentScroll = 0;
+export const Table = observer(
+  ({ data, columns, view, onSelectRow, hiddenColumns = [] }) => {
+    const tasks = getRoot(view).tasksStore;
+    const tableHead = React.createRef();
+    const { totalTasks, task } = tasks;
 
-  const hiddenColumns = view.columns.filter((c) => c.hidden).map((c) => c.id);
+    const handleScroll = (e) => {
+      // console.log(e);
+      // e.preserve();
+      // if (tableHead.current) {
+      //   requestAnimationFrame(() => {
+      //     const { scrollTop } = e.target;
+      //     Object.assign(tableHead.current?.style, {
+      //       transform: `translateY(${scrollTop}px)`
+      //     });
+      //   })
+      // }
+    };
 
-  console.log({ hiddenColumns });
-
-  const handleScroll = (e) => {
-    // console.log(e);
-    // e.preserve();
-    // if (tableHead.current) {
-    //   requestAnimationFrame(() => {
-    //     const { scrollTop } = e.target;
-    //     Object.assign(tableHead.current?.style, {
-    //       transform: `translateY(${scrollTop}px)`
-    //     });
-    //   })
-    // }
-  };
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    state: { selectedRowIds },
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: {
-        hiddenColumns: view.root.isLabeling ? [] : hiddenColumns,
-        sortBy: [{ id: "id", desc: false }],
+    const {
+      getTableProps,
+      getTableBodyProps,
+      headerGroups,
+      rows,
+      prepareRow,
+      setHiddenColumns,
+      state: { selectedRowIds },
+    } = useTable(
+      {
+        columns,
+        data,
+        initialState: {
+          sortBy: [{ id: "id", desc: false }],
+          hiddenColumns,
+        },
       },
-    },
-    useFilters, // useFilters!
-    useSortBy,
-    useRowSelect,
-    (hooks) => {
-      hooks.visibleColumns.push((columns) => {
-        return [
-          // Let's make a column for selection
-          {
-            id: "selection",
-            // The header can use the table's getToggleAllRowsSelectedProps method
-            // to render a checkbox
-            Header: ({ getToggleAllRowsSelectedProps }) =>
-              !view.root.isLabeling ? (
-                <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-              ) : null,
-            // The cell can use the individual row's getToggleRowSelectedProps method
-            // to the render a checkbox
-            Cell: ({ row, value }) =>
-              !view.root.isLabeling ? (
-                <>
-                  <IndeterminateCheckbox {...row.getToggleRowSelectedProps()} />{" "}
-                </>
-              ) : (
-                <span
-                  style={{ cursor: "pointer" }}
-                  onClick={() => onSelectRow && onSelectRow(row.original)}
-                ></span>
-              ),
-          },
-          ...columns,
-        ];
-      });
-    }
-  );
-
-  const gridView = () => {
-    return (
-      <>
-        {view.enableFilters === true ? (
-          <div>
-            {headerGroups.map((headerGroup) => (
-              <div
-                {...headerGroup.getHeaderGroupProps()}
-                style={{ background: "#ccc" }}
-              >
-                {headerGroup.headers.map((column) => (
-                  <div {...column.getHeaderProps()}>
-                    {column.render("Header")}
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        ) : null}
-
-        <div className="grid">
-          {rows.map((row, i) => {
-            prepareRow(row);
-            return (
-              <div {...row.getRowProps()}>
-                {row.cells.map((cell) => {
-                  return (
-                    <div {...cell.getCellProps()}>{cell.render("Cell")}</div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
-      </>
+      useFilters, // useFilters!
+      useSortBy,
+      useRowSelect,
+      (hooks) => {
+        hooks.visibleColumns.push((columns) => {
+          return [
+            // Let's make a column for selection
+            {
+              id: "selection",
+              // The header can use the table's getToggleAllRowsSelectedProps method
+              // to render a checkbox
+              Header: ({ getToggleAllRowsSelectedProps }) =>
+                !view.root.isLabeling ? (
+                  <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+                ) : null,
+              // The cell can use the individual row's getToggleRowSelectedProps method
+              // to the render a checkbox
+              Cell: ({ row }) =>
+                !view.root.isLabeling ? (
+                  <>
+                    <IndeterminateCheckbox
+                      {...row.getToggleRowSelectedProps()}
+                    />{" "}
+                  </>
+                ) : (
+                  <span
+                    style={{ cursor: "pointer" }}
+                    onClick={() => onSelectRow && onSelectRow(row.original)}
+                  ></span>
+                ),
+            },
+            ...columns,
+          ];
+        });
+      }
     );
-  };
 
-  const listView = () => {
-    return (
-      <>
-        <div className="dm-content__table" onScroll={handleScroll}>
-          <table {...getTableProps()}>
-            <thead ref={tableHead} className="dm-content__table-head">
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map((column) => (
-                    <th
-                      {...column.getHeaderProps(getPropsForColumnCell(column))}
-                    >
-                      {column.render("Header")}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-              {rows.map((row, i) => {
-                prepareRow(row);
-                const currentTask = row.original;
-                const isCurrent = currentTask === task;
-                const rowProps = row.getRowProps({
-                  style: {
-                    background: isCurrent ? "#efefef" : "none",
-                  },
-                });
-                const onClick = () => {
-                  if (!isCurrent) {
-                    getRoot(view).tasksStore.setTask(currentTask);
-                  }
-                };
-                return (
-                  <tr {...rowProps} onClick={onClick}>
-                    {row.cells.map((cell) => {
-                      const cellProps = {
-                        ...cell.getCellProps(),
-                        ...getPropsForColumnCell(cell.column),
-                      };
-
-                      const cellContent = cell.render("Cell");
-
-                      return <td {...cellProps}>{cellContent ?? null}</td>;
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </>
-    );
-  };
-
-  // Render the UI for your table
-  return (
-    <TableStyles className="dm-content">
-      {view.root.isLabeling ? (
-        listView()
-      ) : (
+    const gridView = () => {
+      return (
         <>
-          {view.type === "list" ? listView() : gridView()}
-          <div className="dm-content__statusbar">
-            <div>
-              Selected {Object.keys(selectedRowIds).length} of {totalTasks}{" "}
-              tasks
-            </div>
+          <div className="grid">
+            {rows.map((row, i) => {
+              prepareRow(row);
+              return (
+                <div {...row.getRowProps()}>
+                  {row.cells.map((cell) => {
+                    return (
+                      <div {...cell.getCellProps()}>{cell.render("Cell")}</div>
+                    );
+                  })}
+                </div>
+              );
+            })}
           </div>
         </>
-      )}
-    </TableStyles>
-  );
-});
+      );
+    };
+
+    const listView = () => {
+      return (
+        <ListView
+          getTableProps={getTableProps}
+          getTableBodyProps={getTableBodyProps}
+          getPropsForColumnCell={getPropsForColumnCell}
+          tableHead={tableHead}
+          prepareRow={prepareRow}
+          headerGroups={headerGroups}
+          rows={rows}
+          view={view}
+          task={task}
+          onScroll={handleScroll}
+        />
+      );
+    };
+
+    React.useEffect(() => {
+      console.log("set hidden columns");
+      setHiddenColumns(hiddenColumns);
+    }, [setHiddenColumns, hiddenColumns]);
+
+    // Render the UI for your table
+    return (
+      <TableStyles className="dm-content">
+        {view.root.isLabeling ? (
+          listView()
+        ) : (
+          <>
+            {view.type === "list" ? listView() : gridView()}
+            <div className="dm-content__statusbar">
+              <div>
+                Selected {Object.keys(selectedRowIds).length} of {totalTasks}{" "}
+                tasks
+              </div>
+            </div>
+          </>
+        )}
+      </TableStyles>
+    );
+  }
+);

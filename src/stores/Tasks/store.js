@@ -26,17 +26,19 @@ export const TasksStore = types
         })
         .flat();
     },
-  }))
-  .actions((self) => {
-    const api = getRoot(self).API;
 
-    const loadTask = flow(function* (taskID) {
+    get API() {
+      return getRoot(self).API;
+    },
+  }))
+  .actions((self) => ({
+    loadTask: flow(function* (taskID) {
       let remoteTask;
 
       if (taskID !== undefined) {
-        remoteTask = yield api.task({ taskID });
+        remoteTask = yield self.API.task({ taskID });
       } else {
-        remoteTask = yield api.nextTask({
+        remoteTask = yield self.API.nextTask({
           projectID: getRoot(self).project.id,
         });
       }
@@ -59,12 +61,12 @@ export const TasksStore = types
       self.setTask(task.id);
 
       return task;
-    });
+    }),
 
-    const fetchTasks = flow(function* () {
+    fetchTasks: flow(function* () {
       self.loading = true;
 
-      const data = yield api.tasks({
+      const data = yield self.API.tasks({
         page: self.page,
         page_size: self.pageSize,
       });
@@ -74,9 +76,9 @@ export const TasksStore = types
       if (loaded) self.page += 1;
 
       self.loading = false;
-    });
+    }),
 
-    const setData = ({ tasks, total }) => {
+    setData({ tasks, total }) {
       if (tasks.length > 0) {
         const newTasks = tasks.map((t) => ({
           ...t,
@@ -87,27 +89,13 @@ export const TasksStore = types
         return true;
       }
       return false;
-    };
+    },
 
-    const getDataFields = () => {
-      const { data } = self;
-      return data ? Object.keys(data[0]?.["data"] || {}) : null;
-    };
-
-    const setTask = (val) => {
+    setTask(val) {
       self.task = val;
-    };
+    },
 
-    const unsetTask = () => {
+    unsetTask() {
       self.task = undefined;
-    };
-
-    return {
-      fetchTasks,
-      loadTask,
-      setData,
-      getDataFields,
-      setTask,
-      unsetTask,
-    };
-  });
+    },
+  }));

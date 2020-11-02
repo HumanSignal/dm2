@@ -18,7 +18,7 @@ export const View = types
       "tasks"
     ),
 
-    filters: types.optional(types.array(ViewFilter), []),
+    filters: types.array(types.late(() => ViewFilter)),
 
     hiddenColumns: types.maybeNull(
       types.array(types.late(() => types.reference(ViewColumn)))
@@ -36,38 +36,22 @@ export const View = types
       return getParent(getParent(self));
     },
 
-    get dataFields() {
-      return self.fields
-        .filter((f) => f.source === "inputs")
-        .map((f) => f.field);
-    },
-
-    get hasDataFields() {
-      return self.dataFields.length > 0;
-    },
-
     get columns() {
       return getRoot(self).viewsStore.columns;
     },
 
-    get visibleColumns() {
-      return self.columns.filter((c) => !c.hidden);
-    },
-
-    get columnsVisibility() {
-      return self.columns.reduce((res, col) => {
-        return [...res, [col.key, !col.isHidden]];
-      }, []);
-    },
-
     // get fields formatted as columns structure for react-table
     get fieldsAsColumns() {
-      return self.visibleColumns.reduce((res, column) => {
+      return self.columns.reduce((res, column) => {
         if (!column.parent) {
           res.push(column.asField);
         }
         return res;
       }, []);
+    },
+
+    get hiddenColumnsList() {
+      return self.columns.filter((c) => c.hidden).map((c) => c.key);
     },
 
     fieldsSource(source) {
@@ -91,8 +75,10 @@ export const View = types
       self.renameMode = mode;
     },
 
-    toggleFilters() {
-      self.enableFilters = !self.enableFilters;
+    createFilter() {
+      self.filters.push({
+        filter: self.parent.availableFilters[0],
+      });
     },
 
     toggleColumn(column) {

@@ -1,3 +1,5 @@
+import { LoadingOutlined } from "@ant-design/icons";
+import { Spin } from "antd";
 import { observer, Provider } from "mobx-react";
 import React from "react";
 import { Labeling } from "../Label/Label";
@@ -18,7 +20,17 @@ const AppComponent = ({ app }) => {
     <Provider store={app}>
       <Styles fullScreen={labeling}>
         {loading ? (
-          <div>Loading...</div>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Spin indicator={<LoadingOutlined />} size="large" />
+          </div>
         ) : labeling ? (
           <Labeling />
         ) : (

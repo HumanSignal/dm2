@@ -55,7 +55,7 @@ export const AppStore = types
 
       yield self.fetchProject();
       yield self.viewsStore.fetchColumns();
-      yield self.viewsStore.fetchFilters();
+      // yield self.viewsStore.fetchFilters();
       yield self.viewsStore.fetchViews();
       yield self.tasksStore.fetchTasks();
 

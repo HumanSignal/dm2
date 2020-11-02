@@ -13,7 +13,7 @@ const BaseInput = ({ defaultValue, onChange, placeholder }) => {
   );
 };
 
-export const String = [
+export const StringFilter = [
   {
     key: "contains",
     label: "=",

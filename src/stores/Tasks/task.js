@@ -7,7 +7,7 @@ export const TaskModel = types
     data: types.optional(CustomJSON, {}),
     extra: types.optional(CustomJSON, {}),
     accuracy: types.maybeNull(types.integer),
-    agreement: types.optional(types.integer, 0),
+    agreement: types.optional(types.number, 0),
     finished: types.optional(types.boolean, false),
     is_labeled: types.optional(types.boolean, false),
     created_at: types.optional(types.maybeNull(types.string), null),

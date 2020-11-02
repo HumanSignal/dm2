@@ -1,3 +1,3 @@
 import { Common } from "./Common";
 
-export const Date = [...Common];
+export const DateFilter = [...Common];
