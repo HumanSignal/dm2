@@ -15,11 +15,18 @@ import * as FilterInputs from "./types";
 export const FilterInput = observer(({ filter, field, value, operator }) => {
   console.log({ field, filter, value, operator });
 
-  const type = React.useMemo(() => FilterInputs[field.type], [field]);
-  const selected = React.useMemo(() => type.find((t) => t.key === operator), [
-    operator,
-    type,
-  ]);
+  const types = React.useMemo(() => FilterInputs[field.type], [field]);
+
+  const selected = React.useMemo(() => {
+    if (operator) {
+      return types.find((t) => t.key === operator);
+    } else {
+      const type = types[0];
+      filter.setOperator(type.key);
+      return type;
+    }
+  }, [operator, types, filter]);
+
   const Input = selected.input;
 
   return (
@@ -29,10 +36,8 @@ export const FilterInput = observer(({ filter, field, value, operator }) => {
           width={field.width ?? 90}
           placeholder="Condition"
           defaultValue={filter.operator}
-          items={type.map(({ key, label }) => ({ value: key, label }))}
-          onChange={(selectedKey) => {
-            filter.setOperator(selectedKey);
-          }}
+          items={types.map(({ key, label }) => ({ value: key, label }))}
+          onChange={(selectedKey) => filter.setOperator(selectedKey)}
         />
       </div>
       <div className="filter-line__column">

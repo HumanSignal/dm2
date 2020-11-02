@@ -9,10 +9,7 @@ const BaseInput = ({ defaultValue, onChange, placeholder, schema, style }) => {
       placeholder={placeholder}
       defaultValue={defaultValue}
       onChange={(e) => onChange(e, Number(e.target.value))}
-      style={{
-        width: "100%",
-        ...(style ?? {}),
-      }}
+      style={{ width: 80 }}
       {...(schema ?? {})}
     />
   );

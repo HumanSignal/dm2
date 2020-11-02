@@ -22,7 +22,7 @@ export const ViewFilter = types
     value: types.maybeNull(
       types.union(FilterValue, FilterValueRange, types.array(FilterValue))
     ),
-    operator: types.optional(Operators, "equal"),
+    operator: types.maybeNull(types.optional(Operators, "equal")),
   })
   .views((self) => ({
     get field() {
@@ -35,8 +35,9 @@ export const ViewFilter = types
   }))
   .actions((self) => ({
     setFilter(value) {
-      self.filter = value;
       self.value = null;
+      self.operator = null;
+      self.filter = value;
     },
     setOperator(operator) {
       self.operator = operator;
