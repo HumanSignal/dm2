@@ -67,7 +67,7 @@ export const initDevApp = async (DataManager) => {
       gateway: "/api",
       endpoints: {
         tasks: {
-          path: "/tasks",
+          path: "/project/tabs/:tabID/tasks",
           mock(url, urlParams) {
             const { page = 1, page_size = 20 } = urlParams;
             const offset = (page - 1) * page_size;

@@ -1,5 +1,4 @@
 import { flow, types } from "mobx-state-tree";
-import { TasksStore } from "./Tasks";
 import { CustomJSON } from "./types";
 import { ViewsStore } from "./Views";
 
@@ -9,8 +8,6 @@ export const AppStore = types
       types.enumeration(["explorer", "labelstream"]),
       "explorer"
     ),
-
-    tasksStore: types.optional(TasksStore, {}),
 
     viewsStore: types.optional(ViewsStore, {
       views: [],
@@ -30,7 +27,7 @@ export const AppStore = types
     },
 
     get isLabeling() {
-      return !!self.tasksStore.task;
+      return !!self.tasksStore?.task || self.isLabelStreamMode;
     },
 
     get isLabelStreamMode() {
@@ -39,6 +36,14 @@ export const AppStore = types
 
     get isExplorerMode() {
       return self.mode === "explorer";
+    },
+
+    get currentView() {
+      return self.viewsStore.selected;
+    },
+
+    get tasksStore() {
+      return self.currentView?.taskStore;
     },
   }))
   .actions((self) => ({
@@ -54,10 +59,12 @@ export const AppStore = types
       self.loading = true;
 
       yield self.fetchProject();
+      console.log("Project loaded");
       yield self.viewsStore.fetchColumns();
+      console.log("Columns set up. Filter types initialized.");
       // yield self.viewsStore.fetchFilters();
       yield self.viewsStore.fetchViews();
-      yield self.tasksStore.fetchTasks();
+      console.log("Views loaded. Current view is set to %O", self.currentView);
 
       self.loading = false;
     }),

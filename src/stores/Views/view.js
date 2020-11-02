@@ -1,5 +1,7 @@
 import { getParent, getRoot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
+import { TasksStore } from "../Tasks";
+import { CustomJSON } from "../types";
 import { ViewColumn } from "./view_column";
 import { ViewFilter } from "./view_filter";
 
@@ -19,6 +21,8 @@ export const View = types
     ),
 
     filters: types.array(types.late(() => ViewFilter)),
+    selectedTasks: types.optional(types.array(CustomJSON), []),
+    selectedCompletions: types.optional(types.array(CustomJSON), []),
 
     hiddenColumns: types.maybeNull(
       types.array(types.late(() => types.reference(ViewColumn)))
@@ -26,6 +30,7 @@ export const View = types
 
     enableFilters: false,
     renameMode: false,
+    taskStore: types.optional(TasksStore, {}),
   })
   .views((self) => ({
     get root() {
@@ -87,5 +92,9 @@ export const View = types
       } else {
         self.hiddenColumns = [...self.hiddenColumns, column];
       }
+    },
+
+    reload() {
+      self.taskStore.reload();
     },
   }));

@@ -18,9 +18,9 @@ export const ViewColumn = types
       "String"
     ),
     defaultHidden: types.optional(types.boolean, false),
-    parent: types.maybeNull(types.late(() => types.safeReference(ViewColumn))),
+    parent: types.maybeNull(types.late(() => types.reference(ViewColumn))),
     children: types.maybeNull(
-      types.array(types.late(() => types.safeReference(ViewColumn)))
+      types.array(types.late(() => types.reference(ViewColumn)))
     ),
   })
   .views((self) => ({

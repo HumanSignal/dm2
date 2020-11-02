@@ -14,12 +14,10 @@ import "./index.scss";
  * @param {{app: AppStore} param0
  */
 const AppComponent = ({ app }) => {
-  const labeling = app.isLabelStreamMode || app.tasksStore.task !== undefined;
-  const { loading } = app;
   return (
     <Provider store={app}>
-      <Styles fullScreen={labeling}>
-        {loading ? (
+      <Styles fullScreen={app.isLabeling}>
+        {app.loading ? (
           <div
             style={{
               width: "100%",
@@ -31,7 +29,7 @@ const AppComponent = ({ app }) => {
           >
             <Spin indicator={<LoadingOutlined />} size="large" />
           </div>
-        ) : labeling ? (
+        ) : app.isLabeling ? (
           <Labeling />
         ) : (
           <TabsWrapper />

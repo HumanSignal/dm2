@@ -2,20 +2,20 @@ import { Checkbox, Menu } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 
-const TabFieldsMenu = observer(({ view }) => {
-  const menuItem = (col) => (
-    <Menu.Item key={col.key}>
-      <Checkbox
-        size="small"
-        checked={!col.hidden}
-        onChange={col.toggleVisibility}
-        style={{ width: "100%" }}
-      >
-        {col.title}
-      </Checkbox>
-    </Menu.Item>
-  );
+const menuItem = (col) => (
+  <Menu.Item key={col.key}>
+    <Checkbox
+      size="small"
+      checked={!col.hidden}
+      onChange={col.toggleVisibility}
+      style={{ width: "100%" }}
+    >
+      {col.title}
+    </Checkbox>
+  </Menu.Item>
+);
 
+const TabFieldsMenu = observer(({ view }) => {
   return (
     <Menu size="small">
       {view.columns.map((col) => {

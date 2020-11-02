@@ -26,6 +26,7 @@ export const ViewsStore = types
       } else {
         self.selected = view;
       }
+      self.selected.reload();
     },
 
     deleteView(view) {
@@ -70,7 +71,6 @@ export const ViewsStore = types
       }
 
       const newView = View.create(snapshot);
-      console.log({ snapshot, newView });
 
       return newView;
     },

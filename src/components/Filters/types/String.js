@@ -8,7 +8,7 @@ const BaseInput = ({ defaultValue, onChange, placeholder }) => {
       type="text"
       placeholder={placeholder}
       defaultValue={defaultValue}
-      onChange={onChange}
+      onChange={(e) => onChange(e, e.target.value)}
     />
   );
 };
@@ -16,22 +16,22 @@ const BaseInput = ({ defaultValue, onChange, placeholder }) => {
 export const StringFilter = [
   {
     key: "contains",
-    label: "=",
+    label: "contains...",
     input: (props) => <BaseInput {...props} />,
   },
   {
     key: "not_contains",
-    label: "≠",
+    label: "not contains...",
     input: (props) => <BaseInput {...props} />,
   },
   {
     key: "equal",
-    label: "<",
+    label: "equal...",
     input: (props) => <BaseInput {...props} />,
   },
   {
     key: "not_equal",
-    label: ">",
+    label: "not equal...",
     input: (props) => <BaseInput {...props} />,
   },
   ...Common,

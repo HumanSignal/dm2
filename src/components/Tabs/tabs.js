@@ -13,17 +13,21 @@ const getTabPaneProps = (view, data) => ({
   tab: <TabTitle item={view} data={data} />,
 });
 
-const createTab = (data) => (view) => (
-  <Tabs.TabPane {...getTabPaneProps(view, data)}>
-    <TablePanel view={view} />
-    <Table
-      view={view}
-      data={Array.from(data)}
-      columns={view.fieldsAsColumns}
-      hiddenColumns={view.hiddenColumnsList}
-    />
-  </Tabs.TabPane>
-);
+const createTab = (data) => (view) => {
+  const columns = React.useMemo(() => view.fieldsAsColumns, [view]);
+
+  return (
+    <Tabs.TabPane {...getTabPaneProps(view, data)}>
+      <TablePanel view={view} />
+      <Table
+        view={view}
+        data={Array.from(data)}
+        columns={columns}
+        hiddenColumns={view.hiddenColumnsList}
+      />
+    </Tabs.TabPane>
+  );
+};
 
 export const TabsWrapper = inject("store")(
   observer(({ store }) => {

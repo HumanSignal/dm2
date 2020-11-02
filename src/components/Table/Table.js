@@ -31,21 +31,38 @@ const IndeterminateCheckbox = React.forwardRef(
     const defaultRef = React.useRef();
     const resolvedRef = ref || defaultRef;
 
-    React.useEffect(() => {
-      resolvedRef.current.indeterminate = indeterminate;
-    }, [resolvedRef, indeterminate]);
-
     return (
       <>
         <Checkbox
           ref={resolvedRef}
           {...rest}
+          indeterminate={indeterminate}
           onClick={(e) => e.stopPropagation()}
         />
       </>
     );
   }
 );
+
+const SelectionCell = (view) => (columns) => {
+  const result = [];
+
+  if (!view.root.isLabeling) {
+    result.push({
+      id: "selection",
+      Header: ({ getToggleAllRowsSelectedProps }) => (
+        <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+      ),
+      Cell: ({ row: { getToggleRowSelectedProps } }) => (
+        <IndeterminateCheckbox {...getToggleRowSelectedProps()} />
+      ),
+    });
+  }
+
+  result.push(...columns);
+
+  return result;
+};
 
 export const Table = observer(
   ({ data, columns, view, onSelectRow, hiddenColumns = [] }) => {
@@ -87,36 +104,7 @@ export const Table = observer(
       useSortBy,
       useRowSelect,
       (hooks) => {
-        hooks.visibleColumns.push((columns) => {
-          return [
-            // Let's make a column for selection
-            {
-              id: "selection",
-              // The header can use the table's getToggleAllRowsSelectedProps method
-              // to render a checkbox
-              Header: ({ getToggleAllRowsSelectedProps }) =>
-                !view.root.isLabeling ? (
-                  <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-                ) : null,
-              // The cell can use the individual row's getToggleRowSelectedProps method
-              // to the render a checkbox
-              Cell: ({ row }) =>
-                !view.root.isLabeling ? (
-                  <>
-                    <IndeterminateCheckbox
-                      {...row.getToggleRowSelectedProps()}
-                    />{" "}
-                  </>
-                ) : (
-                  <span
-                    style={{ cursor: "pointer" }}
-                    onClick={() => onSelectRow && onSelectRow(row.original)}
-                  ></span>
-                ),
-            },
-            ...columns,
-          ];
-        });
+        hooks.visibleColumns.push(SelectionCell(view));
       }
     );
 
@@ -162,6 +150,10 @@ export const Table = observer(
       console.log("set hidden columns");
       setHiddenColumns(hiddenColumns);
     }, [setHiddenColumns, hiddenColumns]);
+
+    React.useEffect(() => {
+      console.log(selectedRowIds);
+    }, [selectedRowIds]);
 
     // Render the UI for your table
     return (

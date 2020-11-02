@@ -46,5 +46,6 @@ export const ViewFilter = types
     },
     setValue(value) {
       self.value = value;
+      console.log(`Value updated: ${self.value}`);
     },
   }));

@@ -1,4 +1,4 @@
-import { flow, getRoot, types } from "mobx-state-tree";
+import { flow, getParent, getRoot, types } from "mobx-state-tree";
 import { TaskModel } from "./task";
 
 export const TasksStore = types
@@ -69,6 +69,7 @@ export const TasksStore = types
       const data = yield self.API.tasks({
         page: self.page,
         page_size: self.pageSize,
+        tabID: getParent(self).id,
       });
 
       const loaded = self.setData(data);
@@ -76,6 +77,12 @@ export const TasksStore = types
       if (loaded) self.page += 1;
 
       self.loading = false;
+    }),
+
+    reload: flow(function* () {
+      self.data = [];
+      self.page = 1;
+      yield self.fetchTasks();
     }),
 
     setData({ tasks, total }) {
