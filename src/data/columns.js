@@ -23,6 +23,20 @@ const columns = (tasks, data = {}, extra = {}) => [
     type: "Boolean",
   },
   {
+    id: "collaborator",
+    title: "Collaborators",
+    type: "List",
+    schema: {
+      items: [
+        { color: "cyan", value: "ns@heartex.ai", title: "Nick Skriabin" },
+        { color: "magenta", value: "mt@heartex.ai", title: "Max Tkachenko" },
+        { color: "purple", value: "mm@heartex.ai", title: "Michail Maluyk" },
+        { color: "green", value: "an@heartex.ai", title: "Andrew" },
+        { color: "blue", value: "nick@heartex.ai", title: "Nick" },
+      ],
+    },
+  },
+  {
     id: "created_at",
     title: "Created at",
     type: "Datetime",
@@ -65,14 +79,12 @@ const columns = (tasks, data = {}, extra = {}) => [
     title: key.replace(/^\$/, ""),
     parent: "data",
     type: "Image",
-    defaultHidden: true,
   })),
   ...Object.keys(extra).map((key) => ({
     id: key,
     title: key.replace(/^\$/, ""),
     parent: "extra",
     type: "String",
-    defaultHidden: true,
   })),
 ];
 

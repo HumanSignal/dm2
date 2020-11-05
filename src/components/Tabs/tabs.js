@@ -1,6 +1,8 @@
-import { Tabs } from "antd";
+import { ShrinkOutlined } from "@ant-design/icons";
+import { Button, PageHeader, Tabs } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
+import { Filters } from "../Filters/Filters";
 import { Table } from "../Table/Table";
 import { TabTitle } from "./tabs-pane";
 import { TablePanel } from "./tabs-panel";
@@ -13,12 +15,12 @@ const getTabPaneProps = (view, data) => ({
   tab: <TabTitle item={view} data={data} />,
 });
 
-const createTab = (data) => (view) => {
+const createTab = (views, data) => (view) => {
   const columns = React.useMemo(() => view.fieldsAsColumns, [view]);
 
   return (
     <Tabs.TabPane {...getTabPaneProps(view, data)}>
-      <TablePanel view={view} />
+      <TablePanel views={views} view={view} />
       <Table
         view={view}
         data={Array.from(data)}
@@ -29,9 +31,35 @@ const createTab = (data) => (view) => {
   );
 };
 
+const FiltersSidebar = observer(({ views }) => {
+  return views.sidebarEnabled && views.sidebarVisible ? (
+    <div className="sidebar">
+      <PageHeader
+        title="Filters"
+        extra={
+          <Button
+            key="close-filters"
+            type="link"
+            onClick={() => views.collapseFilters()}
+          >
+            <ShrinkOutlined />
+          </Button>
+        }
+        style={{
+          margin: "0 0 10px",
+          padding: "0 10px",
+          height: 24,
+        }}
+      />
+      <Filters sidebar={true} />
+    </div>
+  ) : null;
+});
+
 export const TabsWrapper = inject("store")(
   observer(({ store }) => {
     const tasks = store.tasksStore;
+    const views = store.viewsStore;
     const activeTab = store.viewsStore.selected;
     const data =
       activeTab.target === "annotations" ? tasks.annotationsData : tasks.data;
@@ -44,8 +72,9 @@ export const TabsWrapper = inject("store")(
           onEdit={store.viewsStore.addView}
           onChange={(key) => store.viewsStore.setSelected(key)}
         >
-          {store.viewsStore.all.map(createTab(data))}
+          {store.viewsStore.all.map(createTab(views, data))}
         </Tabs>
+        <FiltersSidebar views={views} />
       </TabsStyles>
     );
   })

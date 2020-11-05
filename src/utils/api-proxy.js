@@ -28,9 +28,6 @@ export class APIProxy {
   /** @type {string} */
   gateway = null;
 
-  /** @type {Endpoints} */
-  endpoints = new Map();
-
   /** @type {Dict<string>} */
   commonHeaders = {};
 
@@ -44,11 +41,10 @@ export class APIProxy {
   constructor(options) {
     this.commonHeaders = options.commonHeaders ?? {};
     this.gateway = this.buildGateway(options.gateway);
-    this.endpoints = new Map(Object.entries(options.endpoints));
     this.mockDelay = options.mockDelay ?? 0;
     console.log(`API gateway: ${this.gateway}`);
 
-    this.buildMethods();
+    this.buildMethods(options.endpoints);
   }
 
   /**
@@ -74,10 +70,20 @@ export class APIProxy {
    * Build methods list from endpoints
    * @private
    */
-  buildMethods() {
-    this.endpoints.forEach((settings, methodName) => {
-      this[methodName] = this.createApiCallExecutor(settings);
-    });
+  buildMethods(endpoints, parentPath) {
+    if (endpoints) {
+      const methods = new Map(Object.entries(endpoints));
+
+      methods.forEach((settings, methodName) => {
+        const { scope, ...restSettings } = settings;
+        this[methodName] = this.createApiCallExecutor(restSettings, [
+          parentPath,
+        ]);
+
+        if (scope)
+          this.buildMethods(scope, [...(parentPath ?? []), restSettings.path]);
+      });
+    }
   }
 
   /**
@@ -85,12 +91,16 @@ export class APIProxy {
    * @param {EndpointConfig} settings
    * @private
    */
-  createApiCallExecutor(settings) {
+  createApiCallExecutor(settings, parentPath) {
     return async (urlParams, { headers, body } = {}) => {
       try {
         const methodSettings = this.getSettings(settings);
         const requestMethod = (methodSettings.method ?? "get").toUpperCase();
-        const apiCallURL = this.createUrl(methodSettings.path, urlParams ?? {});
+        const apiCallURL = this.createUrl(
+          methodSettings.path,
+          urlParams ?? {},
+          parentPath
+        );
 
         const request = new Request(apiCallURL, {
           method: requestMethod,
@@ -170,14 +180,24 @@ export class APIProxy {
    * @param {Dict} data
    * @private
    */
-  createUrl(path, data = {}) {
+  createUrl(endpoint, data = {}, parentPath) {
     const url = new URL(this.gateway);
     const usedKeys = [];
+    const path = [...(parentPath ?? []), endpoint]
+      .filter((p) => p !== undefined)
+      .join("/")
+      .replace(/([/]+)/g, "/");
+
+    console.log({ parentPath, endpoint, path });
 
     const processedPath = path.replace(/:([^/]+)/g, (...res) => {
       const key = res[1];
       usedKeys.push(key);
-      return data[key] ?? `[can't find key \`${key}\` in data]`;
+      const result = data[key];
+
+      if (!result) throw new Error(`Can't find key \`${key}\` in data`);
+
+      return result;
     });
 
     url.pathname += processedPath;
@@ -240,12 +260,15 @@ export class APIProxy {
 
       const groupName = `Mock [${settings.method.toUpperCase()}: ${url}]`;
       console.groupCollapsed(groupName);
+      console.log("URL params", params);
+      console.log("Body:", request.body);
 
       try {
         response = await settings.mock(url, params ?? {}, request);
       } catch {
         ok = false;
       }
+
       console.log("Response:", response);
 
       console.groupEnd(groupName);

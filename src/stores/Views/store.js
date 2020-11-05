@@ -9,6 +9,8 @@ export const ViewsStore = types
     views: types.optional(types.array(View), []),
     availableFilters: types.optional(types.array(ViewFilterType), []),
     columns: types.optional(types.array(ViewColumn), []),
+    sidebarEnabled: types.optional(types.boolean, false),
+    sidebarVisible: types.optional(types.boolean, false),
   })
   .views((self) => ({
     get all() {
@@ -17,6 +19,10 @@ export const ViewsStore = types
 
     get canClose() {
       return self.all.length > 1;
+    },
+
+    serialize() {
+      return self.views.map((v) => v.serialize());
     },
   }))
   .actions((self) => ({
@@ -27,6 +33,7 @@ export const ViewsStore = types
         self.selected = view;
       }
       self.selected.reload();
+      localStorage.setItem("selectedTab", self.selected.id);
     },
 
     deleteView(view) {
@@ -60,19 +67,21 @@ export const ViewsStore = types
     },
 
     createView(viewSnapshot) {
-      const snapshot = viewSnapshot ?? {};
+      return View.create(viewSnapshot ?? {});
+    },
 
-      if (!snapshot.hiddenColumns) {
-        const hiddenColumns = self.columns
-          .filter((c) => c.defaultHidden)
-          .map((c) => c.id);
-        console.log(hiddenColumns);
-        snapshot.hiddenColumns = hiddenColumns;
-      }
+    expandFilters() {
+      self.sidebarEnabled = true;
+      self.sidebarVisible = true;
+    },
 
-      const newView = View.create(snapshot);
+    collapseFilters() {
+      self.sidebarEnabled = false;
+      self.sidebarVisible = false;
+    },
 
-      return newView;
+    toggleSidebar() {
+      self.sidebarVisible = !self.sidebarVisible;
     },
 
     fetchColumns: flow(function* () {
@@ -108,7 +117,11 @@ export const ViewsStore = types
     fetchViews: flow(function* () {
       const { tabs } = yield getParent(self).API.tabs();
 
+      console.log(tabs.map((t) => t.id));
       self.views.push(...tabs.map(self.createView));
-      self.setSelected(self.views[0]);
+
+      const selected = localStorage.getItem("selectedTab");
+      const selectedView = self.views.find((v) => v.id === Number(selected));
+      self.setSelected(selectedView ?? self.views[0]);
     }),
   }));

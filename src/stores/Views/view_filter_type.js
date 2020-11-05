@@ -1,11 +1,31 @@
-import { types } from "mobx-state-tree";
+import { isPrimitiveType, types } from "mobx-state-tree";
 import * as FilterTypes from "../../components/Filters/types";
 import { ViewColumn } from "./view_column";
 
-export const FilterValue = types.union(types.string, types.number);
+export const FilterValue = types.union(
+  types.string,
+  types.number,
+  types.boolean
+);
+
+export const FilterItemValue = types.model("FilterItemValue", {
+  value: FilterValue,
+  title: FilterValue,
+  color: types.maybeNull(types.string),
+});
+
+export const FilterItemType = types.union({
+  dispatcher(s) {
+    if (isPrimitiveType(s)) {
+      return FilterValue;
+    } else {
+      return FilterItemValue;
+    }
+  },
+});
 
 export const FilterValueList = types.model("FilterValueList", {
-  items: types.array(FilterValue),
+  items: types.array(FilterItemType),
 });
 
 export const FilterValueRange = types.model("FilterValueRange", {

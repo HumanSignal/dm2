@@ -1,5 +1,6 @@
-import { types } from "mobx-state-tree";
+import { getParent, types } from "mobx-state-tree";
 import * as Filters from "../../components/Filters/types";
+import { debounce } from "../../utils/debounce";
 import {
   FilterValue,
   FilterValueRange,
@@ -32,20 +33,49 @@ export const ViewFilter = types
     get schema() {
       return self.filter.schema;
     },
+
+    /** @returns {import("./view").View} */
+    get view() {
+      return getParent(getParent(self));
+    },
+
+    get component() {
+      return Filters[self.filter.type];
+    },
+
+    get componentValueType() {
+      return self.component?.find(({ key }) => key === self.operator)
+        ?.valueType;
+    },
   }))
   .actions((self) => ({
     setFilter(value) {
-      self.value = null;
-      self.operator = null;
       self.filter = value;
+      self.setOperator(self.component[0].key);
     },
+
     setOperator(operator) {
+      const valueType = self.componentValueType;
       self.operator = operator;
-      self.value = null;
-      console.log("Operator updated");
+
+      console.log({ valueType, type: self.componentValueType });
+      if (valueType !== self.componentValueType) {
+        self.value = null;
+      } else {
+        self.view.save();
+      }
     },
+
     setValue(value) {
       self.value = value;
-      console.log(`Value updated: ${self.value}`);
     },
+
+    delete() {
+      self.view.deleteFilter(self);
+    },
+
+    setValueDelayed: debounce((value) => {
+      self.setValue(value);
+      self.view.save();
+    }, 300),
   }));

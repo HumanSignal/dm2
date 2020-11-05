@@ -1,51 +1,47 @@
-import { Input } from "antd";
 import React from "react";
-import { Common } from "./Common";
+import { FilterInput } from "../FilterInput";
 
-const BaseInput = ({ defaultValue, onChange, placeholder, schema, style }) => {
-  return (
-    <Input
-      type="number"
-      placeholder={placeholder}
-      defaultValue={defaultValue}
-      onChange={(e) => onChange(e, Number(e.target.value))}
-      style={{ width: 80 }}
-      {...(schema ?? {})}
-    />
-  );
+const NumberInput = (props) => {
+  return <FilterInput type="number" {...props} />;
 };
 
 const RangeInput = ({ schema, value, onChange }) => {
-  const minmax = { ...value };
+  const minmax = { min: undefined, max: undefined, ...value };
+
+  const onValueChange = (e, value) => {
+    if (value.min !== undefined && value.max !== undefined) {
+      onChange(e, value);
+    }
+  };
 
   const onChangeMin = (e, value) => {
     minmax.min = value;
-    onChange(e, { ...minmax });
+    onValueChange(e, { ...minmax });
   };
 
   const onChangeMax = (e, value) => {
     minmax.max = value;
-    onChange(e, { ...minmax });
+    onValueChange(e, { ...minmax });
   };
 
   return (
-    <div style={{ display: "flex", alignItems: "center" }}>
-      <BaseInput
+    <>
+      <NumberInput
         placeholder="Min"
-        defaultValue={value?.min}
+        value={value?.min}
         onChange={onChangeMin}
         schema={schema}
-        style={{ width: 80 }}
+        style={{ flex: 1 }}
       />
       <span style={{ padding: "0 10px" }}>and</span>
-      <BaseInput
+      <NumberInput
         placeholder="Max"
-        defaultValue={value?.max}
+        value={value?.max}
         onChange={onChangeMax}
         schema={schema}
-        style={{ width: 80 }}
+        style={{ flex: 1 }}
       />
-    </div>
+    </>
   );
 };
 
@@ -53,42 +49,49 @@ export const NumberFilter = [
   {
     key: "equal",
     label: "=",
-    input: (props) => <BaseInput {...props} />,
+    valueType: "single",
+    input: (props) => <NumberInput {...props} />,
   },
   {
     key: "not_equal",
     label: "≠",
-    input: (props) => <BaseInput {...props} />,
+    valueType: "single",
+    input: (props) => <NumberInput {...props} />,
   },
   {
     key: "less",
     label: "<",
-    input: (props) => <BaseInput {...props} />,
+    valueType: "single",
+    input: (props) => <NumberInput {...props} />,
   },
   {
     key: "greater",
     label: ">",
-    input: (props) => <BaseInput {...props} />,
+    valueType: "single",
+    input: (props) => <NumberInput {...props} />,
   },
   {
     key: "less_or_equal",
     label: "≤",
-    input: (props) => <BaseInput {...props} />,
+    valueType: "single",
+    input: (props) => <NumberInput {...props} />,
   },
   {
     key: "greater_or_equal",
     label: "≥",
-    input: (props) => <BaseInput {...props} />,
+    valueType: "single",
+    input: (props) => <NumberInput {...props} />,
   },
   {
     key: "in",
     label: "is between",
+    valueType: "range",
     input: (props) => <RangeInput {...props} />,
   },
   {
     key: "not_in",
     label: "not between",
+    valueType: "range",
     input: (props) => <RangeInput {...props} />,
   },
-  ...Common,
 ];

@@ -1,3 +1,3 @@
-import { Common } from "./Common";
+import { DateFields } from "./Date";
 
-export const DatetimeFilter = [...Common];
+export const DatetimeFilter = [...DateFields({ time: true })];

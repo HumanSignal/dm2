@@ -5,6 +5,7 @@ export const initDevApp = async (DataManager) => {
   console.log("Running in development");
 
   const { tasks, config } = await import("./data/image_bbox");
+  const { default: tabs } = await import("./data/tabs");
 
   tasks.forEach((t) => {
     Object.assign(t, {
@@ -23,28 +24,82 @@ export const initDevApp = async (DataManager) => {
     });
   });
 
-  const findTask = (id) => tasks.find((t) => t.id === id);
-
-  const findCompletion = (task, id) =>
-    task?.completions?.find((c) => c.id === id);
-
   const timestamp = () => new Date().toISOString();
 
-  const updateTask = (task, patch) => {
-    const index = tasks.indexOf(task);
-    tasks[index] = {
-      ...task,
+  const findEntity = (list, id) => list?.find((e) => e.id === id);
+
+  const updateEntity = (list, entityID, patch) => {
+    const entity = findEntity(list, entityID);
+    const index = list.indexOf(entity);
+
+    if (index < 0) return;
+
+    list[index] = {
+      ...entity,
       ...patch,
     };
-    return task;
+
+    console.log(
+      `Updating entity [${entityID}:${index}] %O with data: %O`,
+      entity,
+      patch
+    );
+    console.log("Update result:", list[index]);
+    return list[index];
   };
 
-  const addCompletion = (task, completion) => {
+  const deleteEntity = (list, id) => list?.filter((e) => e.id !== id) ?? [];
+
+  const findTask = (id) => findEntity(tasks, id);
+
+  const findCompletion = (task, id) => findEntity(task?.completions, id);
+
+  const updateTask = (taskID, patch) => updateEntity(tasks, taskID, patch);
+
+  const addCompletion = (taskID, completion) => {
+    const task = findTask(taskID);
     const completions = task.completions ?? [];
 
-    updateTask(task, {
-      completions: [...completions, completion],
+    updateTask(taskID, {
+      completions: [...completions, createCompletion(completion)],
     });
+
+    return completion;
+  };
+
+  const deleteCompletion = (taskID, id) => {
+    const task = findTask(taskID);
+    return updateTask(taskID, {
+      completions: deleteEntity(task?.completions, id),
+    });
+  };
+
+  const findTab = (id) => findEntity(tabs, id);
+
+  const updateTab = (tabID, patch) => updateEntity(tabs, tabID, patch);
+
+  const createTab = (patch) => {
+    const length = tabs.push({
+      ...patch,
+      id: (tabs[tabs.length - 1].id ?? -1) + 1,
+    });
+
+    return tabs[length - 1];
+  };
+
+  const updateOrCreateTab = (tabID, patch) => {
+    const tab = updateTab(tabID, patch);
+
+    if (tab) {
+      return tab;
+    } else {
+      return createTab(patch);
+    }
+  };
+
+  const deleteTab = (tabID) => {
+    const tabIndex = tabs.findIndex((t) => t.id === tabID);
+    return !!tabs.splice(tabIndex, 1).length;
   };
 
   const createCompletion = (data) => ({
@@ -66,105 +121,6 @@ export const initDevApp = async (DataManager) => {
     api: {
       gateway: "/api",
       endpoints: {
-        tasks: {
-          path: "/project/tabs/:tabID/tasks",
-          mock(url, urlParams) {
-            const { page = 1, page_size = 20 } = urlParams;
-            const offset = (page - 1) * page_size;
-
-            return {
-              tasks: tasks.slice(offset, offset + page_size),
-              total: tasks.length,
-            };
-          },
-        },
-        completions: {
-          path: "/tasks/:taskId/completions",
-          method: "post",
-          mock(url, urlParams) {
-            const { id } = urlParams;
-            return tasks.find((t) => t.id === id)?.completions;
-          },
-        },
-        task: {
-          path: "/tasks/:taskID",
-          mock(url, urlParams) {
-            const { taskID } = urlParams;
-            return tasks.find((t) => t.id === taskID);
-          },
-        },
-        nextTask: {
-          path: "/projects/:projectID/next",
-          method: "get",
-          mock() {
-            const [min, max] = [0, tasks.length - 1];
-            const index = Math.floor(Math.random() * (max - min + 1)) + min;
-            return tasks[index];
-          },
-        },
-        submitCompletion: {
-          path: "/tasks/:taskID/completions",
-          method: "post",
-          headers: {
-            ContentType: "application/json",
-          },
-          mock(url, urlParams, request) {
-            const { taskID } = urlParams;
-            const completion = createCompletion(request.body);
-            addCompletion(findTask(taskID), completion);
-
-            return { id: completion.id };
-          },
-        },
-        updateCompletion: {
-          path: "/tasks/:taskID/completions/:completionID",
-          method: "post",
-          headers: {
-            ContentType: "application/json",
-          },
-          mock(url, urlParams, request) {
-            const { taskID, completionID } = urlParams;
-            const completion = findCompletion(findTask(taskID), completionID);
-
-            if (completion) {
-              updateCompletion(completion, request.body);
-            }
-
-            return {};
-          },
-        },
-        deleteCompletion: {
-          path: "/tasks/:taskID/completions/:completionID",
-          method: "delete",
-          mock(url, urlParams, request) {
-            const { taskID, completionID } = urlParams;
-            const task = findTask(taskID);
-
-            if (task) {
-              updateTask(task, {
-                completions: task.completions?.filter(
-                  (c) => c.id !== completionID
-                ),
-              });
-            }
-
-            return task;
-          },
-        },
-        skipTask: {
-          path: "/tasks/:taskID/cancel",
-          method: "post",
-          mock(url, urlParams, request) {
-            const { taskID } = urlParams;
-            const completion = createCompletion({
-              ...request.body,
-              skipped: true,
-            });
-            addCompletion(findTask(taskID), completion);
-
-            return { id: completion.id };
-          },
-        },
         project: {
           path: "/project",
           async mock() {
@@ -172,32 +128,153 @@ export const initDevApp = async (DataManager) => {
               id: 1,
               label_config_line: config,
               tasks_count: tasks.length,
+              instructions: "Hello world",
             };
           },
-        },
-        columns: {
-          path: "/project/columns",
-          async mock() {
-            return {
-              columns: (await import("./data/columns")).default(
-                tasks,
-                {
-                  image: "Image",
-                  value: "Hello",
+          scope: {
+            columns: {
+              path: "/columns",
+              async mock() {
+                return {
+                  columns: (await import("./data/columns")).default(
+                    tasks,
+                    {
+                      image: "Image",
+                      value: "Hello",
+                    },
+                    {
+                      key: "Value",
+                    }
+                  ),
+                };
+              },
+            },
+            tabs: {
+              path: "/tabs",
+              async mock() {
+                return { tabs };
+              },
+              scope: {
+                updateTab: {
+                  path: "/:tabID",
+                  method: "post",
+                  async mock(url, urlParams, request) {
+                    return {
+                      tab: updateOrCreateTab(urlParams.tabID, request.body),
+                    };
+                  },
                 },
-                {
-                  key: "Value",
-                }
-              ),
-            };
-          },
-        },
-        tabs: {
-          path: "/project/tabs",
-          async mock() {
-            return {
-              tabs: (await import("./data/tabs")).default,
-            };
+                deleteTab: {
+                  path: "/:tabID",
+                  method: "delete",
+                  async mock(url, urlParams, request) {
+                    return {
+                      OK: deleteTab(urlParams.tabID),
+                    };
+                  },
+                },
+                tasks: {
+                  path: "/:tabID/tasks",
+                  mock(url, urlParams) {
+                    const { page = 1, page_size = 20 } = urlParams;
+                    const offset = (page - 1) * page_size;
+
+                    return {
+                      tasks: tasks.slice(offset, offset + page_size),
+                      total: tasks.length,
+                    };
+                  },
+                  scope: {
+                    task: {
+                      path: "/:taskID",
+                      mock(url, urlParams) {
+                        const { taskID } = urlParams;
+                        return tasks.find((t) => t.id === taskID);
+                      },
+                      scope: {
+                        completions: {
+                          path: "/completions",
+                          method: "post",
+                          mock(url, urlParams) {
+                            const { id } = urlParams;
+                            return tasks.find((t) => t.id === id)?.completions;
+                          },
+                          scope: {
+                            updateCompletion: {
+                              path: "/:completionID",
+                              method: "post",
+                              headers: {
+                                ContentType: "application/json",
+                              },
+                              mock(url, urlParams, request) {
+                                const { taskID, completionID } = urlParams;
+                                const completion = findCompletion(
+                                  findTask(taskID),
+                                  completionID
+                                );
+
+                                if (completion) {
+                                  updateCompletion(completion, request.body);
+                                }
+
+                                return { OK: true };
+                              },
+                            },
+                            deleteCompletion: {
+                              path: "/:completionID",
+                              method: "delete",
+                              mock(url, urlParams, request) {
+                                return deleteCompletion(
+                                  urlParams.taskID,
+                                  urlParams.completionID
+                                );
+                              },
+                            },
+                          },
+                        },
+                        submitCompletion: {
+                          path: "/completions",
+                          method: "post",
+                          headers: {
+                            ContentType: "application/json",
+                          },
+                          mock(url, urlParams, request) {
+                            const completion = addCompletion(
+                              urlParams.taskID,
+                              request.body
+                            );
+
+                            return { id: completion.id };
+                          },
+                        },
+                      },
+                    },
+                    nextTask: {
+                      path: "/next",
+                      method: "get",
+                      mock() {
+                        const [min, max] = [0, tasks.length - 1];
+                        const index =
+                          Math.floor(Math.random() * (max - min + 1)) + min;
+                        return tasks[index];
+                      },
+                    },
+                    skipTask: {
+                      path: "/cancel",
+                      method: "post",
+                      mock(url, urlParams, request) {
+                        const completion = addCompletion(urlParams.taskID, {
+                          ...request.body,
+                          skipped: true,
+                        });
+
+                        return { id: completion.id };
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
         filters: {
@@ -230,11 +307,20 @@ export const initDevApp = async (DataManager) => {
         "predictions:menu",
       ],
     },
+    table: {
+      hiddenColumns: {
+        explore: ["data", "extra", "updated_at"],
+      },
+      visibleColumns: {
+        labeling: ["id", "agreement", "finished"],
+      },
+    },
   });
 
   datamanager.on("submitCompletion", (...args) =>
     console.log("submitCompletion", args)
   );
+
   datamanager.on("updateCompletion", (...args) =>
     console.log("updateCompletion", args)
   );

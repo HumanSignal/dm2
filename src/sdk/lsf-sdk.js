@@ -59,8 +59,9 @@ export class LSFWrapper {
 
     const lsfProperties = {
       user: options.user,
-      config: this.projectConfig,
+      config: this.lsfConfig,
       task: taskToLSFormat(this.task),
+      description: this.instructions,
       interfaces: this.buildInterfaces(options.interfaces),
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
@@ -274,7 +275,18 @@ export class LSFWrapper {
     return this.lsf.completionStore.predictions;
   }
 
-  get projectConfig() {
-    return this.datamanager.store.project.label_config_line;
+  /** @returns {string|null} */
+  get lsfConfig() {
+    return this.project.label_config_line;
+  }
+
+  /** @returns {Dict} */
+  get project() {
+    return this.datamanager.store.project;
+  }
+
+  /** @returns {string|null} */
+  get instructions() {
+    return (this.project.instructions ?? "").trim() || null;
   }
 }

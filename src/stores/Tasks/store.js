@@ -63,8 +63,10 @@ export const TasksStore = types
       return task;
     }),
 
-    fetchTasks: flow(function* () {
+    fetchTasks: flow(function* ({ reload = false } = {}) {
       self.loading = true;
+
+      if (reload) self.page = 1;
 
       const data = yield self.API.tasks({
         page: self.page,
@@ -72,7 +74,10 @@ export const TasksStore = types
         tabID: getParent(self).id,
       });
 
-      const loaded = self.setData(data);
+      const loaded = self.setData({
+        ...data,
+        reload,
+      });
 
       if (loaded) self.page += 1;
 
@@ -80,19 +85,20 @@ export const TasksStore = types
     }),
 
     reload: flow(function* () {
-      self.data = [];
-      self.page = 1;
-      yield self.fetchTasks();
+      yield self.fetchTasks({ reload: true });
     }),
 
-    setData({ tasks, total }) {
+    setData({ tasks, total, reload }) {
       if (tasks.length > 0) {
         const newTasks = tasks.map((t) => ({
           ...t,
           source: JSON.stringify(t),
         }));
         self.totalTasks = total;
+
+        if (reload) self.data = [];
         self.data.push(...newTasks);
+
         return true;
       }
       return false;

@@ -18,7 +18,8 @@ const actionsMenu = (
   </Menu>
 );
 
-export const TablePanel = observer(({ view }) => {
+export const TablePanel = observer(({ views, view }) => {
+  console.log(views);
   return (
     <div className="tab-panel">
       <Space size="middle">
@@ -48,11 +49,17 @@ export const TablePanel = observer(({ view }) => {
           </Button>
         </Dropdown>
 
-        <Dropdown overlay={<Filters />} trigger="click">
-          <Button type={view.enableFilters ? "primary" : ""}>
+        {views.sidebarEnabled ? (
+          <Button onClick={() => views.toggleSidebar()}>
             <FilterOutlined /> Filters{" "}
           </Button>
-        </Dropdown>
+        ) : (
+          <Dropdown overlay={<Filters />} trigger="click">
+            <Button type={view.enableFilters ? "primary" : ""}>
+              <FilterOutlined /> Filters{" "}
+            </Button>
+          </Dropdown>
+        )}
       </Space>
 
       <Space size="middle">

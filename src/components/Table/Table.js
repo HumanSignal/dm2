@@ -147,7 +147,6 @@ export const Table = observer(
     };
 
     React.useEffect(() => {
-      console.log("set hidden columns");
       setHiddenColumns(hiddenColumns);
     }, [setHiddenColumns, hiddenColumns]);
 

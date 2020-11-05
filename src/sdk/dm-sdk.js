@@ -2,18 +2,40 @@
 
 /**
  * @typedef {{
+ *  hiddenColumns?: {
+ *    labeling?: string[],
+ *    explore?: string[],
+ *  },
+ *  visibleColumns?: {
+ *    labeling?: string[],
+ *    explore?: string[],
+ *  }
+ * }} TableConfig
+ */
+
+/**
+ * @typedef {{
  * root: HTMLElement,
  * api: import("../utils/api-proxy").APIProxyOptions,
  * settings: Dict<any>,
  * labelStudio: Dict<any>,
  * env: "development" | "production",
  * mode: "labelstream" | "explorer",
+ * table: TableConfig,
  * }} DMConfig
  */
 
 import { APIProxy } from "../utils/api-proxy";
 import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
+
+const DEFAULT_API_CONFIG = {
+  gateway: "/api",
+  endpoints: {
+    tasks: "/project/tabs/:tabID/tasks",
+    completions: "/project/tabs/:tabID/tasks/:taskID/completions",
+  },
+};
 
 export class DataManager {
   /** @type {HTMLElement} */
@@ -40,6 +62,9 @@ export class DataManager {
   /** @type {"explorer" | "labelstream"} */
   mode = "explorer";
 
+  /** @type {TableConfig} */
+  tableConfig = {};
+
   /**
    * @private
    * @type {Map<String, Set<Function>>}
@@ -57,6 +82,7 @@ export class DataManager {
     this.labelStudioOptions = config.labelStudio;
     this.env = config.env ?? process.env.NODE_ENV ?? this.env;
     this.mode = config.mode ?? this.mode;
+    this.tableConfig = config.table ?? {};
 
     this.initApp();
   }

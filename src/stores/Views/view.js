@@ -1,9 +1,82 @@
-import { getParent, getRoot, types } from "mobx-state-tree";
+import {
+  destroy,
+  flow,
+  getParent,
+  getRoot,
+  getSnapshot,
+  types,
+} from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 import { TasksStore } from "../Tasks";
 import { CustomJSON } from "../types";
 import { ViewColumn } from "./view_column";
 import { ViewFilter } from "./view_filter";
+
+const ColumnsList = types.maybeNull(
+  types.array(types.late(() => types.reference(ViewColumn)))
+);
+
+const HiddenColumns = types
+  .model("HiddenColumns", {
+    explore: types.optional(ColumnsList, []),
+    labeling: types.optional(ColumnsList, []),
+  })
+  .views((self) => ({
+    get length() {
+      return self.explore.length + self.labeling.length;
+    },
+
+    get activeList() {
+      return getRoot(self).isLabeling ? self.labeling : self.explore;
+    },
+
+    set activeList(list) {
+      if (getRoot(self).isLabeling) {
+        self.labeling = list;
+      } else {
+        self.explore = list;
+      }
+      return self.activeList;
+    },
+
+    hasColumn(column) {
+      return self.activeList.indexOf(column) >= 0;
+    },
+  }))
+  .actions((self) => ({
+    afterAttach() {
+      const { tableConfig } = getRoot(self).SDK;
+      const { columns } = getParent(self).parent;
+
+      ["explore", "labeling"].forEach((mode) => {
+        if (self[mode].length !== 0) return;
+
+        const hidden = tableConfig.hiddenColumns?.[mode] ?? [];
+        const visible = tableConfig.visibleColumns?.[mode] ?? [];
+        let result = [];
+
+        if (hidden.length) {
+          result = columns.filter((c) => hidden.includes(c.id));
+        } else {
+          result = columns.filter((c) => !visible.includes(c.id));
+        }
+
+        self[mode].push(...result);
+      });
+    },
+
+    add(column) {
+      const set = new Set(self.activeList);
+      set.add(column);
+      self.activeList = Array.from(set);
+    },
+
+    remove(column) {
+      const set = new Set(self.activeList);
+      set.delete(column);
+      self.activeList = Array.from(set);
+    },
+  }));
 
 export const View = types
   .model("View", {
@@ -21,12 +94,15 @@ export const View = types
     ),
 
     filters: types.array(types.late(() => ViewFilter)),
+    filtersConjunction: types.optional(types.enumeration(["and", "or"]), "and"),
     selectedTasks: types.optional(types.array(CustomJSON), []),
     selectedCompletions: types.optional(types.array(CustomJSON), []),
 
-    hiddenColumns: types.maybeNull(
-      types.array(types.late(() => types.reference(ViewColumn)))
-    ),
+    // hiddenColumns: types.maybeNull(
+    //   types.array(types.late(() => types.reference(ViewColumn)))
+    // ),
+
+    hiddenColumns: types.maybeNull(types.optional(HiddenColumns, {})),
 
     enableFilters: false,
     renameMode: false,
@@ -62,6 +138,15 @@ export const View = types
     fieldsSource(source) {
       return self.fields.filter((f) => f.source === source);
     },
+
+    serialize() {
+      return {
+        id: self.id,
+        title: self.title,
+        filters: getSnapshot(self.filters),
+        hiddenColumns: getSnapshot(self.hiddenColumns),
+      };
+    },
   }))
   .actions((self) => ({
     setType(type) {
@@ -80,21 +165,47 @@ export const View = types
       self.renameMode = mode;
     },
 
+    setConjunction(value) {
+      self.filtersConjunction = value;
+    },
+
     createFilter() {
       self.filters.push({
         filter: self.parent.availableFilters[0],
+        view: self.id,
       });
     },
 
     toggleColumn(column) {
-      if (self.hiddenColumns.includes(column)) {
-        self.hiddenColumns = self.hiddenColumns.filter((c) => c !== column);
+      if (self.hiddenColumns.hasColumn(column)) {
+        self.hiddenColumns.remove(column);
       } else {
-        self.hiddenColumns = [...self.hiddenColumns, column];
+        self.hiddenColumns.add(column);
       }
+      self.save();
     },
 
     reload() {
       self.taskStore.reload();
     },
+
+    deleteFilter(filter) {
+      const index = self.filters.findIndex((f) => f === filter);
+      self.filters.splice(index, 1);
+      destroy(filter);
+      self.save();
+    },
+
+    afterAttach() {
+      self.hiddenColumns = HiddenColumns.create();
+    },
+
+    save: flow(function* () {
+      const { id: tabID } = self;
+      const body = self.serialize();
+
+      yield getRoot(self).API.updateTab({ tabID }, { body });
+
+      self.reload();
+    }),
   }));
