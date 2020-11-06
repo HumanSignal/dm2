@@ -62,6 +62,7 @@ export const ViewsStore = types
       });
 
       self.views.push(newView);
+      console.log("View created");
       self.setSelected(newView);
 
       return newView;
@@ -72,6 +73,7 @@ export const ViewsStore = types
     },
 
     createView(viewSnapshot) {
+      console.log({ viewSnapshot });
       return View.create(viewSnapshot ?? {});
     },
 

@@ -273,6 +273,14 @@ export const initDevApp = async (DataManager) => {
                     },
                   },
                 },
+                annotations: {
+                  path: "/annotations",
+                  mock() {
+                    return {
+                      annotations: [],
+                    };
+                  },
+                },
               },
             },
           },
