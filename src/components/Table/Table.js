@@ -164,7 +164,7 @@ export const Table = observer(
             {view.type === "list" ? listView() : gridView()}
             <div className="dm-content__statusbar">
               <div>
-                Selected {Object.keys(selectedRowIds).length} of {total} tasks
+                Selected {Object.keys(selectedRowIds).length} of {total} items
               </div>
             </div>
           </>
