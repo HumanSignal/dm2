@@ -76,7 +76,7 @@ export class APIProxy {
       const methods = new Map(Object.entries(endpoints));
 
       methods.forEach((settings, methodName) => {
-        const { scope, ...restSettings } = settings;
+        const { scope, ...restSettings } = this.getSettings(settings);
         this[methodName] = this.createApiCallExecutor(restSettings, [
           parentPath,
         ]);
@@ -92,10 +92,9 @@ export class APIProxy {
    * @param {EndpointConfig} settings
    * @private
    */
-  createApiCallExecutor(settings, parentPath) {
+  createApiCallExecutor(methodSettings, parentPath) {
     return async (urlParams, { headers, body } = {}) => {
       try {
-        const methodSettings = this.getSettings(settings);
         const requestMethod = (methodSettings.method ?? "get").toUpperCase();
         const apiCallURL = this.createUrl(
           methodSettings.path,
@@ -171,6 +170,7 @@ export class APIProxy {
       method: "GET",
       mock: undefined,
       convert: undefined,
+      scope: undefined,
       ...settings,
     };
   }
