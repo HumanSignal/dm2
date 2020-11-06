@@ -1,114 +1,31 @@
-import { flow, getParent, getRoot, types } from "mobx-state-tree";
+import { flow, getRoot } from "mobx-state-tree";
+import { InfiniteList } from "../../mixins/InfiniteList";
 import { TaskModel } from "./task";
 
-export const TasksStore = types
-  .model("TasksStore", {
-    data: types.optional(types.array(TaskModel), []),
-    task: types.maybeNull(types.safeReference(TaskModel)),
-    page: types.optional(types.integer, 1),
-    pageSize: types.optional(types.integer, 120),
-    totalTasks: types.optional(types.integer, 0),
-    loading: types.optional(types.boolean, false),
-  })
-  .views((self) => ({
-    get annotationsData() {
-      return self.data
-        .map((t) => {
-          return t.completions
-            ? t.completions.map((c) => {
-                c["annotation_id"] = c.id;
-                c["task_id"] = t.id;
-                c["data"] = t.data;
+export const TasksStore = InfiniteList("TasksStore", {
+  apiMethod: "tasks",
+  listItemType: TaskModel,
+}).actions((self) => ({
+  loadTask: flow(function* (taskID) {
+    let remoteTask;
 
-                return c;
-              })
-            : [];
-        })
-        .flat();
-    },
-
-    get API() {
-      return getRoot(self).API;
-    },
-  }))
-  .actions((self) => ({
-    loadTask: flow(function* (taskID) {
-      let remoteTask;
-
-      if (taskID !== undefined) {
-        remoteTask = yield self.API.task({ taskID });
-      } else {
-        remoteTask = yield self.API.nextTask({
-          projectID: getRoot(self).project.id,
-        });
-      }
-
-      taskID = taskID ?? remoteTask.id;
-
-      const taskData = { ...remoteTask, source: JSON.stringify(remoteTask) };
-      let task = self.data.find((t) => t.id === taskID);
-
-      console.log({ remoteTask, task, ids: self.data.map((t) => t.id) });
-
-      if (task) {
-        console.log("Updating existing task", task);
-        task.update(taskData);
-      } else {
-        task = TaskModel.create(taskData);
-        self.data.push(task);
-      }
-
-      self.setTask(task.id);
-
-      return task;
-    }),
-
-    fetchTasks: flow(function* ({ reload = false } = {}) {
-      self.loading = true;
-
-      if (reload) self.page = 1;
-
-      const data = yield self.API.tasks({
-        page: self.page,
-        page_size: self.pageSize,
-        tabID: getParent(self).id,
+    if (taskID !== undefined) {
+      remoteTask = yield self.API.task({ taskID });
+    } else {
+      remoteTask = yield self.API.nextTask({
+        projectID: getRoot(self).project.id,
       });
+    }
 
-      const loaded = self.setData({
-        ...data,
-        reload,
-      });
+    taskID = taskID ?? remoteTask.id;
 
-      if (loaded) self.page += 1;
+    const task = self.updateItem(taskID, {
+      ...remoteTask,
+      source: JSON.stringify(remoteTask),
+    });
 
-      self.loading = false;
-    }),
+    self.setTask(task.id);
 
-    reload: flow(function* () {
-      yield self.fetchTasks({ reload: true });
-    }),
-
-    setData({ tasks, total, reload }) {
-      if (tasks.length > 0) {
-        const newTasks = tasks.map((t) => ({
-          ...t,
-          source: JSON.stringify(t),
-        }));
-        self.totalTasks = total;
-
-        if (reload) self.data = [];
-        self.data.push(...newTasks);
-
-        return true;
-      }
-      return false;
-    },
-
-    setTask(val) {
-      self.task = val;
-    },
-
-    unsetTask() {
-      self.task = undefined;
-    },
-  }));
+    return task;
+  }),
+}));

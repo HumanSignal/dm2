@@ -61,8 +61,7 @@ export const TabsWrapper = inject("store")(
     const tasks = store.tasksStore;
     const views = store.viewsStore;
     const activeTab = store.viewsStore.selected;
-    const data =
-      activeTab.target === "annotations" ? tasks.annotationsData : tasks.data;
+    const data = tasks.list;
 
     return (
       <TabsStyles>

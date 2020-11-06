@@ -1,7 +1,8 @@
 import { types } from "mobx-state-tree";
+import { InfiniteListItem } from "../../mixins/InfiniteList";
 import { CustomJSON } from "../types";
 
-export const TaskModel = types
+const TaskModelBase = types
   .model("TaskModel", {
     id: types.identifierNumber,
     data: types.optional(CustomJSON, {}),
@@ -28,10 +29,6 @@ export const TaskModel = types
     get lastPrediction() {
       return self.predictions[self.predictions.length - 1];
     },
-  }))
-  .actions((self) => ({
-    update(newData) {
-      for (let key in newData) self[key] = newData[key];
-      return self;
-    },
   }));
+
+export const TaskModel = types.compose(TaskModelBase, InfiniteListItem);
