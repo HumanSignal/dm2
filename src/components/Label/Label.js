@@ -45,13 +45,9 @@ const History = ({ root, history }) => {
 const LabelingComponent = observer(({ store }) => {
   const lsfRef = React.createRef();
   const view = store.viewsStore.selected;
-  const columns = view.fieldsAsColumns;
   const history = store.SDK.lsf?.history;
 
-  console.log({ history, sdk: store.SDK });
-
   const runLS = () => {
-    // console.log(lsfRef.current, store.dataStore.selected);
     store.SDK.startLabeling(lsfRef.current, store.dataStore.selected);
   };
 

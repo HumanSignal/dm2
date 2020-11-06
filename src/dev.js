@@ -307,14 +307,14 @@ export const initDevApp = async (DataManager) => {
         "predictions:menu",
       ],
     },
-    table: {
-      hiddenColumns: {
-        explore: ["tasks-data", "tasks-extra", "tasks-updated_at"],
-      },
-      visibleColumns: {
-        labeling: ["tasks-id", "tasks-agreement", "tasks-finished"],
-      },
-    },
+    // table: {
+    //   hiddenColumns: {
+    //     explore: ["tasks-data", "tasks-extra", "tasks-updated_at"],
+    //   },
+    //   visibleColumns: {
+    //     labeling: ["tasks-id", "tasks-agreement", "tasks-finished"],
+    //   },
+    // },
   });
 
   datamanager.on("submitCompletion", (...args) =>

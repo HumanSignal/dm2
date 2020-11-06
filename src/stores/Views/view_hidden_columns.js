@@ -46,7 +46,7 @@ export const ViewHiddenColumns = types
 
         if (hidden.length) {
           result = columns.filter((c) => hidden.includes(c.id));
-        } else {
+        } else if (visible.length) {
           result = columns.filter((c) => !visible.includes(c.id));
         }
 
