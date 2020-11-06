@@ -16,7 +16,10 @@ const getTabPaneProps = (view, data) => ({
 });
 
 const createTab = (views, data) => (view) => {
-  const columns = React.useMemo(() => view.fieldsAsColumns, [view]);
+  const columns = React.useMemo(() => view.fieldsAsColumns, [
+    view,
+    view.target,
+  ]);
 
   return (
     <Tabs.TabPane {...getTabPaneProps(view, data)}>
@@ -66,7 +69,7 @@ export const TabsWrapper = inject("store")(
         <Tabs
           type="editable-card"
           activeKey={activeTab.key}
-          onEdit={store.viewsStore.addView}
+          onEdit={() => store.viewsStore.addView()}
           onChange={(key) => store.viewsStore.setSelected(key)}
         >
           {store.viewsStore.all.map(createTab(views, store.dataStore.list))}

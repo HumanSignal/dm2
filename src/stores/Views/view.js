@@ -7,6 +7,7 @@ import {
   types,
 } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
+import { AnnotationStore } from "../Annotations";
 import { TasksStore } from "../Tasks";
 import { CustomJSON } from "../types";
 import { ViewFilter } from "./view_filter";
@@ -41,6 +42,7 @@ export const View = types
     enableFilters: false,
     renameMode: false,
     taskStore: types.optional(TasksStore, {}),
+    annotationStore: types.optional(AnnotationStore, {}),
   })
   .views((self) => ({
     get root() {
@@ -96,6 +98,7 @@ export const View = types
 
     setTarget(target) {
       self.target = target;
+      self.dataStore.fetch();
     },
 
     setTitle(title) {
