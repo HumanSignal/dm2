@@ -39,7 +39,7 @@ export const ListView = ({
           },
           onClick() {
             if (!isCurrent) {
-              getRoot(view).tasksStore.setTask(currentTask);
+              getRoot(view).dataStore.setSelected(currentTask);
             }
           },
         });

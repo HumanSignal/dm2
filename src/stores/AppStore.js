@@ -27,7 +27,7 @@ export const AppStore = types
     },
 
     get isLabeling() {
-      return !!self.tasksStore?.task || self.isLabelStreamMode;
+      return !!self.dataStore?.selected || self.isLabelStreamMode;
     },
 
     get isLabelStreamMode() {
@@ -43,7 +43,7 @@ export const AppStore = types
     },
 
     get tasksStore() {
-      return self.currentView?.taskStore;
+      return self.currentView?.dataStore;
     },
   }))
   .actions((self) => ({

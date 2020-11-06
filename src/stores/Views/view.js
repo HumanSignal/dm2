@@ -9,74 +9,8 @@ import {
 import { guidGenerator } from "../../utils/random";
 import { TasksStore } from "../Tasks";
 import { CustomJSON } from "../types";
-import { ViewColumn } from "./view_column";
 import { ViewFilter } from "./view_filter";
-
-const ColumnsList = types.maybeNull(
-  types.array(types.late(() => types.reference(ViewColumn)))
-);
-
-const HiddenColumns = types
-  .model("HiddenColumns", {
-    explore: types.optional(ColumnsList, []),
-    labeling: types.optional(ColumnsList, []),
-  })
-  .views((self) => ({
-    get length() {
-      return self.explore.length + self.labeling.length;
-    },
-
-    get activeList() {
-      return getRoot(self).isLabeling ? self.labeling : self.explore;
-    },
-
-    set activeList(list) {
-      if (getRoot(self).isLabeling) {
-        self.labeling = list;
-      } else {
-        self.explore = list;
-      }
-      return self.activeList;
-    },
-
-    hasColumn(column) {
-      return self.activeList.indexOf(column) >= 0;
-    },
-  }))
-  .actions((self) => ({
-    afterAttach() {
-      const { tableConfig } = getRoot(self).SDK;
-      const { columns } = getParent(self).parent;
-
-      ["explore", "labeling"].forEach((mode) => {
-        if (self[mode].length !== 0) return;
-
-        const hidden = tableConfig.hiddenColumns?.[mode] ?? [];
-        const visible = tableConfig.visibleColumns?.[mode] ?? [];
-        let result = [];
-
-        if (hidden.length) {
-          result = columns.filter((c) => hidden.includes(c.id));
-        } else {
-          result = columns.filter((c) => !visible.includes(c.id));
-        }
-
-        self[mode].push(...result);
-      });
-    },
-
-    add(column) {
-      const set = new Set(self.activeList);
-      set.add(column);
-      self.activeList = Array.from(set);
-    },
-
-    remove(column) {
-      const set = new Set(self.activeList);
-      set.delete(column);
-      self.activeList = Array.from(set);
-    },
-  }));
+import { ViewHiddenColumns } from "./view_hidden_columns";
 
 export const View = types
   .model("View", {
@@ -102,7 +36,7 @@ export const View = types
     //   types.array(types.late(() => types.reference(ViewColumn)))
     // ),
 
-    hiddenColumns: types.maybeNull(types.optional(HiddenColumns, {})),
+    hiddenColumns: types.maybeNull(types.optional(ViewHiddenColumns, {})),
 
     enableFilters: false,
     renameMode: false,
@@ -135,8 +69,15 @@ export const View = types
       return self.columns.filter((c) => c.hidden).map((c) => c.key);
     },
 
-    fieldsSource(source) {
-      return self.fields.filter((f) => f.source === source);
+    get dataStore() {
+      switch (self.target) {
+        case "tasks":
+          return self.taskStore;
+        case "annotations":
+          return self.annotationStore;
+        default:
+          return null;
+      }
     },
 
     serialize() {
@@ -186,7 +127,7 @@ export const View = types
     },
 
     reload() {
-      self.taskStore.reload();
+      self.dataStore.reload();
     },
 
     deleteFilter(filter) {
@@ -197,7 +138,7 @@ export const View = types
     },
 
     afterAttach() {
-      self.hiddenColumns = HiddenColumns.create();
+      self.hiddenColumns = ViewHiddenColumns.create();
     },
 
     save: flow(function* () {

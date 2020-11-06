@@ -5,6 +5,7 @@ export const ViewColumn = types
   .model("ViewColumn", {
     id: types.identifier,
     title: types.string,
+    alias: types.string,
     type: types.optional(
       types.enumeration([
         "String",
@@ -22,6 +23,7 @@ export const ViewColumn = types
     children: types.maybeNull(
       types.array(types.late(() => types.reference(ViewColumn)))
     ),
+    target: types.enumeration(["tasks", "annotations"]),
   })
   .views((self) => ({
     get hidden() {
@@ -47,21 +49,21 @@ export const ViewColumn = types
     get accessor() {
       return (data) => {
         if (!self.parent) {
-          const value = data[self.id];
+          const value = data[self.alias];
           return typeof value === "object" ? null : value;
         }
 
         try {
-          const value = data?.[self.parent.id]?.[self.id];
+          const value = data?.[self.parent.alias]?.[self.alias];
           return value ?? null;
         } catch {
           console.log("Error generating accessor", {
-            id: self.id,
-            parent: self.parent?.id,
+            id: self.alias,
+            parent: self.parent?.alias,
             data,
             snapshot: getSnapshot(self),
           });
-          return data[self.id];
+          return data[self.alias];
         }
       };
     },

@@ -23,3 +23,21 @@ export const randomDate = (start, end) => {
     start.getTime() + Math.random() * (end.getTime() - start.getTime())
   );
 };
+
+export const groupBy = (list, group) => {
+  return list.reduce((res, item) => {
+    const property = group(item);
+
+    if (res[property]) {
+      res[property].push(item);
+    } else {
+      res[property] = [item];
+    }
+
+    return res;
+  }, {});
+};
+
+export const unique = (list) => {
+  return Array.from(new Set(list));
+};

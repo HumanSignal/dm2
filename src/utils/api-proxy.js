@@ -71,6 +71,7 @@ export class APIProxy {
    * @private
    */
   buildMethods(endpoints, parentPath) {
+    console.log({ parentPath });
     if (endpoints) {
       const methods = new Map(Object.entries(endpoints));
 
@@ -183,7 +184,8 @@ export class APIProxy {
   createUrl(endpoint, data = {}, parentPath) {
     const url = new URL(this.gateway);
     const usedKeys = [];
-    const path = [...(parentPath ?? []), endpoint]
+    const path = []
+      .concat(...(parentPath ?? []), endpoint)
       .filter((p) => p !== undefined)
       .join("/")
       .replace(/([/]+)/g, "/");

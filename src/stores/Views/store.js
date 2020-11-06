@@ -1,14 +1,15 @@
 import { destroy, flow, getParent, getSnapshot, types } from "mobx-state-tree";
+import { unique } from "../../utils/utils";
 import { View } from "./view";
 import { ViewColumn } from "./view_column";
-import { FilterSchema, ViewFilterType } from "./view_filter_type";
+import { ViewFilterType } from "./view_filter_type";
 
 export const ViewsStore = types
   .model("ViewsStore", {
     selected: types.safeReference(View),
     views: types.optional(types.array(View), []),
     availableFilters: types.optional(types.array(ViewFilterType), []),
-    columns: types.optional(types.array(ViewColumn), []),
+    columnsTargetMap: types.map(types.array(ViewColumn)),
     sidebarEnabled: types.optional(types.boolean, false),
     sidebarVisible: types.optional(types.boolean, false),
   })
@@ -19,6 +20,10 @@ export const ViewsStore = types
 
     get canClose() {
       return self.all.length > 1;
+    },
+
+    get columns() {
+      return self.columnsTargetMap.get(self.selected?.target ?? "tasks");
     },
 
     serialize() {
@@ -86,21 +91,37 @@ export const ViewsStore = types
 
     fetchColumns: flow(function* () {
       const { columns } = yield getParent(self).API.columns();
+      const targets = unique(columns.map((c) => c.target));
+
+      targets.forEach((t) => {
+        console.log("Target", t);
+        self.columnsTargetMap.set(t, []);
+      });
 
       columns.forEach((c) => {
+        console.log(`Creating column ${c.id} with target ${c.target}`);
+
+        const { target } = c;
+
+        const parent = c.parent ? `${target}-${c.parent}` : undefined;
+        const children = c.children
+          ? c.children.map((ch) => `${target}-${ch}`)
+          : undefined;
+
         const column = ViewColumn.create({
           ...c,
+          id: `${target}-${c.id}`,
           filters: c.filters ?? [],
+          alias: c.id,
+          parent,
+          children,
         });
 
-        self.columns.push(column);
+        self.columnsTargetMap.get(c.target).push(column);
 
         if (!c.children) {
-          if (c.id === "agreement") {
-            console.log(c.schema, FilterSchema.create(c.schema));
-          }
           self.availableFilters.push({
-            id: `${c.id}-filter`,
+            id: `${c.id}-${c.target}-filter`,
             type: c.type,
             field: column.id,
             schema: c.schema ?? null,
