@@ -94,13 +94,10 @@ export const ViewsStore = types
       const targets = unique(columns.map((c) => c.target));
 
       targets.forEach((t) => {
-        console.log("Target", t);
         self.columnsTargetMap.set(t, []);
       });
 
       columns.forEach((c) => {
-        console.log(`Creating column ${c.id} with target ${c.target}`);
-
         const { target } = c;
 
         const parent = c.parent ? `${target}-${c.parent}` : undefined;
@@ -138,7 +135,6 @@ export const ViewsStore = types
     fetchViews: flow(function* () {
       const { tabs } = yield getParent(self).API.tabs();
 
-      console.log(tabs.map((t) => t.id));
       self.views.push(...tabs.map(self.createView));
 
       const selected = localStorage.getItem("selectedTab");

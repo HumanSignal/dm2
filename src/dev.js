@@ -309,10 +309,10 @@ export const initDevApp = async (DataManager) => {
     },
     table: {
       hiddenColumns: {
-        explore: ["data", "extra", "updated_at"],
+        explore: ["tasks-data", "tasks-extra", "tasks-updated_at"],
       },
       visibleColumns: {
-        labeling: ["id", "agreement", "finished"],
+        labeling: ["tasks-id", "tasks-agreement", "tasks-finished"],
       },
     },
   });

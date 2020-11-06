@@ -46,13 +46,13 @@ const LabelingComponent = observer(({ store }) => {
   const lsfRef = React.createRef();
   const view = store.viewsStore.selected;
   const columns = view.fieldsAsColumns;
-  const data = store.dataStore.list;
   const history = store.SDK.lsf?.history;
 
   console.log({ history, sdk: store.SDK });
 
   const runLS = () => {
-    store.SDK.startLabeling(lsfRef.current, store.dataStore.selecter);
+    // console.log(lsfRef.current, store.dataStore.selected);
+    store.SDK.startLabeling(lsfRef.current, store.dataStore.selected);
   };
 
   const closeLabeling = () => {
@@ -74,9 +74,9 @@ const LabelingComponent = observer(({ store }) => {
         {store.isExplorerMode && (
           <div className="table">
             <Table
-              data={data}
               view={view}
-              columns={columns}
+              data={store.dataStore.list}
+              columns={view.fieldsAsColumns}
               hiddenColumns={view.hiddenColumnsList}
             />
           </div>

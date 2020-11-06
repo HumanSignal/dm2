@@ -10,7 +10,7 @@ export const ListView = ({
   headerGroups,
   rows,
   view,
-  task,
+  selected,
   onScroll,
 }) => {
   const tableHeadContent = (
@@ -32,7 +32,7 @@ export const ListView = ({
       {rows.map((row, i) => {
         prepareRow(row);
         const currentTask = row.original;
-        const isCurrent = currentTask === task;
+        const isCurrent = currentTask === selected;
         const rowProps = row.getRowProps({
           style: {
             background: isCurrent ? "#efefef" : "none",

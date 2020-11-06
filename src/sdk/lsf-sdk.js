@@ -89,7 +89,7 @@ export class LSFWrapper {
     else console.info(`Reloading task ${taskID}`);
 
     this.setLoading(true);
-    const tasks = this.datamanager.store.tasksStore;
+    const tasks = this.datamanager.store.dataStore;
     const newTask = await tasks.loadTask(taskID);
 
     this.task = newTask;
@@ -155,7 +155,7 @@ export class LSFWrapper {
 
     if (this.datamanager.mode === "labelstream") {
       await this.loadTask();
-    } else {
+    } else if (this.task) {
       this.setCompletion(this.task.lastCompletion?.id);
     }
 
