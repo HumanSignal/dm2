@@ -58,10 +58,8 @@ const FiltersSidebar = observer(({ views }) => {
 
 export const TabsWrapper = inject("store")(
   observer(({ store }) => {
-    const tasks = store.tasksStore;
     const views = store.viewsStore;
     const activeTab = store.viewsStore.selected;
-    const data = tasks.list;
 
     return (
       <TabsStyles>
@@ -71,7 +69,7 @@ export const TabsWrapper = inject("store")(
           onEdit={store.viewsStore.addView}
           onChange={(key) => store.viewsStore.setSelected(key)}
         >
-          {store.viewsStore.all.map(createTab(views, data))}
+          {store.viewsStore.all.map(createTab(views, store.dataStore.list))}
         </Tabs>
         <FiltersSidebar views={views} />
       </TabsStyles>

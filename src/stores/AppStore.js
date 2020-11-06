@@ -42,7 +42,7 @@ export const AppStore = types
       return self.viewsStore.selected;
     },
 
-    get tasksStore() {
+    get dataStore() {
       return self.currentView?.dataStore;
     },
   }))

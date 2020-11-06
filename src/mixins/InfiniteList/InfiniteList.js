@@ -44,7 +44,7 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
   const model = types
     .model(modelName, {
       list: types.optional(types.array(listItemType), []),
-      selected: types.maybeNull(listItemType),
+      selected: types.maybeNull(types.reference(listItemType)),
     })
     .actions((self) => ({
       updateItem(itemID, patch) {

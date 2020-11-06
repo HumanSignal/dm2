@@ -66,9 +66,9 @@ const SelectionCell = (view) => (columns) => {
 
 export const Table = observer(
   ({ data, columns, view, onSelectRow, hiddenColumns = [] }) => {
-    const tasks = getRoot(view).tasksStore;
+    const tasks = getRoot(view).dataStore;
     const tableHead = React.createRef();
-    const { totalTasks, task } = tasks;
+    const { total: totalCount, task } = tasks;
 
     const handleScroll = (e) => {
       // console.log(e);
@@ -164,7 +164,7 @@ export const Table = observer(
             {view.type === "list" ? listView() : gridView()}
             <div className="dm-content__statusbar">
               <div>
-                Selected {Object.keys(selectedRowIds).length} of {totalTasks}{" "}
+                Selected {Object.keys(selectedRowIds).length} of {totalCount}{" "}
                 tasks
               </div>
             </div>

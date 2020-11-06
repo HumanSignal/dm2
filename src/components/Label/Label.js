@@ -46,21 +46,21 @@ const LabelingComponent = observer(({ store }) => {
   const lsfRef = React.createRef();
   const view = store.viewsStore.selected;
   const columns = view.fieldsAsColumns;
-  const data = store.tasksStore.data;
+  const data = store.dataStore.list;
   const history = store.SDK.lsf?.history;
 
   console.log({ history, sdk: store.SDK });
 
   const runLS = () => {
-    store.SDK.startLabeling(lsfRef.current, store.tasksStore.task);
+    store.SDK.startLabeling(lsfRef.current, store.dataStore.selecter);
   };
 
   const closeLabeling = () => {
-    store.tasksStore.unsetTask();
+    store.dataStore.unsetTask();
     store.SDK.destroyLSF();
   };
 
-  React.useEffect(runLS, [store.tasksStore.task]);
+  React.useEffect(runLS, [store.dataStore.selected]);
 
   return (
     <Styles>
