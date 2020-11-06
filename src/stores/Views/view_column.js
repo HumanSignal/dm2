@@ -15,6 +15,10 @@ export const ViewColumn = types
         "List",
         "Image",
         "Audio",
+        "AudioPlus",
+        "Text",
+        "HyperText",
+        "TimeSeries",
       ]),
       "String"
     ),
