@@ -1,13 +1,14 @@
 import React from "react";
 import { FilterInput } from "../FilterInput";
 
-const BaseInput = ({ defaultValue, onChange, placeholder }) => {
+const BaseInput = ({ value, defaultValue, onChange, placeholder }) => {
   return (
     <FilterInput
       type="text"
       style={{ fontSize: 14 }}
       placeholder={placeholder}
       defaultValue={defaultValue}
+      value={value}
       onChange={(e) => onChange(e, e.target.value)}
     />
   );

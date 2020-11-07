@@ -9,6 +9,16 @@ const tabs = [
       //   value: { min: 0.2, max: 0.5 },
       //   operator: "in",
       // },
+      {
+        filter: "tasks-id-filter",
+        operator: "equal",
+        value: 31,
+      },
+      {
+        filter: "tasks-image-filter",
+        operator: "equal",
+        value: "\u0441\u0441",
+      },
     ],
   },
   {
