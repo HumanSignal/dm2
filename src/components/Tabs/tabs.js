@@ -15,12 +15,7 @@ const getTabPaneProps = (view, data) => ({
   tab: <TabTitle item={view} data={data} />,
 });
 
-const createTab = (views, data) => (view) => {
-  const columns = React.useMemo(() => view.fieldsAsColumns, [
-    view,
-    view.target,
-  ]);
-
+const createTab = (views, data, columns) => (view) => {
   return (
     <Tabs.TabPane {...getTabPaneProps(view, data)}>
       <TablePanel views={views} view={view} />
@@ -63,6 +58,9 @@ export const TabsWrapper = inject("store")(
   observer(({ store }) => {
     const views = store.viewsStore;
     const activeTab = store.viewsStore.selected;
+    const columns = React.useMemo(() => {
+      return activeTab.fieldsAsColumns;
+    }, [activeTab, activeTab.target]);
 
     return (
       <TabsStyles>
@@ -72,7 +70,9 @@ export const TabsWrapper = inject("store")(
           onEdit={() => store.viewsStore.addView()}
           onChange={(key) => store.viewsStore.setSelected(key)}
         >
-          {store.viewsStore.all.map(createTab(views, store.dataStore.list))}
+          {store.viewsStore.all.map(
+            createTab(views, store.dataStore.list, columns)
+          )}
         </Tabs>
         <FiltersSidebar views={views} />
       </TabsStyles>
