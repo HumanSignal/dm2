@@ -94,11 +94,10 @@ export const ViewsStore = types
         title: `${lastView?.title ?? "Tab"} ${self.views.length}`,
       });
 
-      yield newView.save();
-
       self.views.push(newView);
       self.setSelected(newView);
       console.log("Tab created");
+      yield newView.save();
 
       return newView;
     }),
