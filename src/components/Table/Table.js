@@ -96,7 +96,6 @@ export const Table = observer(
         columns,
         data,
         initialState: {
-          sortBy: [{ id: "id", desc: true }],
           hiddenColumns,
         },
       },

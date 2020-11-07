@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 const Styles = styled.div`
   height: 100%;
-  padding: ${(props) => (props.fullScreen ? "0" : "1rem")};
+  padding: ${(props) => (props.fullScreen ? "0" : "0")};
   min-height: 500px;
   box-sizing: border-box;
 
