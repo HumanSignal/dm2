@@ -6,6 +6,7 @@ import {
   getSnapshot,
   types,
 } from "mobx-state-tree";
+import { guidGenerator } from "../../utils/random";
 import { unique } from "../../utils/utils";
 import { View } from "./view";
 import { ViewColumn } from "./view_column";
@@ -95,6 +96,7 @@ export const ViewsStore = types
         ...(viewSnapshot ?? {}),
         id: (lastView?.id ?? -1) + 1,
         title: `${lastView?.title ?? "Tab"} ${self.views.length}`,
+        key: guidGenerator(),
       });
 
       self.views.push(newView);
