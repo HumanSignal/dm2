@@ -111,7 +111,7 @@ export class APIProxy {
         });
 
         if (requestMethod !== "GET") {
-          const contentType = request.headers["ContentType"];
+          const contentType = request.headers["Content-Type"];
 
           if (contentType === "multipart/form-data") {
             request.body = this.createRequestBody(body);
