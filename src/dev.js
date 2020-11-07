@@ -179,7 +179,7 @@ export const initDevApp = async (DataManager) => {
         tasks: {
           path: "/project/tabs/:tabID/tasks",
           mock(url, urlParams) {
-            const { page = 1, page_size = 20 } = urlParams;
+            const { page = 1, page_size = 500 } = urlParams;
             const offset = (page - 1) * page_size;
 
             return {
