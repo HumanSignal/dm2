@@ -32,16 +32,21 @@ export const ViewsStore = types
   }))
   .actions((self) => ({
     setSelected(view) {
+      let selected;
       if (typeof view === "string") {
-        self.selected = self.views.find((v) => v.key === view);
+        selected = self.views.find((v) => v.key === view);
+      } else if (typeof view === "number") {
+        selected = self.views.find((v) => v.id === view);
       } else {
-        self.selected = view;
+        selected = self.views.find((v) => v.id === view.id);
       }
+
+      self.selected = selected;
       self.selected.reload();
       localStorage.setItem("selectedTab", self.selected.id);
     },
 
-    deleteView(view) {
+    deleteView: flow(function* (view) {
       if (self.selected === view) {
         const index = self.views.indexOf(view);
         const newView =
@@ -49,10 +54,11 @@ export const ViewsStore = types
         self.setSelected(newView.key);
       }
 
+      yield view.delete();
       destroy(view);
-    },
+    }),
 
-    addView(viewSnapshot) {
+    addView: flow(function* (viewSnapshot) {
       const lastView = self.views[self.views.length - 1];
 
       const newView = self.createView({
@@ -62,11 +68,12 @@ export const ViewsStore = types
       });
 
       self.views.push(newView);
-      console.log("View created");
       self.setSelected(newView);
+      console.log("Tab created");
+      yield newView.save();
 
       return newView;
-    },
+    }),
 
     duplicateView(view) {
       self.addView(getSnapshot(view));

@@ -3,7 +3,7 @@ import { InfiniteListItem } from "../../mixins/InfiniteList";
 import { CustomJSON } from "../types";
 
 const TaskModelBase = types
-  .model("TaskModel", {
+  .model({
     id: types.identifierNumber,
     data: types.optional(CustomJSON, {}),
     extra: types.optional(CustomJSON, {}),
@@ -16,7 +16,7 @@ const TaskModelBase = types
     updated_at: types.optional(types.maybeNull(types.string), null),
     overlap: types.optional(types.maybeNull(types.integer), null),
     project: types.optional(types.maybeNull(types.integer), null),
-    source: types.string,
+    // source: types.string,
 
     /* TODO: might need to be converted to a store at some point */
     completions: types.optional(types.array(CustomJSON), []),
@@ -32,4 +32,8 @@ const TaskModelBase = types
     },
   }));
 
-export const TaskModel = types.compose(TaskModelBase, InfiniteListItem);
+export const TaskModel = types.compose(
+  "TaskModel",
+  TaskModelBase,
+  InfiniteListItem
+);

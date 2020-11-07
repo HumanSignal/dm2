@@ -14,7 +14,11 @@ const MixinBase = types
   }))
   .actions((self) => ({
     setSelected(val) {
-      self.selected = val;
+      if (typeof val === "number") {
+        self.selected = self.list[val];
+      } else {
+        self.selected = self.list[val.id];
+      }
     },
 
     unsetTask() {
@@ -72,11 +76,8 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
           tabID: getParent(self).id,
         });
 
-        const loaded = self.setList({
-          list: data[apiMethod],
-          total: data.total,
-          reload,
-        });
+        const { total, [apiMethod]: list } = data;
+        const loaded = self.setList({ total, list, reload });
 
         if (loaded) self.page += 1;
 

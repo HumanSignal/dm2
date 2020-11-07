@@ -15,6 +15,9 @@ export const CustomJSON = types.custom({
   isTargetType(value) {
     return typeof value === "object";
   },
+  getValidationMessage() {
+    return "Error";
+  },
 });
 
 export const StringOrNumber = types.union(types.string, types.number);

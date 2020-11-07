@@ -162,5 +162,11 @@ export const View = types
       yield getRoot(self).API.updateTab({ tabID }, { body });
 
       self.reload();
+
+      console.log("Tab saved");
+    }),
+
+    delete: flow(function* () {
+      yield getRoot(self).API.deleteTab();
     }),
   }));

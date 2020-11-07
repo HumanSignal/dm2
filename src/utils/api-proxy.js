@@ -76,6 +76,9 @@ export class APIProxy {
 
       methods.forEach((settings, methodName) => {
         const { scope, ...restSettings } = this.getSettings(settings);
+
+        console.log({ restSettings, settings, methodName });
+
         this[methodName] = this.createApiCallExecutor(restSettings, [
           parentPath,
         ]);
@@ -101,17 +104,25 @@ export class APIProxy {
           parentPath
         );
 
+        const initialheaders = Object.assign(
+          this.getDefaultHeaders(requestMethod),
+          methodSettings.headers ?? {},
+          headers ?? {}
+        );
+
+        console.log({
+          initialheaders,
+          headers,
+          sHeaders: methodSettings.headers,
+        });
+
         const request = new Request(apiCallURL, {
           method: requestMethod,
-          headers: Object.assign(
-            {},
-            methodSettings.headers ?? {},
-            headers ?? {}
-          ),
+          headers: new Headers(initialheaders),
         });
 
         if (requestMethod !== "GET") {
-          const contentType = request.headers["Content-Type"];
+          const contentType = request.headers.get("Content-Type");
 
           if (contentType === "multipart/form-data") {
             request.body = this.createRequestBody(body);
@@ -172,6 +183,18 @@ export class APIProxy {
       scope: undefined,
       ...settings,
     };
+  }
+
+  getDefaultHeaders(method) {
+    switch (method) {
+      case "POST": {
+        return {
+          "Content-Type": "application/json",
+        };
+      }
+      default:
+        return {};
+    }
   }
 
   /**
@@ -260,11 +283,16 @@ export class APIProxy {
       const groupName = `Mock [${settings.method.toUpperCase()}: ${url}]`;
       console.groupCollapsed(groupName);
       console.log("URL params", params);
-      console.log("Body:", request.body);
+      console.log("Body:", request);
 
       try {
+        if (typeof request.body === "string") {
+          request.body = JSON.parse(request.body);
+        }
+
         response = await settings.mock(url, params ?? {}, request);
-      } catch {
+      } catch (err) {
+        console.error(err);
         ok = false;
       }
 

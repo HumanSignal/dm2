@@ -230,7 +230,7 @@ export const initDevApp = async (DataManager) => {
           path: "/tasks/:taskID/completions",
           method: "post",
           headers: {
-            ContentType: "application/json",
+            "Content-Type": "application/json",
           },
           mock(url, urlParams, request) {
             const completion = addCompletion(urlParams.taskID, request.body);
@@ -242,7 +242,7 @@ export const initDevApp = async (DataManager) => {
           path: "/completions/:completionID",
           method: "post",
           headers: {
-            ContentType: "application/json",
+            "Content-Type": "application/json",
           },
           mock(url, urlParams, request) {
             const { taskID, completionID } = urlParams;
