@@ -102,6 +102,7 @@ export const ViewsStore = types
       columns.forEach((c) => {
         const { target } = c;
 
+        const columnID = `${target}-${c.id}`;
         const parent = c.parent ? `${target}-${c.parent}` : undefined;
         const children = c.children
           ? c.children.map((ch) => `${target}-${ch}`)
@@ -109,7 +110,7 @@ export const ViewsStore = types
 
         const column = ViewColumn.create({
           ...c,
-          id: `${target}-${c.id}`,
+          id: columnID,
           filters: c.filters ?? [],
           alias: c.id,
           parent,
@@ -120,9 +121,9 @@ export const ViewsStore = types
 
         if (!c.children) {
           self.availableFilters.push({
-            id: `${c.id}-${c.target}-filter`,
+            id: `${columnID}-filter`,
             type: c.type,
-            field: column.id,
+            field: columnID,
             schema: c.schema ?? null,
           });
         }

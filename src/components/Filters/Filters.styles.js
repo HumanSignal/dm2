@@ -140,15 +140,9 @@ export const FiltersStyles = styled.div`
     }
 
     &__empty {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-
-      .ant-btn {
-        width: 120px;
-        margin-top: 10px;
-      }
+      padding: 0 10px;
+      font-size: 14px;
+      color: #585858;
     }
   }
 `;

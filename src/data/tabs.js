@@ -4,11 +4,11 @@ const tabs = [
     title: "Tab 1",
     hiddenColumns: null,
     filters: [
-      {
-        filter: "agreement-filter",
-        value: { min: 0.2, max: 0.5 },
-        operator: "in",
-      },
+      // {
+      //   filter: "tasks-agreement-filter",
+      //   value: { min: 0.2, max: 0.5 },
+      //   operator: "in",
+      // },
     ],
   },
   {

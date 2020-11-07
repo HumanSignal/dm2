@@ -18,18 +18,20 @@ export const Filters = inject("store")(
         className={["filters", sidebar ? "filters__sidebar" : null]}
       >
         <div className="filters__list">
-          {filters.length
-            ? filters.map((filter, i) => (
-                <FilterLine
-                  index={i}
-                  filter={filter}
-                  view={currentView}
-                  sidebar={sidebar}
-                  key={`${filter.filter.id}-${i}`}
-                  availableFilters={availableFilters}
-                />
-              ))
-            : "No filters applied"}
+          {filters.length ? (
+            filters.map((filter, i) => (
+              <FilterLine
+                index={i}
+                filter={filter}
+                view={currentView}
+                sidebar={sidebar}
+                key={`${filter.filter.id}-${i}`}
+                availableFilters={availableFilters}
+              />
+            ))
+          ) : (
+            <div className="filters__empty">No filters applied</div>
+          )}
         </div>
         <div className="filters__actions">
           <Button
