@@ -27,7 +27,7 @@ export const View = types
     ),
 
     filters: types.array(types.late(() => ViewFilter)),
-    filtersConjunction: types.optional(types.enumeration(["and", "or"]), "and"),
+    conjunction: types.optional(types.enumeration(["and", "or"]), "and"),
     selectedTasks: types.optional(types.array(CustomJSON), []),
     selectedCompletions: types.optional(types.array(CustomJSON), []),
 
@@ -85,6 +85,7 @@ export const View = types
         title: self.title,
         filters: getSnapshot(self.filters),
         hiddenColumns: getSnapshot(self.hiddenColumns),
+        conjunction: self.conjunction,
       };
     },
   }))
@@ -100,6 +101,7 @@ export const View = types
 
     setTitle(title) {
       self.title = title;
+      self.save();
     },
 
     setRenameMode(mode) {
@@ -107,7 +109,8 @@ export const View = types
     },
 
     setConjunction(value) {
-      self.filtersConjunction = value;
+      self.conjunction = value;
+      self.save();
     },
 
     setTask(params = {}) {
@@ -152,8 +155,6 @@ export const View = types
       yield getRoot(self).API.updateTab({ tabID }, { body });
 
       self.reload();
-
-      console.log("Tab saved");
     }),
 
     delete: flow(function* () {

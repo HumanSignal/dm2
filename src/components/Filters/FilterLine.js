@@ -13,7 +13,7 @@ const Conjunction = observer(({ index, view }) => {
         { value: "or", label: "Or" },
       ]}
       disabled={index > 1}
-      value={view.filtersConjunction}
+      value={view.conjunction}
       style={{ textAlign: "right" }}
       onChange={(value) => view.setConjunction(value)}
     />

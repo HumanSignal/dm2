@@ -20,6 +20,7 @@ const tabs = [
         value: "\u0441\u0441",
       },
     ],
+    conjunction: "or",
   },
   {
     id: 2,
