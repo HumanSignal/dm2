@@ -19,6 +19,11 @@ const tabs = [
         operator: "equal",
         value: "\u0441\u0441",
       },
+      {
+        filter: "tasks-finished-filter",
+        operator: "equal",
+        value: true,
+      },
     ],
     conjunction: "or",
   },
