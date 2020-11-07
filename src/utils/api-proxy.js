@@ -34,6 +34,9 @@ export class APIProxy {
   /** @type {number} */
   mockDelay = 0;
 
+  /** @type {boolean} */
+  disableMock = false;
+
   /**
    * Constructor
    * @param {APIProxyOptions} options
@@ -42,6 +45,7 @@ export class APIProxy {
     this.commonHeaders = options.commonHeaders ?? {};
     this.gateway = this.buildGateway(options.gateway);
     this.mockDelay = options.mockDelay ?? 0;
+    this.disableMock = options.disableMock ?? false;
     console.log(`API gateway: ${this.gateway}`);
 
     this.buildMethods(options.endpoints);
@@ -135,7 +139,11 @@ export class APIProxy {
 
         let rawResponse;
 
-        if (methodSettings.mock && process.env.NODE_ENV === "development") {
+        if (
+          methodSettings.mock &&
+          process.env.NODE_ENV === "development" &&
+          !this.disableMock
+        ) {
           rawResponse = await this.mockRequest(
             apiCallURL,
             urlParams,
@@ -143,7 +151,8 @@ export class APIProxy {
             methodSettings
           );
         } else {
-          rawResponse = await fetch(request);
+          console.log(request);
+          rawResponse = await fetch(apiCallURL, request);
         }
 
         if (rawResponse.ok) {
@@ -286,11 +295,13 @@ export class APIProxy {
       console.log("Body:", request);
 
       try {
+        const fakeRequest = new Request(request);
+
         if (typeof request.body === "string") {
-          request.body = JSON.parse(request.body);
+          fakeRequest.body = JSON.parse(request.body);
         }
 
-        response = await settings.mock(url, params ?? {}, request);
+        response = await settings.mock(url, params ?? {}, fakeRequest);
       } catch (err) {
         console.error(err);
         ok = false;

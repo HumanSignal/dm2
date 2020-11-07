@@ -34,8 +34,8 @@ export const ViewHiddenColumns = types
   }))
   .actions((self) => ({
     afterAttach() {
-      const { tableConfig } = getRoot(self).SDK;
       const { columns } = getParent(self).parent;
+      const { tableConfig } = getRoot(self).SDK;
 
       ["explore", "labeling"].forEach((mode) => {
         if (self[mode].length !== 0) return;

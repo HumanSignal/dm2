@@ -90,14 +90,15 @@ export const ViewsStore = types
 
       const newView = self.createView({
         ...(viewSnapshot ?? {}),
-        id: lastView.id + 1,
-        title: `${lastView.title} ${self.views.length}`,
+        id: (lastView?.id ?? -1) + 1,
+        title: `${lastView?.title ?? "Tab"} ${self.views.length}`,
       });
+
+      yield newView.save();
 
       self.views.push(newView);
       self.setSelected(newView);
       console.log("Tab created");
-      yield newView.save();
 
       return newView;
     }),
