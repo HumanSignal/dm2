@@ -95,7 +95,7 @@ export class LSFWrapper {
     else console.info(`Reloading task ${taskID}`);
 
     this.setLoading(true);
-    const tasks = this.datamanager.store.currentView.taskStore;
+    const tasks = this.datamanager.store.taskStore;
     const newTask = await tasks.loadTask(taskID);
 
     this.task = newTask;
@@ -184,9 +184,9 @@ export class LSFWrapper {
   onUpdateCompletion = async (ls, completion) => {
     this.setLoading(true);
 
+    console.log("saving completion", { completion });
     const result = await this.datamanager.api.updateCompletion(
       {
-        taskID: this.task.id,
         completionID: completion.pk,
       },
       {

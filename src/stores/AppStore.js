@@ -1,4 +1,6 @@
 import { flow, types } from "mobx-state-tree";
+import { AnnotationStore } from "./Annotations";
+import { TasksStore } from "./Tasks";
 import { CustomJSON } from "./types";
 import { ViewsStore } from "./Views";
 
@@ -16,6 +18,9 @@ export const AppStore = types
     project: types.optional(CustomJSON, {}),
 
     loading: types.optional(types.boolean, false),
+
+    taskStore: types.optional(TasksStore, {}),
+    annotationStore: types.optional(AnnotationStore, {}),
   })
   .views((self) => ({
     get SDK() {
@@ -43,7 +48,18 @@ export const AppStore = types
     },
 
     get dataStore() {
-      return self.currentView?.dataStore;
+      switch (self.target) {
+        case "tasks":
+          return self.taskStore;
+        case "annotations":
+          return self.annotationStore;
+        default:
+          return null;
+      }
+    },
+
+    get target() {
+      return self.viewsStore.selected?.target ?? "tasks";
     },
   }))
   .actions((self) => ({

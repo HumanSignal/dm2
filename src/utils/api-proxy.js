@@ -226,7 +226,9 @@ export class APIProxy {
       usedKeys.push(key);
       const result = data[key];
 
-      if (!result) throw new Error(`Can't find key \`${key}\` in data`);
+      if (result === undefined) {
+        throw new Error(`Can't find key \`${key}\` in data`);
+      }
 
       return result;
     });

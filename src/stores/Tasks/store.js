@@ -7,6 +7,7 @@ export const TasksStore = InfiniteList("TasksStore", {
   listItemType: TaskModel,
 }).actions((self) => ({
   loadTask: flow(function* (taskID) {
+    console.log(`Loading task from server: ${taskID}`);
     let remoteTask;
 
     if (taskID !== undefined) {

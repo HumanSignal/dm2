@@ -1,7 +1,12 @@
-import { destroy, flow, getParent, getSnapshot, types } from "mobx-state-tree";
+import {
+  destroy,
+  flow,
+  getParent,
+  getRoot,
+  getSnapshot,
+  types,
+} from "mobx-state-tree";
 import { unique } from "../../utils/utils";
-import { AnnotationStore } from "../Annotations";
-import { TasksStore } from "../Tasks";
 import { View } from "./view";
 import { ViewColumn } from "./view_column";
 import { ViewFilterType } from "./view_filter_type";
@@ -14,9 +19,6 @@ export const ViewsStore = types
     columnsTargetMap: types.map(types.array(ViewColumn)),
     sidebarEnabled: types.optional(types.boolean, false),
     sidebarVisible: types.optional(types.boolean, false),
-
-    taskStore: types.optional(TasksStore, {}),
-    annotationStore: types.optional(AnnotationStore, {}),
   })
   .views((self) => ({
     get all() {
@@ -32,14 +34,15 @@ export const ViewsStore = types
     },
 
     get dataStore() {
-      switch (self.selected.target) {
-        case "tasks":
-          return self.taskStore;
-        case "annotations":
-          return self.annotationStore;
-        default:
-          return null;
-      }
+      return getRoot(self).dataStore;
+    },
+
+    get taskStore() {
+      return getRoot(self).taskStore;
+    },
+
+    get annotationStore() {
+      return getRoot(self).annotationStore;
     },
 
     serialize() {

@@ -68,15 +68,15 @@ export const View = types
     },
 
     get dataStore() {
-      return getRoot(self).viewsStore.dataStore;
+      return getRoot(self).dataStore;
     },
 
     get taskStore() {
-      return getRoot(self).viewsStore.taskStore;
+      return getRoot(self).taskStore;
     },
 
     get annotationStore() {
-      return getRoot(self).viewsStore.annotationStore;
+      return getRoot(self).annotationStore;
     },
 
     serialize() {
