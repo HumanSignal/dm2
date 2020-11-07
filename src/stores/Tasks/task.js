@@ -12,12 +12,13 @@ const TaskModelBase = types
     finished: types.optional(types.boolean, false),
     is_labeled: types.optional(types.boolean, false),
     created_at: types.optional(types.maybeNull(types.string), null),
+    completed_at: types.optional(types.maybeNull(types.string), null),
     updated_at: types.optional(types.maybeNull(types.string), null),
     overlap: types.optional(types.maybeNull(types.integer), null),
     project: types.optional(types.maybeNull(types.integer), null),
     source: types.string,
 
-    /* TODO: might have need to be converted to a store at some point */
+    /* TODO: might need to be converted to a store at some point */
     completions: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
   })

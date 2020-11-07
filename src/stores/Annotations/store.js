@@ -6,26 +6,26 @@ export const AnnotationStore = InfiniteList("AnnotationStore", {
   apiMethod: "annotations",
   listItemType: Annotation,
 }).actions((self) => ({
-  loadTask: flow(function* (taskID) {
+  loadTask: flow(function* (annotationID) {
     let remoteTask;
 
-    if (taskID !== undefined) {
-      remoteTask = yield self.API.task({ taskID });
+    if (annotationID !== undefined) {
+      remoteTask = yield self.API.task({ taskID: annotationID });
     } else {
       remoteTask = yield self.API.nextTask({
         projectID: getRoot(self).project.id,
       });
     }
 
-    taskID = taskID ?? remoteTask.id;
+    annotationID = annotationID ?? remoteTask.id;
 
-    const task = self.updateItem(taskID, {
+    const annotation = self.updateItem(annotationID, {
       ...remoteTask,
       source: JSON.stringify(remoteTask),
     });
 
-    self.setTask(task.id);
+    self.setSelected(annotation.id);
 
-    return task;
+    return annotation;
   }),
 }));

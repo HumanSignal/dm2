@@ -16,3 +16,5 @@ export const CustomJSON = types.custom({
     return typeof value === "object";
   },
 });
+
+export const StringOrNumber = types.union(types.string, types.number);

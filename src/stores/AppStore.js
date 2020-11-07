@@ -62,7 +62,6 @@ export const AppStore = types
       console.log("Project loaded");
       yield self.viewsStore.fetchColumns();
       console.log("Columns set up. Filter types initialized.");
-      // yield self.viewsStore.fetchFilters();
       yield self.viewsStore.fetchViews();
       console.log("Views loaded. Current view is set to %O", self.currentView);
 

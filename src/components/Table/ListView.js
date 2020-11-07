@@ -1,4 +1,3 @@
-import { getRoot } from "mobx-state-tree";
 import React from "react";
 
 export const ListView = ({
@@ -39,7 +38,11 @@ export const ListView = ({
           },
           onClick() {
             if (!isCurrent) {
-              getRoot(view).dataStore.setSelected(currentTask);
+              console.log(currentTask);
+              view.setTask({
+                id: currentTask.id,
+                taskID: currentTask.task_id,
+              });
             }
           },
         });

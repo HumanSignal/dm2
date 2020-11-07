@@ -37,6 +37,9 @@ export class LSFWrapper {
   /** @type {Task} */
   task = null;
 
+  /** @type {Completion} */
+  initialCompletion = null;
+
   /** @type {LabelStudio} */
   lsf = null;
 
@@ -55,7 +58,10 @@ export class LSFWrapper {
     this.datamanager = dm;
     this.root = element;
     this.task = options.task;
+    this.initialCompletion = options.completion;
     this.history = this.datamanager.isLabelStream ? new LSFHistory(this) : null;
+
+    console.log(this.initialCompletion);
 
     const lsfProperties = {
       user: options.user,
@@ -89,7 +95,7 @@ export class LSFWrapper {
     else console.info(`Reloading task ${taskID}`);
 
     this.setLoading(true);
-    const tasks = this.datamanager.store.dataStore;
+    const tasks = this.datamanager.store.currentView.taskStore;
     const newTask = await tasks.loadTask(taskID);
 
     this.task = newTask;
@@ -156,7 +162,12 @@ export class LSFWrapper {
     if (this.datamanager.mode === "labelstream") {
       await this.loadTask();
     } else if (this.task) {
-      this.setCompletion(this.task.lastCompletion?.id);
+      const completionID =
+        this.initialCompletion?.id ?? this.task.lastCompletion?.id;
+      console.log({ completionID });
+      console.log(this.task);
+      console.log(this.lsf.completionStore.completions.length);
+      this.setCompletion(completionID);
     }
 
     this.setLoading(false);
@@ -165,7 +176,7 @@ export class LSFWrapper {
   /** @private */
   onSubmitCompletion = async (ls, completion) => {
     await this.submitCurrentCompletion("submitCompletion", (taskID, body) =>
-      this.datamanager.api.skipTask({ taskID }, { body })
+      this.datamanager.api.submitCompletion({ taskID }, { body })
     );
   };
 

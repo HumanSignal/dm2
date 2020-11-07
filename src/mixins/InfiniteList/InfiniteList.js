@@ -30,7 +30,7 @@ const MixinBase = types
 
         self.total = total;
 
-        if (reload) self.data = [];
+        if (reload) self.list = [];
         self.list.push(...newEntity);
 
         return true;

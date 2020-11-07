@@ -24,7 +24,7 @@ export const TasksStore = InfiniteList("TasksStore", {
       source: JSON.stringify(remoteTask),
     });
 
-    self.setTask(task.id);
+    self.setSelected(task.id);
 
     return task;
   }),

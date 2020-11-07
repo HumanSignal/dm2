@@ -4,13 +4,14 @@ import { randomDate } from "./utils/utils";
 export const initDevApp = async (DataManager) => {
   console.log("Running in development");
 
-  const { tasks, config } = await import("./data/image_bbox");
+  const { tasks, annotations, config } = await import("./data/image_bbox");
   const { default: tabs } = await import("./data/tabs");
 
   tasks.forEach((t) => {
+    const completions = annotations.filter((a) => a.task_id === t.id);
     Object.assign(t, {
       agreement: Math.random(),
-      finished: !!Math.round(Math.random()),
+      finished: !!completions.length,
       created_at: randomDate(
         new Date("2018-01-01"),
         new Date("2020-09-31")
@@ -21,6 +22,7 @@ export const initDevApp = async (DataManager) => {
       ).toISOString(),
       data: { ...t.data, value: guidGenerator() },
       extra: { key: guidGenerator() },
+      completions: completions,
     });
   });
 
@@ -131,171 +133,135 @@ export const initDevApp = async (DataManager) => {
               instructions: "Hello world",
             };
           },
-          scope: {
-            columns: {
-              path: "/columns",
-              async mock() {
-                return {
-                  columns: (await import("./data/columns")).default(
-                    tasks,
-                    {
-                      image: "Image",
-                      value: "Hello",
-                    },
-                    {
-                      key: "Value",
-                    }
-                  ),
-                };
-              },
-            },
-            tabs: {
-              path: "/tabs",
-              async mock() {
-                return { tabs };
-              },
-              scope: {
-                updateTab: {
-                  path: "/:tabID",
-                  method: "post",
-                  async mock(url, urlParams, request) {
-                    return {
-                      tab: updateOrCreateTab(urlParams.tabID, request.body),
-                    };
-                  },
-                },
-                deleteTab: {
-                  path: "/:tabID",
-                  method: "delete",
-                  async mock(url, urlParams, request) {
-                    return {
-                      OK: deleteTab(urlParams.tabID),
-                    };
-                  },
-                },
-                tasks: {
-                  path: "/:tabID/tasks",
-                  mock(url, urlParams) {
-                    const { page = 1, page_size = 20 } = urlParams;
-                    const offset = (page - 1) * page_size;
-
-                    return {
-                      tasks: tasks.slice(offset, offset + page_size),
-                      total: tasks.length,
-                    };
-                  },
-                  scope: {
-                    task: {
-                      path: "/:taskID",
-                      mock(url, urlParams) {
-                        const { taskID } = urlParams;
-                        return tasks.find((t) => t.id === taskID);
-                      },
-                      scope: {
-                        completions: {
-                          path: "/completions",
-                          method: "post",
-                          mock(url, urlParams) {
-                            const { id } = urlParams;
-                            return tasks.find((t) => t.id === id)?.completions;
-                          },
-                          scope: {
-                            updateCompletion: {
-                              path: "/:completionID",
-                              method: "post",
-                              headers: {
-                                ContentType: "application/json",
-                              },
-                              mock(url, urlParams, request) {
-                                const { taskID, completionID } = urlParams;
-                                const completion = findCompletion(
-                                  findTask(taskID),
-                                  completionID
-                                );
-
-                                if (completion) {
-                                  updateCompletion(completion, request.body);
-                                }
-
-                                return { OK: true };
-                              },
-                            },
-                            deleteCompletion: {
-                              path: "/:completionID",
-                              method: "delete",
-                              mock(url, urlParams, request) {
-                                return deleteCompletion(
-                                  urlParams.taskID,
-                                  urlParams.completionID
-                                );
-                              },
-                            },
-                          },
-                        },
-                        submitCompletion: {
-                          path: "/completions",
-                          method: "post",
-                          headers: {
-                            ContentType: "application/json",
-                          },
-                          mock(url, urlParams, request) {
-                            const completion = addCompletion(
-                              urlParams.taskID,
-                              request.body
-                            );
-
-                            return { id: completion.id };
-                          },
-                        },
-                      },
-                    },
-                    nextTask: {
-                      path: "/next",
-                      method: "get",
-                      mock() {
-                        const [min, max] = [0, tasks.length - 1];
-                        const index =
-                          Math.floor(Math.random() * (max - min + 1)) + min;
-                        return tasks[index];
-                      },
-                    },
-                    skipTask: {
-                      path: "/cancel",
-                      method: "post",
-                      mock(url, urlParams, request) {
-                        const completion = addCompletion(urlParams.taskID, {
-                          ...request.body,
-                          skipped: true,
-                        });
-
-                        return { id: completion.id };
-                      },
-                    },
-                  },
-                },
-                annotations: {
-                  path: "/annotations",
-                  mock() {
-                    return {
-                      annotations: [],
-                    };
-                  },
-                },
-              },
-            },
-          },
         },
-        filters: {
-          path: "/filters",
+        columns: {
+          path: "/project/columns",
           async mock() {
-            const { filters } = await import("./data/filters");
-            console.log({ availableFilters: filters });
-            return filters(tasks);
+            return {
+              columns: (await import("./data/columns")).default(
+                tasks,
+                {
+                  image: "Image",
+                  value: "Hello",
+                },
+                {
+                  key: "Value",
+                }
+              ),
+            };
           },
         },
-        cancel: "/cancel",
-        projects: "/projects",
-        expertInstructions: "/expert_instruction",
+        tabs: {
+          path: "/project/tabs",
+          async mock() {
+            return { tabs };
+          },
+        },
+        updateTab: {
+          path: "/project/tabs/:tabID",
+          method: "post",
+          async mock(url, urlParams, request) {
+            return {
+              tab: updateOrCreateTab(urlParams.tabID, request.body),
+            };
+          },
+        },
+        deleteTab: {
+          path: "/project/tabs/:tabID",
+          method: "delete",
+          async mock(url, urlParams, request) {
+            return {
+              OK: deleteTab(urlParams.tabID),
+            };
+          },
+        },
+
+        tasks: {
+          path: "/project/tabs/:tabID/tasks",
+          mock(url, urlParams) {
+            const { page = 1, page_size = 20 } = urlParams;
+            const offset = (page - 1) * page_size;
+
+            return {
+              tasks: tasks.slice(offset, offset + page_size),
+              total: tasks.length,
+            };
+          },
+        },
+        annotations: {
+          path: "/project/tabs/:tabID/annotations",
+          mock() {
+            return {
+              annotations: annotations,
+              total: annotations.length,
+            };
+          },
+        },
+
+        task: {
+          path: "/tasks/:taskID",
+          mock(url, urlParams) {
+            const { taskID } = urlParams;
+            return tasks.find((t) => t.id === taskID);
+          },
+        },
+        skipTask: {
+          path: "/tasks/:taskID/completions?was_cancelled=1",
+          mock(url, urlParams, request) {
+            const completion = addCompletion(urlParams.taskID, {
+              ...request.body,
+              skipped: true,
+            });
+
+            return { id: completion.id };
+          },
+        },
+        nextTask: {
+          path: "/project/next",
+          mock() {
+            const [min, max] = [0, tasks.length - 1];
+            const index = Math.floor(Math.random() * (max - min + 1)) + min;
+            return tasks[index];
+          },
+        },
+
+        completion: "/tasks/:taskID/completions/:id",
+        submitCompletion: {
+          path: "/tasks/:taskID/completions",
+          method: "post",
+          headers: {
+            ContentType: "application/json",
+          },
+          mock(url, urlParams, request) {
+            const completion = addCompletion(urlParams.taskID, request.body);
+
+            return { id: completion.id };
+          },
+        },
+        updateCompletion: {
+          path: "/completions/:completionID",
+          method: "post",
+          headers: {
+            ContentType: "application/json",
+          },
+          mock(url, urlParams, request) {
+            const { taskID, completionID } = urlParams;
+            const completion = findCompletion(findTask(taskID), completionID);
+
+            if (completion) {
+              updateCompletion(completion, request.body);
+            }
+
+            return { OK: true };
+          },
+        },
+        deleteCompletion: {
+          path: "/completions/:completionID",
+          method: "delete",
+          mock(url, urlParams, request) {
+            return deleteCompletion(urlParams.taskID, urlParams.completionID);
+          },
+        },
       },
     },
     labelStudio: {
@@ -315,14 +281,20 @@ export const initDevApp = async (DataManager) => {
         "predictions:menu",
       ],
     },
-    // table: {
-    //   hiddenColumns: {
-    //     explore: ["tasks-data", "tasks-extra", "tasks-updated_at"],
-    //   },
-    //   visibleColumns: {
-    //     labeling: ["tasks-id", "tasks-agreement", "tasks-finished"],
-    //   },
-    // },
+    table: {
+      hiddenColumns: {
+        explore: ["tasks-data", "tasks-extra", "tasks-updated_at"],
+      },
+      visibleColumns: {
+        labeling: [
+          "tasks-id",
+          "tasks-agreement",
+          "tasks-finished",
+          "annotations-id",
+          "annotations-task_id",
+        ],
+      },
+    },
   });
 
   datamanager.on("submitCompletion", (...args) =>

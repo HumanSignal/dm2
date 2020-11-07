@@ -64,6 +64,19 @@ export const tasksColumns = (tasks, data = {}, extra = {}) =>
       },
     },
     {
+      id: "completed_at",
+      title: "Completed at",
+      type: "Datetime",
+      schema: {
+        min: new Date(
+          Math.min(...tasks.map((t) => new Date(t.updated_at).getTime()))
+        ).toISOString(),
+        max: new Date(
+          Math.max(...tasks.map((t) => new Date(t.updated_at).getTime()))
+        ).toISOString(),
+      },
+    },
+    {
       id: "data",
       title: "Data",
       type: "List",

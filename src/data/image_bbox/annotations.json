@@ -1,0 +1,107 @@
+[
+  {
+    "created_at": 1603907642,
+    "id": 30001,
+    "lead_time": 2.4,
+    "result": [],
+    "task_id": 30
+  },
+  {
+    "created_at": 1603904943,
+    "id": 3001,
+    "lead_time": 5.821,
+    "result": [],
+    "skipped": true,
+    "task_id": 3,
+    "was_cancelled": true
+  },
+  {
+    "created_at": 1603904960,
+    "id": 3002,
+    "lead_time": 22.66,
+    "result": [],
+    "skipped": true,
+    "task_id": 3,
+    "was_cancelled": true
+  },
+  {
+    "created_at": 1603904965,
+    "id": 3003,
+    "lead_time": 28.243,
+    "result": [],
+    "skipped": true,
+    "task_id": 3,
+    "was_cancelled": true
+  },
+  {
+    "created_at": 1603854849,
+    "id": 2001,
+    "lead_time": 3.215,
+    "result": [],
+    "skipped": true,
+    "task_id": 2,
+    "was_cancelled": true
+  },
+  {
+    "created_at": 1603765441,
+    "id": 1001,
+    "lead_time": 27.551,
+    "result": [],
+    "skipped": false,
+    "task_id": 1,
+    "was_cancelled": false
+  },
+  {
+    "created_at": 1603724528,
+    "id": 1,
+    "lead_time": 1161.826,
+    "result": [
+      {
+        "from_name": "label",
+        "id": "4bjM7I2PvV",
+        "image_rotation": 0,
+        "original_height": 403,
+        "original_width": 600,
+        "to_name": "image",
+        "type": "polygonlabels",
+        "value": {
+          "points": [
+            [
+              34.333333333333336,
+              58.064516129032256
+            ],
+            [
+              36.5,
+              51.61290322580645
+            ],
+            [
+              58.666666666666664,
+              46.15384615384615
+            ],
+            [
+              57,
+              72.45657568238214
+            ],
+            [
+              49.333333333333336,
+              81.88585607940446
+            ]
+          ],
+          "polygonlabels": [
+            "Airplane"
+          ]
+        }
+      }
+    ],
+    "skipped": false,
+    "task_id": 0,
+    "was_cancelled": false
+  },
+  {
+    "created_at": 1603766032,
+    "id": 2,
+    "lead_time": 3.342,
+    "result": [],
+    "task_id": 0
+  }
+]

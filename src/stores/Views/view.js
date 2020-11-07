@@ -98,7 +98,7 @@ export const View = types
 
     setTarget(target) {
       self.target = target;
-      self.dataStore.fetch();
+      self.dataStore.reload();
     },
 
     setTitle(title) {
@@ -111,6 +111,17 @@ export const View = types
 
     setConjunction(value) {
       self.filtersConjunction = value;
+    },
+
+    setTask(params = {}) {
+      if (params.taskID !== undefined) {
+        console.log("set with completion");
+        self.taskStore.setSelected(params.taskID);
+        self.annotationStore.setSelected(params.id);
+      } else {
+        console.log("set task");
+        self.taskStore.setSelected(params.id);
+      }
     },
 
     createFilter() {

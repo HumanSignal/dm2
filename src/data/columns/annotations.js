@@ -6,7 +6,7 @@ export const annotationsColumns = (tasks, data = {}, extra = {}) =>
       type: "Number",
     },
     {
-      id: "task",
+      id: "task_id",
       title: "Task ID",
       type: "Number",
     },

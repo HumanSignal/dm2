@@ -129,11 +129,6 @@ export const ViewsStore = types
       });
     }),
 
-    fetchFilters: flow(function* () {
-      const result = yield getParent(self).API.filters();
-      self.availableFilters.push(...result);
-    }),
-
     fetchViews: flow(function* () {
       const { tabs } = yield getParent(self).API.tabs();
 

@@ -151,18 +151,28 @@ export class DataManager {
    * @param {HTMLElement} element Root element LSF will be rendered into
    * @param {import("../stores/Tasks").TaskModel} task
    */
-  startLabeling(element, task) {
+  startLabeling(element) {
+    const { currentView } = this.store;
+    const [task, completion] = [
+      currentView.taskStore.selected,
+      currentView.annotationStore.selected,
+    ];
+
+    console.log({ task, completion });
+
     if (!this.lsf) {
       this.lsf = new LSFWrapper(this, element, {
         ...this.labelStudioOptions,
         task,
+        completion,
       });
 
       return;
     }
 
-    if (this.lsf.task !== task) {
-      const completionID = task.lastCompletion?.id;
+    if (this.lsf.task !== task || completion !== undefined) {
+      const completionID = completion?.id ?? task.lastCompletion?.id;
+      console.log("Loading", [task.id, completionID]);
       this.lsf.loadTask(task.id, completionID);
     }
   }
