@@ -48,6 +48,7 @@ const LabelingComponent = observer(({ store }) => {
   const history = store.SDK.lsf?.history;
 
   const runLS = () => {
+    console.log("Loading LSF");
     store.SDK.startLabeling(lsfRef.current, store.dataStore.selected);
   };
 

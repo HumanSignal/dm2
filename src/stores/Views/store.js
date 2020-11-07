@@ -1,5 +1,7 @@
 import { destroy, flow, getParent, getSnapshot, types } from "mobx-state-tree";
 import { unique } from "../../utils/utils";
+import { AnnotationStore } from "../Annotations";
+import { TasksStore } from "../Tasks";
 import { View } from "./view";
 import { ViewColumn } from "./view_column";
 import { ViewFilterType } from "./view_filter_type";
@@ -12,6 +14,9 @@ export const ViewsStore = types
     columnsTargetMap: types.map(types.array(ViewColumn)),
     sidebarEnabled: types.optional(types.boolean, false),
     sidebarVisible: types.optional(types.boolean, false),
+
+    taskStore: types.optional(TasksStore, {}),
+    annotationStore: types.optional(AnnotationStore, {}),
   })
   .views((self) => ({
     get all() {
@@ -24,6 +29,17 @@ export const ViewsStore = types
 
     get columns() {
       return self.columnsTargetMap.get(self.selected?.target ?? "tasks");
+    },
+
+    get dataStore() {
+      switch (self.selected.target) {
+        case "tasks":
+          return self.taskStore;
+        case "annotations":
+          return self.annotationStore;
+        default:
+          return null;
+      }
     },
 
     serialize() {
@@ -44,6 +60,17 @@ export const ViewsStore = types
       self.selected = selected;
       self.selected.reload();
       localStorage.setItem("selectedTab", self.selected.id);
+    },
+
+    setTask(params = {}) {
+      if (params.taskID !== undefined) {
+        console.log("set with completion");
+        self.taskStore.setSelected(params.taskID);
+        self.annotationStore.setSelected(params.id);
+      } else {
+        console.log("set task");
+        self.taskStore.setSelected(params.id);
+      }
     },
 
     deleteView: flow(function* (view) {

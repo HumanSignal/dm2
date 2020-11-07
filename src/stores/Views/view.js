@@ -7,8 +7,6 @@ import {
   types,
 } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
-import { AnnotationStore } from "../Annotations";
-import { TasksStore } from "../Tasks";
 import { CustomJSON } from "../types";
 import { ViewFilter } from "./view_filter";
 import { ViewHiddenColumns } from "./view_hidden_columns";
@@ -41,8 +39,6 @@ export const View = types
 
     enableFilters: false,
     renameMode: false,
-    taskStore: types.optional(TasksStore, {}),
-    annotationStore: types.optional(AnnotationStore, {}),
   })
   .views((self) => ({
     get root() {
@@ -72,14 +68,15 @@ export const View = types
     },
 
     get dataStore() {
-      switch (self.target) {
-        case "tasks":
-          return self.taskStore;
-        case "annotations":
-          return self.annotationStore;
-        default:
-          return null;
-      }
+      return getRoot(self).viewsStore.dataStore;
+    },
+
+    get taskStore() {
+      return getRoot(self).viewsStore.taskStore;
+    },
+
+    get annotationStore() {
+      return getRoot(self).viewsStore.annotationStore;
     },
 
     serialize() {
@@ -114,14 +111,7 @@ export const View = types
     },
 
     setTask(params = {}) {
-      if (params.taskID !== undefined) {
-        console.log("set with completion");
-        self.taskStore.setSelected(params.taskID);
-        self.annotationStore.setSelected(params.id);
-      } else {
-        console.log("set task");
-        self.taskStore.setSelected(params.id);
-      }
+      getRoot(self).viewsStore.setTask(params);
     },
 
     createFilter() {

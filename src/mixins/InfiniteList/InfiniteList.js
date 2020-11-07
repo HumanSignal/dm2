@@ -1,4 +1,4 @@
-import { flow, getParent, getRoot, types } from "mobx-state-tree";
+import { flow, getRoot, types } from "mobx-state-tree";
 
 const MixinBase = types
   .model("InfiniteListMixin", {
@@ -73,7 +73,7 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
         const data = yield self.API[apiMethod]({
           page: self.page,
           page_size: self.pageSize,
-          tabID: getParent(self).id,
+          tabID: getRoot(self).viewsStore.selected.id,
         });
 
         const { total, [apiMethod]: list } = data;
