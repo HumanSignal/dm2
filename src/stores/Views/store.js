@@ -6,6 +6,7 @@ import {
   getSnapshot,
   types,
 } from "mobx-state-tree";
+import { guidGenerator } from "../../utils/random";
 import { unique } from "../../utils/utils";
 import { View } from "./view";
 import { ViewColumn } from "./view_column";
@@ -65,16 +66,16 @@ export const ViewsStore = types
       localStorage.setItem("selectedTab", self.selected.id);
     },
 
-    setTask(params = {}) {
+    setTask: flow(function* (params = {}) {
       if (params.taskID !== undefined) {
         console.log("set with completion");
-        self.taskStore.setSelected(params.taskID);
+        yield self.taskStore.loadTask(params.taskID);
         self.annotationStore.setSelected(params.id);
       } else {
         console.log("set task");
         self.taskStore.setSelected(params.id);
       }
-    },
+    }),
 
     deleteView: flow(function* (view) {
       if (self.selected === view) {
@@ -95,6 +96,7 @@ export const ViewsStore = types
         ...(viewSnapshot ?? {}),
         id: (lastView?.id ?? -1) + 1,
         title: `${lastView?.title ?? "Tab"} ${self.views.length}`,
+        key: guidGenerator(),
       });
 
       self.views.push(newView);

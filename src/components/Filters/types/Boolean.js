@@ -3,7 +3,7 @@ import { FilterDropdown } from "../FilterDropdown";
 
 export const BooleanFilter = [
   {
-    key: "is",
+    key: "equal",
     label: "is",
     valueType: "single",
     input: (props) => (

@@ -53,7 +53,7 @@ const LabelingComponent = observer(({ store }) => {
   };
 
   const closeLabeling = () => {
-    store.dataStore.unsetTask();
+    store.unsetTask();
     store.SDK.destroyLSF();
   };
 

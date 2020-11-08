@@ -18,7 +18,7 @@ const menuItem = (col) => (
 const TabFieldsMenu = observer(({ view }) => {
   return (
     <Menu size="small">
-      {view.columns.map((col) => {
+      {view.targetColumns.map((col) => {
         if (col.children) {
           return (
             <Menu.ItemGroup key={col.key} title={col.title}>

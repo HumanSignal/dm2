@@ -2,7 +2,10 @@ const tabs = [
   {
     id: 1,
     title: "Tab 1",
-    hiddenColumns: null,
+    hiddenColumns: {
+      explore: ["tasks-image", "tasks-extra", "tasks-created_at"],
+      labeling: [],
+    },
     filters: [
       // {
       //   filter: "tasks-agreement-filter",
@@ -18,6 +21,11 @@ const tabs = [
         filter: "tasks-image-filter",
         operator: "equal",
         value: "\u0441\u0441",
+      },
+      {
+        filter: "tasks-finished-filter",
+        operator: "equal",
+        value: true,
       },
     ],
     conjunction: "or",

@@ -67,6 +67,11 @@ export const AppStore = types
       self.mode = mode;
     },
 
+    unsetTask() {
+      self.annotationStore.unset();
+      self.taskStore.unset();
+    },
+
     fetchProject: flow(function* () {
       self.project = yield self.API.project();
     }),

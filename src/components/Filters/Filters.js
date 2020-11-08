@@ -10,8 +10,7 @@ export const Filters = inject("store")(
     const views = store.viewsStore;
     const currentView = views.selected;
 
-    const { availableFilters } = views;
-    const { filters } = currentView;
+    const { filters, availableFilters } = currentView;
 
     return (
       <FiltersStyles

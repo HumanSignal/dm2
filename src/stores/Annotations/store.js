@@ -28,4 +28,8 @@ export const AnnotationStore = InfiniteList("AnnotationStore", {
 
     return annotation;
   }),
+
+  unsetTask() {
+    self.unset();
+  },
 }));
