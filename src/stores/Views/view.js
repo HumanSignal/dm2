@@ -53,6 +53,10 @@ export const View = types
       return getRoot(self).viewsStore.columns;
     },
 
+    get targetColumns() {
+      return self.columns.filter((c) => c.target == self.target);
+    },
+
     // get fields formatted as columns structure for react-table
     get fieldsAsColumns() {
       return self.columns.reduce((res, column) => {
@@ -65,6 +69,12 @@ export const View = types
 
     get hiddenColumnsList() {
       return self.columns.filter((c) => c.hidden).map((c) => c.key);
+    },
+
+    get availableFilters() {
+      return self.parent.availableFilters.filter(
+        (f) => f.field.target === self.target
+      );
     },
 
     get dataStore() {
@@ -145,7 +155,7 @@ export const View = types
     },
 
     afterAttach() {
-      self.hiddenColumns = ViewHiddenColumns.create();
+      self.hiddenColumns = self.hiddenColumns ?? ViewHiddenColumns.create();
     },
 
     save: flow(function* () {

@@ -2,7 +2,10 @@ const tabs = [
   {
     id: 1,
     title: "Tab 1",
-    hiddenColumns: null,
+    hiddenColumns: {
+      explore: ["tasks-image", "tasks-extra", "tasks-created_at"],
+      labeling: [],
+    },
     filters: [
       // {
       //   filter: "tasks-agreement-filter",
