@@ -120,9 +120,11 @@ export class APIProxy {
           sHeaders: methodSettings.headers,
         });
 
+        const requestHeaders = new Headers(initialheaders);
+
         const request = new Request(apiCallURL, {
           method: requestMethod,
-          headers: new Headers(initialheaders),
+          headers: requestHeaders,
         });
 
         if (requestMethod !== "GET") {
@@ -151,7 +153,13 @@ export class APIProxy {
             methodSettings
           );
         } else {
-          console.log(request);
+          console.log({
+            request,
+            headers: Array.from(requestHeaders).reduce(
+              (res, [k, v]) => ({ ...res, [k]: v }),
+              {}
+            ),
+          });
           rawResponse = await fetch(apiCallURL, request);
         }
 

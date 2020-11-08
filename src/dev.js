@@ -6,6 +6,7 @@ export const initDevApp = async (DataManager) => {
 
   const { tasks, annotations, config } = await import("./data/image_bbox");
   const { default: tabs } = await import("./data/tabs");
+  const useExternalSource = !!process.env.USE_LSB;
 
   tasks.forEach((t) => {
     const completions = annotations.filter((a) => a.task_id === t.id);
@@ -121,7 +122,8 @@ export const initDevApp = async (DataManager) => {
     root: document.getElementById("app"),
     // mode: "labelstream",
     api: {
-      gateway: "/api",
+      disableMock: useExternalSource,
+      gateway: "http://localhost:8081/api",
       endpoints: {
         project: {
           path: "/project",
@@ -281,20 +283,24 @@ export const initDevApp = async (DataManager) => {
         "predictions:menu",
       ],
     },
-    table: {
-      hiddenColumns: {
-        explore: ["tasks-data", "tasks-extra", "tasks-updated_at"],
-      },
-      visibleColumns: {
-        labeling: [
-          "tasks-id",
-          "tasks-agreement",
-          "tasks-finished",
-          "annotations-id",
-          "annotations-task_id",
-        ],
-      },
-    },
+    ...(useExternalSource
+      ? {}
+      : {
+          table: {
+            hiddenColumns: {
+              explore: ["tasks:data", "tasks:extra", "tasks:updated_at"],
+            },
+            visibleColumns: {
+              labeling: [
+                "tasks:id",
+                "tasks:agreement",
+                "tasks:finished",
+                "annotations:id",
+                "annotations:task_id",
+              ],
+            },
+          },
+        }),
   });
 
   datamanager.on("submitCompletion", (...args) =>
