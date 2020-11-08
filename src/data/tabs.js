@@ -3,7 +3,7 @@ const tabs = [
     id: 1,
     title: "Tab 1",
     hiddenColumns: {
-      explore: ["tasks-image", "tasks-extra", "tasks-created_at"],
+      explore: ["tasks:data.image", "tasks:extra", "tasks:created_at"],
       labeling: [],
     },
     filters: [
@@ -13,17 +13,17 @@ const tabs = [
       //   operator: "in",
       // },
       {
-        filter: "tasks-id-filter",
+        filter: "filter:tasks:id",
         operator: "equal",
         value: 31,
       },
       {
-        filter: "tasks-image-filter",
+        filter: "filter:tasks:data.image",
         operator: "equal",
         value: "\u0441\u0441",
       },
       {
-        filter: "tasks-finished-filter",
+        filter: "filter:tasks:finished",
         operator: "equal",
         value: true,
       },

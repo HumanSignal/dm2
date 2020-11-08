@@ -37,21 +37,15 @@ const MixinBase = types
     },
 
     setList({ list, total, reload }) {
-      if (list.length > 0) {
-        const newEntity = list.map((t) => ({
-          ...t,
-          source: JSON.stringify(t),
-        }));
+      const newEntity = list.map((t) => ({
+        ...t,
+        source: JSON.stringify(t),
+      }));
 
-        self.total = total;
+      self.total = total;
 
-        if (reload) self.list = [];
-        self.list.push(...newEntity);
-
-        return true;
-      }
-
-      return false;
+      if (reload) self.list = [];
+      self.list.push(...newEntity);
     },
   }));
 
@@ -89,9 +83,11 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
         });
 
         const { total, [apiMethod]: list } = data;
-        const loaded = self.setList({ total, list, reload });
 
-        if (loaded) self.page += 1;
+        if (list) {
+          self.setList({ total, list, reload });
+          self.page += 1;
+        }
 
         self.loading = false;
       }),

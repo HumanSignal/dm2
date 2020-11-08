@@ -68,11 +68,9 @@ export const ViewsStore = types
 
     setTask: flow(function* (params = {}) {
       if (params.taskID !== undefined) {
-        console.log("set with completion");
         yield self.taskStore.loadTask(params.taskID);
         self.annotationStore.setSelected(params.id);
       } else {
-        console.log("set task");
         self.taskStore.setSelected(params.id);
       }
     }),
@@ -101,7 +99,6 @@ export const ViewsStore = types
 
       self.views.push(newView);
       self.setSelected(newView);
-      console.log("Tab created");
       yield newView.save();
 
       return newView;
@@ -134,6 +131,29 @@ export const ViewsStore = types
       const { columns } = yield getParent(self).API.columns();
       const targets = unique(columns.map((c) => c.target));
 
+      const createColumnPath = (columns, column) => {
+        const result = [];
+
+        if (column.parent) {
+          result.push(
+            createColumnPath(
+              columns,
+              columns.find((c) => {
+                return c.id === column.parent && c.target === column.target;
+              })
+            ).columnPath
+          );
+        }
+
+        const parentPath = result.join(".");
+
+        result.push(column.id);
+
+        const columnPath = result.join(".");
+
+        return { parentPath, columnPath };
+      };
+
       targets.forEach((t) => {
         self.columnsTargetMap.set(t, []);
       });
@@ -141,10 +161,14 @@ export const ViewsStore = types
       columns.forEach((c) => {
         const { target } = c;
 
-        const columnID = `${target}-${c.id}`;
-        const parent = c.parent ? `${target}-${c.parent}` : undefined;
+        const { columnPath, parentPath } = createColumnPath(columns, c);
+        console.log({ columnPath, parentPath });
+
+        const columnID = `${target}:${columnPath}`;
+        const parent = parentPath ? `${target}:${parentPath}` : undefined;
+
         const children = c.children
-          ? c.children.map((ch) => `${target}-${ch}`)
+          ? c.children.map((ch) => `${target}:${columnPath}.${ch}`)
           : undefined;
 
         const column = ViewColumn.create({
@@ -160,7 +184,7 @@ export const ViewsStore = types
 
         if (!c.children) {
           self.availableFilters.push({
-            id: `${columnID}-filter`,
+            id: `filter:${columnID}`,
             type: c.type,
             field: columnID,
             schema: c.schema ?? null,
