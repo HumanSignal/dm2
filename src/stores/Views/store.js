@@ -66,16 +66,16 @@ export const ViewsStore = types
       localStorage.setItem("selectedTab", self.selected.id);
     },
 
-    setTask(params = {}) {
+    setTask: flow(function* (params = {}) {
       if (params.taskID !== undefined) {
         console.log("set with completion");
-        self.taskStore.setSelected(params.taskID);
+        yield self.taskStore.loadTask(params.taskID);
         self.annotationStore.setSelected(params.id);
       } else {
         console.log("set task");
         self.taskStore.setSelected(params.id);
       }
-    },
+    }),
 
     deleteView: flow(function* (view) {
       if (self.selected === view) {

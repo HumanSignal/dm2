@@ -14,14 +14,25 @@ const MixinBase = types
   }))
   .actions((self) => ({
     setSelected(val) {
+      console.log("Setting selected", val);
       if (typeof val === "number") {
-        self.selected = self.list[val];
+        self.selected = self.list.find((t) => t.id === val);
+        console.log(
+          `Set selected [${self.selected.$treenode.type.name}] by id`,
+          val,
+          self.selected
+        );
       } else {
-        self.selected = self.list[val.id];
+        self.selected = val;
+        console.log(
+          `Set selected [${self.selected.$treenode.type.name}] by model`,
+          val,
+          self.selected
+        );
       }
     },
 
-    unsetTask() {
+    unset() {
       self.selected = undefined;
     },
 
@@ -59,6 +70,7 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
           item.update(patch);
         } else {
           item = listItemType.create(patch);
+          console.log(`Created item [${self.type}#${itemID}]`, item);
           self.list.push(item);
         }
 
