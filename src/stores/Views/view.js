@@ -23,7 +23,7 @@ export const View = types
 
     target: types.optional(
       types.enumeration(["tasks", "annotations"]),
-      "annotations"
+      "tasks"
     ),
 
     filters: types.array(types.late(() => ViewFilter)),
