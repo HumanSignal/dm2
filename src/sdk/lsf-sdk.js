@@ -183,10 +183,12 @@ export class LSFWrapper {
   /** @private */
   onUpdateCompletion = async (ls, completion) => {
     this.setLoading(true);
+    const { task } = this;
 
     console.log("saving completion", { completion });
     const result = await this.datamanager.api.updateCompletion(
       {
+        taskID: task.id,
         completionID: completion.pk,
       },
       {
