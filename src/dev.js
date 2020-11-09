@@ -297,8 +297,7 @@ export const initDevApp = async (DataManager) => {
             visibleColumns: {
               labeling: [
                 "tasks:id",
-                "tasks:agreement",
-                "tasks:finished",
+                "tasks:was_cancelled",
                 "annotations:id",
                 "annotations:task_id",
               ],

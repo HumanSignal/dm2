@@ -10,7 +10,7 @@ export const TableStyles = styled.div`
     &__statusbar {
       display: flex;
       align-items: center;
-      padding-top: 10px;
+      padding: 10px 0;
     }
 
     &__table {
@@ -19,6 +19,7 @@ export const TableStyles = styled.div`
       height: 100%;
       width: 100%;
       flex-direction: column;
+      box-shadow: 0.5px 0.5px 0 0.5px #f0f0f0 inset;
 
       &-body {
         flex: 1;
@@ -27,7 +28,7 @@ export const TableStyles = styled.div`
 
       &-head {
         flex: 0;
-        background-color: #efefef;
+        background-color: #fafafa;
         font-weight: bold;
       }
 
@@ -43,11 +44,13 @@ export const TableStyles = styled.div`
       &-header {
         flex: 1;
         display: flex;
-        align-items: center;
         padding: 10px;
+        min-width: 50px;
+        overflow: hidden;
+        align-items: center;
         box-sizing: border-box;
         border-collapse: collapse;
-        box-shadow: 0 0 0 0.5px #b5b5b5;
+        box-shadow: 0.5px 0.5px 0 0.5px #f0f0f0 inset;
       }
     }
   }

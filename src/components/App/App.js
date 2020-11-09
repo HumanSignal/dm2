@@ -5,7 +5,6 @@ import React from "react";
 import { Labeling } from "../Label/Label";
 import { TabsWrapper } from "../Tabs/tabs";
 import Styles from "./App.styles";
-import "./index.scss";
 
 /** @typedef {import("../../stores/AppStore").AppStore} AppStore */
 
