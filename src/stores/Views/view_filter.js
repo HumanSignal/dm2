@@ -13,8 +13,6 @@ const operatorNames = Array.from(
   )
 );
 
-console.log({ operatorNames });
-
 const Operators = types.enumeration(operatorNames);
 
 export const ViewFilter = types
@@ -58,7 +56,6 @@ export const ViewFilter = types
       const valueType = self.componentValueType;
       self.operator = operator;
 
-      console.log({ valueType, type: self.componentValueType });
       if (valueType !== self.componentValueType) {
         self.value = null;
       } else {

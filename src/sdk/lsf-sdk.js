@@ -61,8 +61,6 @@ export class LSFWrapper {
     this.initialCompletion = options.completion;
     this.history = this.datamanager.isLabelStream ? new LSFHistory(this) : null;
 
-    console.log(this.initialCompletion);
-
     const lsfProperties = {
       user: options.user,
       config: this.lsfConfig,
@@ -164,9 +162,6 @@ export class LSFWrapper {
     } else if (this.task) {
       const completionID =
         this.initialCompletion?.id ?? this.task.lastCompletion?.id;
-      console.log({ completionID });
-      console.log(this.task);
-      console.log(this.lsf.completionStore.completions.length);
       this.setCompletion(completionID);
     }
 
@@ -185,7 +180,6 @@ export class LSFWrapper {
     this.setLoading(true);
     const { task } = this;
 
-    console.log("saving completion", { completion });
     const result = await this.datamanager.api.updateCompletion(
       {
         taskID: task.id,
@@ -230,7 +224,6 @@ export class LSFWrapper {
     this.setLoading(true);
 
     const { taskID, currentCompletion } = this;
-    console.log({ taskID, currentCompletion });
     const result = await submit(taskID, this.prepareData(currentCompletion));
 
     if (result && result.id !== undefined) {

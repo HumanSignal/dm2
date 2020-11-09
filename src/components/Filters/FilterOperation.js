@@ -15,8 +15,6 @@ import { Common } from "./types/Common";
  */
 export const FilterOperation = observer(
   ({ filter, field, value, operator }) => {
-    console.log({ field, filter, value, operator });
-
     const types = React.useMemo(
       () => [...FilterInputs[field.type], ...Common],
       [field]
@@ -37,8 +35,6 @@ export const FilterOperation = observer(
     const onChange = (e, value) => {
       filter.setValueDelayed(value);
     };
-
-    console.log({ types });
 
     return (
       <>

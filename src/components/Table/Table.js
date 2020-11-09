@@ -1,18 +1,37 @@
-import { Checkbox } from "antd";
+import { EyeOutlined } from "@ant-design/icons";
+import { Button, Checkbox } from "antd";
+import Modal from "antd/lib/modal/Modal";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { useFilters, useRowSelect, useSortBy, useTable } from "react-table";
+import * as CellViews from "./CellViews";
 import { ListView } from "./ListView";
 import { TableStyles } from "./Table.styles";
 
 const COLUMN_WIDTHS = new Map([
   ["selection", 50],
-  ["id", 100],
+  ["tasks:id", 100],
   ["status", 100],
   ["annotations", 150],
   ["created_on", 100],
+  ["tasks:was_cancelled", 120],
+  ["tasks:data.image", 150],
+
+  ["show-source", 30],
 ]);
+
+const getColumnWidth = (colID) => {
+  if (COLUMN_WIDTHS[colID]) {
+    return {
+      width: COLUMN_WIDTHS[colID],
+      minWidth: COLUMN_WIDTHS[colID],
+      maxWidth: COLUMN_WIDTHS[colID],
+    };
+  }
+
+  return {};
+};
 
 const getPropsForColumnCell = (column) => {
   const props = {};
@@ -44,7 +63,7 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 );
 
-const SelectionCell = (view) => (columns) => {
+const SelectionCell = (view, setShowSource) => (columns) => {
   const result = [];
 
   if (!view.root.isLabeling) {
@@ -59,7 +78,35 @@ const SelectionCell = (view) => (columns) => {
     });
   }
 
-  result.push(...columns);
+  result.push(
+    ...columns.map((col) => {
+      if (CellViews[col.type]) {
+        Object.assign(col, { Cell: CellViews[col.type] });
+      }
+
+      console.log("Column ID", col.id);
+      Object.assign(col, getColumnWidth(col.id));
+
+      return col;
+    })
+  );
+
+  result.push({
+    id: "show-source",
+    ...getColumnWidth("show-source"),
+    Header: ({ getToggleAllRowsSelectedProps }) => "Source",
+    Cell: ({ row: { original } }) => (
+      <Button
+        type="link"
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowSource(original.source);
+        }}
+      >
+        <EyeOutlined />
+      </Button>
+    ),
+  });
 
   return result;
 };
@@ -69,6 +116,7 @@ export const Table = observer(
     const { dataStore } = getRoot(view);
     const tableHead = React.createRef();
     const { total, selected } = dataStore;
+    const [showSource, setShowSource] = React.useState();
 
     const handleScroll = (e) => {
       // console.log(e);
@@ -103,7 +151,7 @@ export const Table = observer(
       useSortBy,
       useRowSelect,
       (hooks) => {
-        hooks.visibleColumns.push(SelectionCell(view));
+        hooks.visibleColumns.push(SelectionCell(view, setShowSource));
       }
     );
 
@@ -168,6 +216,17 @@ export const Table = observer(
             </div>
           </>
         )}
+        <Modal
+          visible={!!showSource}
+          onOk={() => setShowSource("")}
+          onCancel={() => setShowSource("")}
+        >
+          <pre>
+            {showSource
+              ? JSON.stringify(JSON.parse(showSource), null, "  ")
+              : ""}
+          </pre>
+        </Modal>
       </TableStyles>
     );
   }

@@ -6,7 +6,9 @@ export const initDevApp = async (DataManager) => {
 
   const { tasks, annotations, config } = await import("./data/image_bbox");
   const { default: tabs } = await import("./data/tabs");
-  const useExternalSource = !!process.env.USE_LSB;
+  const useExternalSource = !!process.env.REACT_APP_USE_LSB;
+
+  console.log(process.env);
 
   tasks.forEach((t) => {
     const completions = annotations.filter((a) => a.task_id === t.id);

@@ -10,9 +10,7 @@ export class LabelButtons extends Component {
   observer = null;
 
   componentDidMount() {
-    console.log("Partal mount");
     const target = this.target;
-    console.log(this.props.root);
     if (target) {
       this.updateElement(target);
     }
@@ -20,7 +18,6 @@ export class LabelButtons extends Component {
 
   componentDidUpdate() {
     if (!this.observer && this.target) {
-      console.log("creating observer");
       const target = this.target;
 
       this.observer = new MutationObserver((mutations) => {
@@ -50,7 +47,6 @@ export class LabelButtons extends Component {
 
   updateElement(target) {
     const panel = target.querySelector(".ls-panel");
-    console.log({ target, panel });
 
     if (panel && !this.isConnected) {
       this.createButtonsWrapper(panel);
@@ -73,7 +69,6 @@ export class LabelButtons extends Component {
 
     child.after(wrapper);
     this.setState({ element: wrapper });
-    console.log("Element updated");
   }
 
   get target() {

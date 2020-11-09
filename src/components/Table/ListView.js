@@ -38,7 +38,6 @@ export const ListView = ({
           },
           onClick() {
             if (!isCurrent) {
-              console.log(currentTask);
               view.setTask({
                 id: currentTask.id,
                 taskID: currentTask.task_id,

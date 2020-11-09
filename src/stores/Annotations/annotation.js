@@ -7,4 +7,5 @@ export const Annotation = types.model("Annotation", {
   task_id: types.integer,
   created_at: types.optional(types.maybeNull(StringOrNumber), null),
   updated_at: types.optional(types.maybeNull(StringOrNumber), null),
+  source: types.optional(types.string, ""),
 });

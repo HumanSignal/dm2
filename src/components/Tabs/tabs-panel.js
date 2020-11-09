@@ -19,7 +19,6 @@ const actionsMenu = (
 );
 
 export const TablePanel = observer(({ views, view }) => {
-  console.log(views);
   return (
     <div className="tab-panel">
       <Space size="middle">

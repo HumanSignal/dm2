@@ -81,8 +81,6 @@ export class APIProxy {
       methods.forEach((settings, methodName) => {
         const { scope, ...restSettings } = this.getSettings(settings);
 
-        console.log({ restSettings, settings, methodName });
-
         this[methodName] = this.createApiCallExecutor(restSettings, [
           parentPath,
         ]);

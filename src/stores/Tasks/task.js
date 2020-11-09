@@ -16,7 +16,7 @@ const TaskModelBase = types
     updated_at: types.optional(types.maybeNull(types.string), null),
     overlap: types.optional(types.maybeNull(types.integer), null),
     project: types.optional(types.maybeNull(types.integer), null),
-    // source: types.string,
+    source: types.optional(types.string, ""),
 
     /* TODO: might need to be converted to a store at some point */
     completions: types.optional(types.array(CustomJSON), []),
@@ -29,6 +29,11 @@ const TaskModelBase = types
 
     get lastPrediction() {
       return self.predictions[self.predictions.length - 1];
+    },
+  }))
+  .actions((self) => ({
+    afterFetch() {
+      console.log("Task fetched and created");
     },
   }));
 

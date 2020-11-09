@@ -109,7 +109,6 @@ export const ViewsStore = types
     },
 
     createView(viewSnapshot) {
-      console.log({ viewSnapshot });
       return View.create(viewSnapshot ?? {});
     },
 
@@ -162,7 +161,6 @@ export const ViewsStore = types
         const { target } = c;
 
         const { columnPath, parentPath } = createColumnPath(columns, c);
-        console.log({ columnPath, parentPath });
 
         const columnID = `${target}:${columnPath}`;
         const parent = parentPath ? `${target}:${parentPath}` : undefined;
@@ -170,6 +168,14 @@ export const ViewsStore = types
         const children = c.children
           ? c.children.map((ch) => `${target}:${columnPath}.${ch}`)
           : undefined;
+
+        console.log(`Column [ID:${c.id}]`, {
+          columnPath,
+          parentPath,
+          columnID,
+          parent,
+          children,
+        });
 
         const column = ViewColumn.create({
           ...c,

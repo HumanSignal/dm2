@@ -43,11 +43,7 @@ export const ViewColumn = types
     },
 
     get key() {
-      if (self.parent) {
-        return `${self.parent.key}.${self.id}`;
-      } else {
-        return self.id;
-      }
+      return self.id;
     },
 
     get accessor() {

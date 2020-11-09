@@ -20,6 +20,16 @@ export const TableStyles = styled.div`
 
       & > table {
         width: 100%;
+
+        tbody {
+          tr {
+            height: 100px;
+          }
+
+          td {
+            vertical-align: middle;
+          }
+        }
       }
     }
   }

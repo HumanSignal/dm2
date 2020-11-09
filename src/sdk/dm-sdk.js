@@ -158,8 +158,6 @@ export class DataManager {
       currentView.annotationStore.selected,
     ];
 
-    console.log({ task, completion });
-
     if (!this.lsf) {
       this.lsf = new LSFWrapper(this, element, {
         ...this.labelStudioOptions,
