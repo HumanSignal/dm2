@@ -7,6 +7,8 @@ export const initDevApp = async (DataManager) => {
   const { tasks, annotations, config } = await import("./data/image_bbox");
   const { default: tabs } = await import("./data/tabs");
   const useExternalSource = !!process.env.REACT_APP_USE_LSB;
+  const gatewayAPI =
+    process.env.REACT_APP_GATEWAY_API || "http://localhost:8081/api";
 
   console.log(process.env);
 
@@ -125,7 +127,7 @@ export const initDevApp = async (DataManager) => {
     // mode: "labelstream",
     api: {
       disableMock: useExternalSource,
-      gateway: "http://localhost:8081/api",
+      gateway: gatewayAPI,
       endpoints: {
         project: {
           path: "/project",
