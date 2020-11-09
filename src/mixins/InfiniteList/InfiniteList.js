@@ -69,6 +69,8 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
       },
 
       fetch: flow(function* ({ reload = false } = {}) {
+        if (self.loading) return;
+
         self.loading = true;
 
         if (reload) {

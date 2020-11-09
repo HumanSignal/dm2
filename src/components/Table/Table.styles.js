@@ -44,8 +44,10 @@ export const TableStyles = styled.div`
       &-header {
         flex: 1;
         display: flex;
-        align-items: center;
         padding: 10px;
+        min-width: 50px;
+        overflow: hidden;
+        align-items: center;
         box-sizing: border-box;
         border-collapse: collapse;
         box-shadow: 0.5px 0.5px 0 0.5px #f0f0f0 inset;
