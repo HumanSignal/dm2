@@ -31,6 +31,10 @@ export const TabsStyles = styled.div`
     width: 330px;
   }
 
+  .ant-tabs-nav {
+    margin-bottom: 0;
+  }
+
   .ant-page-header-heading {
     align-items: center;
   }

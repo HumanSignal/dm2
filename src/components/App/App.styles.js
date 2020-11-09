@@ -22,46 +22,27 @@ const Styles = styled.div`
     grid-gap: 1em;
   }
 
-  table {
-    border-spacing: 0;
-    border-collapse: collapse;
+  .checkbox {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-    thead {
-      background: #fafafa;
-    }
+  .container {
+    padding: 2em;
+    width: 90%;
+    height: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 
-    tr {
-      :hover td {
-        background: #fafafa;
-      }
-    }
+  .antdTable {
+    width: auto;
+  }
 
-    th,
-    td {
-      margin: 0;
-      padding: 0.5rem;
-      border: 1px solid #f0f0f0;
-
-      vertical-align: top;
-
-      .resizer {
-        display: inline-block;
-        background: blue;
-        width: 10px;
-        height: 100%;
-        position: absolute;
-        right: 0;
-        top: 0;
-        transform: translateX(50%);
-        z-index: 1;
-        ${"" /* prevents from scrolling while dragging on touch devices */}
-        touch-action:none;
-
-        &.isResizing {
-          background: red;
-        }
-      }
-    }
+  .selected,
+  .tags {
+    float: right;
   }
 `;
 

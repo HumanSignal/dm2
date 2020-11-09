@@ -1,6 +1,7 @@
 import React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
+import InfiniteLoader from "react-window-infinite-loader";
 
 const compileRowProps = (row, view, selected, style) => {
   const currentTask = row.original;
@@ -84,14 +85,28 @@ export const ListView = ({
     <div {...getTableBodyProps()} className="dm-content__table-body">
       <AutoSizer>
         {({ width, height }) => (
-          <FixedSizeList
-            width={width}
-            height={height}
-            itemSize={100}
-            itemCount={rows.length}
+          <InfiniteLoader
+            itemCount={view.dataStore.total}
+            isItemLoaded={(index) => rows[index] !== undefined}
+            loadMoreItems={() => {
+              if (view.dataStore.hasNextPage) {
+                view.dataStore.fetch();
+              }
+            }}
           >
-            {renderRow}
-          </FixedSizeList>
+            {({ onItemsRendered, ref }) => (
+              <FixedSizeList
+                ref={ref}
+                width={width}
+                height={height}
+                itemSize={100}
+                itemCount={rows.length}
+                onItemsRendered={onItemsRendered}
+              >
+                {renderRow}
+              </FixedSizeList>
+            )}
+          </InfiniteLoader>
         )}
       </AutoSizer>
     </div>

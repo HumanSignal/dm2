@@ -6,7 +6,6 @@ import { Filters } from "../Filters/Filters";
 import { Table } from "../Table/Table";
 import { TabTitle } from "./tabs-pane";
 import { TablePanel } from "./tabs-panel";
-import "./tabs.scss";
 import { TabsStyles } from "./Tabs.styles";
 
 const getTabPaneProps = (view, data) => ({

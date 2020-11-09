@@ -65,7 +65,11 @@ export class APIProxy {
     } catch {
       console.log("Gateway built from location");
       const gateway = new URL(window.location.href);
-      gateway.pathname = url;
+      if (url[0] === "/") {
+        gateway.pathname = url;
+      } else {
+        gateway.pathname += url;
+      }
       return gateway.toString();
     }
   }
