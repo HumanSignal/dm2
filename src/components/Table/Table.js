@@ -6,6 +6,7 @@ import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { useFilters, useRowSelect, useSortBy, useTable } from "react-table";
 import * as CellViews from "./CellViews";
+import { GridView } from "./GridView";
 import { ListView } from "./ListView";
 import { TableStyles } from "./Table.styles";
 
@@ -74,8 +75,8 @@ const SelectionCell = (view, setShowSource) => (columns) => {
 
   result.push({
     id: "show-source",
+    title: "Source",
     ...getColumnWidth("show-source"),
-    Header: ({ getToggleAllRowsSelectedProps }) => "Source",
     Cell: ({ row: { original } }) => (
       <Button
         type="link"
@@ -92,122 +93,85 @@ const SelectionCell = (view, setShowSource) => (columns) => {
   return result;
 };
 
-export const Table = observer(
-  ({ data, columns, view, onSelectRow, hiddenColumns = [] }) => {
-    const { dataStore } = getRoot(view);
-    const tableHead = React.createRef();
-    const { total, selected } = dataStore;
-    const [showSource, setShowSource] = React.useState();
+export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
+  const { dataStore } = getRoot(view);
+  const { total, selected } = dataStore;
+  const [showSource, setShowSource] = React.useState();
 
-    const handleScroll = (e) => {
-      // console.log(e);
-      // e.preserve();
-      // if (tableHead.current) {
-      //   requestAnimationFrame(() => {
-      //     const { scrollTop } = e.target;
-      //     Object.assign(tableHead.current?.style, {
-      //       transform: `translateY(${scrollTop}px)`
-      //     });
-      //   })
-      // }
-    };
-
-    const {
-      getTableProps,
-      getTableBodyProps,
-      headerGroups,
-      rows,
-      prepareRow,
-      setHiddenColumns,
-      state: { selectedRowIds },
-    } = useTable(
-      {
-        columns,
-        data,
-        initialState: {
-          hiddenColumns,
-        },
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow,
+    setHiddenColumns,
+    state: { selectedRowIds },
+  } = useTable(
+    {
+      columns,
+      data,
+      initialState: {
+        hiddenColumns,
       },
-      useFilters, // useFilters!
-      useSortBy,
-      useRowSelect,
-      (hooks) => {
-        hooks.visibleColumns.push(SelectionCell(view, setShowSource));
-      }
-    );
+    },
+    useFilters, // useFilters!
+    useSortBy,
+    useRowSelect,
+    (hooks) => {
+      hooks.visibleColumns.push(SelectionCell(view, setShowSource));
+    }
+  );
 
-    const gridView = () => {
-      return (
+  const gridView = () => {
+    return <GridView rows={rows} prepareRow={prepareRow} />;
+  };
+
+  const listView = () => {
+    return (
+      <ListView
+        rows={rows}
+        view={view}
+        selected={selected}
+        prepareRow={prepareRow}
+        headerGroups={headerGroups}
+        getTableProps={getTableProps}
+        getTableBodyProps={getTableBodyProps}
+      />
+    );
+  };
+
+  React.useEffect(() => {
+    setHiddenColumns(hiddenColumns);
+  }, [setHiddenColumns, hiddenColumns]);
+
+  React.useEffect(() => {
+    console.log(selectedRowIds);
+  }, [selectedRowIds]);
+
+  // Render the UI for your table
+  return (
+    <TableStyles className="dm-content">
+      {view.root.isLabeling ? (
+        listView()
+      ) : (
         <>
-          <div className="grid">
-            {rows.map((row, i) => {
-              prepareRow(row);
-              return (
-                <div {...row.getRowProps()}>
-                  {row.cells.map((cell) => {
-                    return (
-                      <div {...cell.getCellProps()}>{cell.render("Cell")}</div>
-                    );
-                  })}
-                </div>
-              );
-            })}
+          {view.type === "list" ? listView() : gridView()}
+          <div className="dm-content__statusbar">
+            <div>
+              Selected {Object.keys(selectedRowIds).length} of {total} items
+            </div>
           </div>
         </>
-      );
-    };
-
-    const listView = () => {
-      return (
-        <ListView
-          getTableProps={getTableProps}
-          getTableBodyProps={getTableBodyProps}
-          tableHead={tableHead}
-          prepareRow={prepareRow}
-          headerGroups={headerGroups}
-          rows={rows}
-          view={view}
-          selected={selected}
-          onScroll={handleScroll}
-        />
-      );
-    };
-
-    React.useEffect(() => {
-      setHiddenColumns(hiddenColumns);
-    }, [setHiddenColumns, hiddenColumns]);
-
-    React.useEffect(() => {
-      console.log(selectedRowIds);
-    }, [selectedRowIds]);
-
-    // Render the UI for your table
-    return (
-      <TableStyles className="dm-content">
-        {view.root.isLabeling ? (
-          listView()
-        ) : (
-          <>
-            {view.type === "list" ? listView() : gridView()}
-            <div className="dm-content__statusbar">
-              <div>
-                Selected {Object.keys(selectedRowIds).length} of {total} items
-              </div>
-            </div>
-          </>
-        )}
-        <Modal
-          visible={!!showSource}
-          onOk={() => setShowSource("")}
-          onCancel={() => setShowSource("")}
-        >
-          <pre>
-            {showSource
-              ? JSON.stringify(JSON.parse(showSource), null, "  ")
-              : ""}
-          </pre>
-        </Modal>
-      </TableStyles>
-    );
-  }
-);
+      )}
+      <Modal
+        visible={!!showSource}
+        onOk={() => setShowSource("")}
+        onCancel={() => setShowSource("")}
+      >
+        <pre>
+          {showSource ? JSON.stringify(JSON.parse(showSource), null, "  ") : ""}
+        </pre>
+      </Modal>
+    </TableStyles>
+  );
+});

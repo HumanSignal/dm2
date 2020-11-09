@@ -152,10 +152,9 @@ export class DataManager {
    * @param {import("../stores/Tasks").TaskModel} task
    */
   startLabeling(element) {
-    const { currentView } = this.store;
     const [task, completion] = [
-      currentView.taskStore.selected,
-      currentView.annotationStore.selected,
+      this.store.taskStore.selected,
+      this.store.annotationStore.selected,
     ];
 
     if (!this.lsf) {

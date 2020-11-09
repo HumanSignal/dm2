@@ -16,7 +16,7 @@ export const CustomJSON = types.custom({
     return typeof value === "object";
   },
   getValidationMessage() {
-    return "Error";
+    return "Error parsing JSON";
   },
 });
 

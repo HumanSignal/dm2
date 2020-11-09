@@ -28,6 +28,7 @@ export const ViewColumn = types
       types.array(types.late(() => types.reference(ViewColumn)))
     ),
     target: types.enumeration(["tasks", "annotations"]),
+    width: types.optional(types.integer, 150),
   })
   .views((self) => ({
     get hidden() {

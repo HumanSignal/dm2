@@ -15,21 +15,39 @@ export const TableStyles = styled.div`
 
     &__table {
       flex: 1;
+      display: flex;
       height: 100%;
-      overflow: auto;
+      width: 100%;
+      flex-direction: column;
 
-      & > table {
-        width: 100%;
+      &-body {
+        flex: 1;
+        height: 100%;
+      }
 
-        tbody {
-          tr {
-            height: 100px;
-          }
+      &-head {
+        flex: 0;
+        background-color: #efefef;
+        font-weight: bold;
+      }
 
-          td {
-            vertical-align: middle;
-          }
-        }
+      &-row {
+        display: flex;
+      }
+
+      &-body &-row {
+        height: 100px;
+      }
+
+      &-cell,
+      &-header {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        box-sizing: border-box;
+        border-collapse: collapse;
+        box-shadow: 0 0 0 0.5px #b5b5b5;
       }
     }
   }

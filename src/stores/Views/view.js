@@ -30,11 +30,6 @@ export const View = types
     conjunction: types.optional(types.enumeration(["and", "or"]), "and"),
     selectedTasks: types.optional(types.array(CustomJSON), []),
     selectedCompletions: types.optional(types.array(CustomJSON), []),
-
-    // hiddenColumns: types.maybeNull(
-    //   types.array(types.late(() => types.reference(ViewColumn)))
-    // ),
-
     hiddenColumns: types.maybeNull(types.optional(ViewHiddenColumns, {})),
 
     enableFilters: false,
