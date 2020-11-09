@@ -3,7 +3,7 @@ import { flow, getRoot, types } from "mobx-state-tree";
 const MixinBase = types
   .model("InfiniteListMixin", {
     page: types.optional(types.integer, 1),
-    pageSize: types.optional(types.integer, 500),
+    pageSize: types.optional(types.integer, 10),
     total: types.optional(types.integer, 0),
     loading: types.optional(types.boolean, false),
   })
