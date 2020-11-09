@@ -8,7 +8,7 @@ export const initDevApp = async (DataManager) => {
   const { default: tabs } = await import("./data/tabs");
   const useExternalSource = !!process.env.REACT_APP_USE_LSB;
   const gatewayAPI =
-    process.env.REACT_APP_GATEWAY_API || "http://localhost:8081/api";
+    process.env.REACT_APP_GATEWAY_API || "http://localhost:8080/api";
 
   console.log(process.env);
 
