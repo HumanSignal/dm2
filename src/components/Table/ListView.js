@@ -3,7 +3,6 @@ import React from "react";
 export const ListView = ({
   getTableProps,
   getTableBodyProps,
-  getPropsForColumnCell,
   tableHead,
   prepareRow,
   headerGroups,
@@ -17,9 +16,7 @@ export const ListView = ({
       {headerGroups.map((headerGroup) => (
         <tr {...headerGroup.getHeaderGroupProps()}>
           {headerGroup.headers.map((column) => (
-            <th {...column.getHeaderProps(getPropsForColumnCell(column))}>
-              {column.render("Header")}
-            </th>
+            <th {...column.getHeaderProps()}>{column.render("Header")}</th>
           ))}
         </tr>
       ))}
@@ -49,14 +46,8 @@ export const ListView = ({
         return (
           <tr {...rowProps}>
             {row.cells.map((cell) => {
-              const cellProps = {
-                ...cell.getCellProps(),
-                ...getPropsForColumnCell(cell.column),
-              };
-
               const cellContent = cell.render("Cell");
-
-              return <td {...cellProps}>{cellContent ?? null}</td>;
+              return <td {...cell.getCellProps()}>{cellContent ?? null}</td>;
             })}
           </tr>
         );

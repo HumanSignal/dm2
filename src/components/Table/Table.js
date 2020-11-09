@@ -11,13 +11,6 @@ import { TableStyles } from "./Table.styles";
 
 const COLUMN_WIDTHS = new Map([
   ["selection", 50],
-  ["tasks:id", 100],
-  ["status", 100],
-  ["annotations", 150],
-  ["created_on", 100],
-  ["tasks:was_cancelled", 120],
-  ["tasks:data.image", 150],
-
   ["show-source", 30],
 ]);
 
@@ -31,18 +24,6 @@ const getColumnWidth = (colID) => {
   }
 
   return {};
-};
-
-const getPropsForColumnCell = (column) => {
-  const props = {};
-
-  if (COLUMN_WIDTHS.has(column.id)) {
-    props.style = {
-      width: COLUMN_WIDTHS.get(column.id),
-    };
-  }
-
-  return props;
 };
 
 const IndeterminateCheckbox = React.forwardRef(
@@ -181,7 +162,6 @@ export const Table = observer(
         <ListView
           getTableProps={getTableProps}
           getTableBodyProps={getTableBodyProps}
-          getPropsForColumnCell={getPropsForColumnCell}
           tableHead={tableHead}
           prepareRow={prepareRow}
           headerGroups={headerGroups}
