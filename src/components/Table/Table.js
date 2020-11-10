@@ -4,7 +4,13 @@ import Modal from "antd/lib/modal/Modal";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
-import { useFilters, useRowSelect, useSortBy, useTable } from "react-table";
+import {
+  useFilters,
+  useFlexLayout,
+  useRowSelect,
+  useSortBy,
+  useTable,
+} from "react-table";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
 import { ListView } from "./ListView";
@@ -16,11 +22,12 @@ const COLUMN_WIDTHS = new Map([
 ]);
 
 const getColumnWidth = (colID) => {
-  if (COLUMN_WIDTHS[colID]) {
+  const width = COLUMN_WIDTHS.get(colID);
+  if (width !== undefined) {
     return {
-      width: COLUMN_WIDTHS[colID],
-      minWidth: COLUMN_WIDTHS[colID],
-      maxWidth: COLUMN_WIDTHS[colID],
+      width: width,
+      minWidth: width,
+      maxWidth: width,
     };
   }
 
@@ -51,6 +58,7 @@ const SelectionCell = (view, setShowSource) => (columns) => {
   if (!view.root.isLabeling) {
     result.push({
       id: "selection",
+      ...getColumnWidth("selection"),
       Header: ({ getToggleAllRowsSelectedProps }) => (
         <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
       ),
@@ -90,6 +98,8 @@ const SelectionCell = (view, setShowSource) => (columns) => {
     ),
   });
 
+  console.log({ columns: result });
+
   return result;
 };
 
@@ -117,6 +127,7 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
     useFilters, // useFilters!
     useSortBy,
     useRowSelect,
+    useFlexLayout,
     (hooks) => {
       hooks.visibleColumns.push(SelectionCell(view, setShowSource));
     }
