@@ -46,6 +46,9 @@ const LabelingComponent = observer(({ store }) => {
   const lsfRef = React.createRef();
   const view = store.viewsStore.selected;
   const history = store.SDK.lsf?.history;
+  const columns = React.useMemo(() => {
+    return view.fieldsAsColumns;
+  }, [view, view.target]);
 
   const runLS = () => {
     console.log("Loading LSF");
@@ -71,9 +74,10 @@ const LabelingComponent = observer(({ store }) => {
         {store.isExplorerMode && (
           <div className="table">
             <Table
+              key={`data-${view.target}`}
               view={view}
-              data={store.dataStore.list}
-              columns={view.fieldsAsColumns}
+              columns={columns}
+              data={Array.from(store.dataStore.list)}
               hiddenColumns={view.hiddenColumnsList}
             />
           </div>

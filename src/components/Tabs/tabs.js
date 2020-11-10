@@ -19,6 +19,7 @@ const createTab = (views, data, columns) => (view) => {
     <Tabs.TabPane {...getTabPaneProps(view, data)}>
       <TablePanel views={views} view={view} />
       <Table
+        key={`data-${view.target}`}
         view={view}
         data={Array.from(data)}
         columns={columns}
