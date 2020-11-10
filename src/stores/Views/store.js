@@ -91,7 +91,7 @@ export const ViewsStore = types
     addView: flow(function* (viewSnapshot) {
       const lastView = self.views[self.views.length - 1];
 
-      // Add +1 to tab name if the last part of title is integer
+      // Add +1 to tab name if the last part of title is an integer
       let new_title = lastView?.title ?? "Tab";
       if (lastView.title) {
         let parts = lastView.title.split(" ");
