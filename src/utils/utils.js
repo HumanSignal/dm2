@@ -41,3 +41,7 @@ export const groupBy = (list, group) => {
 export const unique = (list) => {
   return Array.from(new Set(list));
 };
+
+export const cleanArray = (array) => {
+  return array.filter((el) => !!el);
+};

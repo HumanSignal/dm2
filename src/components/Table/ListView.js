@@ -2,6 +2,7 @@ import React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
+import { cleanArray } from "../../utils/utils";
 
 const compileRowProps = (row, view, selected, style) => {
   const currentTask = row.original;
@@ -16,6 +17,7 @@ const compileRowProps = (row, view, selected, style) => {
       }
     },
   });
+
   const styles = {
     ...style,
     background: isCurrent ? "#efefef" : "none",
@@ -30,6 +32,28 @@ const compileRowProps = (row, view, selected, style) => {
   return props;
 };
 
+const compileTableCellProps = (column, className, propsGetter) => {
+  const props = propsGetter(column);
+
+  Object.assign(props, {
+    className: cleanArray([props.className, className]),
+  });
+
+  return props;
+};
+
+const compileHeaderProps = (column) => {
+  return compileTableCellProps(column, "dm-content__table-header", (column) =>
+    column.getHeaderProps()
+  );
+};
+
+const compileCellProps = (cell) => {
+  return compileTableCellProps(cell, "dm-content__table-cell", (cell) =>
+    cell.getCellProps()
+  );
+};
+
 export const ListView = ({
   getTableProps,
   getTableBodyProps,
@@ -41,24 +65,17 @@ export const ListView = ({
 }) => {
   const tableHead = React.useRef();
 
-  const renderRow = React.useCallback(
-    ({ style, index }) => {
-      const row = rows[index];
-      prepareRow(row);
-      return (
-        <div
-          {...compileRowProps(row, view, selected, style)}
-          className="dm-content__table-row"
-        >
-          {row.cells.map((cell) => (
-            <div {...cell.getCellProps()} className="dm-content__table-cell">
-              {cell.render("Cell") ?? null}
-            </div>
-          ))}
-        </div>
-      );
+  const loadMore = React.useCallback(() => {
+    if (view.dataStore.hasNextPage) {
+      view.dataStore.fetch();
+    }
+  }, [view.dataStore]);
+
+  const isItemLoaded = React.useCallback(
+    (index) => {
+      return rows[index] !== undefined;
     },
-    [rows, prepareRow, selected, view]
+    [rows]
   );
 
   const tableHeadContent = (
@@ -69,16 +86,29 @@ export const ListView = ({
           className="dm-content__table-row"
         >
           {headerGroup.headers.map((column) => (
-            <div
-              {...column.getHeaderProps()}
-              className="dm-content__table-header"
-            >
-              {column.render("Header")}
-            </div>
+            <div {...compileHeaderProps(column)}>{column.render("Header")}</div>
           ))}
         </div>
       ))}
     </div>
+  );
+
+  const renderRow = React.useCallback(
+    ({ style, index }) => {
+      const row = rows[index];
+      prepareRow(row);
+      return (
+        <div
+          {...compileRowProps(row, view, selected, style)}
+          className="dm-content__table-row"
+        >
+          {row.cells.map((cell) => (
+            <div {...compileCellProps(cell)}>{cell.render("Cell") ?? null}</div>
+          ))}
+        </div>
+      );
+    },
+    [rows, prepareRow, selected, view]
   );
 
   const tableBodyContent = (
@@ -87,12 +117,8 @@ export const ListView = ({
         {({ width, height }) => (
           <InfiniteLoader
             itemCount={view.dataStore.total}
-            isItemLoaded={(index) => rows[index] !== undefined}
-            loadMoreItems={() => {
-              if (view.dataStore.hasNextPage) {
-                view.dataStore.fetch();
-              }
-            }}
+            isItemLoaded={isItemLoaded}
+            loadMoreItems={loadMore}
           >
             {({ onItemsRendered, ref }) => (
               <FixedSizeList
@@ -100,6 +126,7 @@ export const ListView = ({
                 width={width}
                 height={height}
                 itemSize={100}
+                overscanCount={10}
                 itemCount={rows.length}
                 onItemsRendered={onItemsRendered}
               >
