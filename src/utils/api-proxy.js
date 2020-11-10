@@ -37,24 +37,29 @@ export class APIProxy {
   /** @type {boolean} */
   disableMock = false;
 
+  /** @type {"same-origin"|"cors"} */
+  requestMode = "same-origin";
+
   /**
    * Constructor
    * @param {APIProxyOptions} options
    */
   constructor(options) {
     this.commonHeaders = options.commonHeaders ?? {};
-    this.gateway = this.buildGateway(options.gateway);
+    this.gateway = this.resolvegateway(options.gateway);
+    this.requestMode = this.detectMode();
     this.mockDelay = options.mockDelay ?? 0;
     this.disableMock = options.disableMock ?? false;
     console.log(`API gateway: ${this.gateway}`);
 
-    this.buildMethods(options.endpoints);
+    this.resolveMethods(options.endpoints);
   }
 
   /**
-   *
+   * Resolves gateway to a full URL
+   * @returns {string}
    */
-  buildGateway(url) {
+  resolvegateway(url) {
     if (url instanceof URL) {
       console.log("Gateway built from URL");
       return url.toString();
@@ -75,10 +80,21 @@ export class APIProxy {
   }
 
   /**
+   * Detect RequestMode.
+   * @returns {"same-origin"|"cors"}
+   */
+  detectMode() {
+    const currentOrigin = window.location.origin;
+    const gatewayOrigin = new URL(this.gateway).origin;
+
+    return currentOrigin === gatewayOrigin ? "same-origin" : "cors";
+  }
+
+  /**
    * Build methods list from endpoints
    * @private
    */
-  buildMethods(endpoints, parentPath) {
+  resolveMethods(endpoints, parentPath) {
     if (endpoints) {
       const methods = new Map(Object.entries(endpoints));
 
@@ -90,7 +106,10 @@ export class APIProxy {
         ]);
 
         if (scope)
-          this.buildMethods(scope, [...(parentPath ?? []), restSettings.path]);
+          this.resolveMethods(scope, [
+            ...(parentPath ?? []),
+            restSettings.path,
+          ]);
       });
     }
   }
@@ -127,6 +146,8 @@ export class APIProxy {
         const request = new Request(apiCallURL, {
           method: requestMethod,
           headers: requestHeaders,
+          mode: this.requestMode,
+          credentials: this.requestMode === "cors" ? "omit" : "same-origin",
         });
 
         if (requestMethod !== "GET") {
