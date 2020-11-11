@@ -19,7 +19,7 @@ export const TableStyles = styled.div`
       height: 100%;
       width: 100%;
       flex-direction: column;
-      box-shadow: 0.5px 0.5px 0 0.5px #f0f0f0 inset;
+      box-shadow: -0.5px -0.5px 0 0.5px #f0f0f0 inset;
 
       &-body {
         flex: 1;
@@ -28,8 +28,9 @@ export const TableStyles = styled.div`
 
       &-head {
         flex: 0;
-        background-color: #fafafa;
         font-weight: bold;
+        background-color: #fafafa;
+        box-shadow: 0 -0.5px 0 0.5px #f0f0f0 inset;
       }
 
       &-row {

@@ -34,7 +34,7 @@ const AppComponent = ({ app }) => {
   return (
     <ErrorBoundary>
       <Provider store={app}>
-        <Styles fullScreen={app.isLabeling}>
+        <Styles fullScreen={app.isLabeling} style={{ padding: 15 }}>
           {app.loading ? (
             <div className="app-loader">
               <Spin indicator={<LoadingOutlined />} size="large" />
