@@ -58,7 +58,7 @@ export const View = types
     get fieldsAsColumns() {
       return self.columns.reduce((res, column) => {
         if (!column.parent) {
-          res.push(column.asField);
+          res.push(...column.asField);
         }
         return res;
       }, []);

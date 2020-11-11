@@ -28,7 +28,6 @@ export const TableStyles = styled.div`
 
       &-head {
         flex: 0;
-        font-weight: bold;
         background-color: #fafafa;
         box-shadow: 0 -0.5px 0 0.5px #f0f0f0 inset;
       }
@@ -54,5 +53,12 @@ export const TableStyles = styled.div`
         box-shadow: 0.5px 0.5px 0 0.5px #f0f0f0 inset;
       }
     }
+  }
+
+  .data-variable {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 `;

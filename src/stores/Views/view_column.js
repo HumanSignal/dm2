@@ -85,18 +85,23 @@ export const ViewColumn = types
     },
 
     get asField() {
-      const result = {
-        ...self,
-        id: self.key,
-        Header: self.title,
-        Cell: self.renderer,
-        accessor: self.accessor,
-        hidden: self.hidden,
-        original: self,
-      };
+      const result = [];
 
       if (self.children) {
-        result.columns = self.children.map((subColumn) => subColumn.asField);
+        const childColumns = [].concat(
+          ...self.children.map((subColumn) => subColumn.asField)
+        );
+        result.push(...childColumns);
+      } else {
+        result.push({
+          ...self,
+          id: self.key,
+          Header: self.title,
+          Cell: self.renderer,
+          accessor: self.accessor,
+          hidden: self.hidden,
+          original: self,
+        });
       }
 
       return result;

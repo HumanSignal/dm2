@@ -1,5 +1,5 @@
 import { EyeOutlined } from "@ant-design/icons";
-import { Button, Checkbox } from "antd";
+import { Button, Checkbox, Tag } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
@@ -64,8 +64,25 @@ const SelectionCell = (view, setShowSource) => (columns) => {
 
   result.push(
     ...columns.map((col) => {
+      console.log({ col });
       if (CellViews[col.type]) {
         Object.assign(col, { Cell: CellViews[col.type] });
+      }
+
+      if (col.original?.parent) {
+        const { parent } = col.original;
+
+        Object.assign(col, {
+          Header: () => (
+            <div className="data-variable">
+              {col.original.title}
+
+              <Tag color="blue" style={{ fontWeight: "bold" }}>
+                {parent.title}
+              </Tag>
+            </div>
+          ),
+        });
       }
 
       Object.assign(col, getColumnWidth(col.id));
