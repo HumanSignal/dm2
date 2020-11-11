@@ -45,6 +45,10 @@ export const ViewFilter = types
       return self.component?.find(({ key }) => key === self.operator)
         ?.valueType;
     },
+
+    get target() {
+      return self.filter.field.target;
+    },
   }))
   .actions((self) => ({
     setFilter(value) {

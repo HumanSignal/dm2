@@ -20,12 +20,16 @@ const Conjunction = observer(({ index, view }) => {
   );
 });
 
+const GroupWrapper = ({ children, wrap = false }) => {
+  return wrap ? <div className="filter-line__group">{children}</div> : children;
+};
+
 export const FilterLine = observer(
   ({ filter, availableFilters, index, view, sidebar }) => {
     return (
       <div className="filter-line">
         <div className="filter-line__settings">
-          <div className="filter-line__group">
+          <GroupWrapper wrap={sidebar}>
             <div className="filter-line__column filter-line__conjunction">
               {index === 0 ? (
                 <span style={{ fontSize: 12, paddingRight: 5 }}>Where</span>
@@ -46,15 +50,15 @@ export const FilterLine = observer(
                 onChange={(value) => filter.setFilter(value)}
               />
             </div>
-          </div>
-          <div className="filter-line__group">
+          </GroupWrapper>
+          <GroupWrapper wrap={sidebar}>
             <FilterOperation
               filter={filter}
               value={filter.value}
               operator={filter.operator}
               field={filter.field}
             />
-          </div>
+          </GroupWrapper>
         </div>
         <div className="filter-line__remove">
           <Button type="link" onClick={(e) => filter.delete()}>

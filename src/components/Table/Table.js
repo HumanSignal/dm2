@@ -74,7 +74,6 @@ const SelectionCell = (view, setShowSource) => (columns) => {
         Object.assign(col, { Cell: CellViews[col.type] });
       }
 
-      console.log("Column ID", col.id);
       Object.assign(col, getColumnWidth(col.id));
 
       return col;
@@ -97,8 +96,6 @@ const SelectionCell = (view, setShowSource) => (columns) => {
       </Button>
     ),
   });
-
-  console.log({ columns: result });
 
   return result;
 };

@@ -84,6 +84,10 @@ export const View = types
       return getRoot(self).annotationStore;
     },
 
+    get currentFilters() {
+      return self.filters.filter((f) => f.target === self.target);
+    },
+
     serialize() {
       return {
         id: self.id,

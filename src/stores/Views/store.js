@@ -1,3 +1,4 @@
+import isNumeric from "antd/es/_util/isNumeric";
 import {
   destroy,
   flow,
@@ -11,7 +12,6 @@ import { unique } from "../../utils/utils";
 import { View } from "./view";
 import { ViewColumn } from "./view_column";
 import { ViewFilterType } from "./view_filter_type";
-import isNumeric from "antd/es/_util/isNumeric";
 
 export const ViewsStore = types
   .model("ViewsStore", {
@@ -185,14 +185,6 @@ export const ViewsStore = types
         const children = c.children
           ? c.children.map((ch) => `${target}:${columnPath}.${ch}`)
           : undefined;
-
-        console.log(`Column [ID:${c.id}]`, {
-          columnPath,
-          parentPath,
-          columnID,
-          parent,
-          children,
-        });
 
         const column = ViewColumn.create({
           ...c,
