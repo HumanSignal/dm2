@@ -16,6 +16,7 @@ export const View = types
     id: types.identifierNumber,
 
     title: "Tasks",
+    oldTitle: types.maybeNull(types.string),
 
     key: types.optional(types.string, guidGenerator),
 
@@ -115,6 +116,7 @@ export const View = types
 
     setRenameMode(mode) {
       self.renameMode = mode;
+      if (self.renameMode) self.oldTitle = self.title;
     },
 
     setConjunction(value) {

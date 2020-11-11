@@ -62,9 +62,11 @@ export const ViewsStore = types
         selected = self.views.find((v) => v.id === view.id);
       }
 
-      self.selected = selected;
-      self.selected.reload();
-      localStorage.setItem("selectedTab", self.selected.id);
+      if (self.selected !== selected) {
+        self.selected = selected;
+        self.selected.reload();
+        localStorage.setItem("selectedTab", self.selected.id);
+      }
     },
 
     setTask: flow(function* (params = {}) {
