@@ -40,6 +40,10 @@ export const TableStyles = styled.div`
         height: 100px;
       }
 
+      &-header {
+        font-weight: 500;
+      }
+
       &-cell,
       &-header {
         flex: 1;
