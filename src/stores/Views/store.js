@@ -11,6 +11,7 @@ import { unique } from "../../utils/utils";
 import { View } from "./view";
 import { ViewColumn } from "./view_column";
 import { ViewFilterType } from "./view_filter_type";
+import isNumeric from "antd/es/_util/isNumeric";
 
 export const ViewsStore = types
   .model("ViewsStore", {
@@ -90,10 +91,26 @@ export const ViewsStore = types
     addView: flow(function* (viewSnapshot) {
       const lastView = self.views[self.views.length - 1];
 
+      // Add +1 to tab name if the last part of title is an integer
+      let new_title = lastView?.title ?? "Tab";
+      if (lastView.title) {
+        let parts = lastView.title.split(" ");
+        let number = parts[parts.length - 1];
+        // check is the last title part an integer?  Tab 1 => integer 1
+        if (isNumeric(number)) {
+          new_title =
+            parts.slice(0, parts.length - 1).join(" ") +
+            " " +
+            (parseInt(number) + 1);
+        } else {
+          new_title += " 1";
+        }
+      }
+
       const newView = self.createView({
         ...(viewSnapshot ?? {}),
         id: (lastView?.id ?? -1) + 1,
-        title: `${lastView?.title ?? "Tab"} ${self.views.length}`,
+        title: new_title,
         key: guidGenerator(),
       });
 
