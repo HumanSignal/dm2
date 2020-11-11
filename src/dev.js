@@ -10,8 +10,6 @@ export const initDevApp = async (DataManager) => {
   const gatewayAPI =
     process.env.REACT_APP_GATEWAY_API || "http://localhost:8080/api";
 
-  console.log(process.env);
-
   tasks.forEach((t) => {
     const completions = annotations.filter((a) => a.task_id === t.id);
     Object.assign(t, {

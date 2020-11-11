@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const Styles = styled.div`
+export const Styles = styled.div`
   height: 100%;
   padding: ${(props) => (props.fullScreen ? "0" : "0")};
   min-height: 500px;
@@ -44,6 +44,12 @@ const Styles = styled.div`
   .tags {
     float: right;
   }
-`;
 
-export default Styles;
+  .app-loader {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+`;

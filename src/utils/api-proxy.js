@@ -135,12 +135,6 @@ export class APIProxy {
           headers ?? {}
         );
 
-        console.log({
-          initialheaders,
-          headers,
-          sHeaders: methodSettings.headers,
-        });
-
         const requestHeaders = new Headers(initialheaders);
 
         const request = new Request(apiCallURL, {
@@ -176,13 +170,6 @@ export class APIProxy {
             methodSettings
           );
         } else {
-          console.log({
-            request,
-            headers: Array.from(requestHeaders).reduce(
-              (res, [k, v]) => ({ ...res, [k]: v }),
-              {}
-            ),
-          });
           rawResponse = await fetch(apiCallURL, request);
         }
 

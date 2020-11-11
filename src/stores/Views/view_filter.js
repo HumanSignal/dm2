@@ -57,10 +57,10 @@ export const ViewFilter = types
       self.operator = operator;
 
       if (valueType !== self.componentValueType) {
-        self.value = null;
-      } else {
-        self.view.save();
+        self.setValue(null);
       }
+
+      self.save();
     },
 
     setValue(value) {
@@ -69,6 +69,12 @@ export const ViewFilter = types
 
     delete() {
       self.view.deleteFilter(self);
+    },
+
+    save() {
+      if (self.value) {
+        self.view.save();
+      }
     },
 
     setValueDelayed: debounce((value) => {

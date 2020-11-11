@@ -4,9 +4,27 @@ import { observer, Provider } from "mobx-react";
 import React from "react";
 import { Labeling } from "../Label/Label";
 import { TabsWrapper } from "../Tabs/tabs";
-import Styles from "./App.styles";
+import { Styles } from "./App.styles";
 
 /** @typedef {import("../../stores/AppStore").AppStore} AppStore */
+
+class ErrorBoundary extends React.Component {
+  state = {
+    error: null,
+  };
+
+  componentDidCatch(error) {
+    this.setState({ error });
+  }
+
+  render() {
+    return this.state.error ? (
+      <div className="error">{this.state.error}</div>
+    ) : (
+      this.props.children
+    );
+  }
+}
 
 /**
  * Main Component
@@ -14,27 +32,21 @@ import Styles from "./App.styles";
  */
 const AppComponent = ({ app }) => {
   return (
-    <Provider store={app}>
-      <Styles fullScreen={app.isLabeling}>
-        {app.loading ? (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Spin indicator={<LoadingOutlined />} size="large" />
-          </div>
-        ) : app.isLabeling ? (
-          <Labeling />
-        ) : (
-          <TabsWrapper />
-        )}
-      </Styles>
-    </Provider>
+    <ErrorBoundary>
+      <Provider store={app}>
+        <Styles fullScreen={app.isLabeling}>
+          {app.loading ? (
+            <div className="app-loader">
+              <Spin indicator={<LoadingOutlined />} size="large" />
+            </div>
+          ) : app.isLabeling ? (
+            <Labeling />
+          ) : (
+            <TabsWrapper />
+          )}
+        </Styles>
+      </Provider>
+    </ErrorBoundary>
   );
 };
 
