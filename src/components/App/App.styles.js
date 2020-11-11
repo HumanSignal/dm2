@@ -6,7 +6,7 @@ export const Styles = styled.div`
   min-height: 500px;
   box-sizing: border-box;
 
-  .grid {
+  /* .grid {
     display: flex;
   }
 
@@ -20,6 +20,20 @@ export const Styles = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-gap: 1em;
+  } */
+
+  .grid {
+    flex: 1;
+    box-shadow: 0 0 0 1px #ccc inset;
+  }
+
+  .grid__item {
+    display: flex;
+    padding: 10px;
+    height: 100px;
+    justify-content: space-between;
+    box-sizing: border-box;
+    box-shadow: -0.5px -0.5px 0 0.5px #ccc;
   }
 
   .checkbox {

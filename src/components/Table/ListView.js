@@ -80,21 +80,10 @@ export const ListView = observer(
     rows,
     view,
     selected,
+    loadMore,
+    isItemLoaded,
   }) => {
     const tableHead = React.useRef();
-
-    const loadMore = React.useCallback(() => {
-      if (view.dataStore.hasNextPage) {
-        view.dataStore.fetch();
-      }
-    }, [view.dataStore]);
-
-    const isItemLoaded = React.useCallback(
-      (index) => {
-        return rows[index] !== undefined;
-      },
-      [rows]
-    );
 
     const tableHeadContent = (
       <div ref={tableHead} className="dm-content__table-head">

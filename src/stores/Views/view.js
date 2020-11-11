@@ -20,7 +20,7 @@ export const View = types
 
     key: types.optional(types.string, guidGenerator),
 
-    type: types.optional(types.enumeration(["list", "grid"]), "list"),
+    type: types.optional(types.enumeration(["list", "grid"]), "grid"),
 
     target: types.optional(
       types.enumeration(["tasks", "annotations"]),
@@ -103,6 +103,7 @@ export const View = types
       return {
         id: self.id,
         title: self.title,
+        ordering: self.ordering,
         filters: getSnapshot(self.filters).filter((f) => !!f.value),
         hiddenColumns: getSnapshot(self.hiddenColumns),
         conjunction: self.conjunction,

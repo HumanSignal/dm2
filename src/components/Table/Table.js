@@ -4,13 +4,7 @@ import Modal from "antd/lib/modal/Modal";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
-import {
-  useFilters,
-  useFlexLayout,
-  useRowSelect,
-  useSortBy,
-  useTable,
-} from "react-table";
+import { useFilters, useFlexLayout, useRowSelect, useTable } from "react-table";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
 import { ListView } from "./ListView";
@@ -122,7 +116,6 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
       },
     },
     useFilters, // useFilters!
-    useSortBy,
     useRowSelect,
     useFlexLayout,
     (hooks) => {
@@ -130,8 +123,31 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
     }
   );
 
+  const loadMore = React.useCallback(() => {
+    view.dataStore.fetch();
+  }, [view.dataStore]);
+
+  const isItemLoaded = React.useCallback(
+    (index) => {
+      const rowExists = !!rows[index];
+      const hasNextPage = view.dataStore.hasNextPage;
+
+      return !hasNextPage || !rowExists;
+    },
+    [rows, view.dataStore.hasNextPage]
+  );
+
   const gridView = () => {
-    return <GridView rows={rows} prepareRow={prepareRow} />;
+    return (
+      <GridView
+        rows={rows}
+        view={view}
+        loadMore={loadMore}
+        selected={selected}
+        prepareRow={prepareRow}
+        isItemLoaded={isItemLoaded}
+      />
+    );
   };
 
   const listView = () => {
@@ -139,8 +155,10 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
       <ListView
         rows={rows}
         view={view}
+        loadMore={loadMore}
         selected={selected}
         prepareRow={prepareRow}
+        isItemLoaded={isItemLoaded}
         headerGroups={headerGroups}
         getTableProps={getTableProps}
         getTableBodyProps={getTableBodyProps}
