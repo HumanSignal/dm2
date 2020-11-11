@@ -1,8 +1,14 @@
 import React from "react";
 import { FilterInput } from "../FilterInput";
 
-const NumberInput = (props) => {
-  return <FilterInput type="number" {...props} />;
+const NumberInput = ({ onChange, ...rest }) => {
+  return (
+    <FilterInput
+      type="number"
+      {...rest}
+      onChange={(value) => onChange(Number(value))}
+    />
+  );
 };
 
 const RangeInput = ({ schema, value, onChange }) => {

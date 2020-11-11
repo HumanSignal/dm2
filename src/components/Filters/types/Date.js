@@ -7,12 +7,12 @@ export const DateTimeInput = ({ range, onChange }) => {
     onChange(value) {
       console.log(value);
       if (Array.isArray(value)) {
-        onChange(null, {
+        onChange({
           min: value[0].toISOString(),
           max: value[1].toISOString(),
         });
       } else {
-        onChange(null, value.toISOString());
+        onChange(value.toISOString());
       }
     },
     style: {

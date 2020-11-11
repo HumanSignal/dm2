@@ -93,7 +93,7 @@ export const View = types
       return {
         id: self.id,
         title: self.title,
-        filters: getSnapshot(self.filters),
+        filters: getSnapshot(self.filters).filter((f) => !!f.value),
         hiddenColumns: getSnapshot(self.hiddenColumns),
         conjunction: self.conjunction,
       };

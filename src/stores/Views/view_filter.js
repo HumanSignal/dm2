@@ -76,13 +76,12 @@ export const ViewFilter = types
     },
 
     save() {
-      if (self.value) {
+      if (self.value !== null && self.value !== undefined) {
         self.view.save();
       }
     },
 
-    setValueDelayed: debounce((value) => {
-      self.setValue(value);
-      self.view.save();
+    saveDelayed: debounce(() => {
+      self.save();
     }, 300),
   }));

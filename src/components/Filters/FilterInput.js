@@ -9,13 +9,19 @@ export const FilterInput = ({
   schema,
   style,
 }) => {
+  const inputRef = React.useRef();
+  const onChangeHandler = (e) => {
+    onChange(inputRef.current.input.value);
+  };
+
   return (
     <Input
       size="small"
       type={type}
       value={value}
+      ref={inputRef}
       placeholder={placeholder}
-      onChange={(e) => onChange(e, Number(e.target.value))}
+      onChange={onChangeHandler}
       style={{
         fontSize: 12,
         height: 24,

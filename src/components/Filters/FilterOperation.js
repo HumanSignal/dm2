@@ -32,8 +32,10 @@ export const FilterOperation = observer(
 
     const Input = selected.input;
 
-    const onChange = (e, value) => {
-      filter.setValueDelayed(value);
+    const onChange = (value) => {
+      console.log(value);
+      filter.setValue(value);
+      filter.saveDelayed();
     };
 
     return (

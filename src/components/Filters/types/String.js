@@ -9,7 +9,7 @@ const BaseInput = ({ value, defaultValue, onChange, placeholder }) => {
       placeholder={placeholder}
       defaultValue={defaultValue}
       value={value}
-      onChange={(e) => onChange(e, e.target.value)}
+      onChange={onChange}
     />
   );
 };
