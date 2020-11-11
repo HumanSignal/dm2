@@ -32,6 +32,7 @@ export const View = types
     selectedTasks: types.optional(types.array(CustomJSON), []),
     selectedCompletions: types.optional(types.array(CustomJSON), []),
     hiddenColumns: types.maybeNull(types.optional(ViewHiddenColumns, {})),
+    ordering: types.optional(types.array(types.string), []),
 
     enableFilters: false,
     renameMode: false,
@@ -89,6 +90,15 @@ export const View = types
       return self.filters.filter((f) => f.target === self.target);
     },
 
+    get currentOrder() {
+      return self.ordering.reduce((res, field) => {
+        const fieldName = field.replace(/^\-/, "");
+        const desc = field[0] === "-";
+
+        return { ...res, [fieldName]: desc };
+      }, {});
+    },
+
     serialize() {
       return {
         id: self.id,
@@ -126,6 +136,18 @@ export const View = types
 
     setTask(params = {}) {
       getRoot(self).viewsStore.setTask(params);
+    },
+
+    setOrdering(value) {
+      const direction = self.currentOrder[value];
+      let ordering = value;
+
+      if (direction !== undefined) {
+        ordering = direction ? value : `-${value}`;
+      }
+
+      self.ordering[0] = ordering;
+      self.save();
     },
 
     createFilter() {

@@ -29,6 +29,7 @@ export const ViewColumn = types
     ),
     target: types.enumeration(["tasks", "annotations"]),
     width: types.optional(types.integer, 150),
+    orderable: types.optional(types.boolean, true),
   })
   .views((self) => ({
     get hidden() {
@@ -75,6 +76,14 @@ export const ViewColumn = types
       };
     },
 
+    get canOrder() {
+      return self.orderable && !self.children;
+    },
+
+    get order() {
+      return self.parentView.currentOrder[self.id];
+    },
+
     get asField() {
       const result = {
         ...self,
@@ -83,6 +92,7 @@ export const ViewColumn = types
         Cell: self.renderer,
         accessor: self.accessor,
         hidden: self.hidden,
+        original: self,
       };
 
       if (self.children) {
