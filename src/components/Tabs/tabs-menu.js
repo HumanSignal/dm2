@@ -1,8 +1,7 @@
 import { Menu } from "antd";
-import { observer } from "mobx-react";
 import React from "react";
 
-export const TabsMenu = observer(({ item }) => {
+export const TabsMenu = (item) => {
   return (
     <Menu onClick={(e) => e.domEvent.stopPropagation()}>
       <Menu.Item key="0">
@@ -29,17 +28,19 @@ export const TabsMenu = observer(({ item }) => {
           Duplicate
         </a>
       </Menu.Item>
-      <Menu.Divider />
       {item.parent.canClose ? (
-        <Menu.Item
-          key="2"
-          onClick={() => {
-            item.parent.deleteView(item);
-          }}
-        >
-          Close
-        </Menu.Item>
+        <>
+          <Menu.Divider />
+          <Menu.Item
+            key="2"
+            onClick={() => {
+              item.parent.deleteView(item);
+            }}
+          >
+            Close
+          </Menu.Item>
+        </>
       ) : null}
     </Menu>
   );
-});
+};

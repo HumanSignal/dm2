@@ -1,5 +1,5 @@
 import { DownOutlined } from "@ant-design/icons";
-import { Dropdown } from "antd";
+import { Button, Dropdown } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { TabsMenu } from "./tabs-menu";
@@ -23,14 +23,10 @@ export const TabTitle = observer(({ item }) => {
         item.title
       )}
       &nbsp;&nbsp;&nbsp;&nbsp;
-      <Dropdown overlay={<TabsMenu item={item} />} trigger={["click"]}>
-        <a
-          href="#down"
-          className="ant-dropdown-link"
-          onClick={(e) => e.preventDefault()}
-        >
+      <Dropdown overlay={TabsMenu(item)} trigger={["click"]}>
+        <Button type="link" size="small" onClick={(e) => e.preventDefault()}>
           <DownOutlined />
-        </a>
+        </Button>
       </Dropdown>
     </span>
   );

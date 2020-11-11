@@ -1,5 +1,4 @@
 import { Checkbox, Menu } from "antd";
-import { observer } from "mobx-react";
 import React from "react";
 
 const menuItem = (col) => (
@@ -15,7 +14,7 @@ const menuItem = (col) => (
   </Menu.Item>
 );
 
-const TabFieldsMenu = observer(({ view }) => {
+const TabFieldsMenu = (view) => {
   return (
     <Menu size="small">
       {view.targetColumns.map((col) => {
@@ -33,6 +32,6 @@ const TabFieldsMenu = observer(({ view }) => {
       })}
     </Menu>
   );
-});
+};
 
 export default TabFieldsMenu;

@@ -11,8 +11,9 @@ export const FiltersStyles = styled.div`
   &:not(.filters__sidebar) {
     margin-top: 10px;
     min-width: 400px;
-    border-radius: 3px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
+      0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
   }
 
   .filter-line {
