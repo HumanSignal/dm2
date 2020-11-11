@@ -127,10 +127,8 @@ export const View = types
     },
 
     createFilter() {
-      self.filters.push({
-        filter: self.parent.availableFilters[0],
-        view: self.id,
-      });
+      const filter = self.availableFilters[0];
+      self.filters.push({ filter, view: self.id });
     },
 
     toggleColumn(column) {

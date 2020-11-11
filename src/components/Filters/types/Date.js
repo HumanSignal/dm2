@@ -6,6 +6,14 @@ export const DateTimeInput = ({ range, onChange }) => {
     size: "small",
     onChange(value) {
       console.log(value);
+      if (Array.isArray(value)) {
+        onChange(null, {
+          min: value[0].toISOString(),
+          max: value[1].toISOString(),
+        });
+      } else {
+        onChange(null, value.toISOString());
+      }
     },
     style: {
       flex: 1,
