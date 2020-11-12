@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React from "react";
 import { FilterInput } from "../FilterInput";
 
@@ -6,35 +7,32 @@ const NumberInput = ({ onChange, ...rest }) => {
     <FilterInput
       type="number"
       {...rest}
-      onChange={(value) => onChange(Number(value))}
+      onChange={(value) => onChange(value ? Number(value) : null)}
     />
   );
 };
 
-const RangeInput = ({ schema, value, onChange }) => {
-  const minmax = { min: undefined, max: undefined, ...value };
+const RangeInput = observer(({ schema, value, onChange }) => {
+  const min = value?.min;
+  const max = value?.max;
 
-  const onValueChange = (e, value) => {
-    if (value.min !== undefined && value.max !== undefined) {
-      onChange(e, value);
-    }
+  const onValueChange = (value) => {
+    onChange(value);
   };
 
-  const onChangeMin = (e, value) => {
-    minmax.min = value;
-    onValueChange(e, { ...minmax });
+  const onChangeMin = (value) => {
+    onValueChange({ min: value, max });
   };
 
-  const onChangeMax = (e, value) => {
-    minmax.max = value;
-    onValueChange(e, { ...minmax });
+  const onChangeMax = (value) => {
+    onValueChange({ min, max: value });
   };
 
   return (
     <>
       <NumberInput
         placeholder="Min"
-        value={value?.min}
+        value={min}
         onChange={onChangeMin}
         schema={schema}
         style={{ flex: 1 }}
@@ -42,14 +40,14 @@ const RangeInput = ({ schema, value, onChange }) => {
       <span style={{ padding: "0 10px" }}>and</span>
       <NumberInput
         placeholder="Max"
-        value={value?.max}
+        value={max}
         onChange={onChangeMax}
         schema={schema}
         style={{ flex: 1 }}
       />
     </>
   );
-};
+});
 
 export const NumberFilter = [
   {

@@ -1,6 +1,7 @@
 import { getParent, types } from "mobx-state-tree";
 import * as Filters from "../../components/Filters/types";
 import { debounce } from "../../utils/debounce";
+import { isDefined } from "../../utils/utils";
 import {
   FilterValue,
   FilterValueRange,
@@ -49,6 +50,18 @@ export const ViewFilter = types
     get target() {
       return self.filter.field.target;
     },
+
+    get isValidFilter() {
+      const { value } = self;
+      if (value === null || value === undefined) return false;
+
+      if (FilterValueRange.is(value)) {
+        const { min, max } = value;
+        return isDefined(min) && isDefined(max);
+      }
+
+      return true;
+    },
   }))
   .actions((self) => ({
     setFilter(value) {
@@ -76,9 +89,7 @@ export const ViewFilter = types
     },
 
     save() {
-      if (self.value !== null && self.value !== undefined) {
-        self.view.save();
-      }
+      if (self.isValidFilter) self.view.save();
     },
 
     saveDelayed: debounce(() => {

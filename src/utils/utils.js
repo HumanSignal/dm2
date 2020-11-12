@@ -45,3 +45,7 @@ export const unique = (list) => {
 export const cleanArray = (array) => {
   return array.filter((el) => !!el);
 };
+
+export const isDefined = (value) => {
+  return value !== null && value !== undefined;
+};

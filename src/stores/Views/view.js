@@ -106,7 +106,9 @@ export const View = types
         ordering: self.ordering,
         type: self.type,
         target: self.target,
-        filters: getSnapshot(self.filters).filter((f) => !!f.value),
+        filters: self.filters
+          .filter((f) => !!f.isValidFilter)
+          .map((el) => getSnapshot(el)),
         hiddenColumns: getSnapshot(self.hiddenColumns),
         conjunction: self.conjunction,
       };

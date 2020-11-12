@@ -17,7 +17,6 @@ const COLUMN_WIDTHS = new Map([
 
 const getColumnWidth = (colID) => {
   const width = COLUMN_WIDTHS.get(colID);
-  console.log({ colID, width });
   if (width !== undefined) {
     return {
       width: width,
@@ -63,7 +62,6 @@ const SelectionCell = (view, setShowSource) => (columns) => {
 
   result.push(
     ...columns.map((col) => {
-      console.log({ col });
       if (CellViews[col.type]) {
         Object.assign(col, { Cell: CellViews[col.type] });
       }
@@ -177,7 +175,7 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
   }, [setHiddenColumns, hiddenColumns]);
 
   React.useEffect(() => {
-    console.log(selectedRowIds);
+    // console.log(selectedRowIds);
   }, [selectedRowIds]);
 
   // Render the UI for your table

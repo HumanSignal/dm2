@@ -29,8 +29,8 @@ export const FilterValueList = types.model("FilterValueList", {
 });
 
 export const FilterValueRange = types.model("FilterValueRange", {
-  min: FilterValue,
-  max: FilterValue,
+  min: types.maybeNull(FilterValue),
+  max: types.maybeNull(FilterValue),
 });
 
 export const FilterSchema = types.union({
