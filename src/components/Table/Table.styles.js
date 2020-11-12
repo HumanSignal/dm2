@@ -19,7 +19,7 @@ export const TableStyles = styled.div`
       height: 100%;
       width: 100%;
       flex-direction: column;
-      box-shadow: -0.5px -0.5px 0 0.5px #f0f0f0 inset;
+      box-shadow: 0 0 0 1px #f0f0f0 inset;
 
       &-body {
         flex: 1;

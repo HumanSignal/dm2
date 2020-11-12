@@ -1,7 +1,8 @@
-import { ExpandAltOutlined, PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { Button, Tooltip } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
+import { BsLayoutSidebarInsetReverse } from "react-icons/bs";
 import { FilterLine } from "./FilterLine";
 import { FiltersStyles } from "./Filters.styles";
 
@@ -50,8 +51,9 @@ export const Filters = inject("store")(
                 size="small"
                 about="Pin to sidebar"
                 onClick={() => views.expandFilters()}
+                style={{ display: "inline-flex", alignItems: "center" }}
               >
-                <ExpandAltOutlined />
+                <BsLayoutSidebarInsetReverse />
               </Button>
             </Tooltip>
           ) : null}

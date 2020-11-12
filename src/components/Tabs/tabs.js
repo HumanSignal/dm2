@@ -1,7 +1,7 @@
-import { ShrinkOutlined } from "@ant-design/icons";
 import { Button, PageHeader, Tabs } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
+import { RiCloseLine } from "react-icons/ri";
 import { Filters } from "../Filters/Filters";
 import { Table } from "../Table/Table";
 import { TabTitle } from "./tabs-pane";
@@ -45,8 +45,9 @@ const FiltersSidebar = observer(({ views }) => {
             key="close-filters"
             type="link"
             onClick={() => views.collapseFilters()}
+            style={{ display: "inline-flex", alignItems: "center" }}
           >
-            <ShrinkOutlined />
+            <RiCloseLine size={24} />
           </Button>
         }
         style={{
