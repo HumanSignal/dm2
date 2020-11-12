@@ -51,7 +51,11 @@ const OrderButton = observer(({ desc }) => {
     SortIcon = desc ? FaSortDown : FaSortUp;
   }
 
-  return <SortIcon style={{ marginLeft: 10 }} />;
+  return (
+    <SortIcon
+      style={{ marginLeft: 10, opacity: desc !== undefined ? 0.8 : 0.25 }}
+    />
+  );
 });
 
 const SelectionCell = (view, setShowSource) => (columns) => {
