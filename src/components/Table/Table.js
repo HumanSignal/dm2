@@ -1,10 +1,11 @@
-import { Button, Checkbox, Tag } from "antd";
+import { Button, Checkbox, Tag, Tooltip } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import { RiCodeSSlashLine } from "react-icons/ri";
+import { VscQuestion } from "react-icons/vsc";
 import { useFilters, useFlexLayout, useRowSelect, useTable } from "react-table";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
@@ -85,9 +86,7 @@ const SelectionCell = (view, setShowSource) => (columns) => {
     >
       {col.original.title}
 
-      {col.original?.canOrder ? (
-        <OrderButton desc={col.original.order} />
-      ) : null}
+      {col.original?.canOrder && <OrderButton desc={col.original.order} />}
     </div>
   );
 
@@ -109,6 +108,12 @@ const SelectionCell = (view, setShowSource) => (columns) => {
                 <Tag color="blue" style={{ fontWeight: "bold" }}>
                   {parent.title}
                 </Tag>
+              )}
+
+              {col.original?.help && (
+                <Tooltip title={col.original?.help}>
+                  <VscQuestion size={16} />
+                </Tooltip>
               )}
             </div>
           );

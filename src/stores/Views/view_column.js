@@ -30,6 +30,7 @@ export const ViewColumn = types
     target: types.enumeration(["tasks", "annotations"]),
     width: types.optional(types.integer, 150),
     orderable: types.optional(types.boolean, true),
+    help: types.maybeNull(types.string),
   })
   .views((self) => ({
     get hidden() {
