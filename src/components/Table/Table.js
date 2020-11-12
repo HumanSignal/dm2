@@ -98,10 +98,14 @@ const SelectionCell = (view, setShowSource) => (columns) => {
 
       Object.assign(col, {
         Header: () => {
-          const parent = col.original?.parent;
+          const { parent, help, orderable } = col.original ?? {};
+          const className = [
+            "data-variable",
+            orderable ? "data-variable__orderable" : null,
+          ];
 
           return (
-            <div className="data-variable">
+            <div className={className.join(" ")}>
               {renderColHeaderContent(col)}
 
               {parent && (
@@ -110,8 +114,8 @@ const SelectionCell = (view, setShowSource) => (columns) => {
                 </Tag>
               )}
 
-              {col.original?.help && (
-                <Tooltip title={col.original?.help}>
+              {help && (
+                <Tooltip title={help}>
                   <VscQuestion size={16} />
                 </Tooltip>
               )}

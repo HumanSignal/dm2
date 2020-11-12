@@ -64,5 +64,9 @@ export const TableStyles = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    &__orderable {
+      cursor: pointer;
+    }
   }
 `;
