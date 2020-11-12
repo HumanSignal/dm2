@@ -20,7 +20,7 @@ export const View = types
 
     key: types.optional(types.string, guidGenerator),
 
-    type: types.optional(types.enumeration(["list", "grid"]), "grid"),
+    type: types.optional(types.enumeration(["list", "grid"]), "list"),
 
     target: types.optional(
       types.enumeration(["tasks", "annotations"]),
@@ -104,6 +104,8 @@ export const View = types
         id: self.id,
         title: self.title,
         ordering: self.ordering,
+        type: self.type,
+        target: self.target,
         filters: getSnapshot(self.filters).filter((f) => !!f.value),
         hiddenColumns: getSnapshot(self.hiddenColumns),
         conjunction: self.conjunction,
@@ -113,11 +115,12 @@ export const View = types
   .actions((self) => ({
     setType(type) {
       self.type = type;
+      self.save();
     },
 
     setTarget(target) {
       self.target = target;
-      self.dataStore.reload();
+      self.save();
     },
 
     setTitle(title) {

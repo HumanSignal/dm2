@@ -3,9 +3,10 @@ import { flow, getRoot, types } from "mobx-state-tree";
 const MixinBase = types
   .model("InfiniteListMixin", {
     page: types.optional(types.integer, 0),
-    pageSize: types.optional(types.integer, 10),
+    pageSize: types.optional(types.integer, 30),
     total: types.optional(types.integer, 0),
     loading: types.optional(types.boolean, false),
+    loaded: types.optional(types.boolean, false),
   })
   .views((self) => ({
     get API() {
@@ -73,7 +74,11 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
 
         self.loading = true;
 
-        if (reload) self.page = 0;
+        if (reload) {
+          self.page = 0;
+          self.loaded = false;
+          self.list = [];
+        }
 
         self.page++;
 
@@ -90,6 +95,7 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
         }
 
         self.loading = false;
+        self.loaded = true;
       }),
 
       reload: flow(function* () {

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { Button } from "antd";
+import { Button, PageHeader } from "antd";
 import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
 import React from "react";
@@ -64,12 +64,6 @@ const LabelingComponent = observer(({ store }) => {
 
   return (
     <Styles>
-      {store.isExplorerMode && (
-        <div className="navigation">
-          <Button onClick={closeLabeling}>Back to Table</Button>
-        </div>
-      )}
-
       <div className="wrapper">
         {store.isExplorerMode && (
           <div className="table">
@@ -83,9 +77,10 @@ const LabelingComponent = observer(({ store }) => {
           </div>
         )}
         <div key="lsf-root" className="label-studio">
-          <div id="label-studio" ref={lsfRef}></div>
-
-          <History root={lsfRef} history={history} />
+          <PageHeader onBack={closeLabeling} title="Labeling">
+            <div id="label-studio" ref={lsfRef}></div>
+            <History root={lsfRef} history={history} />
+          </PageHeader>
         </div>
       </div>
     </Styles>

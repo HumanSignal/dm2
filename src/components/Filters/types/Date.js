@@ -1,11 +1,11 @@
 import { DatePicker } from "antd";
+import moment from "moment";
 import React from "react";
 
-export const DateTimeInput = ({ range, onChange }) => {
+export const DateTimeInput = ({ value, range, onChange }) => {
   const props = {
     size: "small",
     onChange(value) {
-      console.log(value);
       if (Array.isArray(value)) {
         onChange({
           min: value[0].toISOString(),
@@ -19,10 +19,11 @@ export const DateTimeInput = ({ range, onChange }) => {
       flex: 1,
     },
   };
+
   return range ? (
-    <DatePicker.RangePicker {...props} />
+    <DatePicker.RangePicker {...props} value={moment(value)} />
   ) : (
-    <DatePicker {...props} />
+    <DatePicker {...props} value={moment(value)} />
   );
 };
 

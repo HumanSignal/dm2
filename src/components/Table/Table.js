@@ -17,11 +17,10 @@ const COLUMN_WIDTHS = new Map([
 
 const getColumnWidth = (colID) => {
   const width = COLUMN_WIDTHS.get(colID);
+  console.log({ colID, width });
   if (width !== undefined) {
     return {
       width: width,
-      minWidth: width,
-      maxWidth: width,
     };
   }
 
@@ -141,18 +140,10 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
   );
 
   const loadMore = React.useCallback(() => {
-    view.dataStore.fetch();
+    if (view.dataStore.hasNextPage) {
+      view.dataStore.fetch();
+    }
   }, [view.dataStore]);
-
-  const isItemLoaded = React.useCallback(
-    (index) => {
-      const rowExists = !!rows[index];
-      const hasNextPage = view.dataStore.hasNextPage;
-
-      return !hasNextPage || !rowExists;
-    },
-    [rows, view.dataStore.hasNextPage]
-  );
 
   const gridView = () => {
     return (
@@ -162,7 +153,6 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
         loadMore={loadMore}
         selected={selected}
         prepareRow={prepareRow}
-        isItemLoaded={isItemLoaded}
       />
     );
   };
@@ -175,7 +165,6 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
         loadMore={loadMore}
         selected={selected}
         prepareRow={prepareRow}
-        isItemLoaded={isItemLoaded}
         headerGroups={headerGroups}
         getTableProps={getTableProps}
         getTableBodyProps={getTableBodyProps}
@@ -203,6 +192,7 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
             <div>
               Selected {Object.keys(selectedRowIds).length} of {total} items
             </div>
+            <div>{view.dataStore.loading && "Loading"}</div>
           </div>
         </>
       )}

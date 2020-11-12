@@ -81,12 +81,40 @@ export const ListView = observer(
     view,
     selected,
     loadMore,
-    isItemLoaded,
   }) => {
-    const tableHead = React.useRef();
+    const renderRow = React.useCallback(
+      ({ style, index }) => {
+        const row = rows[index];
+        prepareRow(row);
+        return (
+          <div
+            {...compileRowProps(row, view, selected, style)}
+            className="dm-content__table-row"
+          >
+            {row.cells.map((cell) => (
+              <div {...compileCellProps(cell)}>
+                {cell.render("Cell") ?? null}
+              </div>
+            ))}
+          </div>
+        );
+      },
+      [rows, prepareRow, selected, view]
+    );
+
+    const isItemLoaded = React.useCallback(
+      (index) => {
+        const rowExists = !!rows[index];
+        const hasNextPage = view.dataStore.hasNextPage;
+        console.log({ index, itemLoaded: !hasNextPage || rowExists });
+
+        return !hasNextPage || rowExists;
+      },
+      [rows, view.dataStore.hasNextPage]
+    );
 
     const tableHeadContent = (
-      <div ref={tableHead} className="dm-content__table-head">
+      <div className="dm-content__table-head">
         {headerGroups.map((headerGroup) => (
           <div
             {...headerGroup.getHeaderGroupProps()}
@@ -111,26 +139,6 @@ export const ListView = observer(
           </div>
         ))}
       </div>
-    );
-
-    const renderRow = React.useCallback(
-      ({ style, index }) => {
-        const row = rows[index];
-        prepareRow(row);
-        return (
-          <div
-            {...compileRowProps(row, view, selected, style)}
-            className="dm-content__table-row"
-          >
-            {row.cells.map((cell) => (
-              <div {...compileCellProps(cell)}>
-                {cell.render("Cell") ?? null}
-              </div>
-            ))}
-          </div>
-        );
-      },
-      [rows, prepareRow, selected, view]
     );
 
     const tableBodyContent = (

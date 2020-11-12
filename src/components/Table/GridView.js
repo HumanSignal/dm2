@@ -8,7 +8,7 @@ export const GridView = ({
   prepareRow,
   view,
   loadMore,
-  isItemLoaded,
+  // isItemLoaded,
 }) => {
   const columnCount = 4;
 
@@ -21,8 +21,9 @@ export const GridView = ({
       const index = getCellIndex(rowIndex, columnIndex);
       const row = rows[index];
 
-      if (!row) return null;
+      if (!row) return <div>Loading...</div>;
 
+      prepareRow(row);
       const props = row.getRowProps?.() ?? {};
 
       Object.assign(props, {
@@ -32,7 +33,6 @@ export const GridView = ({
         },
       });
 
-      prepareRow(row);
       return (
         <div {...props} className="grid__item">
           {row.cells.map((cell) => {
@@ -58,15 +58,27 @@ export const GridView = ({
     [prepareRow, rows]
   );
 
-  const onItemsRenderedWrap = (onItemsRendered) => {
-    return (props) => {
-      onItemsRendered({
-        overscanStartIndex: props.overscanRowStartIndex,
-        overscanStopIndex: props.overscanRowStopIndex,
-        visibleStartIndex: props.visibleRowStartIndex,
-        visibleStopIndex: props.visibleRowStopIndex,
-      });
-    };
+  const onItemsRenderedWrap = (cb) => ({
+    visibleRowStartIndex,
+    visibleRowStopIndex,
+    overscanRowStopIndex,
+    overscanRowStartIndex,
+  }) => {
+    cb({
+      overscanStartIndex: overscanRowStartIndex,
+      overscanStopIndex: overscanRowStopIndex,
+      visibleStartIndex: visibleRowStartIndex,
+      visibleStopIndex: visibleRowStopIndex,
+    });
+  };
+
+  const itemCount = Math.ceil(rows.length / columnCount);
+
+  const isItemLoaded = (index) => {
+    const rowIndex = index * columnCount;
+    const rowFullfilled =
+      rows.slice(rowIndex, columnCount).length === columnCount;
+    return !view.dataStore.hasNextPage || rowFullfilled;
   };
 
   return (
@@ -74,7 +86,7 @@ export const GridView = ({
       <AutoSizer>
         {({ width, height }) => (
           <InfiniteLoader
-            itemCount={view.dataStore.total}
+            itemCount={itemCount}
             isItemLoaded={isItemLoaded}
             loadMoreItems={loadMore}
           >
@@ -87,7 +99,7 @@ export const GridView = ({
                 overscanRowCount={10}
                 columnCount={columnCount}
                 columnWidth={width / columnCount}
-                rowCount={Math.ceil(rows.length / 4)}
+                rowCount={itemCount}
                 onItemsRendered={onItemsRenderedWrap(onItemsRendered)}
               >
                 {renderItem}
