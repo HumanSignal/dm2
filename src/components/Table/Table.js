@@ -1,9 +1,10 @@
-import { EyeOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Tag } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
+import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
+import { RiCodeSSlashLine } from "react-icons/ri";
 import { useFilters, useFlexLayout, useRowSelect, useTable } from "react-table";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
@@ -44,6 +45,15 @@ const IndeterminateCheckbox = React.forwardRef(
   }
 );
 
+const OrderButton = observer(({ desc }) => {
+  let SortIcon = FaSort;
+  if (desc !== undefined) {
+    SortIcon = desc ? FaSortDown : FaSortUp;
+  }
+
+  return <SortIcon style={{ marginLeft: 10 }} />;
+});
+
 const SelectionCell = (view, setShowSource) => (columns) => {
   const result = [];
 
@@ -60,27 +70,46 @@ const SelectionCell = (view, setShowSource) => (columns) => {
     });
   }
 
+  const applySort = (col) => {
+    if (col.original?.canOrder) view.setOrdering(col.original.id);
+  };
+
+  const renderColHeaderContent = (col) => (
+    <div
+      style={{ display: "flex", alignItems: "center" }}
+      onClick={() => applySort(col)}
+    >
+      {col.original.title}
+
+      {col.original?.canOrder ? (
+        <OrderButton desc={col.original.order} />
+      ) : null}
+    </div>
+  );
+
   result.push(
     ...columns.map((col) => {
       if (CellViews[col.type]) {
         Object.assign(col, { Cell: CellViews[col.type] });
       }
 
-      if (col.original?.parent) {
-        const { parent } = col.original;
+      Object.assign(col, {
+        Header: () => {
+          const parent = col.original?.parent;
 
-        Object.assign(col, {
-          Header: () => (
+          return (
             <div className="data-variable">
-              {col.original.title}
+              {renderColHeaderContent(col)}
 
-              <Tag color="blue" style={{ fontWeight: "bold" }}>
-                {parent.title}
-              </Tag>
+              {parent && (
+                <Tag color="blue" style={{ fontWeight: "bold" }}>
+                  {parent.title}
+                </Tag>
+              )}
             </div>
-          ),
-        });
-      }
+          );
+        },
+      });
 
       Object.assign(col, getColumnWidth(col.id));
 
@@ -100,7 +129,7 @@ const SelectionCell = (view, setShowSource) => (columns) => {
           setShowSource(original.source);
         }}
       >
-        <EyeOutlined />
+        <RiCodeSSlashLine size={18} />
       </Button>
     ),
   });

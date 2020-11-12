@@ -99,6 +99,14 @@ export const View = types
       }, {});
     },
 
+    get filtersApplied() {
+      return self.validFilters.length > 0;
+    },
+
+    get validFilters() {
+      return self.filters.filter((f) => !!f.isValidFilter);
+    },
+
     serialize() {
       return {
         id: self.id,
@@ -106,9 +114,7 @@ export const View = types
         ordering: self.ordering,
         type: self.type,
         target: self.target,
-        filters: self.filters
-          .filter((f) => !!f.isValidFilter)
-          .map((el) => getSnapshot(el)),
+        filters: self.validFilters.map((el) => getSnapshot(el)),
         hiddenColumns: getSnapshot(self.hiddenColumns),
         conjunction: self.conjunction,
       };

@@ -3,12 +3,12 @@ import {
   BarsOutlined,
   CaretDownOutlined,
   EyeOutlined,
-  FilterOutlined,
   PlayCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Dropdown, Menu, Radio, Space } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
+import { VscListFilter } from "react-icons/vsc";
 import { Filters } from "../Filters/Filters";
 import TabFieldsMenu from "./tab-fields-menu";
 
@@ -17,6 +17,15 @@ const actionsMenu = (
     <Menu.Item key="1">Delete</Menu.Item>
   </Menu>
 );
+
+const FiltersButton = ({ onClick, active }) => {
+  return (
+    <Button onClick={onClick} type={active ? "primary" : "default"}>
+      <VscListFilter style={{ marginBottom: -2, marginRight: 7 }} />
+      Filters
+    </Button>
+  );
+};
 
 export const TablePanel = observer(({ views, view }) => {
   return (
@@ -49,14 +58,13 @@ export const TablePanel = observer(({ views, view }) => {
         </Dropdown>
 
         {views.sidebarEnabled ? (
-          <Button onClick={() => views.toggleSidebar()}>
-            <FilterOutlined /> Filters{" "}
-          </Button>
+          <FiltersButton
+            onClick={() => views.toggleSidebar()}
+            active={view.filtersApplied}
+          />
         ) : (
           <Dropdown overlay={<Filters />} trigger="click">
-            <Button type={view.enableFilters ? "primary" : ""}>
-              <FilterOutlined /> Filters{" "}
-            </Button>
+            <FiltersButton active={view.filtersApplied} />
           </Dropdown>
         )}
       </Space>

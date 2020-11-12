@@ -1,5 +1,5 @@
-import { LoadingOutlined, ShrinkOutlined } from "@ant-design/icons";
-import { Button, PageHeader, Spin, Tabs } from "antd";
+import { ShrinkOutlined } from "@ant-design/icons";
+import { Button, PageHeader, Tabs } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { Filters } from "../Filters/Filters";
@@ -15,17 +15,11 @@ const getTabPaneProps = (view, data) => ({
 });
 
 const TabContent = observer(({ views, view, data, columns }) => {
-  const dataMemo = React.useMemo(() => Array.from(data), [
-    data,
-    view.dataStore.loading,
-    view.dataStore.loaded,
-  ]);
-
   return (
     <Table
       key={`data-${view.target}`}
       view={view}
-      data={dataMemo}
+      data={Array.from(data)}
       columns={columns}
       hiddenColumns={view.hiddenColumnsList}
     />
@@ -36,21 +30,7 @@ const createTab = (views, data, columns) => (view) => {
   return (
     <Tabs.TabPane {...getTabPaneProps(view, data)}>
       <TablePanel views={views} view={view} />
-      {view.dataStore.loaded ? (
-        <TabContent view={view} views={views} data={data} columns={columns} />
-      ) : (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          <Spin indicator={<LoadingOutlined />} size="large" />
-        </div>
-      )}
+      <TabContent views={views} view={view} data={data} columns={columns} />
     </Tabs.TabPane>
   );
 };

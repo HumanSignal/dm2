@@ -1,7 +1,3 @@
-import {
-  SortAscendingOutlined,
-  SortDescendingOutlined,
-} from "@ant-design/icons";
 import { observer } from "mobx-react";
 import React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -59,18 +55,6 @@ const compileCellProps = (cell) => {
   );
 };
 
-const OrderButton = observer(({ desc }) => {
-  if (desc !== undefined) {
-    return (
-      <div style={{ paddingLeft: 10 }}>
-        {desc ? <SortDescendingOutlined /> : <SortAscendingOutlined />}
-      </div>
-    );
-  }
-
-  return null;
-});
-
 export const ListView = observer(
   ({
     getTableProps,
@@ -121,19 +105,8 @@ export const ListView = observer(
             className="dm-content__table-row"
           >
             {headerGroup.headers.map((column) => (
-              <div
-                {...compileHeaderProps(column)}
-                onClick={() => {
-                  if (column.original?.canOrder) {
-                    view.setOrdering(column.original.id);
-                  }
-                }}
-              >
+              <div {...compileHeaderProps(column)}>
                 {column.render("Header")}
-
-                {column.original?.canOrder ? (
-                  <OrderButton desc={column.original.order} />
-                ) : null}
               </div>
             ))}
           </div>
