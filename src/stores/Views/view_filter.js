@@ -81,6 +81,7 @@ export const ViewFilter = types
     },
 
     setValue(value) {
+      console.log(`Filter set ${self.field.id}`, value);
       self.value = value;
     },
 

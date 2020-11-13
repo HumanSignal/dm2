@@ -6,13 +6,13 @@ export const DateTimeInput = ({ value, range, onChange }) => {
   const props = {
     size: "small",
     onChange(value) {
+      console.log(value);
       if (Array.isArray(value)) {
-        onChange({
-          min: value[0].toISOString(),
-          max: value[1].toISOString(),
-        });
+        const [min, max] = value.map((d) => d.toISOString());
+        console.log({ min, max });
+        onChange({ min, max });
       } else {
-        onChange(value.toISOString());
+        onChange(value?.toISOString());
       }
     },
     style: {
@@ -20,10 +20,19 @@ export const DateTimeInput = ({ value, range, onChange }) => {
     },
   };
 
+  const dateValue = range
+    ? [
+        value?.min ? moment(value?.min) : undefined,
+        value?.max ? moment(value?.max) : undefined,
+      ]
+    : value
+    ? moment(value)
+    : undefined;
+
   return range ? (
-    <DatePicker.RangePicker {...props} value={moment(value)} />
+    <DatePicker.RangePicker {...props} value={dateValue} />
   ) : (
-    <DatePicker {...props} value={moment(value)} />
+    <DatePicker {...props} value={dateValue} />
   );
 };
 
