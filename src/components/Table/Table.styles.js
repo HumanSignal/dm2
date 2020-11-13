@@ -57,7 +57,7 @@ export const TableStyles = styled.div`
         z-index: 100;
         position: absolute;
         pointer-events: none;
-        box-shadow: 0 0 0 1.5px #0fa5e8 inset;
+        box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.8) inset;
       }
 
       &-header {
