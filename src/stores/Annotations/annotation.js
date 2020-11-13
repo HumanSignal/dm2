@@ -9,4 +9,5 @@ export const Annotation = types.model("Annotation", {
   created_at: types.optional(types.maybeNull(StringOrNumber), null),
   updated_at: types.optional(types.maybeNull(StringOrNumber), null),
   source: types.optional(types.string, ""),
+  was_cancelled: types.optional(types.boolean, false),
 });
