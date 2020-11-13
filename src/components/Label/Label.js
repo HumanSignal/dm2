@@ -77,7 +77,11 @@ const LabelingComponent = observer(({ store }) => {
           </div>
         )}
         <div key="lsf-root" className="label-studio">
-          <PageHeader onBack={closeLabeling} title="Labeling">
+          <PageHeader
+            onBack={closeLabeling}
+            title="Labeling"
+            style={{ padding: 0 }}
+          >
             <div id="label-studio" ref={lsfRef}></div>
             <History root={lsfRef} history={history} />
           </PageHeader>

@@ -201,6 +201,6 @@ export const View = types
     }),
 
     delete: flow(function* () {
-      yield getRoot(self).API.deleteTab();
+      yield getRoot(self).API.deleteTab({ tabID: self.id });
     }),
   }));

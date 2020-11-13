@@ -23,11 +23,15 @@ const MixinBase = types
   }))
   .actions((self) => ({
     setSelected(val) {
+      let selected;
       if (typeof val === "number") {
-        self.selected = self.list.find((t) => t.id === val);
+        selected = self.list.find((t) => t.id === val);
       } else {
-        self.selected = val;
+        selected = val;
       }
+
+      self.selected = selected;
+      self.highlighted = selected;
     },
 
     unset() {
@@ -52,6 +56,7 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
     .model(modelName, {
       list: types.optional(types.array(listItemType), []),
       selected: types.maybeNull(types.reference(listItemType)),
+      highlighted: types.maybeNull(types.reference(listItemType)),
     })
     .actions((self) => ({
       updateItem(itemID, patch) {

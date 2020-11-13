@@ -1,16 +1,15 @@
 import { observer } from "mobx-react";
 import React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
-import { FixedSizeList } from "react-window";
+import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import { cleanArray } from "../../utils/utils";
 
-const compileRowProps = (row, view, selected, style) => {
+const compileRowProps = (row, view, style, className) => {
   const currentTask = row.original;
-  const isCurrent = currentTask === selected;
   const props = row.getRowProps({
     onClick() {
-      if (!isCurrent) {
+      if (!currentTask.isSelected) {
         view.setTask({
           id: currentTask.id,
           taskID: currentTask.task_id,
@@ -19,16 +18,12 @@ const compileRowProps = (row, view, selected, style) => {
     },
   });
 
-  const styles = {
-    ...style,
-    background: isCurrent ? "#efefef" : "none",
-  };
+  let currentClass = className ? [className] : [];
+  if (currentTask.isSelected) currentClass.push("selected");
+  if (currentTask.isHighlighted) currentClass.push("highlighted");
 
-  if (props.style) {
-    Object.assign(props.style, styles);
-  } else {
-    props.style = styles;
-  }
+  props.className = currentClass.join(" ");
+  props.style = { ...(props.style ?? {}), ...(style ?? {}) };
 
   return props;
 };
@@ -55,6 +50,88 @@ const compileCellProps = (cell) => {
   );
 };
 
+const StickyListContext = React.createContext();
+StickyListContext.Consumer.displayName = "StickyListContext";
+
+const ItemWrapper = ({ data, index, style }) => {
+  const { Renderer, stickyItems } = data;
+  if (stickyItems && stickyItems.includes(index)) {
+    return null;
+  }
+  return <Renderer index={index} style={style} />;
+};
+
+const Row = ({ index, style }) => (
+  <div className="row" style={style}>
+    Row {index}
+  </div>
+);
+
+const StickyRow = ({ index, style }) => (
+  <div className="sticky" style={style}>
+    Sticky Row {index}
+  </div>
+);
+
+const StickyList = React.forwardRef(
+  (
+    { children, stickyComponent, stickyItems, stickyItemsHeight, ...rest },
+    ref
+  ) => {
+    const itemData = {
+      Renderer: children,
+      StickyComponent: stickyComponent,
+      stickyItems,
+      stickyItemsHeight,
+    };
+
+    return (
+      <StickyListContext.Provider value={itemData}>
+        <VariableSizeList
+          ref={ref}
+          itemData={itemData}
+          itemSize={(index) => {
+            if (stickyItems.includes(index)) {
+              return stickyItemsHeight[index] ?? rest.itemHeight;
+            }
+            return rest.itemHeight;
+          }}
+          {...rest}
+        >
+          {ItemWrapper}
+        </VariableSizeList>
+      </StickyListContext.Provider>
+    );
+  }
+);
+StickyList.displayName = "StickyList";
+
+const innerElementType = React.forwardRef(({ children, ...rest }, ref) => {
+  console.log({ children });
+  return (
+    <StickyListContext.Consumer>
+      {({ stickyItems, stickyItemsHeight, StickyComponent }) => (
+        <div ref={ref} {...rest}>
+          {stickyItems.map((index) => (
+            <StickyComponent
+              key={index}
+              index={index}
+              style={{
+                left: 0,
+                width: "100%",
+                height: stickyItemsHeight[index],
+                top: index * stickyItemsHeight[index],
+              }}
+            />
+          ))}
+
+          {children}
+        </div>
+      )}
+    </StickyListContext.Consumer>
+  );
+});
+
 export const ListView = observer(
   ({
     getTableProps,
@@ -66,26 +143,6 @@ export const ListView = observer(
     selected,
     loadMore,
   }) => {
-    const renderRow = React.useCallback(
-      ({ style, index }) => {
-        const row = rows[index];
-        prepareRow(row);
-        return (
-          <div
-            {...compileRowProps(row, view, selected, style)}
-            className="dm-content__table-row"
-          >
-            {row.cells.map((cell) => (
-              <div {...compileCellProps(cell)}>
-                {cell.render("Cell") ?? null}
-              </div>
-            ))}
-          </div>
-        );
-      },
-      [rows, prepareRow, selected, view]
-    );
-
     const isItemLoaded = React.useCallback(
       (index) => {
         const rowExists = !!rows[index];
@@ -97,8 +154,8 @@ export const ListView = observer(
       [rows, view.dataStore.hasNextPage]
     );
 
-    const tableHeadContent = (
-      <div className="dm-content__table-head">
+    const tableHeadContent = ({ style }) => (
+      <div className="dm-content__table-head" style={style}>
         {headerGroups.map((headerGroup) => (
           <div
             {...headerGroup.getHeaderGroupProps()}
@@ -114,6 +171,23 @@ export const ListView = observer(
       </div>
     );
 
+    const renderRow = React.useCallback(
+      ({ style, index }) => {
+        const row = rows[index - 1];
+        prepareRow(row);
+        return (
+          <div {...compileRowProps(row, view, style, "dm-content__table-row")}>
+            {row.cells.map((cell) => (
+              <div {...compileCellProps(cell)}>
+                {cell.render("Cell") ?? null}
+              </div>
+            ))}
+          </div>
+        );
+      },
+      [rows, prepareRow, view]
+    );
+
     const tableBodyContent = (
       <div {...getTableBodyProps()} className="dm-content__table-body">
         <AutoSizer>
@@ -124,17 +198,21 @@ export const ListView = observer(
               loadMoreItems={loadMore}
             >
               {({ onItemsRendered, ref }) => (
-                <FixedSizeList
+                <StickyList
                   ref={ref}
                   width={width}
                   height={height}
-                  itemSize={100}
                   overscanCount={10}
-                  itemCount={rows.length}
+                  itemHeight={100}
+                  itemCount={rows.length + 1}
+                  stickyComponent={tableHeadContent}
                   onItemsRendered={onItemsRendered}
+                  innerElementType={innerElementType}
+                  stickyItems={[0]}
+                  stickyItemsHeight={[42]}
                 >
                   {renderRow}
-                </FixedSizeList>
+                </StickyList>
               )}
             </InfiniteLoader>
           )}
@@ -144,7 +222,6 @@ export const ListView = observer(
 
     return (
       <div {...getTableProps({ className: "dm-content__table" })}>
-        {tableHeadContent}
         {tableBodyContent}
       </div>
     );

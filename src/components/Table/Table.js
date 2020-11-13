@@ -25,7 +25,7 @@ const getColumnWidth = (colID) => {
     };
   }
 
-  return {};
+  return { minWidth: 100 };
 };
 
 const IndeterminateCheckbox = React.forwardRef(

@@ -28,16 +28,36 @@ export const TableStyles = styled.div`
 
       &-head {
         flex: 0;
+        z-index: 10;
+        position: sticky;
         background-color: #fafafa;
         box-shadow: 0 -0.5px 0 0.5px #f0f0f0 inset;
       }
 
       &-row {
         display: flex;
+        z-index: 1;
       }
 
       &-body &-row {
         height: 100px;
+      }
+
+      &-row.selected {
+        z-index: 100;
+        background-color: #deefff;
+      }
+
+      &-row:not(.selected).highlighted::after {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        content: "";
+        z-index: 100;
+        position: absolute;
+        pointer-events: none;
+        box-shadow: 0 0 0 1.5px #0fa5e8 inset;
       }
 
       &-header {
@@ -55,6 +75,10 @@ export const TableStyles = styled.div`
         box-sizing: border-box;
         border-collapse: collapse;
         box-shadow: 0.5px 0.5px 0 0.5px #f0f0f0 inset;
+      }
+
+      .selected &-cell {
+        box-shadow: 0.5px 0.5px 0 0.5px #deefff inset;
       }
     }
   }
