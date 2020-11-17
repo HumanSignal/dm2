@@ -36,7 +36,7 @@ export const TableStyles = styled.div`
     }
 
     &__table-row,
-    &__table-heading {
+    &__table-header {
       display: flex;
       z-index: 1;
     }
@@ -68,12 +68,12 @@ export const TableStyles = styled.div`
       box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.8) inset;
     }
 
-    &__table-header {
+    &__table-heading {
       font-weight: 500;
     }
 
     &__table-cell,
-    &__table-header {
+    &__table-heading {
       flex: 1;
       display: flex;
       padding: 10px;

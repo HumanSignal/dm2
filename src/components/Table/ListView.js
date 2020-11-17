@@ -45,7 +45,7 @@ const compileTableCellProps = (column, className, propsGetter) => {
 };
 
 const compileHeaderProps = (column) => {
-  return compileTableCellProps(column, "dm-content__table-header", (column) =>
+  return compileTableCellProps(column, "dm-content__table-heading", (column) =>
     column.getHeaderProps()
   );
 };
@@ -150,7 +150,7 @@ export const ListView = observer(
       <div className="dm-content__table-header" style={style}>
         {headerGroups.map((headerGroup) => (
           <div
-            className="dm-content__table-heading"
+            className="dm-content__table-heading-group"
             {...headerGroup.getHeaderGroupProps()}
           >
             {headerGroup.headers.map((column) => (
@@ -205,11 +205,11 @@ export const ListView = observer(
                   overscanCount={10}
                   itemHeight={lineHeight}
                   itemCount={rows.length + 1}
-                  stickyComponent={tableHeadContent}
                   onItemsRendered={onItemsRendered}
                   innerElementType={innerElementType}
                   stickyItems={[0]}
                   stickyItemsHeight={[headerHeight]}
+                  stickyComponent={tableHeadContent}
                   initialScrollOffset={
                     initialScrollOffset - height / 2 + headerHeight
                   }
