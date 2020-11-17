@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Button } from "antd";
+import { Button, Tag } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { FilterDropdown } from "./FilterDropdown";
@@ -25,7 +25,7 @@ const GroupWrapper = ({ children, wrap = false }) => {
 };
 
 export const FilterLine = observer(
-  ({ filter, availableFilters, index, view, sidebar }) => {
+  ({ filter, availableFilters, index, view, sidebar, dropdownClassName }) => {
     return (
       <div className="filter-line">
         <div className="filter-line__settings">
@@ -41,13 +41,21 @@ export const FilterLine = observer(
               <FilterDropdown
                 placeholder="Column"
                 defaultValue={filter.filter.id}
-                items={availableFilters.map((f) => ({
-                  value: f.id,
-                  label: f.field.title,
-                }))}
+                items={availableFilters}
                 width={80}
                 dropdownWidth={120}
+                dropdownClassName={dropdownClassName}
                 onChange={(value) => filter.setFilter(value)}
+                optionRender={({ original: filter }) => (
+                  <div className="filters__selector">
+                    {filter.field.title}
+                    {filter.field.parent && (
+                      <Tag className="filters__selector__tag" color="#1d91e4">
+                        {filter.field.parent.title}
+                      </Tag>
+                    )}
+                  </div>
+                )}
               />
             </div>
           </GroupWrapper>

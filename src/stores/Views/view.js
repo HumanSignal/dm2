@@ -69,9 +69,7 @@ export const View = types
     },
 
     get availableFilters() {
-      return self.parent.availableFilters.filter(
-        (f) => f.field.target === self.target
-      );
+      return self.parent.availableFilters;
     },
 
     get dataStore() {

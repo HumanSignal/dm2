@@ -11,6 +11,34 @@ const TagRender = (items) => ({ label, ...rest }) => {
   );
 };
 
+const renderOptGroup = ({ id, title, options }, optionRender) => {
+  return (
+    <Select.OptGroup key={id} label={title}>
+      {options.map(renderSelectItem(optionRender))}
+    </Select.OptGroup>
+  );
+};
+
+const renderSelectItem = (optionRender) => (item) => {
+  const value = item.value ?? item;
+  const label = item.label ?? item.title ?? value;
+
+  if (item.options) {
+    return renderOptGroup(item, optionRender);
+  }
+
+  return (
+    <Select.Option
+      key={value}
+      value={value}
+      style={{ fontSize: 12 }}
+      title={label}
+    >
+      {optionRender ? optionRender(item) : label}
+    </Select.Option>
+  );
+};
+
 export const FilterDropdown = ({
   placeholder,
   defaultValue,
@@ -21,6 +49,8 @@ export const FilterDropdown = ({
   onChange,
   multiple,
   value,
+  optionRender,
+  dropdownClassName,
 }) => {
   return (
     <Select
@@ -44,21 +74,9 @@ export const FilterDropdown = ({
       suffixIcon={<CaretDownOutlined style={{ pointerEvents: "none" }} />}
       listItemHeight={20}
       listHeight={600}
+      dropdownClassName={dropdownClassName}
     >
-      {items.map((item) => {
-        const value = item.value ?? item;
-        const label = item.label ?? item.title ?? value;
-        return (
-          <Select.Option
-            key={value}
-            value={value}
-            style={{ fontSize: 12 }}
-            title={label}
-          >
-            {label}
-          </Select.Option>
-        );
-      })}
+      {items.map(renderSelectItem(optionRender))}
     </Select>
   );
 };

@@ -1,14 +1,18 @@
 import { guidGenerator } from "./utils/random";
 import { randomDate } from "./utils/utils";
 
-export const initDevApp = async (DataManager) => {
-  console.log("Running in development");
+const { REACT_APP_USE_LSB, REACT_APP_GATEWAY_API } = process.env;
 
+export const initDevApp = async (DataManager) => {
   const { tasks, annotations, config } = await import("./data/image_bbox");
   const { default: tabs } = await import("./data/tabs");
-  const useExternalSource = !!process.env.REACT_APP_USE_LSB;
-  const gatewayAPI =
-    process.env.REACT_APP_GATEWAY_API || "http://localhost:8080/api";
+  const useExternalSource = !!REACT_APP_USE_LSB || !!REACT_APP_GATEWAY_API;
+  const gatewayAPI = REACT_APP_GATEWAY_API ?? "http://localhost:8080/api";
+
+  console.log("Running in development", {
+    REACT_APP_USE_LSB,
+    REACT_APP_GATEWAY_API,
+  });
 
   tasks.forEach((t) => {
     const completions = annotations.filter((a) => a.task_id === t.id);

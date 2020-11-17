@@ -11,53 +11,91 @@ export const Filters = inject("store")(
     const views = store.viewsStore;
     const currentView = views.selected;
 
-    const { currentFilters: filters, availableFilters } = currentView;
+    const { currentFilters: filters } = currentView;
+
+    const fields = React.useMemo(
+      () =>
+        currentView.availableFilters.reduce((res, filter) => {
+          const target = filter.field.target;
+          const groupTitle = target
+            .split("_")
+            .map((s) =>
+              s
+                .split("")
+                .map((c, i) => (i === 0 ? c.toUpperCase() : c))
+                .join("")
+            )
+            .join(" ");
+          const group = res[target] ?? {
+            id: target,
+            title: groupTitle,
+            options: [],
+          };
+
+          group.options.push({
+            value: filter.id,
+            title: filter.field.title,
+            original: filter,
+          });
+
+          return { ...res, [target]: group };
+        }, {}),
+      [currentView.availableFilters]
+    );
+
+    console.log({ FiltersStyles });
 
     return (
       <FiltersStyles
         className={["filters", sidebar ? "filters__sidebar" : null]}
       >
-        <div className="filters__list">
-          {filters.length ? (
-            filters.map((filter, i) => (
-              <FilterLine
-                index={i}
-                filter={filter}
-                view={currentView}
-                sidebar={sidebar}
-                key={`${filter.filter.id}-${i}`}
-                availableFilters={availableFilters}
-              />
-            ))
-          ) : (
-            <div className="filters__empty">No filters applied</div>
-          )}
-        </div>
-        <div className="filters__actions">
-          <Button
-            type="primary"
-            size="small"
-            ghost
-            onClick={() => currentView.createFilter()}
-          >
-            <PlusOutlined />
-            Add {filters.length ? "another filter" : "filter"}
-          </Button>
-
-          {!sidebar ? (
-            <Tooltip title="Pin to sidebar">
+        {({ className }) => (
+          <>
+            {console.log(className)}
+            <div className="filters__list">
+              {filters.length ? (
+                filters.map((filter, i) => (
+                  <FilterLine
+                    index={i}
+                    filter={filter}
+                    view={currentView}
+                    sidebar={sidebar}
+                    key={`${filter.filter.id}-${i}`}
+                    availableFilters={Object.values(fields)}
+                    dropdownClassName={className.split(" ")[1]}
+                  />
+                ))
+              ) : (
+                <div className="filters__empty">No filters applied</div>
+              )}
+            </div>
+            <div className="filters__actions">
               <Button
-                type="link"
+                type="primary"
                 size="small"
-                about="Pin to sidebar"
-                onClick={() => views.expandFilters()}
-                style={{ display: "inline-flex", alignItems: "center" }}
+                ghost
+                onClick={() => currentView.createFilter()}
               >
-                <BsLayoutSidebarInsetReverse />
+                <PlusOutlined />
+                Add {filters.length ? "another filter" : "filter"}
               </Button>
-            </Tooltip>
-          ) : null}
-        </div>
+
+              {!sidebar ? (
+                <Tooltip title="Pin to sidebar">
+                  <Button
+                    type="link"
+                    size="small"
+                    about="Pin to sidebar"
+                    onClick={() => views.expandFilters()}
+                    style={{ display: "inline-flex", alignItems: "center" }}
+                  >
+                    <BsLayoutSidebarInsetReverse />
+                  </Button>
+                </Tooltip>
+              ) : null}
+            </div>
+          </>
+        )}
       </FiltersStyles>
     );
   })

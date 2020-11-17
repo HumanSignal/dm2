@@ -20,66 +20,73 @@ export const TableStyles = styled.div`
       width: 100%;
       flex-direction: column;
       box-shadow: 0 0 0 1px #f0f0f0 inset;
+    }
 
-      &-body {
-        flex: 1;
-        height: 100%;
-      }
+    &__table-body {
+      flex: 1;
+      height: 100%;
+    }
 
-      &-head {
-        flex: 0;
-        z-index: 10;
-        position: sticky;
-        background-color: #fafafa;
-        box-shadow: 0 -0.5px 0 0.5px #f0f0f0 inset;
-      }
+    &__table-header {
+      flex: 0;
+      z-index: 10;
+      position: sticky;
+      background-color: #fafafa;
+      box-shadow: 0 -0.5px 0 0.5px #f0f0f0 inset;
+    }
 
-      &-row {
-        display: flex;
-        z-index: 1;
-      }
+    &__table-row,
+    &__table-heading {
+      display: flex;
+      z-index: 1;
+    }
 
-      &-body &-row {
-        height: 100px;
-      }
+    &__table-row {
+      cursor: pointer;
+      position: relative;
+    }
 
-      &-row.selected {
-        z-index: 100;
-        background-color: #deefff;
-      }
+    &__table-row.selected,
+    &__table-row:hover {
+      z-index: 100;
+      background-color: #f3f9ff;
+    }
 
-      &-row:not(.selected).highlighted::after {
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        content: "";
-        z-index: 100;
-        position: absolute;
-        pointer-events: none;
-        box-shadow: 0 0 0 1.5px #0fa5e8 inset;
-      }
+    &__table-row.selected {
+      pointer-events: none;
+    }
 
-      &-header {
-        font-weight: 500;
-      }
+    &__table-row:not(.selected).highlighted::after {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      content: "";
+      z-index: 100;
+      position: absolute;
+      pointer-events: none;
+      box-shadow: 0 0 0 1.5px #0fa5e8 inset;
+    }
 
-      &-cell,
-      &-header {
-        flex: 1;
-        display: flex;
-        padding: 10px;
-        min-width: 50px;
-        overflow: hidden;
-        align-items: center;
-        box-sizing: border-box;
-        border-collapse: collapse;
-        box-shadow: 0.5px 0.5px 0 0.5px #f0f0f0 inset;
-      }
+    &__table-header {
+      font-weight: 500;
+    }
 
-      .selected &-cell {
-        box-shadow: 0.5px 0.5px 0 0.5px #deefff inset;
-      }
+    &__table-cell,
+    &__table-header {
+      flex: 1;
+      display: flex;
+      padding: 10px;
+      min-width: 50px;
+      overflow: hidden;
+      align-items: center;
+      box-sizing: border-box;
+      border-collapse: collapse;
+      box-shadow: 0.5px 0.5px 0 0.5px #f0f0f0 inset;
+    }
+
+    .selected &__table-cell {
+      box-shadow: 0.5px 0.5px 0 0.5px #deefff inset;
     }
   }
 

@@ -13,19 +13,34 @@ import { ListView } from "./ListView";
 import { TableStyles } from "./Table.styles";
 
 const COLUMN_WIDTHS = new Map([
-  ["selection", 50],
-  ["show-source", 30],
+  [
+    "selection",
+    {
+      width: "30px",
+      minWidth: "30px",
+      maxWidth: "30px",
+      align: "center",
+    },
+  ],
+  [
+    "show-source",
+    {
+      width: "40px",
+      minWidth: "40px",
+      maxWidth: "40px",
+      align: "center",
+    },
+  ],
 ]);
 
 const getColumnWidth = (colID) => {
-  const width = COLUMN_WIDTHS.get(colID);
-  if (width !== undefined) {
-    return {
-      width: width,
-    };
+  const props = COLUMN_WIDTHS.get(colID);
+
+  if (props !== undefined) {
+    return props;
   }
 
-  return { minWidth: 100 };
+  return { minWidth: 30 };
 };
 
 const IndeterminateCheckbox = React.forwardRef(
@@ -59,6 +74,48 @@ const OrderButton = observer(({ desc }) => {
   );
 });
 
+const applySort = (view, col) => {
+  if (col.original?.canOrder) view.setOrdering(col.original.id);
+};
+
+const renderColHeaderContent = (view, col) => (
+  <div
+    style={{ display: "flex", alignItems: "center" }}
+    onClick={() => applySort(view, col)}
+  >
+    {col.original?.title}
+
+    {col.original?.canOrder && <OrderButton desc={col.original.order} />}
+  </div>
+);
+
+const TableCellHeader = (view) => ({ column: col }) => {
+  console.log({ view, col });
+  const { parent, help, orderable } = col.original ?? {};
+  const className = [
+    "data-variable",
+    orderable ? "data-variable__orderable" : null,
+  ];
+
+  return (
+    <div className={className.join(" ")}>
+      {renderColHeaderContent(view, col)}
+
+      {parent && (
+        <Tag color="blue" style={{ fontWeight: "bold" }}>
+          {parent.title}
+        </Tag>
+      )}
+
+      {help && (
+        <Tooltip title={help}>
+          <VscQuestion size={16} />
+        </Tooltip>
+      )}
+    </div>
+  );
+};
+
 const SelectionCell = (view, setShowSource) => (columns) => {
   const result = [];
 
@@ -75,56 +132,27 @@ const SelectionCell = (view, setShowSource) => (columns) => {
     });
   }
 
-  const applySort = (col) => {
-    if (col.original?.canOrder) view.setOrdering(col.original.id);
-  };
-
-  const renderColHeaderContent = (col) => (
-    <div
-      style={{ display: "flex", alignItems: "center" }}
-      onClick={() => applySort(col)}
-    >
-      {col.original.title}
-
-      {col.original?.canOrder && <OrderButton desc={col.original.order} />}
-    </div>
-  );
-
   result.push(
     ...columns.map((col) => {
-      if (CellViews[col.type]) {
-        Object.assign(col, { Cell: CellViews[col.type] });
-      }
-
-      Object.assign(col, {
-        Header: () => {
-          const { parent, help, orderable } = col.original ?? {};
-          const className = [
-            "data-variable",
-            orderable ? "data-variable__orderable" : null,
-          ];
-
-          return (
-            <div className={className.join(" ")}>
-              {renderColHeaderContent(col)}
-
-              {parent && (
-                <Tag color="blue" style={{ fontWeight: "bold" }}>
-                  {parent.title}
-                </Tag>
-              )}
-
-              {help && (
-                <Tooltip title={help}>
-                  <VscQuestion size={16} />
-                </Tooltip>
-              )}
-            </div>
-          );
+      console.log(col.type);
+      Object.assign(
+        col,
+        {
+          Header: TableCellHeader(view),
         },
-      });
+        getColumnWidth(col.id)
+      );
 
-      Object.assign(col, getColumnWidth(col.id));
+      if (CellViews[col.type]) {
+        const cellRenderer = CellViews[col.type];
+        let constraints = cellRenderer.constraints ?? {};
+
+        if (constraints instanceof Function) {
+          constraints = constraints(col);
+        }
+
+        Object.assign(col, { Cell: cellRenderer, ...constraints });
+      }
 
       return col;
     })
@@ -146,6 +174,8 @@ const SelectionCell = (view, setShowSource) => (columns) => {
       </Button>
     ),
   });
+
+  console.log({ result });
 
   return result;
 };
@@ -208,6 +238,7 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
         headerGroups={headerGroups}
         getTableProps={getTableProps}
         getTableBodyProps={getTableBodyProps}
+        lineHeight={50}
       />
     );
   };

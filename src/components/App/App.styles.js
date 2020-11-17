@@ -54,11 +54,6 @@ export const Styles = styled.div`
     width: auto;
   }
 
-  .selected,
-  .tags {
-    float: right;
-  }
-
   .app-loader {
     width: 100%;
     height: 100%;

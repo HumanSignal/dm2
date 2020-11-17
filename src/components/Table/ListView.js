@@ -5,7 +5,7 @@ import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import { cleanArray } from "../../utils/utils";
 
-const compileRowProps = (row, view, style, className) => {
+const compileRowProps = (row, view, className) => {
   const currentTask = row.original;
   const props = row.getRowProps({
     onClick() {
@@ -23,7 +23,6 @@ const compileRowProps = (row, view, style, className) => {
   if (currentTask.isHighlighted) currentClass.push("highlighted");
 
   props.className = currentClass.join(" ");
-  props.style = { ...(props.style ?? {}), ...(style ?? {}) };
 
   return props;
 };
@@ -34,6 +33,13 @@ const compileTableCellProps = (column, className, propsGetter) => {
   Object.assign(props, {
     className: cleanArray([props.className, className]),
   });
+
+  props.style = { ...(props.style ?? {}) };
+  const align = column.align ?? column.column?.align;
+
+  if (align === "center") {
+    props.style.justifyContent = "center";
+  }
 
   return props;
 };
@@ -60,18 +66,6 @@ const ItemWrapper = ({ data, index, style }) => {
   }
   return <Renderer index={index} style={style} />;
 };
-
-const Row = ({ index, style }) => (
-  <div className="row" style={style}>
-    Row {index}
-  </div>
-);
-
-const StickyRow = ({ index, style }) => (
-  <div className="sticky" style={style}>
-    Sticky Row {index}
-  </div>
-);
 
 const StickyList = React.forwardRef(
   (
@@ -107,7 +101,6 @@ const StickyList = React.forwardRef(
 StickyList.displayName = "StickyList";
 
 const innerElementType = React.forwardRef(({ children, ...rest }, ref) => {
-  console.log({ children });
   return (
     <StickyListContext.Consumer>
       {({ stickyItems, stickyItemsHeight, StickyComponent }) => (
@@ -117,7 +110,6 @@ const innerElementType = React.forwardRef(({ children, ...rest }, ref) => {
               key={index}
               index={index}
               style={{
-                left: 0,
                 width: "100%",
                 height: stickyItemsHeight[index],
                 top: index * stickyItemsHeight[index],
@@ -140,14 +132,14 @@ export const ListView = observer(
     headerGroups,
     rows,
     view,
-    selected,
     loadMore,
+    lineHeight,
   }) => {
+    const headerHeight = 42;
     const isItemLoaded = React.useCallback(
       (index) => {
         const rowExists = !!rows[index];
         const hasNextPage = view.dataStore.hasNextPage;
-        console.log({ index, itemLoaded: !hasNextPage || rowExists });
 
         return !hasNextPage || rowExists;
       },
@@ -155,11 +147,11 @@ export const ListView = observer(
     );
 
     const tableHeadContent = ({ style }) => (
-      <div className="dm-content__table-head" style={style}>
+      <div className="dm-content__table-header" style={style}>
         {headerGroups.map((headerGroup) => (
           <div
+            className="dm-content__table-heading"
             {...headerGroup.getHeaderGroupProps()}
-            className="dm-content__table-row"
           >
             {headerGroup.headers.map((column) => (
               <div {...compileHeaderProps(column)}>
@@ -176,7 +168,10 @@ export const ListView = observer(
         const row = rows[index - 1];
         prepareRow(row);
         return (
-          <div {...compileRowProps(row, view, style, "dm-content__table-row")}>
+          <div
+            {...compileRowProps(row, view, "dm-content__table-row")}
+            style={{ height: lineHeight }}
+          >
             {row.cells.map((cell) => (
               <div {...compileCellProps(cell)}>
                 {cell.render("Cell") ?? null}
@@ -185,8 +180,13 @@ export const ListView = observer(
           </div>
         );
       },
-      [rows, prepareRow, view]
+      [rows, prepareRow, view, lineHeight]
     );
+
+    const selectedRowIndex = rows.findIndex(
+      (r) => r.original?.isSelected || r.original?.isHighlighted
+    );
+    const initialScrollOffset = selectedRowIndex * 100;
 
     const tableBodyContent = (
       <div {...getTableBodyProps()} className="dm-content__table-body">
@@ -203,13 +203,16 @@ export const ListView = observer(
                   width={width}
                   height={height}
                   overscanCount={10}
-                  itemHeight={100}
+                  itemHeight={lineHeight}
                   itemCount={rows.length + 1}
                   stickyComponent={tableHeadContent}
                   onItemsRendered={onItemsRendered}
                   innerElementType={innerElementType}
                   stickyItems={[0]}
-                  stickyItemsHeight={[42]}
+                  stickyItemsHeight={[headerHeight]}
+                  initialScrollOffset={
+                    initialScrollOffset - height / 2 + headerHeight
+                  }
                 >
                   {renderRow}
                 </StickyList>

@@ -1,6 +1,15 @@
+import React from "react";
 import styled from "styled-components";
 
-export const FiltersStyles = styled.div`
+const Wrapper = ({ className, children, ...rest }) => {
+  return (
+    <div className={className} {...rest}>
+      {children({ className })}
+    </div>
+  );
+};
+
+export const FiltersStyles = styled(Wrapper)`
   padding-top: 10px;
   background-color: white;
 
@@ -145,5 +154,24 @@ export const FiltersStyles = styled.div`
       font-size: 14px;
       color: #585858;
     }
+
+    &__selector {
+      flex: 1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .filters__selector__tag.ant-tag,
+  .ant-select-selector .filters__selector__tag.ant-tag {
+    font-size: 11px;
+    padding: 0 2px;
+    font-weight: 300;
+    margin: 0 0 0 7px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    flex: 0;
   }
 `;
