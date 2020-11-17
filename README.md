@@ -17,3 +17,7 @@ npm run start
 ### Completions
 
 `/completions`
+
+### Run in development mode with server API
+
+REACT_APP_USE_LSB=true REACT_APP_GATEWAY_API=http://localhost:8080/api npm run start

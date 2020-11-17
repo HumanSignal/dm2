@@ -91,6 +91,17 @@ export const FiltersStyles = styled(Wrapper)`
       align-items: flex-start;
     }
 
+    /* opened dropdown item */
+    .ant-select-single {
+      &.ant-select-open {
+        .ant-select-selection-item {
+          color: rgba(0, 0, 0, 0.85);
+        }
+        box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.5);
+      }
+      border-radius: 3px;
+    }
+
     .ant-select-selector {
       padding: 0;
 

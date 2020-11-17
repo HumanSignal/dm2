@@ -17,25 +17,25 @@ const BaseInput = ({ value, defaultValue, onChange, placeholder }) => {
 export const StringFilter = [
   {
     key: "contains",
-    label: "contains...",
+    label: "contains",
     valueType: "single",
     input: (props) => <BaseInput {...props} />,
   },
   {
     key: "not_contains",
-    label: "not contains...",
+    label: "not contains",
     valueType: "single",
     input: (props) => <BaseInput {...props} />,
   },
   {
     key: "equal",
-    label: "equal...",
+    label: "equal",
     valueType: "single",
     input: (props) => <BaseInput {...props} />,
   },
   {
     key: "not_equal",
-    label: "not equal...",
+    label: "not equal",
     valueType: "single",
     input: (props) => <BaseInput {...props} />,
   },
