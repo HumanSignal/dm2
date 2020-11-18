@@ -4,14 +4,18 @@ import { FilterDropdown } from "../FilterDropdown";
 const VariantSelect = ({ schema, onChange, multiple, value }) => {
   const { items } = schema;
 
-  const selected = value && value.length ? value : undefined;
+  const selected = multiple
+    ? value && value.length
+      ? value
+      : undefined
+    : value;
 
   return (
     <FilterDropdown
       items={items}
+      value={selected}
       multiple={multiple}
-      defaultValue={selected}
-      onChange={(value) => onChange(undefined, value)}
+      onChange={(value) => onChange(value)}
     />
   );
 };

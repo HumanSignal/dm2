@@ -90,7 +90,6 @@ const renderColHeaderContent = (view, col) => (
 );
 
 const TableCellHeader = (view) => ({ column: col }) => {
-  console.log({ view, col });
   const { parent, help, orderable } = col.original ?? {};
   const className = [
     "data-variable",
@@ -134,7 +133,6 @@ const SelectionCell = (view, setShowSource) => (columns) => {
 
   result.push(
     ...columns.map((col) => {
-      console.log(col.type);
       Object.assign(
         col,
         {

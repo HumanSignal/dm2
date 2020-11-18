@@ -7,8 +7,8 @@ export const Common = [
     label: "is empty",
     input: (props) => (
       <FilterDropdown
-        defaultValue={props.value ?? false}
-        onChange={(value) => props.onChange(undefined, value)}
+        value={props.value ?? false}
+        onChange={(value) => props.onChange(value)}
         items={[
           { value: true, label: "yes" },
           { value: false, label: "no" },

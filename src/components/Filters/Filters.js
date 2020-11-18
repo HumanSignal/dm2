@@ -11,7 +11,10 @@ export const Filters = inject("store")(
     const views = store.viewsStore;
     const currentView = views.selected;
 
-    const { currentFilters: filters } = currentView;
+    const filters = React.useMemo(() => {
+      const { filters } = currentView;
+      return filters.length ? filters : [];
+    }, [() => currentView.filters.length]);
 
     const fields = React.useMemo(
       () =>
@@ -43,15 +46,12 @@ export const Filters = inject("store")(
       [currentView.availableFilters]
     );
 
-    console.log({ FiltersStyles });
-
     return (
       <FiltersStyles
         className={["filters", sidebar ? "filters__sidebar" : null]}
       >
         {({ className }) => (
           <>
-            {console.log(className)}
             <div className="filters__list">
               {filters.length ? (
                 filters.map((filter, i) => (
@@ -71,9 +71,9 @@ export const Filters = inject("store")(
             </div>
             <div className="filters__actions">
               <Button
+                ghost
                 type="primary"
                 size="small"
-                ghost
                 onClick={() => currentView.createFilter()}
               >
                 <PlusOutlined />

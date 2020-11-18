@@ -161,8 +161,18 @@ export const View = types
     },
 
     createFilter() {
-      const filter = self.availableFilters[0];
-      self.filters.push({ filter, view: self.id });
+      const filterType = self.availableFilters[0];
+      const filter = ViewFilter.create({
+        filter: filterType,
+        view: self.id,
+      });
+
+      self.filters.push(filter);
+      console.log({ filter });
+
+      if (filter.isValidFilter) {
+        self.save();
+      }
     },
 
     toggleColumn(column) {

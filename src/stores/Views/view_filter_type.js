@@ -45,9 +45,20 @@ export const FilterSchema = types.union({
   },
 });
 
-export const ViewFilterType = types.model("ViewFilterType", {
-  id: types.identifier,
-  field: types.reference(ViewColumn),
-  type: types.enumeration(Object.keys(FilterTypes)),
-  schema: types.maybeNull(FilterSchema),
-});
+export const ViewFilterType = types
+  .model("ViewFilterType", {
+    id: types.identifier,
+    field: types.reference(ViewColumn),
+    type: types.enumeration(Object.keys(FilterTypes)),
+    schema: types.maybeNull(FilterSchema),
+  })
+  .views((self) => ({
+    get defaultValue() {
+      switch (self.type) {
+        case "Boolean":
+          return false;
+        default:
+          return undefined;
+      }
+    },
+  }));

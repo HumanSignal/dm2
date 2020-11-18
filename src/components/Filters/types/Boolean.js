@@ -9,7 +9,7 @@ export const BooleanFilter = [
     input: (props) => (
       <FilterDropdown
         defaultValue={props.value ?? false}
-        onChange={(value) => props.onChange(undefined, value)}
+        onChange={(value) => props.onChange(value)}
         items={[
           { value: true, label: "yes" },
           { value: false, label: "no" },

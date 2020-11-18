@@ -16,6 +16,20 @@ const operatorNames = Array.from(
 
 const Operators = types.enumeration(operatorNames);
 
+const getOperatorDefaultValue = (operator) => {
+  if (operatorNames.includes(operator)) {
+    switch (operator) {
+      default:
+        return null;
+
+      case "empty":
+        return false;
+    }
+  }
+
+  return null;
+};
+
 export const ViewFilter = types
   .model("ViewFilter", {
     filter: types.reference(ViewFilterType),
@@ -53,35 +67,45 @@ export const ViewFilter = types
 
     get isValidFilter() {
       const { value } = self;
-      if (value === null || value === undefined) return false;
 
-      if (FilterValueRange.is(value)) {
-        const { min, max } = value;
-        return isDefined(min) && isDefined(max);
+      if (!isDefined(value)) {
+        return false;
+      } else if (FilterValueRange.is(value)) {
+        return isDefined(value.min) && isDefined(value.max);
       }
 
       return true;
     },
   }))
   .actions((self) => ({
+    afterAttach() {
+      self.setDefaultValue();
+    },
+
     setFilter(value) {
+      const previousFilterType = self.filter.type;
       self.filter = value;
       self.setOperator(self.component[0].key);
+
+      if (previousFilterType !== value.type) {
+        self.setDefaultValue();
+      }
+
+      self.save();
     },
 
     setOperator(operator) {
-      const valueType = self.componentValueType;
+      const previousValueType = self.componentValueType;
       self.operator = operator;
 
-      if (valueType !== self.componentValueType) {
-        self.setValue(null);
+      if (previousValueType !== self.componentValueType) {
+        self.setDefaultValue();
       }
 
       self.save();
     },
 
     setValue(value) {
-      console.log(`Filter set ${self.field.id}`, value);
       self.value = value;
     },
 
@@ -90,7 +114,15 @@ export const ViewFilter = types
     },
 
     save() {
-      if (self.isValidFilter) self.view.save();
+      if (self.isValidFilter) {
+        self.view.save();
+      }
+    },
+
+    setDefaultValue() {
+      self.setValue(
+        getOperatorDefaultValue(self.operator) ?? self.filter.defaultValue
+      );
     },
 
     saveDelayed: debounce(() => {
