@@ -37,7 +37,10 @@ export const ViewColumn = types
       if (self.children) {
         return all(self.children, (c) => c.hidden);
       } else {
-        return self.parentView?.hiddenColumns.hasColumn(self) ?? false;
+        return (
+          self.parentView?.hiddenColumns.hasColumn(self) ??
+          (self.parent.hidden || false)
+        );
       }
     },
 

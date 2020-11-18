@@ -289,23 +289,21 @@ export const initDevApp = async (DataManager) => {
         "predictions:menu",
       ],
     },
-    ...(useExternalSource
-      ? {}
-      : {
-          table: {
-            hiddenColumns: {
-              explore: ["tasks:data", "tasks:extra", "tasks:updated_at"],
-            },
-            visibleColumns: {
-              labeling: [
-                "tasks:id",
-                "tasks:was_cancelled",
-                "annotations:id",
-                "annotations:task_id",
-              ],
-            },
-          },
-        }),
+    table: {
+      hiddenColumns: {
+        explore: ["tasks:completed_at", "tasks:data"],
+      },
+      visibleColumns: {
+        labeling: [
+          "tasks:id",
+          "tasks:was_cancelled",
+          "tasks:data.image",
+          "tasks:data.text",
+          "annotations:id",
+          "annotations:task_id",
+        ],
+      },
+    },
   });
 
   datamanager.on("submitCompletion", (...args) =>

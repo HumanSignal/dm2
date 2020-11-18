@@ -215,8 +215,8 @@ export class LSFWrapper {
   };
 
   onSkipTask = async (ls) => {
-    await this.submitCurrentCompletion("skipTask", (taskID, body) =>
-      this.datamanager.api.skipTask({ taskID }, { body })
+    await this.submitCurrentCompletion("skipTask", (taskID) =>
+      this.datamanager.api.skipTask({ taskID, was_cancelled: 1 })
     );
   };
 
