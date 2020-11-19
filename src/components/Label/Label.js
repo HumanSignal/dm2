@@ -73,7 +73,7 @@ const LabelingComponent = observer(({ store }) => {
           tags={
             store.isExplorerMode ? (
               <div style={{ paddingLeft: 20 }}>
-                <FieldsButton key="fields-button" view={view} />
+                <FieldsButton size="small" view={view} />
               </div>
             ) : (
               []
