@@ -169,7 +169,6 @@ export class DataManager {
 
     if (this.lsf.task !== task || completion !== undefined) {
       const completionID = completion?.id ?? task.lastCompletion?.id;
-      console.log("Loading", [task.id, completionID]);
       this.lsf.loadTask(task.id, completionID);
     }
   }

@@ -31,11 +31,6 @@ const TaskModelBase = types
     get lastPrediction() {
       return self.predictions[self.predictions.length - 1];
     },
-  }))
-  .actions((self) => ({
-    afterFetch() {
-      console.log("Task fetched and created");
-    },
   }));
 
 export const TaskModel = types.compose(

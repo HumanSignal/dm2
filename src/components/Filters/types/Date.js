@@ -6,10 +6,8 @@ export const DateTimeInput = ({ value, range, onChange }) => {
   const props = {
     size: "small",
     onChange(value) {
-      console.log(value);
       if (Array.isArray(value)) {
         const [min, max] = value.map((d) => d.toISOString());
-        console.log({ min, max });
         onChange({ min, max });
       } else {
         onChange(value?.toISOString());

@@ -2,6 +2,88 @@ import React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeGrid } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
+import { groupBy } from "../../utils/utils";
+import * as DataGroups from "./DataGroups";
+
+const getCell = (cells, cellID) => {
+  return cells.find((c) => {
+    const split = c.column.id.split(":");
+    const id = split[1] ?? split[0];
+    console.log({ id, cellID });
+    return id === cellID;
+  });
+};
+
+const getDataCells = (cells) => {
+  return cells.filter((c) => /data\./.test(c.column.id));
+};
+
+const cellRenderer = (cells) => (cellID) => {
+  return getCell(cells, cellID).render("Cell");
+};
+
+const GridHeader = ({ row }) => {
+  const { original } = row;
+  const renderCell = cellRenderer(row.cells);
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        justifyContent: "space-between",
+      }}
+    >
+      <div style={{ display: "flex", width: "100%", flex: 1 }}>
+        <span>{renderCell("selection")}</span>
+        <span style={{ marginLeft: 5 }}>{renderCell("id")}</span>
+      </div>
+
+      <div>
+        <div
+          style={{
+            display: "flex",
+            width: "100%",
+            justifyContent: "flex-end",
+            flex: 1,
+          }}
+        >
+          {original.completed_at ? original.completed_at : "Not completed"}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const GridBody = ({ row }) => {
+  const dataCells = groupBy(
+    getDataCells(row.cells),
+    (item) => item.column.original.type
+  );
+  console.log(dataCells);
+
+  return Object.entries(dataCells).map(([dataType, cells]) => {
+    return <GridDataGroup key={dataType} type={dataType} cells={cells} />;
+  });
+};
+
+const GridDataGroup = ({ type, cells }) => {
+  const DataTypeComponent = DataGroups[type];
+
+  return (
+    <div style={{ padding: "3px 0" }}>
+      {DataTypeComponent ? (
+        <DataTypeComponent cells={cells} />
+      ) : (
+        <div>
+          {cells.map((c) => (
+            <div key={c.getCellProps().key}>{c.render("Cell")}</div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export const GridView = ({
   rows,
@@ -26,16 +108,20 @@ export const GridView = ({
       prepareRow(row);
       const props = row.getRowProps?.() ?? {};
 
+      console.log({ ...props.style });
+      console.log({ ...style });
+
       Object.assign(props, {
         style: {
-          ...(props.style ?? {}),
           ...style,
         },
       });
 
       return (
         <div {...props} className="grid__item">
-          {row.cells.map((cell) => {
+          <GridHeader row={row} />
+          <GridBody row={row} />
+          {/* {row.cells.map((cell) => {
             const { column } = cell;
             return (
               <div key={cell.getCellProps().key}>
@@ -51,7 +137,7 @@ export const GridView = ({
                 {cell.render("Cell")}
               </div>
             );
-          })}
+          })} */}
         </div>
       );
     },
@@ -95,7 +181,7 @@ export const GridView = ({
                 ref={ref}
                 width={width}
                 height={height}
-                rowHeight={100}
+                rowHeight={150}
                 overscanRowCount={10}
                 columnCount={columnCount}
                 columnWidth={width / columnCount}

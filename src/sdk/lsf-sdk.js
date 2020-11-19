@@ -53,8 +53,6 @@ export class LSFWrapper {
    * @param {LSFOptions} options
    */
   constructor(dm, element, options) {
-    console.log("Initializing LabelStudio");
-
     this.datamanager = dm;
     this.root = element;
     this.task = options.task;

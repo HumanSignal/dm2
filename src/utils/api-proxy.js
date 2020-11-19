@@ -50,7 +50,6 @@ export class APIProxy {
     this.requestMode = this.detectMode();
     this.mockDelay = options.mockDelay ?? 0;
     this.disableMock = options.disableMock ?? false;
-    console.log(`API gateway: ${this.gateway}`);
 
     this.resolveMethods(options.endpoints);
   }
@@ -61,14 +60,12 @@ export class APIProxy {
    */
   resolvegateway(url) {
     if (url instanceof URL) {
-      console.log("Gateway built from URL");
       return url.toString();
     }
 
     try {
       return new URL(url).toString();
     } catch {
-      console.log("Gateway built from location");
       const gateway = new URL(window.location.href);
       if (url[0] === "/") {
         gateway.pathname = url;
@@ -182,7 +179,6 @@ export class APIProxy {
 
           return responseData;
         } else {
-          console.log("Error during API call");
           return this.generateError(rawResponse);
         }
       } catch (exception) {

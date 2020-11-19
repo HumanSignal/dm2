@@ -7,7 +7,6 @@ import {
   types,
 } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
-import { CustomJSON } from "../types";
 import { ViewFilter } from "./view_filter";
 import { ViewHiddenColumns } from "./view_hidden_columns";
 
@@ -29,8 +28,6 @@ export const View = types
 
     filters: types.array(types.late(() => ViewFilter)),
     conjunction: types.optional(types.enumeration(["and", "or"]), "and"),
-    selectedTasks: types.optional(types.array(CustomJSON), []),
-    selectedCompletions: types.optional(types.array(CustomJSON), []),
     hiddenColumns: types.maybeNull(types.optional(ViewHiddenColumns, {})),
     ordering: types.optional(types.array(types.string), []),
     selected: types.optional(types.array(types.number), []),
@@ -173,7 +170,6 @@ export const View = types
       });
 
       self.filters.push(filter);
-      console.log({ filter });
 
       if (filter.isValidFilter) {
         self.save();

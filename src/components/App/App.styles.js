@@ -19,9 +19,7 @@ export const Styles = styled.div`
   }
 
   .grid__item {
-    display: flex;
     padding: 10px;
-    height: 100px;
     justify-content: space-between;
     box-sizing: border-box;
     box-shadow: -0.5px -0.5px 0 0.5px #ccc;
