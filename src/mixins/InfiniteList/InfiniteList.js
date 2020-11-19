@@ -77,12 +77,13 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
       fetch: flow(function* ({ reload = false } = {}) {
         if (self.loading) return;
 
+        let selected;
         self.loading = true;
 
         if (reload) {
+          selected = self.selected?.id;
           self.page = 0;
           self.loaded = false;
-          self.list = [];
         }
 
         self.page++;
@@ -95,9 +96,8 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
 
         const { total, [apiMethod]: list } = data;
 
-        if (list) {
-          self.setList({ total, list, reload });
-        }
+        if (list) self.setList({ total, list, reload });
+        if (selected) self.selected = selected;
 
         self.loading = false;
         self.loaded = true;

@@ -29,4 +29,20 @@ export const Styles = styled.div`
     box-sizing: border-box;
     padding-bottom: 50px;
   }
+
+  .ant-page-header {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ant-page-header-content {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+
+    .tab-panel {
+      padding-top: 0;
+    }
+  }
 `;

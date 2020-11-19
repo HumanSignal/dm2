@@ -29,7 +29,7 @@ export const TableStyles = styled.div`
 
     &__table-header {
       flex: 0;
-      z-index: 10;
+      z-index: 100;
       position: sticky;
       background-color: #fafafa;
       box-shadow: 0 -0.5px 0 0.5px #f0f0f0 inset;
@@ -48,7 +48,7 @@ export const TableStyles = styled.div`
 
     &__table-row.selected,
     &__table-row:hover {
-      z-index: 100;
+      z-index: 50;
       background-color: #f3f9ff;
     }
 

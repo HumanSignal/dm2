@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { Button, PageHeader, Space } from "antd";
+import { Button, PageHeader } from "antd";
 import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
 import React from "react";
@@ -66,32 +66,36 @@ const LabelingComponent = observer(({ store }) => {
   return (
     <Styles>
       <div className="wrapper">
-        {store.isExplorerMode && (
-          <div className="table" style={{ minWidth: "40vw" }}>
-            <div className="tab-panel">
-              <Space size="middle">
-                <FieldsButton view={view} />
-              </Space>
+        <PageHeader
+          title="Labeling"
+          onBack={closeLabeling}
+          style={{ padding: 0 }}
+          tags={
+            store.isExplorerMode ? (
+              <div style={{ paddingLeft: 20 }}>
+                <FieldsButton key="fields-button" view={view} />
+              </div>
+            ) : (
+              []
+            )
+          }
+        >
+          {store.isExplorerMode && (
+            <div className="table" style={{ minWidth: "40vw" }}>
+              <Table
+                key={`data-${view.target}`}
+                view={view}
+                columns={columns}
+                data={Array.from(store.dataStore.list)}
+                hiddenColumns={view.hiddenColumnsList}
+              />
             </div>
-            <Table
-              key={`data-${view.target}`}
-              view={view}
-              columns={columns}
-              data={Array.from(store.dataStore.list)}
-              hiddenColumns={view.hiddenColumnsList}
-            />
-          </div>
-        )}
-        <div key="lsf-root" className="label-studio">
-          <PageHeader
-            onBack={closeLabeling}
-            title="Labeling"
-            style={{ padding: 0 }}
-          >
+          )}
+          <div key="lsf-root" className="label-studio">
             <div id="label-studio" ref={lsfRef}></div>
             <History root={lsfRef} history={history} />
-          </PageHeader>
-        </div>
+          </div>
+        </PageHeader>
       </div>
     </Styles>
   );
