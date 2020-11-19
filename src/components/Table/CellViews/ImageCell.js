@@ -21,8 +21,8 @@ export const ImageCell = (column) => {
 
 Object.assign(ImageCell, {
   constraints: {
-    maxWidth: 30,
-    minWidth: 30,
-    width: 30,
+    maxWidth: 40,
+    minWidth: 40,
+    width: 40,
   },
 });

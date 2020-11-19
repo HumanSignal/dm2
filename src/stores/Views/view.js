@@ -33,6 +33,7 @@ export const View = types
     selectedCompletions: types.optional(types.array(CustomJSON), []),
     hiddenColumns: types.maybeNull(types.optional(ViewHiddenColumns, {})),
     ordering: types.optional(types.array(types.string), []),
+    selected: types.optional(types.array(types.number), []),
 
     enableFilters: false,
     renameMode: false,
@@ -158,6 +159,10 @@ export const View = types
 
       self.ordering[0] = ordering;
       self.save();
+    },
+
+    setSelected(ids) {
+      self.selected = Object.keys(ids).map(Number);
     },
 
     createFilter() {

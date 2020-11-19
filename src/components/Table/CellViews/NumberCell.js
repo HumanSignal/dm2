@@ -4,9 +4,9 @@ Object.assign(NumberCell, {
   constraints: (col) =>
     /id|has_cancelled/.test(col.id)
       ? {
-          minWidth: 50,
-          maxWidth: 50,
-          width: 50,
+          minWidth: 30,
+          maxWidth: 30,
+          width: 30,
         }
       : {},
 });

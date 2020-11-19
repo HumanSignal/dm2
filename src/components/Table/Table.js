@@ -6,7 +6,7 @@ import React from "react";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import { RiCodeSSlashLine } from "react-icons/ri";
 import { VscQuestion } from "react-icons/vsc";
-import { useFilters, useFlexLayout, useRowSelect, useTable } from "react-table";
+import { useFlexLayout, useRowSelect, useTable } from "react-table";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
 import { ListView } from "./ListView";
@@ -202,9 +202,12 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
       data,
       initialState: {
         hiddenColumns,
+        selectedRowIds: view.selected.reduce(
+          (res, el) => ({ ...res, [el]: true }),
+          {}
+        ),
       },
     },
-    useFilters, // useFilters!
     useRowSelect,
     useFlexLayout,
     (hooks) => {
@@ -251,8 +254,8 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
   }, [setHiddenColumns, hiddenColumns]);
 
   React.useEffect(() => {
-    // console.log(selectedRowIds);
-  }, [selectedRowIds]);
+    view.setSelected(selectedRowIds);
+  }, [view, selectedRowIds]);
 
   // Render the UI for your table
   return (
