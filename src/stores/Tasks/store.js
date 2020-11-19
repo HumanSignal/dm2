@@ -9,11 +9,12 @@ export const TasksStore = InfiniteList("TasksStore", {
   loadTask: flow(function* (taskID) {
     console.log(`Loading task from server: ${taskID}`);
     let remoteTask;
+    const rootStore = getRoot(self);
 
     if (taskID !== undefined) {
-      remoteTask = yield self.API.task({ taskID });
+      remoteTask = yield rootStore.apiCall("task", { taskID });
     } else {
-      remoteTask = yield self.API.nextTask({
+      remoteTask = yield rootStore.apiCall("nextTask", {
         projectID: getRoot(self).project.id,
       });
     }

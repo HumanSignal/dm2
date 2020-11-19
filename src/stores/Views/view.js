@@ -208,12 +208,12 @@ export const View = types
       const { id: tabID } = self;
       const body = self.serialize();
 
-      yield getRoot(self).API.updateTab({ tabID }, { body });
+      yield getRoot(self).apiCall("updateTab", { tabID }, { body });
 
       self.reload();
     }),
 
     delete: flow(function* () {
-      yield getRoot(self).API.deleteTab({ tabID: self.id });
+      yield getRoot(self).apiCall("deleteTab", { tabID: self.id });
     }),
   }));

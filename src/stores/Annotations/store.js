@@ -8,11 +8,12 @@ export const AnnotationStore = InfiniteList("AnnotationStore", {
 }).actions((self) => ({
   loadTask: flow(function* (annotationID) {
     let remoteTask;
+    const rootStore = getRoot(self);
 
     if (annotationID !== undefined) {
-      remoteTask = yield self.API.task({ taskID: annotationID });
+      remoteTask = yield rootStore.apiCall("task", { taskID: annotationID });
     } else {
-      remoteTask = yield self.API.nextTask({
+      remoteTask = yield rootStore.apiCall("nextTask", {
         projectID: getRoot(self).project.id,
       });
     }

@@ -78,16 +78,20 @@ const applySort = (view, col) => {
   if (col.original?.canOrder) view.setOrdering(col.original.id);
 };
 
-const renderColHeaderContent = (view, col) => (
-  <div
-    style={{ display: "flex", alignItems: "center" }}
-    onClick={() => applySort(view, col)}
-  >
-    {col.original?.title}
+const renderColHeaderContent = (view, col) => {
+  const canOrder = col.original?.canOrder && view.type === "list";
 
-    {col.original?.canOrder && <OrderButton desc={col.original.order} />}
-  </div>
-);
+  return (
+    <div
+      style={{ display: "flex", alignItems: "center" }}
+      onClick={() => applySort(view, col)}
+    >
+      {col.original?.title}
+
+      {canOrder && <OrderButton desc={col.original.order} />}
+    </div>
+  );
+};
 
 const TableCellHeader = (view) => ({ column: col }) => {
   const { parent, help, orderable } = col.original ?? {};
@@ -184,7 +188,7 @@ const SelectionCell = (view, setShowSource) => (columns) => {
 };
 
 export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
-  const { dataStore } = getRoot(view);
+  const { dataStore, serverError } = getRoot(view);
   const { total, selected } = dataStore;
   const [showSource, setShowSource] = React.useState();
 
@@ -257,22 +261,25 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
     view.setSelected(selectedRowIds);
   }, [view, selectedRowIds]);
 
+  const content = view.root.isLabeling ? (
+    listView()
+  ) : (
+    <>
+      {view.type === "list" ? listView() : gridView()}
+      <div className="dm-content__statusbar">
+        <div>
+          Selected {Object.keys(selectedRowIds).length} of {total} items
+        </div>
+        <div>{view.dataStore.loading && "Loading"}</div>
+      </div>
+    </>
+  );
+
   // Render the UI for your table
   return (
     <TableStyles className="dm-content">
-      {view.root.isLabeling ? (
-        listView()
-      ) : (
-        <>
-          {view.type === "list" ? listView() : gridView()}
-          <div className="dm-content__statusbar">
-            <div>
-              Selected {Object.keys(selectedRowIds).length} of {total} items
-            </div>
-            <div>{view.dataStore.loading && "Loading"}</div>
-          </div>
-        </>
-      )}
+      {content}
+
       <Modal
         visible={!!showSource}
         onOk={() => setShowSource("")}

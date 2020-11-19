@@ -1,12 +1,5 @@
 import isNumeric from "antd/es/_util/isNumeric";
-import {
-  destroy,
-  flow,
-  getParent,
-  getRoot,
-  getSnapshot,
-  types,
-} from "mobx-state-tree";
+import { destroy, flow, getRoot, getSnapshot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 import { unique } from "../../utils/utils";
 import { View } from "./view";
@@ -146,7 +139,7 @@ export const ViewsStore = types
     },
 
     fetchColumns: flow(function* () {
-      const { columns } = yield getParent(self).API.columns();
+      const { columns } = yield getRoot(self).apiCall("columns");
       const targets = unique(columns.map((c) => c.target));
 
       const createColumnPath = (columns, column) => {
@@ -211,7 +204,7 @@ export const ViewsStore = types
     }),
 
     fetchViews: flow(function* () {
-      const { tabs } = yield getParent(self).API.tabs();
+      const { tabs } = yield getRoot(self).apiCall("tabs");
 
       self.views.push(...tabs.map(self.createView));
 

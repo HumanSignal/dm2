@@ -21,7 +21,7 @@ export const GridView = ({
       const index = getCellIndex(rowIndex, columnIndex);
       const row = rows[index];
 
-      if (!row) return <div>Loading...</div>;
+      if (!row) return null;
 
       prepareRow(row);
       const props = row.getRowProps?.() ?? {};

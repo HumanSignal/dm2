@@ -182,6 +182,7 @@ export class APIProxy {
 
           return responseData;
         } else {
+          console.log("Error during API call");
           return this.generateError(rawResponse);
         }
       } catch (exception) {
@@ -284,8 +285,19 @@ export class APIProxy {
    * @param {Response} fetchResponse
    * @private
    */
-  generateError(fetchResponse) {
-    return { error: fetchResponse.statusText };
+  async generateError(fetchResponse) {
+    const result = (async () => {
+      try {
+        return fetchResponse.json();
+      } catch {
+        return {};
+      }
+    })();
+
+    return {
+      error: fetchResponse.statusText,
+      response: await result,
+    };
   }
 
   /**

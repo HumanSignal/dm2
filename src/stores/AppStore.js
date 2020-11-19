@@ -1,4 +1,5 @@
-import { flow, types } from "mobx-state-tree";
+import { notification } from "antd";
+import { flow, getRoot, types } from "mobx-state-tree";
 import { AnnotationStore } from "./Annotations";
 import { TasksStore } from "./Tasks";
 import { CustomJSON } from "./types";
@@ -21,6 +22,8 @@ export const AppStore = types
 
     taskStore: types.optional(TasksStore, {}),
     annotationStore: types.optional(AnnotationStore, {}),
+
+    serverError: types.map(CustomJSON),
   })
   .views((self) => ({
     get SDK() {
@@ -73,7 +76,7 @@ export const AppStore = types
     },
 
     fetchProject: flow(function* () {
-      self.project = yield self.API.project();
+      self.project = yield getRoot(self).apiCall("project");
     }),
 
     fetchData: flow(function* () {
@@ -87,5 +90,25 @@ export const AppStore = types
       console.log("Views loaded. Current view is set to %O", self.currentView);
 
       self.loading = false;
+    }),
+
+    apiCall: flow(function* (methodName, params, body) {
+      let result = yield self.API[methodName](params, body);
+
+      if (result.error) {
+        self.serverError.set(methodName, {
+          error: "Something went wrong",
+          response: result.response,
+        });
+
+        notification.error({
+          message: "Error occurred when loading data",
+          description: result.response.detail,
+        });
+      } else {
+        self.serverError.delete(methodName);
+      }
+
+      return result;
     }),
   }));

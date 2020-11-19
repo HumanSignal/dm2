@@ -88,7 +88,7 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
 
         self.page++;
 
-        const data = yield self.API[apiMethod]({
+        const data = yield getRoot(self).apiCall(apiMethod, {
           page: self.page,
           page_size: self.pageSize,
           tabID: getRoot(self).viewsStore.selected.id,

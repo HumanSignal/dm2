@@ -6,7 +6,9 @@ import {
 } from "@ant-design/icons";
 import { Button, Dropdown, Menu, Radio, Space } from "antd";
 import { observer } from "mobx-react";
+import { getRoot } from "mobx-state-tree";
 import React from "react";
+import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
 
@@ -43,6 +45,8 @@ export const TablePanel = observer(({ views, view }) => {
         <FieldsButton view={view} />
 
         <FiltersPane sidebar={views.sidebarEnabled} viewStore={views} />
+
+        <ErrorBox errors={getRoot(view).serverError} />
       </Space>
 
       <Space size="middle">
