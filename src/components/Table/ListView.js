@@ -170,7 +170,7 @@ export const ListView = observer(
         return (
           <div
             {...compileRowProps(row, view, "dm-content__table-row")}
-            style={{ height: lineHeight }}
+            style={{ ...style, height: lineHeight }}
           >
             {row.cells.map((cell) => (
               <div {...compileCellProps(cell)}>

@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { Button, PageHeader } from "antd";
+import { Button, PageHeader, Space } from "antd";
 import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
 import React from "react";
+import { FieldsButton } from "../Common/FieldsButton";
 import { Table } from "../Table/Table";
 import { Styles } from "./Label.styles";
 import { LabelButtons } from "./LabelButtons";
@@ -67,6 +68,11 @@ const LabelingComponent = observer(({ store }) => {
       <div className="wrapper">
         {store.isExplorerMode && (
           <div className="table" style={{ minWidth: "40vw" }}>
+            <div className="tab-panel">
+              <Space size="middle">
+                <FieldsButton view={view} />
+              </Space>
+            </div>
             <Table
               key={`data-${view.target}`}
               view={view}

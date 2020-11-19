@@ -2,30 +2,19 @@ import {
   AppstoreOutlined,
   BarsOutlined,
   CaretDownOutlined,
-  EyeOutlined,
   PlayCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Dropdown, Menu, Radio, Space } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
-import { VscListFilter } from "react-icons/vsc";
-import { Filters } from "../Filters/Filters";
-import TabFieldsMenu from "./tab-fields-menu";
+import { FieldsButton } from "../Common/FieldsButton";
+import { FiltersPane } from "../Common/FiltersPane";
 
 const actionsMenu = (
   <Menu onClick={() => {}}>
     <Menu.Item key="1">Delete</Menu.Item>
   </Menu>
 );
-
-const FiltersButton = ({ onClick, active }) => {
-  return (
-    <Button onClick={onClick} type={active ? "primary" : "default"}>
-      <VscListFilter style={{ marginBottom: -2, marginRight: 7 }} />
-      Filters
-    </Button>
-  );
-};
 
 export const TablePanel = observer(({ views, view }) => {
   return (
@@ -51,22 +40,9 @@ export const TablePanel = observer(({ views, view }) => {
           <Radio.Button value="annotations">Annotations</Radio.Button>
         </Radio.Group>
 
-        <Dropdown overlay={TabFieldsMenu(view)} transitionName={""}>
-          <Button>
-            <EyeOutlined /> Fields <CaretDownOutlined />
-          </Button>
-        </Dropdown>
+        <FieldsButton view={view} />
 
-        {views.sidebarEnabled ? (
-          <FiltersButton
-            onClick={() => views.toggleSidebar()}
-            active={view.filtersApplied}
-          />
-        ) : (
-          <Dropdown overlay={<Filters />} trigger="click">
-            <FiltersButton active={view.filtersApplied} />
-          </Dropdown>
-        )}
+        <FiltersPane sidebar={views.sidebarEnabled} viewStore={views} />
       </Space>
 
       <Space size="middle">

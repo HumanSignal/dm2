@@ -81,7 +81,7 @@ export const ViewColumn = types
     },
 
     get canOrder() {
-      return self.orderable && !self.children;
+      return self.orderable && !self.children && !getRoot(self).isLabeling;
     },
 
     get order() {

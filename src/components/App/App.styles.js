@@ -6,21 +6,12 @@ export const Styles = styled.div`
   min-height: 500px;
   box-sizing: border-box;
 
-  /* .grid {
+  .tab-panel {
     display: flex;
+    justify-content: space-between;
+    padding-top: 1em;
+    padding-bottom: 1em;
   }
-
-  .grid > div {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 1em;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 1em;
-  } */
 
   .grid {
     flex: 1;

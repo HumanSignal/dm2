@@ -20,13 +20,6 @@ export const TabsStyles = styled.div`
     }
   }
 
-  .tab-panel {
-    display: flex;
-    justify-content: space-between;
-    padding-top: 1em;
-    padding-bottom: 1em;
-  }
-
   .sidebar {
     width: 330px;
   }

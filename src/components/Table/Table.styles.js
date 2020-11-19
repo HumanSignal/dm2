@@ -38,10 +38,10 @@ export const TableStyles = styled.div`
     &__table-row,
     &__table-header {
       display: flex;
-      z-index: 1;
     }
 
     &__table-row {
+      z-index: 1;
       cursor: pointer;
       position: relative;
     }
