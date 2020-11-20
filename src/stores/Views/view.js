@@ -172,9 +172,7 @@ export const View = types
 
       self.filters.push(filter);
 
-      if (filter.isValidFilter) {
-        self.save();
-      }
+      if (filter.isValidFilter) self.save();
     },
 
     toggleColumn(column) {
@@ -211,6 +209,7 @@ export const View = types
 
       yield getRoot(self).apiCall("updateTab", { tabID }, { body });
 
+      self.saved = true;
       self.reload();
     }),
 
