@@ -42,7 +42,7 @@ export const TablePanel = observer(({ views, view }) => {
           <Radio.Button value="annotations">Annotations</Radio.Button>
         </Radio.Group>
 
-        <FieldsButton view={view} />
+        <FieldsButton columns={view.targetColumns} />
 
         <FiltersPane sidebar={views.sidebarEnabled} viewStore={views} />
 

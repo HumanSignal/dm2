@@ -181,7 +181,7 @@ export const View = types
       } else {
         self.hiddenColumns.add(column);
       }
-      self.save();
+      self.save({ reload: false });
     },
 
     reload() {
@@ -203,14 +203,14 @@ export const View = types
       }
     },
 
-    save: flow(function* () {
+    save: flow(function* ({ reload } = {}) {
       const { id: tabID } = self;
       const body = self.serialize();
 
       yield getRoot(self).apiCall("updateTab", { tabID }, { body });
 
       self.saved = true;
-      self.reload();
+      if (reload !== false) self.reload();
     }),
 
     delete: flow(function* () {
