@@ -1,3 +1,4 @@
+export { AudioCell as Audio, AudioCell as AudioPlus } from "./AudioCell";
 export { BooleanCell as Boolean } from "./BooleanCell";
 export { DateTimeCell as Date, DateTimeCell as Datetime } from "./DateTimeCell";
 export { ImageCell as Image } from "./ImageCell";

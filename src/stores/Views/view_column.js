@@ -1,27 +1,26 @@
 import { getRoot, getSnapshot, types } from "mobx-state-tree";
 import { all } from "../../utils/utils";
 
+export const ViewColumnType = types.enumeration([
+  "String",
+  "Number",
+  "Boolean",
+  "Datetime",
+  "List",
+  "Image",
+  "Audio",
+  "AudioPlus",
+  "Text",
+  "HyperText",
+  "TimeSeries",
+]);
+
 export const ViewColumn = types
   .model("ViewColumn", {
     id: types.identifier,
     title: types.string,
     alias: types.string,
-    type: types.optional(
-      types.enumeration([
-        "String",
-        "Number",
-        "Boolean",
-        "Datetime",
-        "List",
-        "Image",
-        "Audio",
-        "AudioPlus",
-        "Text",
-        "HyperText",
-        "TimeSeries",
-      ]),
-      "String"
-    ),
+    type: types.optional(ViewColumnType, "String"),
     defaultHidden: types.optional(types.boolean, false),
     parent: types.maybeNull(types.late(() => types.reference(ViewColumn))),
     children: types.maybeNull(

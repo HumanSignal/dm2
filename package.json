@@ -29,6 +29,7 @@
     "mobx-react": "^6",
     "mobx-state-tree": "^3.16.0",
     "moment": "^2.29.1",
+    "moment-duration-format": "^2.3.2",
     "namor": "^2.0.2",
     "nanoid": "^3.1.10",
     "react": "^16.8.0",

@@ -50,4 +50,10 @@ export const Styles = styled.div`
     justify-content: center;
     align-items: center;
   }
+
+  .flex-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
