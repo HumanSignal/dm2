@@ -111,6 +111,7 @@ export const ViewsStore = types
 
       self.views.push(newView);
       self.setSelected(newView);
+      console.log("Tab set and being updated");
       yield newView.save();
 
       return newView;
@@ -206,7 +207,9 @@ export const ViewsStore = types
     fetchViews: flow(function* () {
       const { tabs } = yield getRoot(self).apiCall("tabs");
 
-      self.views.push(...tabs.map(self.createView));
+      self.views.push(
+        ...tabs.map((t) => self.createView({ ...t, saved: true }))
+      );
 
       const selected = localStorage.getItem("selectedTab");
       const selectedView = self.views.find((v) => v.id === Number(selected));

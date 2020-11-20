@@ -55,8 +55,8 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
   const model = types
     .model(modelName, {
       list: types.optional(types.array(listItemType), []),
-      selected: types.maybeNull(types.reference(listItemType)),
-      highlighted: types.maybeNull(types.reference(listItemType)),
+      selected: types.maybeNull(types.safeReference(listItemType)),
+      highlighted: types.maybeNull(types.safeReference(listItemType)),
     })
     .actions((self) => ({
       updateItem(itemID, patch) {
@@ -77,13 +77,17 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
       fetch: flow(function* ({ reload = false } = {}) {
         if (self.loading) return;
 
-        let selected;
+        let selected, highlighted;
         self.loading = true;
 
         if (reload) {
           selected = self.selected?.id;
+          highlighted = self.highlighted?.id;
+
           self.page = 0;
           self.loaded = false;
+          self.selected = null;
+          self.highlighted = null;
         }
 
         self.page++;
@@ -97,7 +101,9 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
         const { total, [apiMethod]: list } = data;
 
         if (list) self.setList({ total, list, reload });
+
         if (selected) self.selected = selected;
+        if (highlighted) self.highlighted = highlighted;
 
         self.loading = false;
         self.loaded = true;

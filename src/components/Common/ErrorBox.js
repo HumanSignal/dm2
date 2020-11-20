@@ -6,7 +6,7 @@ import { RiErrorWarningFill } from "react-icons/ri";
 const ErrorRenderer = (error, i) => {
   return (
     <Menu.Item key={i} disabled={true}>
-      {error.response.detail}
+      {error.response?.detail}
     </Menu.Item>
   );
 };

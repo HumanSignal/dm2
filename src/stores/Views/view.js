@@ -34,6 +34,7 @@ export const View = types
 
     enableFilters: false,
     renameMode: false,
+    saved: false,
   })
   .views((self) => ({
     get root() {
@@ -186,7 +187,9 @@ export const View = types
     },
 
     reload() {
-      self.dataStore.reload();
+      if (self.saved) {
+        self.dataStore.reload();
+      }
     },
 
     deleteFilter(filter) {
@@ -197,7 +200,9 @@ export const View = types
     },
 
     afterAttach() {
-      self.hiddenColumns = self.hiddenColumns ?? ViewHiddenColumns.create();
+      if (self.saved) {
+        self.hiddenColumns = self.hiddenColumns ?? ViewHiddenColumns.create();
+      }
     },
 
     save: flow(function* () {

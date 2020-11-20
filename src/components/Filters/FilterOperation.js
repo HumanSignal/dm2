@@ -15,10 +15,10 @@ import { Common } from "./types/Common";
  */
 export const FilterOperation = observer(
   ({ filter, field, value, operator }) => {
-    const types = React.useMemo(
-      () => [...FilterInputs[field.type], ...Common],
-      [field]
-    );
+    const types = React.useMemo(() => {
+      const filterTypes = FilterInputs[field.type] ?? FilterInputs.String;
+      return [...filterTypes, ...Common];
+    }, [field]);
 
     const selected = React.useMemo(() => {
       if (operator) {
