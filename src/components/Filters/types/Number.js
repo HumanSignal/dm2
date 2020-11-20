@@ -3,6 +3,7 @@ import React from "react";
 import { FilterInput } from "../FilterInput";
 
 const NumberInput = ({ onChange, ...rest }) => {
+  console.log(rest);
   return (
     <FilterInput
       type="number"

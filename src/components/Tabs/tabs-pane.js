@@ -1,7 +1,7 @@
-import { DownOutlined } from "@ant-design/icons";
 import { Button, Dropdown, Input } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
+import { BsThreeDots } from "react-icons/bs";
 import { TabsMenu } from "./tabs-menu";
 
 export const TabTitle = observer(({ item }) => {
@@ -13,8 +13,15 @@ export const TabTitle = observer(({ item }) => {
       item.setTitle(item.oldTitle);
     }
   };
+
   return (
-    <span>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}
+    >
       {item.renameMode ? (
         <Input
           size="small"
@@ -30,10 +37,16 @@ export const TabTitle = observer(({ item }) => {
       )}
 
       <Dropdown overlay={TabsMenu(item)} trigger={["click"]}>
-        <Button type="link" size="small" onClick={(e) => e.preventDefault()}>
-          <DownOutlined />
+        <Button
+          type="link"
+          size="small"
+          className="flex-button"
+          onClick={(e) => e.stopPropagation()}
+          style={{ padding: 5, marginLeft: 10 }}
+        >
+          <BsThreeDots />
         </Button>
       </Dropdown>
-    </span>
+    </div>
   );
 });

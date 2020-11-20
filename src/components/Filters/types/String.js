@@ -5,11 +5,10 @@ const BaseInput = ({ value, defaultValue, onChange, placeholder }) => {
   return (
     <FilterInput
       type="text"
-      style={{ fontSize: 14 }}
-      placeholder={placeholder}
-      defaultValue={defaultValue}
       value={value}
       onChange={onChange}
+      style={{ fontSize: 14 }}
+      placeholder={placeholder}
     />
   );
 };

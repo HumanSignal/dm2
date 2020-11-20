@@ -16,6 +16,7 @@ export const TabsMenu = (item) => {
           Rename
         </a>
       </Menu.Item>
+
       <Menu.Item key="1">
         <a
           href="#duplicate"
@@ -28,6 +29,7 @@ export const TabsMenu = (item) => {
           Duplicate
         </a>
       </Menu.Item>
+
       {item.parent.canClose ? (
         <>
           <Menu.Divider />

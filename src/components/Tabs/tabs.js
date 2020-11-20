@@ -27,8 +27,10 @@ const TabContent = observer(({ views, view, data, columns }) => {
 });
 
 const createTab = (views, data, columns) => (view) => {
+  const title = <TabTitle item={view} data={data} />;
+
   return (
-    <Tabs.TabPane {...getTabPaneProps(view, data)}>
+    <Tabs.TabPane key={view.key} closable={false} tab={title}>
       <TablePanel views={views} view={view} />
       <TabContent views={views} view={view} data={data} columns={columns} />
     </Tabs.TabPane>
