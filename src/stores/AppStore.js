@@ -93,14 +93,18 @@ export const AppStore = types
       let result = yield self.API[methodName](params, body);
 
       if (result.error) {
-        self.serverError.set(methodName, {
-          error: "Something went wrong",
-          response: result.response,
-        });
+        console.log({ result });
+
+        if (result.response) {
+          self.serverError.set(methodName, {
+            error: "Something went wrong",
+            response: result.response,
+          });
+        }
 
         notification.error({
           message: "Error occurred when loading data",
-          description: result.response.detail,
+          description: result?.response?.detail ?? result.error,
         });
       } else {
         self.serverError.delete(methodName);

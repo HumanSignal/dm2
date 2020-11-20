@@ -153,6 +153,8 @@ export class APIProxy {
           }
         }
 
+        console.log({ request });
+
         let rawResponse;
 
         if (
@@ -211,7 +213,9 @@ export class APIProxy {
 
   getDefaultHeaders(method) {
     switch (method) {
-      case "POST": {
+      case "POST":
+      case "PATH":
+      case "DELETE": {
         return {
           "Content-Type": "application/json",
         };
