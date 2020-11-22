@@ -1,7 +1,7 @@
 import { Button, Dropdown, Input } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
-import { BsThreeDots } from "react-icons/bs";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { TabsMenu } from "./tabs-menu";
 
 export const TabTitle = observer(({ item }) => {
@@ -44,7 +44,7 @@ export const TabTitle = observer(({ item }) => {
           onClick={(e) => e.stopPropagation()}
           style={{ padding: 5, marginLeft: 10 }}
         >
-          <BsThreeDots />
+          <BsThreeDotsVertical />
         </Button>
       </Dropdown>
     </div>
