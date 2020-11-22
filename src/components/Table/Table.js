@@ -112,7 +112,7 @@ const TableCellHeader = (view) => ({ column: col }) => {
 
       {help && (
         <Tooltip title={help}>
-          <VscQuestion size={16} />
+          <VscQuestion size={16} style={{ opacity: 0.5 }} />
         </Tooltip>
       )}
     </div>
