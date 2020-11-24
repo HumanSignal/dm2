@@ -1,4 +1,4 @@
-import { getParent, types } from "mobx-state-tree";
+import { getParent, getRoot, types } from "mobx-state-tree";
 import * as Filters from "../../components/Filters/types";
 import { debounce } from "../../utils/debounce";
 import { isDefined } from "../../utils/utils";
@@ -115,6 +115,7 @@ export const ViewFilter = types
 
     save() {
       if (self.isValidFilter) {
+        getRoot(self).unsetSelection();
         self.view.save();
       }
     },

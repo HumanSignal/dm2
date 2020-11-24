@@ -50,7 +50,7 @@ export const View = types
     },
 
     get targetColumns() {
-      return self.columns.filter((c) => c.target == self.target);
+      return self.columns.filter((c) => c.target === self.target);
     },
 
     // get fields formatted as columns structure for react-table
@@ -186,6 +186,7 @@ export const View = types
 
     reload() {
       if (self.saved) {
+        getRoot(self).unsetSelection();
         self.dataStore.reload();
       }
     },

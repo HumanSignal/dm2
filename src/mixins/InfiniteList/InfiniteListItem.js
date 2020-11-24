@@ -15,7 +15,11 @@ export const InfiniteListItem = types
     },
 
     get isHighlighted() {
-      return self.parent.highlighted === self;
+      try {
+        return self.parent.highlighted === self;
+      } catch {
+        return undefined;
+      }
     },
   }))
   .actions((self) => ({

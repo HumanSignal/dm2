@@ -34,8 +34,9 @@ const MixinBase = types
       self.highlighted = selected;
     },
 
-    unset() {
+    unset({ withHightlight = false } = {}) {
       self.selected = undefined;
+      if (withHightlight) self.highlighted = undefined;
     },
 
     setList({ list, total, reload }) {

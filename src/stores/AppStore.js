@@ -75,6 +75,11 @@ export const AppStore = types
       self.taskStore.unset();
     },
 
+    unsetSelection() {
+      self.annotationStore.unset({ withHightlight: true });
+      self.taskStore.unset({ withHightlight: true });
+    },
+
     fetchProject: flow(function* () {
       self.project = yield getRoot(self).apiCall("project");
     }),
