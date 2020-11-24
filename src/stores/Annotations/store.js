@@ -1,10 +1,10 @@
 import { flow, getRoot } from "mobx-state-tree";
 import { InfiniteList } from "../../mixins/InfiniteList";
-import { Annotation } from "./annotation";
+import { AnnotationModel } from "./annotation";
 
 export const AnnotationStore = InfiniteList("AnnotationStore", {
   apiMethod: "annotations",
-  listItemType: Annotation,
+  listItemType: AnnotationModel,
 }).actions((self) => ({
   loadTask: flow(function* (annotationID) {
     let remoteTask;

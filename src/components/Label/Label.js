@@ -81,7 +81,7 @@ const LabelingComponent = observer(({ store }) => {
           }
         >
           {store.isExplorerMode && (
-            <div className="table" style={{ minWidth: "40vw" }}>
+            <div className="table" style={{ maxWidth: "40vw" }}>
               <Table
                 key={`data-${view.target}`}
                 view={view}

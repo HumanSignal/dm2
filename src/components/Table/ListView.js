@@ -22,6 +22,7 @@ const compileRowProps = (row, view, className) => {
   if (currentTask.isSelected) currentClass.push("selected");
   if (currentTask.isHighlighted) currentClass.push("highlighted");
 
+  props.key = `row-${currentTask.updated}`;
   props.className = currentClass.join(" ");
 
   return props;
@@ -186,6 +187,7 @@ export const ListView = observer(
     const selectedRowIndex = rows.findIndex(
       (r) => r.original?.isSelected || r.original?.isHighlighted
     );
+
     const initialScrollOffset = selectedRowIndex * 100;
 
     const tableBodyContent = (
@@ -205,6 +207,7 @@ export const ListView = observer(
                   overscanCount={10}
                   itemHeight={lineHeight}
                   itemCount={rows.length + 1}
+                  itemKey={(index) => rows[index]?.original?.key ?? index}
                   onItemsRendered={onItemsRendered}
                   innerElementType={innerElementType}
                   stickyItems={[0]}

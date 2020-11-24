@@ -1,2 +1,2 @@
-export { Annotation } from "./annotation";
+export { AnnotationModel } from "./annotation";
 export { AnnotationStore } from "./store";
