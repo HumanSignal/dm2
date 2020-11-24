@@ -147,6 +147,10 @@ export const View = types
       getRoot(self).viewsStore.setTask(params);
     },
 
+    setFilters(filters) {
+      self.filters.push(...(filters ?? []));
+    },
+
     setOrdering(value) {
       const direction = self.currentOrder[value];
       let ordering = value;

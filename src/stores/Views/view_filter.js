@@ -79,7 +79,9 @@ export const ViewFilter = types
   }))
   .actions((self) => ({
     afterAttach() {
-      self.setDefaultValue();
+      if (self.value === null) {
+        self.setDefaultValue();
+      }
     },
 
     setFilter(value) {
