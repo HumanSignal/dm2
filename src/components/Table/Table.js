@@ -160,29 +160,27 @@ const SelectionCell = (view, setShowSource) => (columns) => {
     })
   );
 
-  if (!getRoot(view).isLabeling) {
-    result.push({
-      id: "show-source",
-      title: "Source",
-      ...getColumnWidth("show-source"),
-      Cell: ({ row: { original } }) => (
-        <Button
-          type="link"
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowSource(original.source);
-          }}
-          style={{
-            display: "inline-flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <RiCodeSSlashLine size={18} />
-        </Button>
-      ),
-    });
-  }
+  result.push({
+    id: "show-source",
+    title: "Source",
+    ...getColumnWidth("show-source"),
+    Cell: ({ row: { original } }) => (
+      <Button
+        type="link"
+        onClick={(e) => {
+          e.stopPropagation();
+          setShowSource(original.source);
+        }}
+        style={{
+          display: "inline-flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <RiCodeSSlashLine size={18} />
+      </Button>
+    ),
+  });
 
   return result;
 };
