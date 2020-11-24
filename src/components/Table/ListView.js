@@ -53,7 +53,7 @@ const compileHeaderProps = (column) => {
 
 const compileCellProps = (cell) => {
   return compileTableCellProps(cell, "dm-content__table-cell", (cell) =>
-    cell.getCellProps()
+    cell.getCellProps({ onClick: cell.column.onClick })
   );
 };
 

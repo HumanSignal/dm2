@@ -124,6 +124,7 @@ const SelectionCell = (view, setShowSource) => (columns) => {
 
   result.push({
     id: "selection",
+    onClick: (e) => e.stopPropagation(),
     ...getColumnWidth("selection"),
     Header: ({ getToggleAllRowsSelectedProps }) => (
       <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
