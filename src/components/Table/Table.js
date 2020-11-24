@@ -122,18 +122,16 @@ const TableCellHeader = (view) => ({ column: col }) => {
 const SelectionCell = (view, setShowSource) => (columns) => {
   const result = [];
 
-  if (!view.root.isLabeling) {
-    result.push({
-      id: "selection",
-      ...getColumnWidth("selection"),
-      Header: ({ getToggleAllRowsSelectedProps }) => (
-        <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
-      ),
-      Cell: ({ row: { getToggleRowSelectedProps } }) => (
-        <IndeterminateCheckbox {...getToggleRowSelectedProps()} />
-      ),
-    });
-  }
+  result.push({
+    id: "selection",
+    ...getColumnWidth("selection"),
+    Header: ({ getToggleAllRowsSelectedProps }) => (
+      <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
+    ),
+    Cell: ({ row: { getToggleRowSelectedProps } }) => (
+      <IndeterminateCheckbox {...getToggleRowSelectedProps()} />
+    ),
+  });
 
   result.push(
     ...columns.map((col) => {
@@ -160,27 +158,29 @@ const SelectionCell = (view, setShowSource) => (columns) => {
     })
   );
 
-  result.push({
-    id: "show-source",
-    title: "Source",
-    ...getColumnWidth("show-source"),
-    Cell: ({ row: { original } }) => (
-      <Button
-        type="link"
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowSource(original.source);
-        }}
-        style={{
-          display: "inline-flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <RiCodeSSlashLine size={18} />
-      </Button>
-    ),
-  });
+  if (!getRoot(view).isLabeling) {
+    result.push({
+      id: "show-source",
+      title: "Source",
+      ...getColumnWidth("show-source"),
+      Cell: ({ row: { original } }) => (
+        <Button
+          type="link"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowSource(original.source);
+          }}
+          style={{
+            display: "inline-flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <RiCodeSSlashLine size={18} />
+        </Button>
+      ),
+    });
+  }
 
   return result;
 };
