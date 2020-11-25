@@ -17,7 +17,8 @@ const TaskModelBase = types
     overlap: types.optional(types.maybeNull(types.integer), null),
     project: types.optional(types.maybeNull(types.integer), null),
     source: types.optional(types.string, ""),
-    has_cancelled_completions: types.optional(types.number, 0),
+    has_cancelled_completions: types.optional(types.number, null),
+    total_completions: types.optional(types.maybeNull(types.number), null),
 
     /* TODO: might need to be converted to a store at some point */
     completions: types.optional(types.array(CustomJSON), []),
