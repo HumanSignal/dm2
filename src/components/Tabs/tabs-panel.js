@@ -1,10 +1,5 @@
-import {
-  AppstoreOutlined,
-  BarsOutlined,
-  CaretDownOutlined,
-  PlayCircleOutlined,
-} from "@ant-design/icons";
-import { Button, Dropdown, Menu, Radio, Space } from "antd";
+import { CaretDownOutlined, PlayCircleOutlined } from "@ant-design/icons";
+import { Button, Dropdown, Menu, Space } from "antd";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
@@ -22,7 +17,7 @@ export const TablePanel = observer(({ views, view }) => {
   return (
     <div className="tab-panel">
       <Space size="middle">
-        <Radio.Group
+        {/* <Radio.Group
           value={view.type}
           onChange={(e) => view.setType(e.target.value)}
         >
@@ -32,15 +27,15 @@ export const TablePanel = observer(({ views, view }) => {
           <Radio.Button value="grid">
             <AppstoreOutlined /> Grid
           </Radio.Button>
-        </Radio.Group>
+        </Radio.Group> */}
 
-        <Radio.Group
+        {/* <Radio.Group
           value={view.target}
           onChange={(e) => view.setTarget(e.target.value)}
         >
           <Radio.Button value="tasks">Tasks</Radio.Button>
           <Radio.Button value="annotations">Annotations</Radio.Button>
-        </Radio.Group>
+        </Radio.Group> */}
 
         <FieldsButton columns={view.targetColumns} />
 

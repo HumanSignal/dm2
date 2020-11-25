@@ -1,6 +1,23 @@
 import { DatePicker } from "antd";
 import moment from "moment";
 import React from "react";
+import styled, { css } from "styled-components";
+
+const cssOverride = css`
+  th,
+  td {
+    padding: 3px 0 !important;
+    border: none !important;
+  }
+`;
+
+const StyleWrapper = ({ children, className }) => {
+  return children({ className });
+};
+
+const Picker = styled(StyleWrapper)`
+  ${cssOverride}
+`;
 
 export const DateTimeInput = ({ value, range, onChange }) => {
   const props = {
@@ -27,10 +44,24 @@ export const DateTimeInput = ({ value, range, onChange }) => {
     ? moment(value)
     : undefined;
 
-  return range ? (
-    <DatePicker.RangePicker {...props} value={dateValue} />
-  ) : (
-    <DatePicker {...props} value={dateValue} />
+  return (
+    <Picker>
+      {({ className }) =>
+        range ? (
+          <DatePicker.RangePicker
+            {...props}
+            value={dateValue}
+            dropdownClassName={className}
+          />
+        ) : (
+          <DatePicker
+            {...props}
+            value={dateValue}
+            dropdownClassName={className}
+          />
+        )
+      }
+    </Picker>
   );
 };
 
