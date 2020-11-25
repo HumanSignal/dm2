@@ -269,9 +269,9 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
       {view.type === "list" ? listView() : gridView()}
       <div className="dm-content__statusbar">
         <div>
-          Selected {Object.keys(selectedRowIds).length} of {total} items
+          Found {Object.keys(selectedRowIds).length} of {total} items
         </div>
-        <div>{view.dataStore.loading && "Loading"}</div>
+        <div>{view.dataStore.loading && " Loading ..."}</div>
       </div>
     </>
   );
