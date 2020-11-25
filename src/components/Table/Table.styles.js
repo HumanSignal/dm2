@@ -72,6 +72,10 @@ export const TableStyles = styled.div`
       font-weight: 500;
     }
 
+    &__table-heading-group {
+      width: 100%;
+    }
+
     &__table-cell,
     &__table-heading {
       flex: 1;

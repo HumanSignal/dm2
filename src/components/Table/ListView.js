@@ -42,6 +42,11 @@ const compileTableCellProps = (column, className, propsGetter) => {
     props.style.justifyContent = "center";
   }
 
+  // ['width', 'minWidth', 'maxWidth'].forEach(prop => {
+  //   const value = column.column ? column.column[prop] : column[prop];
+  //   if (value) props.style[prop] = value;
+  // })
+
   return props;
 };
 

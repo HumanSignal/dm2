@@ -6,7 +6,8 @@ import React from "react";
 import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import { RiCodeSSlashLine } from "react-icons/ri";
 import { VscQuestion } from "react-icons/vsc";
-import { useFlexLayout, useRowSelect, useTable } from "react-table";
+import { useRowSelect, useTable } from "react-table";
+import { useFlexLayout } from "react-table/dist/react-table.development";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
 import { ListView } from "./ListView";
@@ -210,6 +211,7 @@ export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
           {}
         ),
       },
+      manualRowSelectedKey: "selected",
     },
     useRowSelect,
     useFlexLayout,
