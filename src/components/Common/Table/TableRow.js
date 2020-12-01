@@ -25,12 +25,7 @@ export const TableRow = observer(
               enabled={!!onRowSelect}
               checked={selectedRows.includes(data.id)}
               onChange={(checked) => {
-                if (checked) {
-                  console.log({ selectedRows, id: data.id });
-                  onRowSelect([...selectedRows, data.id]);
-                } else {
-                  onRowSelect(selectedRows.filter((id) => id !== data.id));
-                }
+                onRowSelect(data.id, checked ? "add" : "delete");
               }}
             />
 
@@ -41,7 +36,6 @@ export const TableRow = observer(
               const value = getProperty(data, valuePath);
               const renderProps = { column: col, original: data, value: value };
 
-              console.log({ id: col.id, style });
               return (
                 <TableCellWrapper key={col.alias} {...style}>
                   {Renderer ? <Renderer {...renderProps} /> : value}

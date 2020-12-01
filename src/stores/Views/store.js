@@ -208,7 +208,13 @@ export const ViewsStore = types
       const { tabs } = yield getRoot(self).apiCall("tabs");
 
       self.views.push(
-        ...tabs.map((t) => self.createView({ ...t, saved: true }))
+        ...tabs.map((t) =>
+          self.createView({
+            ...t,
+            selected: t.selectedItems ?? [],
+            saved: true,
+          })
+        )
       );
 
       const selected = localStorage.getItem("selectedTab");

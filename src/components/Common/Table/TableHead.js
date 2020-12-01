@@ -42,11 +42,8 @@ export const TableHead = observer(
               checked={selectedRows.length === data.length}
               indeterminate={selectedRows.length > 0}
               onChange={(checked) => {
-                if (checked) {
-                  onRowSelect(data.map((item) => item.id));
-                } else {
-                  onRowSelect([]);
-                }
+                const ids = checked ? data.map((item) => item.id) : [];
+                onRowSelect(ids, "update");
               }}
             />
 

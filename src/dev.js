@@ -270,6 +270,19 @@ export const initDevApp = async (DataManager) => {
             return deleteCompletion(urlParams.taskID, urlParams.completionID);
           },
         },
+
+        setSelectedItems: {
+          path: "/project/tabs/:tabID/selected-items",
+          method: "post",
+        },
+        addSelectedItem: {
+          path: "/project/tabs/:tabID/selected-items",
+          method: "patch",
+        },
+        deleteSelectedItem: {
+          path: "/project/tabs/:tabID/selected-items",
+          method: "delete",
+        },
       },
     },
     labelStudio: {

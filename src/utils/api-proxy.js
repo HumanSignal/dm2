@@ -214,7 +214,7 @@ export class APIProxy {
   getDefaultHeaders(method) {
     switch (method) {
       case "POST":
-      case "PATH":
+      case "PATCH":
       case "DELETE": {
         return {
           "Content-Type": "application/json",

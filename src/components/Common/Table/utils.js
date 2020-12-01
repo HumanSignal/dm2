@@ -28,6 +28,5 @@ export const getStyle = (cellViews, col) => {
     }
   }
 
-  console.log(col.id, style, { cellStyle: cellView.style });
   return style;
 };

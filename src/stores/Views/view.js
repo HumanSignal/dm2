@@ -165,7 +165,28 @@ export const View = types
 
     setSelected(ids) {
       self.selected = ids;
+      self.updateSelectedList("setSelectedItems", Array.from(self.selected));
     },
+
+    markSelected(id) {
+      self.selected.push(id);
+      self.updateSelectedList("addSelectedItem", [id]);
+    },
+
+    unmarkSelected(id) {
+      const index = self.selected.findIndex((storedID) => id === storedID);
+      self.selected.splice(index, 1);
+      self.updateSelectedList("deleteSelectedItem", [id]);
+    },
+
+    updateSelectedList: flow(function* (action, ids) {
+      console.log({ action, ids });
+      yield getRoot(self).apiCall(
+        action,
+        { tabID: self.id },
+        { body: Array.from(ids) }
+      );
+    }),
 
     createFilter() {
       const filterType = self.availableFilters[0];

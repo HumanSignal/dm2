@@ -228,9 +228,15 @@ export const DataView = observer(
     );
 
     const onRowSelect = React.useCallback(
-      (selected) => {
+      (selected, state) => {
         console.log({ selected });
-        view.setSelected(selected);
+        if (state === "add") {
+          view.markSelected(selected);
+        } else if (state === "update") {
+          view.setSelected(selected);
+        } else {
+          view.unmarkSelected(selected);
+        }
       },
       [view]
     );
