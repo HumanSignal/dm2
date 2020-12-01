@@ -155,6 +155,7 @@ export class APIProxy {
 
         console.log({ request });
 
+        /** @type {Response} */
         let rawResponse;
 
         if (
@@ -173,9 +174,15 @@ export class APIProxy {
         }
 
         if (rawResponse.ok) {
-          const responseData = rawResponse.body
-            ? await rawResponse.json()
-            : { ok: true };
+          console.log(
+            `Response ok [${apiCallURL}#${requestMethod}]`,
+            rawResponse,
+            rawResponse.body.toString()
+          );
+          const responseData =
+            rawResponse.status === 200
+              ? await rawResponse.json()
+              : { ok: true };
 
           if (methodSettings.convert instanceof Function) {
             return await methodSettings.convert(responseData);
