@@ -1,11 +1,16 @@
+import moment from "moment";
+import React from "react";
+
 export const DateTimeCell = (column) => {
-  return column.value ? new Date(column.value).toISOString() : "";
+  return (
+    <div style={{ whiteSpace: "nowrap" }}>
+      {column.value
+        ? moment(column.value).format("MMM DD yyyy, HH:mm:ss Z")
+        : ""}
+    </div>
+  );
 };
 
-Object.assign(DateTimeCell, {
-  constraints: {
-    maxWidth: 50,
-    minWidth: 50,
-    width: 50,
-  },
-});
+DateTimeCell.style = {
+  width: 50,
+};

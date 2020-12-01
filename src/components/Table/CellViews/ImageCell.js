@@ -1,19 +1,15 @@
 import React from "react";
 
-export const ImageCell = (column) => {
-  return (
-    <img
-      src={column.value}
-      alt={column.value}
-      style={{ maxHeight: "100%", objectFit: "contain", borderRadius: 3 }}
-    />
-  );
-};
+export const ImageCell = (column) => (
+  <img
+    key={column.value}
+    src={column.value}
+    alt={column.value}
+    style={{ maxHeight: "100%", objectFit: "contain", borderRadius: 3 }}
+  />
+);
 
-Object.assign(ImageCell, {
-  constraints: {
-    maxWidth: 40,
-    minWidth: 40,
-    width: 40,
-  },
-});
+ImageCell.style = {
+  width: 40,
+  justifyContent: "center",
+};

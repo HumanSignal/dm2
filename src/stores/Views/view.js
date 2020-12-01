@@ -164,7 +164,7 @@ export const View = types
     },
 
     setSelected(ids) {
-      self.selected = Object.keys(ids).map(Number);
+      self.selected = ids;
     },
 
     createFilter() {

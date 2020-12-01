@@ -3,7 +3,7 @@ import { inject, observer } from "mobx-react";
 import React from "react";
 import { RiCloseLine } from "react-icons/ri";
 import { Filters } from "../Filters/Filters";
-import { Table } from "../Table/Table";
+import { DataView } from "../Table/Table";
 import { TabTitle } from "./tabs-pane";
 import { TablePanel } from "./tabs-panel";
 import { TabsStyles } from "./Tabs.styles";
@@ -16,7 +16,7 @@ const getTabPaneProps = (view, data) => ({
 
 const TabContent = observer(({ views, view, data, columns }) => {
   return (
-    <Table
+    <DataView
       key={`data-${view.target}`}
       view={view}
       data={Array.from(data)}

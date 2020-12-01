@@ -8,41 +8,10 @@ import { RiCodeSSlashLine } from "react-icons/ri";
 import { VscQuestion } from "react-icons/vsc";
 import { useRowSelect, useTable } from "react-table";
 import { useFlexLayout } from "react-table/dist/react-table.development";
+import { Table } from "../Common/Table/Table";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
-import { ListView } from "./ListView";
 import { TableStyles } from "./Table.styles";
-
-const COLUMN_WIDTHS = new Map([
-  [
-    "selection",
-    {
-      width: "30px",
-      minWidth: "30px",
-      maxWidth: "30px",
-      align: "center",
-    },
-  ],
-  [
-    "show-source",
-    {
-      width: "40px",
-      minWidth: "40px",
-      maxWidth: "40px",
-      align: "center",
-    },
-  ],
-]);
-
-const getColumnWidth = (colID) => {
-  const props = COLUMN_WIDTHS.get(colID);
-
-  if (props !== undefined) {
-    return props;
-  }
-
-  return { minWidth: 30 };
-};
 
 const IndeterminateCheckbox = React.forwardRef(
   ({ indeterminate, ...rest }, ref) => {
@@ -126,7 +95,6 @@ const SelectionCell = (view, setShowSource) => (columns) => {
   result.push({
     id: "selection",
     onClick: (e) => e.stopPropagation(),
-    ...getColumnWidth("selection"),
     Header: ({ getToggleAllRowsSelectedProps }) => (
       <IndeterminateCheckbox {...getToggleAllRowsSelectedProps()} />
     ),
@@ -137,13 +105,9 @@ const SelectionCell = (view, setShowSource) => (columns) => {
 
   result.push(
     ...columns.map((col) => {
-      Object.assign(
-        col,
-        {
-          Header: TableCellHeader(view),
-        },
-        getColumnWidth(col.id)
-      );
+      Object.assign(col, {
+        Header: TableCellHeader(view),
+      });
 
       if (CellViews[col.type]) {
         const cellRenderer = CellViews[col.type];
@@ -164,7 +128,6 @@ const SelectionCell = (view, setShowSource) => (columns) => {
     result.push({
       id: "show-source",
       title: "Source",
-      ...getColumnWidth("show-source"),
       Cell: ({ row: { original } }) => (
         <Button
           type="link"
@@ -187,109 +150,156 @@ const SelectionCell = (view, setShowSource) => (columns) => {
   return result;
 };
 
-export const Table = observer(({ data, columns, view, hiddenColumns = [] }) => {
-  const { dataStore } = getRoot(view);
-  const { total, selected } = dataStore;
-  const [showSource, setShowSource] = React.useState();
+export const DataView = observer(
+  ({ data, columns, view, hiddenColumns = [] }) => {
+    const { dataStore, isLabeling } = getRoot(view);
+    const { total, selected } = dataStore;
+    const [showSource, setShowSource] = React.useState();
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    setHiddenColumns,
-    state: { selectedRowIds },
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: {
-        hiddenColumns,
-        selectedRowIds: view.selected.reduce(
-          (res, el) => ({ ...res, [el]: true }),
-          {}
-        ),
+    const {
+      rows,
+      prepareRow,
+      state: { selectedRowIds },
+    } = useTable(
+      {
+        columns,
+        data,
+        initialState: {
+          hiddenColumns,
+          selectedRowIds: view.selected.reduce(
+            (res, el) => ({ ...res, [el]: true }),
+            {}
+          ),
+        },
+        manualRowSelectedKey: "selected",
       },
-      manualRowSelectedKey: "selected",
-    },
-    useRowSelect,
-    useFlexLayout,
-    (hooks) => {
-      hooks.visibleColumns.push(SelectionCell(view, setShowSource));
-    }
-  );
-
-  const loadMore = React.useCallback(() => {
-    if (view.dataStore.hasNextPage) {
-      view.dataStore.fetch();
-    }
-  }, [view.dataStore]);
-
-  const gridView = () => {
-    return (
-      <GridView
-        rows={rows}
-        view={view}
-        loadMore={loadMore}
-        selected={selected}
-        prepareRow={prepareRow}
-      />
+      useRowSelect,
+      useFlexLayout,
+      (hooks) => {
+        hooks.visibleColumns.push(SelectionCell(view, setShowSource));
+      }
     );
-  };
 
-  const listView = () => {
-    return (
-      <ListView
-        rows={rows}
-        view={view}
-        loadMore={loadMore}
-        selected={selected}
-        prepareRow={prepareRow}
-        headerGroups={headerGroups}
-        getTableProps={getTableProps}
-        getTableBodyProps={getTableBodyProps}
-        lineHeight={50}
-      />
+    const gridView = () => {
+      return (
+        <GridView
+          rows={rows}
+          view={view}
+          loadMore={loadMore}
+          selected={selected}
+          prepareRow={prepareRow}
+        />
+      );
+    };
+
+    const loadMore = React.useCallback(() => {
+      if (view.dataStore.hasNextPage) {
+        view.dataStore.fetch();
+      }
+    }, [view.dataStore]);
+
+    const isItemLoaded = React.useCallback(
+      (data, index) => {
+        const rowExists = !!data[index];
+        const hasNextPage = view.dataStore.hasNextPage;
+
+        return !hasNextPage || rowExists;
+      },
+      [view.dataStore.hasNextPage]
     );
-  };
 
-  React.useEffect(() => {
-    setHiddenColumns(hiddenColumns);
-  }, [setHiddenColumns, hiddenColumns]);
+    const columnHeaderExtra = React.useCallback(
+      ({ parent, help }) => (
+        <>
+          {parent && (
+            <Tag color="blue" style={{ fontWeight: "bold" }}>
+              {parent.title}
+            </Tag>
+          )}
 
-  React.useEffect(() => {
-    view.setSelected(selectedRowIds);
-  }, [view, selectedRowIds]);
+          {help && (
+            <Tooltip title={help}>
+              <VscQuestion size={16} style={{ opacity: 0.5 }} />
+            </Tooltip>
+          )}
+        </>
+      ),
+      []
+    );
 
-  const content = view.root.isLabeling ? (
-    listView()
-  ) : (
-    <>
-      {view.type === "list" ? listView() : gridView()}
-      <div className="dm-content__statusbar">
-        <div>
-          Found {Object.keys(selectedRowIds).length} of {total} items
+    const onRowSelect = React.useCallback(
+      (selected) => {
+        console.log({ selected });
+        view.setSelected(selected);
+      },
+      [view]
+    );
+
+    const onRowClick = React.useCallback(
+      (currentTask) => {
+        if (!currentTask.isSelected) {
+          view.setTask({
+            id: currentTask.id,
+            taskID: currentTask.task_id,
+          });
+        }
+      },
+      [view]
+    );
+
+    const listView = () => {
+      return (
+        <Table
+          data={data}
+          rowHeight={70}
+          loadMore={loadMore}
+          fitContent={isLabeling}
+          hiddenColumns={hiddenColumns}
+          cellViews={CellViews}
+          columns={columns}
+          order={view.ordering}
+          isItemLoaded={isItemLoaded}
+          sortingEnabled={view.type === "list"}
+          onSetOrder={(col) => view.setOrdering(col.id)}
+          columnHeaderExtra={columnHeaderExtra}
+          selectedRows={view.selected}
+          onRowSelect={onRowSelect}
+          onRowClick={onRowClick}
+        />
+      );
+    };
+
+    const content = view.root.isLabeling ? (
+      listView()
+    ) : (
+      <>
+        {view.type === "list" ? listView() : gridView()}
+        <div className="dm-content__statusbar">
+          <div>
+            Found {Object.keys(selectedRowIds).length} of {total} items
+          </div>
+          <div>{view.dataStore.loading && " Loading ..."}</div>
         </div>
-        <div>{view.dataStore.loading && " Loading ..."}</div>
-      </div>
-    </>
-  );
+      </>
+    );
 
-  // Render the UI for your table
-  return (
-    <TableStyles className="dm-content">
-      {content}
+    // Render the UI for your table
+    return (
+      <TableStyles className="dm-content">
+        {content}
 
-      <Modal
-        visible={!!showSource}
-        onOk={() => setShowSource("")}
-        onCancel={() => setShowSource("")}
-      >
-        <pre>
-          {showSource ? JSON.stringify(JSON.parse(showSource), null, "  ") : ""}
-        </pre>
-      </Modal>
-    </TableStyles>
-  );
-});
+        <Modal
+          visible={!!showSource}
+          onOk={() => setShowSource("")}
+          onCancel={() => setShowSource("")}
+        >
+          <pre>
+            {showSource
+              ? JSON.stringify(JSON.parse(showSource), null, "  ")
+              : ""}
+          </pre>
+        </Modal>
+      </TableStyles>
+    );
+  }
+);

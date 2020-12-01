@@ -5,7 +5,7 @@ import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { FieldsButton } from "../Common/FieldsButton";
-import { Table } from "../Table/Table";
+import { DataView } from "../Table/Table";
 import { Styles } from "./Label.styles";
 import { LabelButtons } from "./LabelButtons";
 
@@ -81,8 +81,8 @@ const LabelingComponent = observer(({ store }) => {
           }
         >
           {store.isExplorerMode && (
-            <div className="table" style={{ maxWidth: "40vw" }}>
-              <Table
+            <div className="table" style={{ maxWidth: "35vw" }}>
+              <DataView
                 key={`data-${view.target}`}
                 view={view}
                 columns={columns}
