@@ -44,7 +44,6 @@ export const FilterDropdown = ({
   defaultValue,
   items,
   style,
-  dropdownWidth,
   disabled,
   onChange,
   multiple,
@@ -67,7 +66,7 @@ export const FilterDropdown = ({
         ...(multiple ? { padding: 0 } : {}),
         ...(style ?? {}),
       }}
-      dropdownStyle={{ minWidth: dropdownWidth ?? 130 }}
+      dropdownStyle={{ minWidth: "fit-content" }}
       onChange={onChange}
       disabled={disabled}
       size="small"

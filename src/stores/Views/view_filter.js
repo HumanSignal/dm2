@@ -36,7 +36,7 @@ export const ViewFilter = types
     value: types.maybeNull(
       types.union(FilterValue, FilterValueRange, types.array(FilterValue))
     ),
-    operator: types.maybeNull(types.optional(Operators, "equal")),
+    operator: types.maybeNull(Operators),
   })
   .views((self) => ({
     get field() {
@@ -81,6 +81,9 @@ export const ViewFilter = types
     afterAttach() {
       if (self.value === null) {
         self.setDefaultValue();
+      }
+      if (self.operator === null) {
+        self.setOperator(self.component[0].key);
       }
     },
 

@@ -18,7 +18,7 @@ export const FilterOperation = observer(
     const types = React.useMemo(() => {
       const filterTypes = FilterInputs[field.type] ?? FilterInputs.String;
       return [...filterTypes, ...Common];
-    }, [field]);
+    }, [field, operator]);
 
     const selected = React.useMemo(() => {
       if (operator) {
@@ -42,7 +42,7 @@ export const FilterOperation = observer(
         <div className="filter-line__column filter-line__operation">
           <FilterDropdown
             placeholder="Condition"
-            defaultValue={filter.operator}
+            value={filter.operator}
             disabled={types.length === 1}
             items={types.map(({ key, label }) => ({ value: key, label }))}
             onChange={(selectedKey) => filter.setOperator(selectedKey)}
