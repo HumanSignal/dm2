@@ -44,7 +44,7 @@ export const TableRowWrapper = styled.div`
   }
 
   &.selected {
-    pointer-events: none;
+    pointer-events: default;
   }
 
   &:not(.selected).highlighted::after {
