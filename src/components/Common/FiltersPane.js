@@ -1,16 +1,17 @@
 import { Button, Dropdown } from "antd";
+import { observer } from "mobx-react";
 import React from "react";
 import { VscListFilter } from "react-icons/vsc";
 import { Filters } from "../Filters/Filters";
 
-const FiltersButton = ({ onClick, active }) => {
+const FiltersButton = observer(({ onClick, active }) => {
   return (
     <Button onClick={onClick} type={active ? "primary" : "default"}>
       <VscListFilter style={{ marginBottom: -2, marginRight: 7 }} />
       Filters
     </Button>
   );
-};
+});
 
 export const FiltersPane = ({ sidebar, viewStore }) => {
   const view = viewStore?.selected;
