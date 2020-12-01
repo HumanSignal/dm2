@@ -173,7 +173,9 @@ export class APIProxy {
         }
 
         if (rawResponse.ok) {
-          const responseData = await rawResponse.json();
+          const responseData = rawResponse.body
+            ? await rawResponse.json()
+            : { ok: true };
 
           if (methodSettings.convert instanceof Function) {
             return await methodSettings.convert(responseData);

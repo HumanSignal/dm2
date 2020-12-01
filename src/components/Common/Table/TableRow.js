@@ -6,7 +6,7 @@ import { TableContext } from "./TableContext";
 import { getProperty, getStyle } from "./utils";
 
 export const TableRow = observer(
-  ({ data, onClick, style, isSelected, isHighlighted, cellWidth }) => {
+  ({ data, onClick, style, isSelected, isHighlighted }) => {
     const classNames = [];
     if (isSelected) classNames.push("selected");
     if (isHighlighted) classNames.push("highlighted");
