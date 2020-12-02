@@ -17,25 +17,29 @@ export const TablePanel = observer(({ views, view }) => {
   return (
     <div className="tab-panel">
       <Space size="middle">
-        {/* <Radio.Group
-          value={view.type}
-          onChange={(e) => view.setType(e.target.value)}
-        >
-          <Radio.Button value="list">
-            <BarsOutlined /> List
-          </Radio.Button>
-          <Radio.Button value="grid">
-            <AppstoreOutlined /> Grid
-          </Radio.Button>
-        </Radio.Group> */}
+        {/* {false && (
+          <Radio.Group
+            value={view.type}
+            onChange={(e) => view.setType(e.target.value)}
+          >
+            <Radio.Button value="list">
+              <BarsOutlined /> List
+            </Radio.Button>
+            <Radio.Button value="grid">
+              <AppstoreOutlined /> Grid
+            </Radio.Button>
+          </Radio.Group>
+        )} */}
 
-        {/* <Radio.Group
-          value={view.target}
-          onChange={(e) => view.setTarget(e.target.value)}
-        >
-          <Radio.Button value="tasks">Tasks</Radio.Button>
-          <Radio.Button value="annotations">Annotations</Radio.Button>
-        </Radio.Group> */}
+        {/* {false && (
+          <Radio.Group
+            value={view.target}
+            onChange={(e) => view.setTarget(e.target.value)}
+          >
+            <Radio.Button value="tasks">Tasks</Radio.Button>
+            <Radio.Button value="annotations">Annotations</Radio.Button>
+          </Radio.Group>
+        )} */}
 
         <FieldsButton columns={view.targetColumns} />
 
