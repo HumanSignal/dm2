@@ -39,7 +39,9 @@ export const TableHead = observer(
           <TableHeadWrapper style={style}>
             <TableCheckboxCell
               enabled={!!onRowSelect}
-              checked={selectedRows.length === data.length}
+              checked={
+                selectedRows.length > 0 && selectedRows.length === data.length
+              }
               indeterminate={selectedRows.length > 0}
               onChange={(checked) => {
                 const ids = checked ? data.map((item) => item.id) : [];
@@ -54,9 +56,15 @@ export const TableHead = observer(
               const canOrder = sortingEnabled && col.original?.canOrder;
 
               return (
-                <TableCellWrapper key={col.id} {...style}>
+                <TableCellWrapper
+                  key={col.id}
+                  {...style}
+                  className="th"
+                  data-id={col.id}
+                >
                   <TableCellContent
                     canOrder={canOrder}
+                    className="th-content"
                     onClick={() => canOrder && onSetOrder?.(col)}
                   >
                     {Renderer ? <Renderer column={col} /> : col.title}
@@ -64,7 +72,11 @@ export const TableHead = observer(
                     {canOrder && <OrderButton desc={col.original.order} />}
                   </TableCellContent>
 
-                  {extra && <TableHeadExtra>{extra}</TableHeadExtra>}
+                  {extra && (
+                    <TableHeadExtra className="th-extra">
+                      {extra}
+                    </TableHeadExtra>
+                  )}
                 </TableCellWrapper>
               );
             })}

@@ -13,4 +13,5 @@ export const DateTimeCell = (column) => {
 
 DateTimeCell.style = {
   width: 50,
+  minWidth: 240,
 };

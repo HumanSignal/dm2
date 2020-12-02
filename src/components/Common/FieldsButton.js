@@ -37,6 +37,7 @@ export const FieldsButton = observer(({ columns, size }) => {
       visible={isVisible}
       overlay={() => <Menu size="small">{menu}</Menu>}
       onVisibleChange={(visible) => setVisible(visible)}
+      trigger="click"
     >
       <Button size={size}>
         <EyeOutlined /> Fields <CaretDownOutlined />

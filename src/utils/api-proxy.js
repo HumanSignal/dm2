@@ -174,11 +174,6 @@ export class APIProxy {
         }
 
         if (rawResponse.ok) {
-          console.log(
-            `Response ok [${apiCallURL}#${requestMethod}]`,
-            rawResponse,
-            rawResponse.body.toString()
-          );
           const responseData =
             rawResponse.status === 200
               ? await rawResponse.json()

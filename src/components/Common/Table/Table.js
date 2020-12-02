@@ -43,15 +43,19 @@ export const Table = observer(
         return (
           <TableRow
             key={row.id}
+            data={row}
             isSelected={row.isSelected}
             isHighlighted={row.isHighlighted}
-            data={row}
             onClick={props.onRowClick}
-            style={{ ...style, height: props.rowHeight }}
+            style={{
+              ...style,
+              height: props.rowHeight,
+              width: props.fitContent ? "fit-content" : "100%",
+            }}
           />
         );
       },
-      [data, props.onRowClick, props.rowHeight]
+      [data, props.fitContent, props.onRowClick, props.rowHeight]
     );
 
     const renderStickyComponent = React.useCallback(
