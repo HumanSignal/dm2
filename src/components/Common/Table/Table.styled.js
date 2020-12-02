@@ -75,6 +75,7 @@ export const TableCellWrapper = styled.div`
   align-items: center;
   justify-content: ${({ justifyContent }) => justifyContent ?? "space-between"};
   overflow: hidden;
+  position: relative;
 `;
 
 export const TableCellContent = styled.div`

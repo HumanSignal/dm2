@@ -1,10 +1,22 @@
 import { Checkbox } from "antd";
 import React from "react";
+import styled from "styled-components";
 import { TableCellWrapper } from "./Table.styled";
+
+const StyledCheckbox = styled(Checkbox)`
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 const IndeterminateCheckbox = ({ checked, indeterminate, ...props }) => {
   return (
-    <Checkbox
+    <StyledCheckbox
       indeterminate={indeterminate && !checked}
       checked={checked}
       {...props}
