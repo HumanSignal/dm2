@@ -1,4 +1,4 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 
 export const TableWrapper = styled.div`
   width: ${({ fitToContent }) => (fitToContent ? "min-content" : "100%")};
@@ -8,16 +8,13 @@ export const TableWrapper = styled.div`
   box-shadow: 0 0 0 1px #f0f0f0 inset;
   overflow: auto;
 
-  ${({ fitToContent }) =>
-    fitToContent
-      ? css`
-          .table-auto-size,
-          .virtual-table {
-            width: fit-content !important;
-            min-width: fit-content !important;
-          }
-        `
-      : ""}
+  .table-auto-size,
+  .virtual-table {
+    width: ${({ fitToContent }) =>
+      fitToContent ? "fit-content" : "auto"} !important;
+    min-width: ${({ fitToContent }) =>
+      fitToContent ? "fit-content" : "auto"} !important;
+  }
 `;
 
 export const TableHeadWrapper = styled.div`

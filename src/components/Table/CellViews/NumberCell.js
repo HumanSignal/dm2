@@ -4,7 +4,7 @@ NumberCell.style = (col) => {
   const result = {
     width: 30,
     minWidth: 160,
-    maxWidth: 160,
+    // maxWidth: 160,
   };
 
   if (/id/.test(col.id)) {
