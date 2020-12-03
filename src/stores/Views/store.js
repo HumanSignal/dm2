@@ -2,6 +2,7 @@ import isNumeric from "antd/es/_util/isNumeric";
 import { destroy, flow, getRoot, getSnapshot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 import { unique } from "../../utils/utils";
+import { CustomJSON } from "../types";
 import { View } from "./view";
 import { ViewColumn } from "./view_column";
 import { ViewFilterType } from "./view_filter_type";
@@ -14,6 +15,7 @@ export const ViewsStore = types
     columnsTargetMap: types.map(types.array(ViewColumn)),
     sidebarEnabled: types.optional(types.boolean, false),
     sidebarVisible: types.optional(types.boolean, false),
+    columnsRaw: types.optional(CustomJSON, []),
   })
   .views((self) => ({
     get all() {
@@ -139,8 +141,8 @@ export const ViewsStore = types
       self.sidebarVisible = !self.sidebarVisible;
     },
 
-    fetchColumns: flow(function* () {
-      const { columns } = yield getRoot(self).apiCall("columns");
+    fetchColumns() {
+      const columns = self.columnsRaw;
       const targets = unique(columns.map((c) => c.target));
 
       const createColumnPath = (columns, column) => {
@@ -202,7 +204,7 @@ export const ViewsStore = types
           });
         }
       });
-    }),
+    },
 
     fetchViews: flow(function* () {
       const { tabs } = yield getRoot(self).apiCall("tabs");

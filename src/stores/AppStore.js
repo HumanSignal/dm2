@@ -1,7 +1,8 @@
 import { notification } from "antd";
-import { flow, getRoot, types } from "mobx-state-tree";
+import { flow, types } from "mobx-state-tree";
 import { AnnotationStore } from "./Annotations";
-import { TasksStore } from "./Tasks";
+import * as DataStores from "./DataStores";
+import { DynamicModel, registerModel } from "./DynamicModel";
 import { CustomJSON } from "./types";
 import { ViewsStore } from "./Views";
 
@@ -20,7 +21,13 @@ export const AppStore = types
 
     loading: types.optional(types.boolean, false),
 
-    taskStore: types.optional(TasksStore, {}),
+    taskStore: types.optional(
+      types.late(() => {
+        console.trace("Resolving dynamic model");
+        return DynamicModel.get("tasksStore");
+      }),
+      {}
+    ),
     annotationStore: types.optional(AnnotationStore, {}),
 
     serverError: types.map(CustomJSON),
@@ -80,15 +87,30 @@ export const AppStore = types
       self.taskStore.unset({ withHightlight: true });
     },
 
+    createDataStores() {
+      const grouppedColumns = self.viewsStore.columns.reduce((res, column) => {
+        res.set(column.target, res.get(column.target) ?? []);
+        res.get(column.target).push(column);
+        return res;
+      }, new Map());
+
+      grouppedColumns.forEach((columns, target) => {
+        console.log({ target, columns });
+        const dataStore = DataStores[target].create?.(columns);
+        if (dataStore) registerModel(`${target}Store`, dataStore);
+      });
+    },
+
     fetchProject: flow(function* () {
-      self.project = yield getRoot(self).apiCall("project");
+      self.project = yield self.apiCall("project");
     }),
 
     fetchData: flow(function* () {
       self.loading = true;
 
       yield self.fetchProject();
-      yield self.viewsStore.fetchColumns();
+      self.viewsStore.fetchColumns();
+      // self.createDataStores();
       yield self.viewsStore.fetchViews();
 
       self.loading = false;
@@ -98,8 +120,6 @@ export const AppStore = types
       let result = yield self.API[methodName](params, body);
 
       if (result.error) {
-        console.log({ result });
-
         if (result.response) {
           self.serverError.set(methodName, {
             error: "Something went wrong",

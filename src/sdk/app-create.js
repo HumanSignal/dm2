@@ -6,6 +6,22 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { App } from "../components/App/App";
 import { AppStore } from "../stores/AppStore";
+import * as DataStores from "../stores/DataStores";
+import { registerModel } from "../stores/DynamicModel";
+
+const createDynamicModels = (columns) => {
+  const grouppedColumns = columns.reduce((res, column) => {
+    res.set(column.target, res.get(column.target) ?? []);
+    res.get(column.target).push(column);
+    return res;
+  }, new Map());
+
+  grouppedColumns.forEach((columns, target) => {
+    console.log({ target, columns });
+    const dataStore = DataStores[target].create?.(columns);
+    if (dataStore) registerModel(`${target}Store`, dataStore);
+  });
+};
 
 /**
  * Create DM React app
@@ -15,8 +31,12 @@ import { AppStore } from "../stores/AppStore";
  */
 export const createApp = async (rootNode, datamanager) => {
   console.log(`DataManager is loading in ${datamanager.mode} mode`);
+  const { columns } = await datamanager.api.columns();
+
+  createDynamicModels(columns);
+
   const appStore = AppStore.create({
-    viewsStore: { views: [] },
+    viewsStore: { views: [], columnsRaw: columns },
     mode: datamanager.mode,
   });
 
