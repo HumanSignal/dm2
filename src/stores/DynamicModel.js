@@ -12,7 +12,7 @@ export const DynamicModel = (name, columns, properties) => {
 
   const typeWrapper = (type) => types.optional(types.maybeNull(type), null);
 
-  columns.forEach((col) => {
+  columns?.forEach((col) => {
     if (col.parent || col.id === "id") return;
 
     let propertyType;

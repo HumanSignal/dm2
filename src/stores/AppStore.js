@@ -1,6 +1,5 @@
 import { notification } from "antd";
 import { flow, types } from "mobx-state-tree";
-import { AnnotationStore } from "./Annotations";
 import * as DataStores from "./DataStores";
 import { DynamicModel, registerModel } from "./DynamicModel";
 import { CustomJSON } from "./types";
@@ -23,12 +22,17 @@ export const AppStore = types
 
     taskStore: types.optional(
       types.late(() => {
-        console.trace("Resolving dynamic model");
         return DynamicModel.get("tasksStore");
       }),
       {}
     ),
-    annotationStore: types.optional(AnnotationStore, {}),
+
+    annotationStore: types.optional(
+      types.late(() => {
+        return DynamicModel.get("annotationsStore");
+      }),
+      {}
+    ),
 
     serverError: types.map(CustomJSON),
   })

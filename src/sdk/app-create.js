@@ -21,6 +21,9 @@ const createDynamicModels = (columns) => {
     const dataStore = DataStores[target].create?.(columns);
     if (dataStore) registerModel(`${target}Store`, dataStore);
   });
+
+  /** temporary solution until we'll have annotations */
+  registerModel("annotationsStore", DataStores.annotations?.create());
 };
 
 /**
