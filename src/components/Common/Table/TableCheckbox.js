@@ -26,6 +26,7 @@ const IndeterminateCheckbox = ({ checked, indeterminate, ...props }) => {
 
 export const TableCheckboxCell = ({
   enabled,
+  hidden,
   checked,
   indeterminate,
   onChange,
@@ -37,14 +38,16 @@ export const TableCheckboxCell = ({
       justifyContent="center"
       onClick={(e) => e.stopPropagation()}
     >
-      <IndeterminateCheckbox
-        type="checkbox"
-        checked={checked ?? false}
-        indeterminate={indeterminate ?? false}
-        onChange={(e) => {
-          onChange(e.target.checked);
-        }}
-      />
+      {!hidden && (
+        <IndeterminateCheckbox
+          type="checkbox"
+          checked={checked ?? false}
+          indeterminate={indeterminate ?? false}
+          onChange={(e) => {
+            onChange(e.target.checked);
+          }}
+        />
+      )}
     </TableCellWrapper>
   ) : null;
 };

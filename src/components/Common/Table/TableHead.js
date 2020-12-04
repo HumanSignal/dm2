@@ -38,6 +38,7 @@ export const TableHead = observer(
         }) => (
           <TableHeadWrapper style={style}>
             <TableCheckboxCell
+              hidden={true}
               enabled={!!onRowSelect}
               checked={
                 selectedRows.length > 0 && selectedRows.length === data.length

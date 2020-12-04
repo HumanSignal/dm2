@@ -1,11 +1,12 @@
-import { CaretDownOutlined, PlayCircleOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Menu, Space } from "antd";
+import { PlayCircleOutlined } from "@ant-design/icons";
+import { Button, Divider, Menu, Space } from "antd";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
+import { TabsActions } from "./tabs-actions";
 
 const actionsMenu = (
   <Menu onClick={() => {}}>
@@ -40,7 +41,6 @@ export const TablePanel = observer(({ views, view }) => {
             <Radio.Button value="annotations">Annotations</Radio.Button>
           </Radio.Group>
         )} */}
-
         <FieldsButton columns={view.targetColumns} />
 
         <FiltersPane sidebar={views.sidebarEnabled} viewStore={views} />
@@ -49,6 +49,10 @@ export const TablePanel = observer(({ views, view }) => {
       </Space>
 
       <Space size="middle">
+        <TabsActions />
+
+        <Divider />
+
         <Button
           disabled={view.target === "annotations"}
           onClick={() => view.root.setMode("label")}
@@ -56,11 +60,6 @@ export const TablePanel = observer(({ views, view }) => {
           <PlayCircleOutlined />
           Label All
         </Button>
-        <Dropdown overlay={actionsMenu}>
-          <Button>
-            Actions <CaretDownOutlined />
-          </Button>
-        </Dropdown>
       </Space>
     </div>
   );

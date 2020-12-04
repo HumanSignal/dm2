@@ -105,6 +105,10 @@ export const View = types
       return self.filters.filter((f) => !!f.isValidFilter);
     },
 
+    get serializedFilters() {
+      return self.validFilters.map((el) => getSnapshot(el));
+    },
+
     serialize() {
       return {
         id: self.id,
@@ -112,7 +116,7 @@ export const View = types
         ordering: self.ordering,
         type: self.type,
         target: self.target,
-        filters: self.validFilters.map((el) => getSnapshot(el)),
+        filters: self.serializedFilters,
         hiddenColumns: getSnapshot(self.hiddenColumns),
         conjunction: self.conjunction,
       };
@@ -236,6 +240,23 @@ export const View = types
         self.hiddenColumns = self.hiddenColumns ?? ViewHiddenColumns.create();
       }
     },
+
+    invokeAction: flow(function* (actionId) {
+      yield getRoot(self).apiCall(
+        "invokeAction",
+        {
+          id: actionId,
+          tabID: self.id,
+        },
+        {
+          filters: self.serializedFilters,
+          selectedItems: Array.from(self.selected),
+        }
+      );
+
+      self.reload();
+      self.setSelected([]);
+    }),
 
     save: flow(function* ({ reload } = {}) {
       const { id: tabID } = self;

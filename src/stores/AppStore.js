@@ -34,6 +34,8 @@ export const AppStore = types
       {}
     ),
 
+    availableActions: types.optional(types.array(CustomJSON), []),
+
     serverError: types.map(CustomJSON),
   })
   .views((self) => ({
@@ -109,10 +111,15 @@ export const AppStore = types
       self.project = yield self.apiCall("project");
     }),
 
+    fetchActions: flow(function* () {
+      self.availableActions = yield self.apiCall("actions");
+    }),
+
     fetchData: flow(function* () {
       self.loading = true;
 
       yield self.fetchProject();
+      yield self.fetchActions();
       self.viewsStore.fetchColumns();
       // self.createDataStores();
       yield self.viewsStore.fetchViews();

@@ -275,19 +275,11 @@ export const DataView = observer(
       );
     };
 
-    const content = view.root.isLabeling ? (
-      listView()
-    ) : (
-      <>
-        {view.type === "list" ? listView() : gridView()}
-        <div className="dm-content__statusbar">
-          <div>
-            Found {Object.keys(selectedRowIds).length} of {total} items
-          </div>
-          <div>{view.dataStore.loading && " Loading ..."}</div>
-        </div>
-      </>
-    );
+    const content = view.root.isLabeling
+      ? listView()
+      : view.type === "list"
+      ? listView()
+      : gridView();
 
     // Render the UI for your table
     return (
