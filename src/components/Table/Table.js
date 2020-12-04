@@ -233,7 +233,7 @@ export const DataView = observer(
         if (state === "add") {
           view.markSelected(selected);
         } else if (state === "update") {
-          view.setSelected(selected);
+          view.selectAll();
         } else {
           view.unmarkSelected(selected);
         }

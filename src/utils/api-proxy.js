@@ -175,7 +175,7 @@ export class APIProxy {
 
         if (rawResponse.ok) {
           const responseData =
-            rawResponse.status === 200
+            rawResponse.status !== 204
               ? await rawResponse.json()
               : { ok: true };
 

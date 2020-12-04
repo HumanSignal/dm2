@@ -31,6 +31,7 @@ export const View = types
     hiddenColumns: types.maybeNull(types.optional(ViewHiddenColumns, {})),
     ordering: types.optional(types.array(types.string), []),
     selected: types.optional(types.array(types.number), []),
+    selecting: types.optional(types.boolean, false),
 
     enableFilters: false,
     renameMode: false,
@@ -168,6 +169,12 @@ export const View = types
       self.updateSelectedList("setSelectedItems", Array.from(self.selected));
     },
 
+    selectAll: flow(function* () {
+      self.selecting = true;
+      yield self.updateSelectedList("setSelectedItems", "all");
+      self.selecting = false;
+    }),
+
     markSelected(id) {
       self.selected.push(id);
       self.updateSelectedList("addSelectedItem", [id]);
@@ -179,13 +186,14 @@ export const View = types
       self.updateSelectedList("deleteSelectedItem", [id]);
     },
 
-    updateSelectedList: flow(function* (action, ids) {
-      console.log({ action, ids });
-      yield getRoot(self).apiCall(
+    updateSelectedList: flow(function* (action, body) {
+      const { selectedItems } = yield getRoot(self).apiCall(
         action,
         { tabID: self.id },
-        { body: Array.from(ids) }
+        { body }
       );
+
+      self.selected = selectedItems ?? self.selected;
     }),
 
     createFilter() {
