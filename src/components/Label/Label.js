@@ -8,6 +8,7 @@ import { FieldsButton } from "../Common/FieldsButton";
 import { DataView } from "../Table/Table";
 import { Styles } from "./Label.styles";
 import { LabelButtons } from "./LabelButtons";
+import { LabelToolbar } from "./LabelToolbar";
 
 /**
  *
@@ -51,52 +52,75 @@ const LabelingComponent = observer(({ store }) => {
     return view.fieldsAsColumns;
   }, [view, view.target]);
 
-  const runLS = () => {
-    console.log("Loading LSF");
-    store.SDK.startLabeling(lsfRef.current, store.dataStore.selected);
-  };
+  const [completion, setCompletion] = React.useState(
+    store.SDK.lsf?.currentCompletion
+  );
 
   const closeLabeling = () => {
     store.unsetTask();
     store.SDK.destroyLSF();
   };
 
-  React.useEffect(runLS, [store.dataStore.selected]);
+  React.useEffect(() => {
+    const callback = (completion) => {
+      console.log("Completion updated", completion);
+      setCompletion(completion);
+    };
+
+    console.log("Attached to LSF");
+    store.SDK.on("completionSet", callback);
+
+    return () => {
+      store.SDK.off("completionSet", callback);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    console.log("Loading LSF");
+    store.SDK.startLabeling(lsfRef.current, store.dataStore.selected);
+  }, [store.dataStore.selected]);
 
   return (
     <Styles>
-      <div className="wrapper">
-        <PageHeader
-          title="Labeling"
-          onBack={closeLabeling}
-          style={{ padding: 0 }}
-          tags={
-            store.isExplorerMode ? (
-              <div style={{ paddingLeft: 20 }}>
-                <FieldsButton size="small" columns={view.targetColumns} />
-              </div>
-            ) : (
-              []
-            )
-          }
-        >
-          {store.isExplorerMode && (
-            <div className="table" style={{ maxWidth: "35vw" }}>
-              <DataView
-                key={`data-${view.target}`}
-                view={view}
-                columns={columns}
-                data={Array.from(store.dataStore.list)}
-                hiddenColumns={view.hiddenColumnsList}
-              />
+      <PageHeader
+        title="Labeling"
+        onBack={closeLabeling}
+        style={{ padding: 0 }}
+        tags={
+          store.isExplorerMode ? (
+            <div style={{ paddingLeft: 20 }}>
+              <FieldsButton size="small" columns={view.targetColumns} />
             </div>
-          )}
-          <div key="lsf-root" className="label-studio">
+          ) : (
+            []
+          )
+        }
+      >
+        {store.isExplorerMode && (
+          <div className="table" style={{ maxWidth: "35vw" }}>
+            <DataView
+              key={`data-${view.target}`}
+              view={view}
+              columns={columns}
+              data={Array.from(store.dataStore.list)}
+              hiddenColumns={view.hiddenColumnsList}
+            />
+          </div>
+        )}
+        <div key="lsf-root" className="label-studio">
+          <LabelToolbar
+            view={view}
+            history={history}
+            lsf={store.SDK.lsf?.lsf}
+            completion={completion}
+            isLabelStream={store.isLabelStreamMode}
+          />
+          <div className="label-studio__content">
             <div id="label-studio" ref={lsfRef}></div>
             <History root={lsfRef} history={history} />
           </div>
-        </PageHeader>
-      </div>
+        </div>
+      </PageHeader>
     </Styles>
   );
 });

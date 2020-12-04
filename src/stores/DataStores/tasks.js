@@ -8,7 +8,11 @@ export const create = (columns) => {
     /* TODO: might need to be converted to a store at some point */
     completions: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
-  });
+  }).views((self) => ({
+    get lastCompletion() {
+      return self.completions[this.completions.length - 1];
+    },
+  }));
 
   const TaskModel = types.compose("TaskModel", TaskModelBase, InfiniteListItem);
 

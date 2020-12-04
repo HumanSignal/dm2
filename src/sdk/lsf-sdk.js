@@ -14,17 +14,12 @@ import { completionToServer, taskToLSFormat } from "./lsf-utils";
 
 const DEFAULT_INTERFACES = [
   "basic",
-  "panel", // undo, redo, reset panel
-  "controls", // all control buttons: skip, submit, update
-  "submit", // submit button on controls
-  "update", // update button on controls
   "predictions",
   "predictions:menu", // right menu with prediction items
   "completions:menu", // right menu with completion items
   "completions:add-new",
   "completions:delete",
   "side-column", // entity
-  "skip",
 ];
 
 export class LSFWrapper {
@@ -64,7 +59,7 @@ export class LSFWrapper {
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
       description: this.instructions,
-      interfaces: this.buildInterfaces(options.interfaces),
+      interfaces: DEFAULT_INTERFACES,
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
       onSubmitCompletion: this.onSubmitCompletion,
@@ -123,35 +118,39 @@ export class LSFWrapper {
   }
 
   /** @private */
-  setCompletion(id) {
+  setCompletion(completionID) {
+    const id = completionID ? completionID.toString() : null;
     let { completionStore: cs } = this.lsf;
     let completion;
 
     if (this.predictions.length > 0) {
       console.log("Added from prediction");
       completion = cs.addCompletionFromPrediction(this.predictions[0]);
-    } else if (this.completions.length > 0 && id !== undefined) {
+    } else if (this.completions.length) {
       console.log("Existing ID taken");
-      // we are on history item, take completion id from history
-      completion = { id };
+      console.log({
+        id,
+        ids: this.completions.map((c) => c.id),
+        pks: this.completions.map((c) => c.pk),
+      });
+
+      completion =
+        id !== null
+          ? this.completions.find((c) => c.pk === id || c.id === id)
+          : this.completions[0];
     } else {
       console.log("Completion generated");
       completion = cs.addCompletion({ userGenerate: true });
     }
 
     if (completion.id) cs.selectCompletion(completion.id);
-  }
 
-  /** @private */
-  buildInterfaces(interfaces) {
-    const result = interfaces ? interfaces : DEFAULT_INTERFACES;
-
-    if (this.datamanager.isLabelStream) result.push("skip");
-
-    return result;
+    this.datamanager.invoke("completionSet", [completion]);
   }
 
   onLabelStudioLoad = async (ls) => {
+    this.datamanager.invoke("labelStudioLoad", [ls]);
+
     this.lsf = ls;
     this.setLoading(true);
 
@@ -159,8 +158,9 @@ export class LSFWrapper {
       await this.loadTask();
     } else if (this.task) {
       const completionID =
-        this.initialCompletion?.id ?? this.task.lastCompletion?.id;
-      this.setCompletion(completionID);
+        this.initialCompletion?.pk ?? this.task.lastCompletion?.pk;
+
+      await this.loadTask(this.task.id, completionID);
     }
 
     this.setLoading(false);
@@ -168,6 +168,8 @@ export class LSFWrapper {
 
   /** @private */
   onSubmitCompletion = async (ls, completion) => {
+    this.datamanager.invoke("submitCompletion", [ls, completion]);
+
     await this.submitCurrentCompletion("submitCompletion", (taskID, body) =>
       this.datamanager.api.submitCompletion({ taskID }, { body })
     );
@@ -188,7 +190,7 @@ export class LSFWrapper {
       }
     );
 
-    this.datamanager.invoke("updateCompletion", ls, completion, result);
+    this.datamanager.invoke("updateCompletion", [ls, completion, result]);
 
     await this.loadTask(this.task.id, completion.pk);
 
@@ -206,6 +208,8 @@ export class LSFWrapper {
       completionID: completion.pk,
     });
 
+    this.datamanager.invoke("deleteCompletion", [ls, completion]);
+
     task.update(response);
     await this.loadTask(task.id, task.lastCompletion?.id);
 
@@ -213,9 +217,10 @@ export class LSFWrapper {
   };
 
   onSkipTask = async (ls) => {
-    await this.submitCurrentCompletion("skipTask", (taskID) =>
-      this.datamanager.api.skipTask({ taskID, was_cancelled: 1 })
-    );
+    await this.submitCurrentCompletion("skipTask", (taskID) => {
+      this.datamanager.api.skipTask({ taskID, was_cancelled: 1 });
+      this.datamanager.invoke("skipTask", [ls]);
+    });
   };
 
   async submitCurrentCompletion(eventName, submit) {
@@ -228,7 +233,7 @@ export class LSFWrapper {
       currentCompletion.updatePersonalKey(result.id.toString());
 
       const eventData = completionToServer(currentCompletion);
-      this.datamanager.invoke(eventName, this.lsf, eventData, result);
+      this.datamanager.invoke(eventName, [this.lsf, eventData, result]);
 
       this.history?.add(taskID, currentCompletion.pk);
     }

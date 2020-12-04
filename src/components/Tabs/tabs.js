@@ -8,12 +8,6 @@ import { TabTitle } from "./tabs-pane";
 import { TablePanel } from "./tabs-panel";
 import { TabsStyles } from "./Tabs.styles";
 
-const getTabPaneProps = (view, data) => ({
-  key: view.key,
-  closable: false,
-  tab: <TabTitle item={view} data={data} />,
-});
-
 const TabContent = observer(({ views, view, data, columns }) => {
   return (
     <DataView

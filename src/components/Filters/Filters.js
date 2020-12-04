@@ -14,7 +14,7 @@ export const Filters = inject("store")(
     const filters = React.useMemo(() => {
       const { filters } = currentView;
       return filters.length ? filters : [];
-    }, [() => currentView.filters.length]);
+    }, [currentView]);
 
     const fields = React.useMemo(
       () =>

@@ -83,8 +83,6 @@ export const initDevApp = async (DataManager) => {
     });
   };
 
-  const findTab = (id) => findEntity(tabs, id);
-
   const updateTab = (tabID, patch) => updateEntity(tabs, tabID, patch);
 
   const createTab = (patch) => {

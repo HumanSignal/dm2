@@ -29,14 +29,6 @@ import { APIProxy } from "../utils/api-proxy";
 import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
 
-const DEFAULT_API_CONFIG = {
-  gateway: "/api",
-  endpoints: {
-    tasks: "/project/tabs/:tabID/tasks",
-    completions: "/project/tabs/:tabID/tasks/:taskID/completions",
-  },
-};
-
 export class DataManager {
   /** @type {HTMLElement} */
   root = null;

@@ -89,7 +89,7 @@ export const View = types
 
     get currentOrder() {
       return self.ordering.reduce((res, field) => {
-        const fieldName = field.replace(/^\-/, "");
+        const fieldName = field.replace(/^-/, "");
         const desc = field[0] === "-";
 
         return { ...res, [fieldName]: desc };

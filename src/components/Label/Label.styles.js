@@ -1,4 +1,4 @@
-const { default: styled } = require("styled-components");
+import styled from "styled-components";
 
 export const Styles = styled.div`
   height: 100%;
@@ -10,12 +10,6 @@ export const Styles = styled.div`
     padding: 15px;
   }
 
-  .wrapper {
-    display: flex;
-    align-items: stretch;
-    height: 100%;
-  }
-
   .table {
     display: flex;
     flex: 200px 0 0;
@@ -25,6 +19,17 @@ export const Styles = styled.div`
 
   .label-studio {
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .label-studio__toolbar {
+    height: 50px;
+  }
+
+  .label-studio__content {
+    flex: 1;
     overflow: auto;
     box-sizing: border-box;
     padding-bottom: 50px;
@@ -32,6 +37,7 @@ export const Styles = styled.div`
 
   .ant-page-header {
     flex: 1;
+    height: 100%;
     display: flex;
     flex-direction: column;
   }
@@ -45,4 +51,8 @@ export const Styles = styled.div`
       padding-top: 0;
     }
   }
+`;
+
+export const Hint = styled.sup`
+  font-size: 9px;
 `;
