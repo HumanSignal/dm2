@@ -250,6 +250,7 @@ export const View = types
         },
         {
           body: {
+            ordering: self.ordering,
             filters: self.serializedFilters,
             selectedItems: Array.from(self.selected),
           },
