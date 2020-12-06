@@ -184,10 +184,13 @@ export const ViewsStore = types
           ? c.children.map((ch) => `${target}:${columnPath}.${ch}`)
           : undefined;
 
+        const { items: filters, conjunction } = c.filters ?? {};
+
         const column = ViewColumn.create({
           ...c,
           id: columnID,
-          filters: c.filters ?? [],
+          filters: filters ?? [],
+          conjunction: conjunction ?? "and",
           alias: c.id,
           parent,
           children,

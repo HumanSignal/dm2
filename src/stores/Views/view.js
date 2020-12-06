@@ -116,9 +116,11 @@ export const View = types
         ordering: self.ordering,
         type: self.type,
         target: self.target,
-        filters: self.serializedFilters,
+        filters: {
+          conjunction: self.conjunction,
+          items: self.serializedFilters,
+        },
         hiddenColumns: getSnapshot(self.hiddenColumns),
-        conjunction: self.conjunction,
       };
     },
   }))
@@ -251,8 +253,11 @@ export const View = types
         {
           body: {
             ordering: self.ordering,
-            filters: self.serializedFilters,
             selectedItems: Array.from(self.selected),
+            filters: {
+              conjunction: self.conjunction,
+              items: self.serializedFilters,
+            },
           },
         }
       );
