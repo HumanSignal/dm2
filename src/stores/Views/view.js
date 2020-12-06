@@ -249,8 +249,10 @@ export const View = types
           tabID: self.id,
         },
         {
-          filters: self.serializedFilters,
-          selectedItems: Array.from(self.selected),
+          body: {
+            filters: self.serializedFilters,
+            selectedItems: Array.from(self.selected),
+          },
         }
       );
 
