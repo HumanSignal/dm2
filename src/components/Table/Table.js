@@ -258,6 +258,7 @@ export const DataView = observer(
         <Table
           data={data}
           rowHeight={70}
+          total={total}
           loadMore={loadMore}
           fitContent={isLabeling}
           hiddenColumns={hiddenColumns}

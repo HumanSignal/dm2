@@ -1,4 +1,3 @@
-import isNumeric from "antd/es/_util/isNumeric";
 import { destroy, flow, getRoot, getSnapshot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 import { unique } from "../../utils/utils";
@@ -75,9 +74,14 @@ export const ViewsStore = types
 
     deleteView: flow(function* (view) {
       if (self.selected === view) {
-        const index = self.views.indexOf(view);
-        const newView =
-          index === 0 ? self.views[index + 1] : self.views[index - 1];
+        let newView;
+
+        if (self.selected.opener) {
+          newView = self.opener.referrer;
+        } else {
+          const index = self.views.indexOf(view);
+          newView = index === 0 ? self.views[index + 1] : self.views[index - 1];
+        }
         self.setSelected(newView.key);
       }
 
@@ -88,32 +92,18 @@ export const ViewsStore = types
     addView: flow(function* (viewSnapshot) {
       const lastView = self.views[self.views.length - 1];
 
-      // Add +1 to tab name if the last part of title is an integer
-      let new_title = lastView?.title ?? "Tab";
-      if (lastView.title) {
-        let parts = lastView.title.split(" ");
-        let number = parts[parts.length - 1];
-        // check is the last title part an integer?  Tab 1 => integer 1
-        if (isNumeric(number)) {
-          new_title =
-            parts.slice(0, parts.length - 1).join(" ") +
-            " " +
-            (parseInt(number) + 1);
-        } else {
-          new_title += " 1";
-        }
-      }
+      const newTitle = `New tab ${self.views.length + 1}`;
 
       const newView = self.createView({
         ...(viewSnapshot ?? {}),
-        id: (lastView?.id ?? -1) + 1,
-        title: new_title,
+        id: lastView?.id ? lastView.id + 1 : 0,
+        title: newTitle,
         key: guidGenerator(),
       });
 
       self.views.push(newView);
       self.setSelected(newView);
-      console.log("Tab set and being updated");
+
       yield newView.save();
 
       return newView;

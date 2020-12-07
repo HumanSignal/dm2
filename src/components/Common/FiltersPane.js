@@ -13,7 +13,7 @@ const FiltersButton = observer(({ onClick, active }) => {
   );
 });
 
-export const FiltersPane = ({ sidebar, viewStore }) => {
+export const FiltersPane = ({ sidebar, viewStore, filters }) => {
   const view = viewStore?.selected;
 
   if (!view) return null;
@@ -24,7 +24,7 @@ export const FiltersPane = ({ sidebar, viewStore }) => {
       active={view.filtersApplied}
     />
   ) : (
-    <Dropdown overlay={<Filters />} trigger="click">
+    <Dropdown overlay={<Filters filters={filters} />} trigger="click">
       <FiltersButton active={view.filtersApplied} />
     </Dropdown>
   );

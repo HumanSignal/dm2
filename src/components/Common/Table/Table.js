@@ -76,41 +76,35 @@ export const Table = observer(
       ]
     );
 
+    const isItemLoaded = React.useCallback(
+      (index) => {
+        return props.isItemLoaded(data, index);
+      },
+      [props, data]
+    );
+
     return (
       <TableWrapper fitToContent={props.fitToContent}>
         <TableContext.Provider value={contextValue}>
-          <AutoSizer className="table-auto-size">
-            {({ width, height }) => (
-              <InfiniteLoader
-                itemCount={props.total}
-                isItemLoaded={(index) => props.isItemLoaded(data, index)}
-                loadMoreItems={props.loadMore}
-              >
-                {({ onItemsRendered, ref }) => (
-                  <StickyList
-                    ref={ref}
-                    width={width}
-                    height={height}
-                    overscanCount={10}
-                    className="virtual-table"
-                    itemHeight={props.rowHeight}
-                    itemCount={data.length + 1}
-                    itemKey={(index) => data[index]?.key ?? index}
-                    onItemsRendered={onItemsRendered}
-                    innerElementType={innerElementType}
-                    stickyItems={[0]}
-                    stickyItemsHeight={[headerHeight]}
-                    stickyComponent={renderStickyComponent}
-                    initialScrollOffset={
-                      initialScrollOffset - height / 2 + headerHeight
-                    }
-                  >
-                    {renderRow}
-                  </StickyList>
-                )}
-              </InfiniteLoader>
-            )}
-          </AutoSizer>
+          <StickyList
+            overscanCount={10}
+            className="virtual-table"
+            itemHeight={props.rowHeight}
+            totalCount={props.total}
+            itemCount={data.length + 1}
+            itemKey={(index) => data[index]?.key ?? index}
+            innerElementType={innerElementType}
+            stickyItems={[0]}
+            stickyItemsHeight={[headerHeight]}
+            stickyComponent={renderStickyComponent}
+            initialScrollOffset={(height) =>
+              initialScrollOffset - height / 2 + headerHeight
+            }
+            isItemLoaded={isItemLoaded}
+            loadMore={props.loadMore}
+          >
+            {renderRow}
+          </StickyList>
         </TableContext.Provider>
       </TableWrapper>
     );
@@ -123,43 +117,71 @@ StickyListContext.Consumer.displayName = "StickyListConsumer";
 
 const ItemWrapper = ({ data, index, style }) => {
   const { Renderer, stickyItems } = data;
-  if (stickyItems && stickyItems.includes(index)) {
+
+  if (stickyItems?.includes(index) === true) {
     return null;
   }
+
   return <Renderer index={index} style={style} />;
 };
 
-const StickyList = React.forwardRef(
-  (
-    { children, stickyComponent, stickyItems, stickyItemsHeight, ...rest },
-    ref
-  ) => {
-    const itemData = {
-      Renderer: children,
-      StickyComponent: stickyComponent,
-      stickyItems,
-      stickyItemsHeight,
-    };
+const StickyList = observer((props) => {
+  const {
+    children,
+    stickyComponent,
+    stickyItems,
+    stickyItemsHeight,
+    totalCount,
+    isItemLoaded,
+    loadMore,
+    initialScrollOffset,
+    ...rest
+  } = props;
 
-    return (
-      <StickyListContext.Provider value={itemData}>
-        <VariableSizeList
-          ref={ref}
-          itemData={itemData}
-          itemSize={(index) => {
-            if (stickyItems.includes(index)) {
-              return stickyItemsHeight[index] ?? rest.itemHeight;
-            }
-            return rest.itemHeight;
-          }}
-          {...rest}
-        >
-          {ItemWrapper}
-        </VariableSizeList>
-      </StickyListContext.Provider>
-    );
-  }
-);
+  const itemData = {
+    Renderer: children,
+    StickyComponent: stickyComponent,
+    stickyItems,
+    stickyItemsHeight,
+  };
+
+  const itemSize = (index) => {
+    if (stickyItems.includes(index)) {
+      return stickyItemsHeight[index] ?? rest.itemHeight;
+    }
+    return rest.itemHeight;
+  };
+
+  return (
+    <StickyListContext.Provider value={itemData}>
+      <AutoSizer className="table-auto-size">
+        {({ width, height }) => (
+          <InfiniteLoader
+            itemCount={totalCount}
+            loadMoreItems={loadMore}
+            isItemLoaded={isItemLoaded}
+          >
+            {({ onItemsRendered, ref }) => (
+              <VariableSizeList
+                {...rest}
+                ref={ref}
+                width={width}
+                height={height}
+                itemData={itemData}
+                itemSize={itemSize}
+                onItemsRendered={onItemsRendered}
+                initialScrollOffset={initialScrollOffset?.(height) ?? 0}
+              >
+                {ItemWrapper}
+              </VariableSizeList>
+            )}
+          </InfiniteLoader>
+        )}
+      </AutoSizer>
+    </StickyListContext.Provider>
+  );
+});
+
 StickyList.displayName = "StickyList";
 
 const innerElementType = React.forwardRef(({ children, ...rest }, ref) => {

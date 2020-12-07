@@ -32,10 +32,12 @@ export const View = types
     ordering: types.optional(types.array(types.string), []),
     selected: types.optional(types.array(types.number), []),
     selecting: types.optional(types.boolean, false),
+    opener: types.optional(types.maybeNull(types.late(() => View)), null),
 
     enableFilters: false,
     renameMode: false,
     saved: false,
+    virtual: false,
   })
   .views((self) => ({
     get root() {
@@ -122,6 +124,22 @@ export const View = types
         },
         hiddenColumns: getSnapshot(self.hiddenColumns),
       };
+    },
+
+    async labelAll() {
+      const view = self.parent.addView({
+        title: "Virtual tab",
+        opener: self,
+        virtual: true,
+        filters: {
+          conjunction: self.conjunction,
+          items: self.serializedFilters,
+        },
+        selected: self.selected,
+        ordering: self.ordering,
+      });
+
+      await view.invokeAction("label-all", { reload: false });
     },
   }))
   .actions((self) => ({
@@ -243,30 +261,38 @@ export const View = types
       }
     },
 
-    invokeAction: flow(function* (actionId) {
-      yield getRoot(self).apiCall(
+    invokeAction: flow(function* (actionId, options = {}) {
+      const actionParams = {
+        ordering: self.ordering,
+        selectedItems: Array.from(self.selected),
+        filters: {
+          conjunction: self.conjunction,
+          items: self.serializedFilters,
+        },
+      };
+
+      const result = yield getRoot(self).apiCall(
         "invokeAction",
         {
           id: actionId,
           tabID: self.id,
         },
         {
-          body: {
-            ordering: self.ordering,
-            selectedItems: Array.from(self.selected),
-            filters: {
-              conjunction: self.conjunction,
-              items: self.serializedFilters,
-            },
-          },
+          body: actionParams,
         }
       );
 
-      self.reload();
-      self.setSelected([]);
+      if (options.reload !== false) {
+        self.reload();
+        self.setSelected([]);
+      }
+
+      return result;
     }),
 
     save: flow(function* ({ reload } = {}) {
+      if (self.virtual) return;
+
       const { id: tabID } = self;
       const body = self.serialize();
 

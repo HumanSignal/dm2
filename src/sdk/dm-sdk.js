@@ -16,7 +16,9 @@
 /**
  * @typedef {{
  * root: HTMLElement,
- * api: import("../utils/api-proxy").APIProxyOptions,
+ * apiGateway: string | URL,
+ * apiEndpoints: import("../utils/api-proxy").Endpoints,
+ * apiMockDisabled: boolean,
  * settings: Dict<any>,
  * labelStudio: Dict<any>,
  * env: "development" | "production",
@@ -26,6 +28,7 @@
  */
 
 import { APIProxy } from "../utils/api-proxy";
+import { APIConfig } from "./api-config";
 import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
 
@@ -69,7 +72,13 @@ export class DataManager {
    */
   constructor(config) {
     this.root = config.root;
-    this.api = new APIProxy(config.api);
+    this.api = new APIProxy(
+      this.apiConfig({
+        apiGateway: config.apiGateway,
+        apiEndpoints: config.apiEndpoints,
+        apiMockDisabled: config.apiMockDisabled,
+      })
+    );
     this.settings = config.settings;
     this.labelStudioOptions = config.labelStudio;
     this.env = config.env ?? process.env.NODE_ENV ?? this.env;
@@ -85,6 +94,20 @@ export class DataManager {
 
   get isLabelStream() {
     return this.mode === "labelstream";
+  }
+
+  apiConfig({ apiGateway, apiEndpoints, apiMockDisabled }) {
+    const config = APIConfig;
+
+    APIConfig.gateway = apiGateway ?? APIConfig.gateway;
+    APIConfig.mockDisabled = apiMockDisabled;
+
+    Object.assign(APIConfig.endpoints, apiEndpoints ?? {});
+
+    console.log({ apiGateway, apiEndpoints, apiMockDisabled });
+    console.log({ config });
+
+    return config;
   }
 
   /**
@@ -111,6 +134,19 @@ export class DataManager {
     } else {
       events.clear();
     }
+  }
+
+  /**
+   *
+   * @param {"explorer" | "labelstream"} mode
+   */
+  async setMode(mode) {
+    if (mode === "labelstream") {
+      await this.lsf.loadTask();
+    }
+
+    this.mode = mode;
+    this.store.setMode(mode);
   }
 
   /**

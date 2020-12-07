@@ -10,7 +10,11 @@
  */
 
 /**
- * @typedef {Map<string, EndpointConfig>} Endpoints
+ * @typedef {import("./types").Dict} Dict
+ */
+
+/**
+ * @typedef {Dict<string, EndpointConfig>} Endpoints
  */
 
 /**
@@ -18,6 +22,8 @@
  * gateway: string | URL,
  * endpoints: Dict<EndpointConfig>,
  * commonHeaders: Dict<string>,
+ * mockDelay: number,
+ * mockDisabled: boolean,
  * }} APIProxyOptions
  */
 
@@ -35,7 +41,7 @@ export class APIProxy {
   mockDelay = 0;
 
   /** @type {boolean} */
-  disableMock = false;
+  mockDisabled = false;
 
   /** @type {"same-origin"|"cors"} */
   requestMode = "same-origin";
@@ -49,7 +55,7 @@ export class APIProxy {
     this.gateway = this.resolvegateway(options.gateway);
     this.requestMode = this.detectMode();
     this.mockDelay = options.mockDelay ?? 0;
-    this.disableMock = options.disableMock ?? false;
+    this.mockDisabled = options.mockDisabled ?? false;
 
     this.resolveMethods(options.endpoints);
   }
@@ -161,7 +167,7 @@ export class APIProxy {
         if (
           methodSettings.mock &&
           process.env.NODE_ENV === "development" &&
-          !this.disableMock
+          !this.mockDisabled
         ) {
           rawResponse = await this.mockRequest(
             apiCallURL,

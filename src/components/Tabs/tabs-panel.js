@@ -1,5 +1,9 @@
-import { PlayCircleOutlined } from "@ant-design/icons";
-import { Button, Divider, Menu, Space } from "antd";
+import {
+  AppstoreOutlined,
+  BarsOutlined,
+  PlayCircleOutlined,
+} from "@ant-design/icons";
+import { Button, Divider, Radio, Space } from "antd";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
@@ -8,39 +12,14 @@ import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
 import { TabsActions } from "./tabs-actions";
 
-const actionsMenu = (
-  <Menu onClick={() => {}}>
-    <Menu.Item key="1">Delete</Menu.Item>
-  </Menu>
-);
-
 export const TablePanel = observer(({ views, view }) => {
   return (
     <div className="tab-panel">
       <Space size="middle">
-        {/* {false && (
-          <Radio.Group
-            value={view.type}
-            onChange={(e) => view.setType(e.target.value)}
-          >
-            <Radio.Button value="list">
-              <BarsOutlined /> List
-            </Radio.Button>
-            <Radio.Button value="grid">
-              <AppstoreOutlined /> Grid
-            </Radio.Button>
-          </Radio.Group>
-        )} */}
+        {/* {false && (<ViewToggle view={view}/>} */}
 
-        {/* {false && (
-          <Radio.Group
-            value={view.target}
-            onChange={(e) => view.setTarget(e.target.value)}
-          >
-            <Radio.Button value="tasks">Tasks</Radio.Button>
-            <Radio.Button value="annotations">Annotations</Radio.Button>
-          </Radio.Group>
-        )} */}
+        {/* {false && (<DataStoreToggle view={view}/>)} */}
+
         <FieldsButton columns={view.targetColumns} />
 
         <FiltersPane
@@ -68,5 +47,33 @@ export const TablePanel = observer(({ views, view }) => {
         </Button>
       </Space>
     </div>
+  );
+});
+
+const ViewToggle = observer(({ view }) => {
+  return (
+    <Radio.Group
+      value={view.type}
+      onChange={(e) => view.setType(e.target.value)}
+    >
+      <Radio.Button value="list">
+        <BarsOutlined /> List
+      </Radio.Button>
+      <Radio.Button value="grid">
+        <AppstoreOutlined /> Grid
+      </Radio.Button>
+    </Radio.Group>
+  );
+});
+
+const DataStoreToggle = observer(({ view }) => {
+  return (
+    <Radio.Group
+      value={view.target}
+      onChange={(e) => view.setTarget(e.target.value)}
+    >
+      <Radio.Button value="tasks">Tasks</Radio.Button>
+      <Radio.Button value="annotations">Annotations</Radio.Button>
+    </Radio.Group>
   );
 });

@@ -3,6 +3,9 @@ import { randomDate } from "./utils/utils";
 
 const { REACT_APP_USE_LSB, REACT_APP_GATEWAY_API } = process.env;
 
+/**
+ * @param {import("../src/sdk/dm-sdk").DataManager} DataManager
+ */
 export const initDevApp = async (DataManager) => {
   const { tasks, annotations, config } = await import("./data/image_bbox");
   const { default: tabs } = await import("./data/tabs");
@@ -125,170 +128,168 @@ export const initDevApp = async (DataManager) => {
   const datamanager = new DataManager({
     root: document.getElementById("app"),
     // mode: "labelstream",
-    api: {
-      disableMock: useExternalSource,
-      gateway: gatewayAPI,
-      endpoints: {
-        project: {
-          path: "/project",
-          async mock() {
-            return {
-              id: 1,
-              label_config_line: config,
-              tasks_count: tasks.length,
-              instructions: "Hello world",
-            };
-          },
-        },
-        columns: {
-          path: "/project/columns",
-          async mock() {
-            return {
-              columns: (await import("./data/columns")).default(
-                tasks,
-                {
-                  image: "Image",
-                  value: "Hello",
-                },
-                {
-                  key: "Value",
-                }
-              ),
-            };
-          },
-        },
-        tabs: {
-          path: "/project/tabs",
-          async mock() {
-            return { tabs };
-          },
-        },
-        updateTab: {
-          path: "/project/tabs/:tabID",
-          method: "post",
-          async mock(url, urlParams, request) {
-            return {
-              tab: updateOrCreateTab(urlParams.tabID, request.body),
-            };
-          },
-        },
-        deleteTab: {
-          path: "/project/tabs/:tabID",
-          method: "delete",
-          async mock(url, urlParams, request) {
-            return {
-              OK: deleteTab(urlParams.tabID),
-            };
-          },
-        },
+    apiGateway: gatewayAPI,
+    apiMockDisabled: useExternalSource,
+    // apiEndpoints: {
+    //   project: {
+    //     path: "/project",
+    //     async mock() {
+    //       return {
+    //         id: 1,
+    //         label_config_line: config,
+    //         tasks_count: tasks.length,
+    //         instructions: "Hello world",
+    //       };
+    //     },
+    //   },
+    //   columns: {
+    //     path: "/project/columns",
+    //     async mock() {
+    //       return {
+    //         columns: (await import("./data/columns")).default(
+    //           tasks,
+    //           {
+    //             image: "Image",
+    //             value: "Hello",
+    //           },
+    //           {
+    //             key: "Value",
+    //           }
+    //         ),
+    //       };
+    //     },
+    //   },
+    //   tabs: {
+    //     path: "/project/tabs",
+    //     async mock() {
+    //       return { tabs };
+    //     },
+    //   },
+    //   updateTab: {
+    //     path: "/project/tabs/:tabID",
+    //     method: "post",
+    //     async mock(url, urlParams, request) {
+    //       return {
+    //         tab: updateOrCreateTab(urlParams.tabID, request.body),
+    //       };
+    //     },
+    //   },
+    //   deleteTab: {
+    //     path: "/project/tabs/:tabID",
+    //     method: "delete",
+    //     async mock(url, urlParams, request) {
+    //       return {
+    //         OK: deleteTab(urlParams.tabID),
+    //       };
+    //     },
+    //   },
 
-        tasks: {
-          path: "/project/tabs/:tabID/tasks",
-          mock(url, urlParams) {
-            const { page = 1, page_size = 500 } = urlParams;
-            const offset = (page - 1) * page_size;
+    //   tasks: {
+    //     path: "/project/tabs/:tabID/tasks",
+    //     mock(url, urlParams) {
+    //       const { page = 1, page_size = 500 } = urlParams;
+    //       const offset = (page - 1) * page_size;
 
-            return {
-              tasks: tasks.slice(offset, offset + page_size),
-              total: tasks.length,
-            };
-          },
-        },
-        annotations: {
-          path: "/project/tabs/:tabID/annotations",
-          mock() {
-            return {
-              annotations: annotations,
-              total: annotations.length,
-            };
-          },
-        },
+    //       return {
+    //         tasks: tasks.slice(offset, offset + page_size),
+    //         total: tasks.length,
+    //       };
+    //     },
+    //   },
+    //   annotations: {
+    //     path: "/project/tabs/:tabID/annotations",
+    //     mock() {
+    //       return {
+    //         annotations: annotations,
+    //         total: annotations.length,
+    //       };
+    //     },
+    //   },
 
-        task: {
-          path: "/tasks/:taskID",
-          mock(url, urlParams) {
-            const { taskID } = urlParams;
-            return tasks.find((t) => t.id === taskID);
-          },
-        },
-        skipTask: {
-          path: "/tasks/:taskID/completions?was_cancelled=1",
-          mock(url, urlParams, request) {
-            const completion = addCompletion(urlParams.taskID, {
-              ...request.body,
-              skipped: true,
-            });
+    //   task: {
+    //     path: "/tasks/:taskID",
+    //     mock(url, urlParams) {
+    //       const { taskID } = urlParams;
+    //       return tasks.find((t) => t.id === taskID);
+    //     },
+    //   },
+    //   skipTask: {
+    //     path: "/tasks/:taskID/completions?was_cancelled=1",
+    //     mock(url, urlParams, request) {
+    //       const completion = addCompletion(urlParams.taskID, {
+    //         ...request.body,
+    //         skipped: true,
+    //       });
 
-            return { id: completion.id };
-          },
-        },
-        nextTask: {
-          path: "/project/next",
-          mock() {
-            const [min, max] = [0, tasks.length - 1];
-            const index = Math.floor(Math.random() * (max - min + 1)) + min;
-            return tasks[index];
-          },
-        },
+    //       return { id: completion.id };
+    //     },
+    //   },
+    //   nextTask: {
+    //     path: "/project/next",
+    //     mock() {
+    //       const [min, max] = [0, tasks.length - 1];
+    //       const index = Math.floor(Math.random() * (max - min + 1)) + min;
+    //       return tasks[index];
+    //     },
+    //   },
 
-        completion: "/tasks/:taskID/completions/:id",
-        submitCompletion: {
-          path: "/tasks/:taskID/completions",
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          mock(url, urlParams, request) {
-            const completion = addCompletion(urlParams.taskID, request.body);
+    //   completion: "/tasks/:taskID/completions/:id",
+    //   submitCompletion: {
+    //     path: "/tasks/:taskID/completions",
+    //     method: "post",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     mock(url, urlParams, request) {
+    //       const completion = addCompletion(urlParams.taskID, request.body);
 
-            return { id: completion.id };
-          },
-        },
-        updateCompletion: {
-          path: "/completions/:completionID",
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          mock(url, urlParams, request) {
-            const { taskID, completionID } = urlParams;
-            const completion = findCompletion(findTask(taskID), completionID);
+    //       return { id: completion.id };
+    //     },
+    //   },
+    //   updateCompletion: {
+    //     path: "/completions/:completionID",
+    //     method: "post",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     mock(url, urlParams, request) {
+    //       const { taskID, completionID } = urlParams;
+    //       const completion = findCompletion(findTask(taskID), completionID);
 
-            if (completion) {
-              updateCompletion(completion, request.body);
-            }
+    //       if (completion) {
+    //         updateCompletion(completion, request.body);
+    //       }
 
-            return { OK: true };
-          },
-        },
-        deleteCompletion: {
-          path: "/completions/:completionID",
-          method: "delete",
-          mock(url, urlParams, request) {
-            return deleteCompletion(urlParams.taskID, urlParams.completionID);
-          },
-        },
+    //       return { OK: true };
+    //     },
+    //   },
+    //   deleteCompletion: {
+    //     path: "/completions/:completionID",
+    //     method: "delete",
+    //     mock(url, urlParams, request) {
+    //       return deleteCompletion(urlParams.taskID, urlParams.completionID);
+    //     },
+    //   },
 
-        setSelectedItems: {
-          path: "/project/tabs/:tabID/selected-items",
-          method: "post",
-        },
-        addSelectedItem: {
-          path: "/project/tabs/:tabID/selected-items",
-          method: "patch",
-        },
-        deleteSelectedItem: {
-          path: "/project/tabs/:tabID/selected-items",
-          method: "delete",
-        },
+    //   setSelectedItems: {
+    //     path: "/project/tabs/:tabID/selected-items",
+    //     method: "post",
+    //   },
+    //   addSelectedItem: {
+    //     path: "/project/tabs/:tabID/selected-items",
+    //     method: "patch",
+    //   },
+    //   deleteSelectedItem: {
+    //     path: "/project/tabs/:tabID/selected-items",
+    //     method: "delete",
+    //   },
 
-        actions: "/project/actions",
-        invokeAction: {
-          path: "/project/tabs/:tabID/actions",
-          method: "post",
-        },
-      },
-    },
+    //   actions: "/project/actions",
+    //   invokeAction: {
+    //     path: "/project/tabs/:tabID/actions",
+    //     method: "post",
+    //   },
+    // },
     labelStudio: {
       user: {
         pk: 1,
