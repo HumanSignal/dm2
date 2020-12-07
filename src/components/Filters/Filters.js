@@ -7,14 +7,9 @@ import { FilterLine } from "./FilterLine";
 import { FiltersStyles } from "./Filters.styles";
 
 export const Filters = inject("store")(
-  observer(({ store, sidebar }) => {
+  observer(({ store, sidebar, filters }) => {
     const views = store.viewsStore;
     const currentView = views.selected;
-
-    const filters = React.useMemo(() => {
-      const { filters } = currentView;
-      return filters.length ? filters : [];
-    }, [currentView]);
 
     const fields = React.useMemo(
       () =>
@@ -29,6 +24,7 @@ export const Filters = inject("store")(
                 .join("")
             )
             .join(" ");
+
           const group = res[target] ?? {
             id: target,
             title: groupTitle,

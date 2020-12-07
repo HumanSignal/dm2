@@ -184,13 +184,9 @@ export const ViewsStore = types
           ? c.children.map((ch) => `${target}:${columnPath}.${ch}`)
           : undefined;
 
-        const { items: filters, conjunction } = c.filters ?? {};
-
         const column = ViewColumn.create({
           ...c,
           id: columnID,
-          filters: filters ?? [],
-          conjunction: conjunction ?? "and",
           alias: c.id,
           parent,
           children,
@@ -213,13 +209,18 @@ export const ViewsStore = types
       const { tabs } = yield getRoot(self).apiCall("tabs");
 
       self.views.push(
-        ...tabs.map((t) =>
-          self.createView({
-            ...t,
+        ...tabs.map((t) => {
+          const { filters, ...snapshot } = t;
+          const { conjunction, items } = filters ?? {};
+
+          return self.createView({
+            ...snapshot,
+            filters: items ?? [],
+            conjunction: conjunction ?? "and",
             selected: t.selectedItems ?? [],
             saved: true,
-          })
-        )
+          });
+        })
       );
 
       const selected = localStorage.getItem("selectedTab");

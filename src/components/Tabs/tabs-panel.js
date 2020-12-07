@@ -43,7 +43,11 @@ export const TablePanel = observer(({ views, view }) => {
         )} */}
         <FieldsButton columns={view.targetColumns} />
 
-        <FiltersPane sidebar={views.sidebarEnabled} viewStore={views} />
+        <FiltersPane
+          sidebar={views.sidebarEnabled}
+          viewStore={views}
+          filters={Array.from(view.filters ?? [])}
+        />
 
         <ErrorBox errors={getRoot(view).serverError} />
       </Space>
@@ -55,7 +59,9 @@ export const TablePanel = observer(({ views, view }) => {
 
         <Button
           disabled={view.target === "annotations"}
-          onClick={() => view.root.setMode("label")}
+          onClick={() => {
+            view.root.SDK.setMode("labelstream");
+          }}
         >
           <PlayCircleOutlined />
           Label All
