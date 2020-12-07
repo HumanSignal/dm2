@@ -25,29 +25,16 @@ const OrderButton = observer(({ desc }) => {
 });
 
 export const TableHead = observer(
-  ({ style, columnHeaderExtra, onSetOrder, sortingEnabled }) => {
+  ({ style, columnHeaderExtra, onSetOrder, sortingEnabled, selected }) => {
     return (
       <TableContext.Consumer>
-        {({
-          columns,
-          headerRenderers,
-          data,
-          onRowSelect,
-          selectedRows,
-          cellViews,
-        }) => (
+        {({ columns, headerRenderers, data, onRowSelect, cellViews }) => (
           <TableHeadWrapper style={style}>
             <TableCheckboxCell
-              hidden={true}
               enabled={!!onRowSelect}
-              checked={
-                selectedRows.length > 0 && selectedRows.length === data.length
-              }
-              indeterminate={selectedRows.length > 0}
-              onChange={(checked) => {
-                const ids = checked ? data.map((item) => item.id) : [];
-                onRowSelect(ids, "update");
-              }}
+              checked={selected.isAllSelected()}
+              indeterminate={selected.isIndeterminate()}
+              onChange={(checked) => onRowSelect("update", null, checked)}
             />
 
             {columns.map((col) => {

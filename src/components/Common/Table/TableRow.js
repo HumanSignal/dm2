@@ -6,14 +6,14 @@ import { TableContext } from "./TableContext";
 import { getProperty, getStyle } from "./utils";
 
 export const TableRow = observer(
-  ({ data, onClick, style, isSelected, isHighlighted }) => {
+  ({ data, onClick, style, isSelected, isHighlighted, selected }) => {
     const classNames = [];
     if (isSelected) classNames.push("selected");
     if (isHighlighted) classNames.push("highlighted");
 
     return (
       <TableContext.Consumer>
-        {({ columns, onRowSelect, selectedRows, cellViews }) => (
+        {({ columns, onRowSelect, cellViews }) => (
           <TableRowWrapper
             className={classNames.join(" ")}
             onClick={() => {
@@ -23,10 +23,8 @@ export const TableRow = observer(
           >
             <TableCheckboxCell
               enabled={!!onRowSelect}
-              checked={selectedRows.includes(data.id)}
-              onChange={(checked) => {
-                onRowSelect(data.id, checked ? "add" : "delete");
-              }}
+              checked={selected.isSelected(data.id)}
+              onChange={(checked) => onRowSelect("add", data.id, checked)}
             />
 
             {columns.map((col) => {

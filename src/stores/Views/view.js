@@ -10,6 +10,63 @@ import { guidGenerator } from "../../utils/random";
 import { ViewFilter } from "./view_filter";
 import { ViewHiddenColumns } from "./view_hidden_columns";
 
+const SelectedItems = types
+  .model("SelectedItems", {
+    all: types.optional(types.boolean, false),
+    list: types.optional(types.array(types.number), []),
+  })
+  .views((self) => ({
+    get snapshot() {
+      return {
+        all: self.all,
+        [self.all ? "excluded" : "included"]: Array.from(self.list),
+      };
+    },
+
+    isAllSelected() {
+      return self.all && self.list.length === 0;
+    },
+
+    isIndeterminate() {
+      return self.list.length > 0;
+    },
+
+    isSelected(id) {
+      if (self.all) {
+        return !self.list.includes(id);
+      } else {
+        return self.list.includes(id);
+      }
+    },
+  }))
+  .actions((self) => ({
+    toggleSelectedAll() {
+      self.all = !self.all;
+      self.list = [];
+    },
+
+    addItem(id) {
+      self.list.push(id);
+    },
+
+    removeItem(id) {
+      self.list.splice(self.list.indexOf(id), 1);
+    },
+
+    toggleItem(id) {
+      if (self.list.includes(id)) {
+        self.list.splice(self.list.indexOf(id), 1);
+      } else {
+        self.list.push(id);
+      }
+    },
+
+    update(data) {
+      self.all = data?.all ?? self.all;
+      self.list = data?.[self.all ? "excluded" : "included"] ?? self.list;
+    },
+  }));
+
 export const View = types
   .model("View", {
     id: types.identifierNumber,
@@ -30,7 +87,7 @@ export const View = types
     conjunction: types.optional(types.enumeration(["and", "or"]), "and"),
     hiddenColumns: types.maybeNull(types.optional(ViewHiddenColumns, {})),
     ordering: types.optional(types.array(types.string), []),
-    selected: types.optional(types.array(types.number), []),
+    selected: types.optional(SelectedItems, {}),
     selecting: types.optional(types.boolean, false),
     opener: types.optional(types.maybeNull(types.late(() => View)), null),
 
@@ -181,31 +238,24 @@ export const View = types
       self.updateSelectedList("setSelectedItems", Array.from(self.selected));
     },
 
-    selectAll: flow(function* () {
-      self.selecting = true;
-      yield self.updateSelectedList("setSelectedItems", "all");
-      self.selecting = false;
-    }),
-
-    markSelected(id) {
-      self.selected.push(id);
-      self.updateSelectedList("addSelectedItem", [id]);
+    selectAll() {
+      self.selected.toggleSelectedAll();
+      self.updateSelectedList("setSelectedItems");
     },
 
-    unmarkSelected(id) {
-      const index = self.selected.findIndex((storedID) => id === storedID);
-      self.selected.splice(index, 1);
-      self.updateSelectedList("deleteSelectedItem", [id]);
+    toggleSelected(id) {
+      self.selected.toggleItem(id);
+      self.updateSelectedList("addSelectedItem");
     },
 
-    updateSelectedList: flow(function* (action, body) {
+    updateSelectedList: flow(function* (action) {
       const { selectedItems } = yield getRoot(self).apiCall(
         action,
         { tabID: self.id },
-        { body }
+        { body: self.selected.snapshot }
       );
 
-      self.selected = selectedItems ?? self.selected;
+      self.selected.update(selectedItems);
     }),
 
     createFilter() {

@@ -203,11 +203,15 @@ export const ViewsStore = types
           const { filters, ...snapshot } = t;
           const { conjunction, items } = filters ?? {};
 
+          const selectedItems = t.selectedItems ?? { all: false, list: [] };
+          const listKey = selectedItems.all ? "excluded" : "included";
+          Object.assign(selectedItems, { list: selectedItems[listKey] ?? [] });
+
           return self.createView({
             ...snapshot,
             filters: items ?? [],
             conjunction: conjunction ?? "and",
-            selected: t.selectedItems ?? [],
+            selected: t.selectedItems ?? {},
             saved: true,
           });
         })

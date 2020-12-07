@@ -10,24 +10,21 @@ import { TableRow } from "./TableRow";
 import { prepareColumns } from "./utils";
 
 export const Table = observer(
-  ({
-    data,
-    onRowSelect,
-    selectedRows,
-    cellViews,
-    headerRenderers,
-    ...props
-  }) => {
+  ({ data, onRowSelect, selected, cellViews, headerRenderers, ...props }) => {
+    console.log({ selected });
     const columns = prepareColumns(props.columns, props.hiddenColumns);
 
     const contextValue = {
       columns,
       onRowSelect,
-      selectedRows,
       data,
       cellViews,
       headerRenderers,
     };
+
+    const selectedItems = React.useMemo(() => {
+      return selected;
+    }, [selected.list, selected.all]);
 
     const selectedRowIndex = data.findIndex(
       (r) => r.original?.isSelected || r.original?.isHighlighted
@@ -47,6 +44,7 @@ export const Table = observer(
             isSelected={row.isSelected}
             isHighlighted={row.isHighlighted}
             onClick={props.onRowClick}
+            selected={selected}
             style={{
               ...style,
               height: props.rowHeight,
@@ -55,7 +53,7 @@ export const Table = observer(
           />
         );
       },
-      [data, props.fitContent, props.onRowClick, props.rowHeight]
+      [data, props.fitContent, props.onRowClick, props.rowHeight, selected]
     );
 
     const renderStickyComponent = React.useCallback(
@@ -66,6 +64,7 @@ export const Table = observer(
           columnHeaderExtra={props.columnHeaderExtra}
           sortingEnabled={props.sortingEnabled}
           onSetOrder={props.onSetOrder}
+          selected={selected}
         />
       ),
       [
@@ -73,6 +72,7 @@ export const Table = observer(
         props.columnHeaderExtra,
         props.sortingEnabled,
         props.onSetOrder,
+        selected,
       ]
     );
 

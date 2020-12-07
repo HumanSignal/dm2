@@ -155,6 +155,9 @@ export const DataView = observer(
     const { dataStore, isLabeling } = getRoot(view);
     const { total, selected } = dataStore;
     const [showSource, setShowSource] = React.useState();
+    const { selected: selectedItems } = view;
+
+    console.log({ selectedItems });
 
     const {
       rows,
@@ -166,7 +169,7 @@ export const DataView = observer(
         data,
         initialState: {
           hiddenColumns,
-          selectedRowIds: view.selected.reduce(
+          selectedRowIds: selectedItems.list.reduce(
             (res, el) => ({ ...res, [el]: true }),
             {}
           ),
@@ -228,14 +231,11 @@ export const DataView = observer(
     );
 
     const onRowSelect = React.useCallback(
-      (selected, state) => {
-        console.log({ selected });
-        if (state === "add") {
-          view.markSelected(selected);
-        } else if (state === "update") {
+      (state, data, checked) => {
+        if (state === "update") {
           view.selectAll();
         } else {
-          view.unmarkSelected(selected);
+          view.toggleSelected(data);
         }
       },
       [view]
@@ -269,7 +269,7 @@ export const DataView = observer(
           sortingEnabled={view.type === "list"}
           onSetOrder={(col) => view.setOrdering(col.id)}
           columnHeaderExtra={columnHeaderExtra}
-          selectedRows={view.selected}
+          selected={selectedItems}
           onRowSelect={onRowSelect}
           onRowClick={onRowClick}
         />
