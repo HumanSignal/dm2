@@ -148,4 +148,35 @@ export const AppStore = types
 
       return result;
     }),
+
+    invokeAction: flow(function* (actionId, options = {}) {
+      const view = self.currentView;
+
+      const actionParams = {
+        ordering: view.ordering,
+        selectedItems: Array.from(view.selected),
+        filters: {
+          conjunction: view.conjunction,
+          items: view.serializedFilters,
+        },
+      };
+
+      const result = yield self.apiCall(
+        "invokeAction",
+        {
+          id: actionId,
+          tabID: view.id,
+        },
+        {
+          body: actionParams,
+        }
+      );
+
+      if (options.reload !== false) {
+        view.reload();
+        view.setSelected([]);
+      }
+
+      return result;
+    }),
   }));

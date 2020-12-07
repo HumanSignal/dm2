@@ -127,19 +127,7 @@ export const View = types
     },
 
     async labelAll() {
-      const view = self.parent.addView({
-        title: "Virtual tab",
-        opener: self,
-        virtual: true,
-        filters: {
-          conjunction: self.conjunction,
-          items: self.serializedFilters,
-        },
-        selected: self.selected,
-        ordering: self.ordering,
-      });
-
-      await view.invokeAction("label-all", { reload: false });
+      self.root.SDK.setMode("labelstream");
     },
   }))
   .actions((self) => ({
@@ -169,7 +157,7 @@ export const View = types
     },
 
     setTask(params = {}) {
-      getRoot(self).viewsStore.setTask(params);
+      self.parent.setTask(params);
     },
 
     setFilters(filters) {

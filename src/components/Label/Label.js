@@ -58,7 +58,9 @@ const LabelingComponent = observer(({ store }) => {
 
   const closeLabeling = () => {
     store.unsetTask();
+    store.SDK.setMode("explorer");
     store.SDK.destroyLSF();
+    store.dataStore.reload();
   };
 
   React.useEffect(() => {

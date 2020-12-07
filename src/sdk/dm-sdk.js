@@ -141,9 +141,9 @@ export class DataManager {
    * @param {"explorer" | "labelstream"} mode
    */
   async setMode(mode) {
-    if (mode === "labelstream") {
-      await this.lsf.loadTask();
-    }
+    // if (mode === "labelstream") {
+    //   await this.lsf.loadTask();
+    // }
 
     this.mode = mode;
     this.store.setMode(mode);

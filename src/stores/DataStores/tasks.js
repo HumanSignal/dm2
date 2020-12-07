@@ -27,8 +27,8 @@ export const create = (columns) => {
       if (taskID !== undefined) {
         remoteTask = yield rootStore.apiCall("task", { taskID });
       } else {
-        remoteTask = yield rootStore.apiCall("nextTask", {
-          projectID: getRoot(self).project.id,
+        remoteTask = yield rootStore.invokeAction("next_task", {
+          reload: false,
         });
       }
 

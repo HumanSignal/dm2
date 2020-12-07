@@ -38,9 +38,7 @@ export const TablePanel = observer(({ views, view }) => {
 
         <Button
           disabled={view.target === "annotations"}
-          onClick={() => {
-            view.root.SDK.setMode("labelstream");
-          }}
+          onClick={() => view.labelAll()}
         >
           <PlayCircleOutlined />
           Label All

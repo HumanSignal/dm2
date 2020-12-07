@@ -12,7 +12,6 @@ const TOOLTIP_DELAY = 0.8;
 
 export const LabelToolbar = observer(
   ({ view, history, completion, lsf, isLabelStream }) => {
-    console.log({ completion });
     return (
       <Toolbar>
         <CurrentTaskWrapper>
@@ -20,7 +19,7 @@ export const LabelToolbar = observer(
             <div style={{ display: "flex", alignItems: "center" }}>
               <History history={history}>
                 <div style={{ margin: history ? "0 10px" : 0 }}>
-                  Task #{view.dataStore.selected.id}
+                  Task #{view.dataStore.selected?.id}
                 </div>
               </History>
             </div>
