@@ -21,7 +21,8 @@ export const create = (columns) => {
     listItemType: TaskModel,
   }).actions((self) => ({
     loadTask: flow(function* (taskID) {
-      let remoteTask;
+      let remoteTask,
+        task = null;
       const rootStore = getRoot(self);
 
       if (taskID !== undefined) {
@@ -32,12 +33,14 @@ export const create = (columns) => {
         });
       }
 
-      taskID = taskID ?? remoteTask.id;
+      if (remoteTask && !remoteTask?.error) {
+        taskID = taskID ?? remoteTask.id;
 
-      const task = self.updateItem(taskID, {
-        ...remoteTask,
-        source: JSON.stringify(remoteTask),
-      });
+        task = self.updateItem(taskID, {
+          ...remoteTask,
+          source: JSON.stringify(remoteTask),
+        });
+      }
 
       self.setSelected(task);
 
