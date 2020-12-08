@@ -143,7 +143,7 @@ const HistoryButton = ({ children, ...rest }) => (
  *
  * @param {{root: HTMLElement, history: import("../../sdk/lsf-history").LSFHistory}} param0
  */
-const History = ({ history, children }) => {
+const History = observer(({ history, children }) => {
   const [canGoBack, setGoBack] = React.useState(false);
   const [canGoForward, setGoForward] = React.useState(false);
   const [renderable, setRenderable] = React.useState(false);
@@ -174,7 +174,7 @@ const History = ({ history, children }) => {
   ) : (
     children
   );
-};
+});
 
 const Toolbar = styled.div`
   flex: 0;
