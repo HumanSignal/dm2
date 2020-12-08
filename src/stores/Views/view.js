@@ -19,8 +19,12 @@ const SelectedItems = types
     get snapshot() {
       return {
         all: self.all,
-        [self.all ? "excluded" : "included"]: Array.from(self.list),
+        [self.listName]: Array.from(self.list),
       };
+    },
+
+    get listName() {
+      return self.all ? "excluded" : "included";
     },
 
     isAllSelected() {
@@ -63,7 +67,7 @@ const SelectedItems = types
 
     update(data) {
       self.all = data?.all ?? self.all;
-      self.list = data?.[self.all ? "excluded" : "included"] ?? self.list;
+      self.list = data?.[self.listName] ?? self.list;
     },
   }));
 
@@ -244,15 +248,21 @@ export const View = types
     },
 
     toggleSelected(id) {
+      const isSelected = self.selected.isSelected(id);
+      const action = isSelected ? "deleteSelectedItem" : "addSelectedItem";
+
       self.selected.toggleItem(id);
-      self.updateSelectedList("addSelectedItem");
+
+      self.updateSelectedList(action, {
+        [self.selected.listName]: [id],
+      });
     },
 
-    updateSelectedList: flow(function* (action) {
+    updateSelectedList: flow(function* (action, extraData) {
       const { selectedItems } = yield getRoot(self).apiCall(
         action,
         { tabID: self.id },
-        { body: self.selected.snapshot }
+        { body: { ...self.selected.snapshot, ...(extraData ?? {}) } }
       );
 
       self.selected.update(selectedItems);
