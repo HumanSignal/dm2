@@ -312,7 +312,7 @@ export const View = types
     invokeAction: flow(function* (actionId, options = {}) {
       const actionParams = {
         ordering: self.ordering,
-        selectedItems: Array.from(self.selected),
+        selectedItems: self.selected.snapshot,
         filters: {
           conjunction: self.conjunction,
           items: self.serializedFilters,
