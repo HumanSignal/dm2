@@ -4,7 +4,7 @@ import React from "react";
 
 export const TabsActions = inject("store")(
   observer(({ store }) => {
-    const selected = store.currentView.selected.length;
+    const selected = store.currentView.selectedLength;
     const actions = store.availableActions
       .filter((a) => !a.hidden)
       .sort((a, b) => a.order - b.order);

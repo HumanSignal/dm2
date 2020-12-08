@@ -176,6 +176,13 @@ export const View = types
       return self.validFilters.map((el) => getSnapshot(el));
     },
 
+    get selectedLength() {
+      const selectedLength = self.selected.list.length;
+      const dataLength = self.dataStore.total;
+
+      return self.selected.all ? dataLength - selectedLength : selectedLength;
+    },
+
     serialize() {
       return {
         id: self.id,
@@ -252,7 +259,7 @@ export const View = types
     },
 
     toggleSelected(id) {
-      const isSelected = self.selected.isSelected(id);
+      const isSelected = self.selected.list.includes(id);
       const action = isSelected ? "deleteSelectedItem" : "addSelectedItem";
 
       self.selected.toggleItem(id);
