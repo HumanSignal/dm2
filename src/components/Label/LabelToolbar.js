@@ -14,7 +14,7 @@ export const LabelToolbar = observer(
   ({ view, history, completion, lsf, isLabelStream }) => {
     const task = view.dataStore.selected;
     return task ? (
-      <Toolbar>
+      <Toolbar style={{ paddingRight: 340 }}>
         <CurrentTaskWrapper>
           <Space size="large">
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -24,10 +24,6 @@ export const LabelToolbar = observer(
                 </div>
               </History>
             </div>
-
-            <ButtonGroup>
-              <Button>Reject</Button>
-            </ButtonGroup>
 
             <LSFOperations history={completion?.history} />
           </Space>
@@ -87,10 +83,12 @@ const SubmissionButtons = observer(({ lsf, completion, isLabelStream }) => {
     buttons.push(
       <Tooltip
         key="skip"
-        title="Cancel (skip) task: [ Ctrl+Space ]"
+        title="Reject task: [ Ctrl+Space ]"
         mouseEnterDelay={TOOLTIP_DELAY}
       >
-        <Button onClick={lsf.skipTask}>Skip {buttons.skip}</Button>
+        <Button onClick={lsf.skipTask} danger>
+          Reject {buttons.skip}
+        </Button>
       </Tooltip>
     );
   }
