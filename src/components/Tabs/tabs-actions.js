@@ -17,7 +17,7 @@ export const TabsActions = inject("store")(
             return (
               <Button
                 key={action.id}
-                onClick={() => store.currentView.invokeAction(action.id)}
+                onClick={() => store.invokeAction(action.id)}
               >
                 {action.title}
               </Button>

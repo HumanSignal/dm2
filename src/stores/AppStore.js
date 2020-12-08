@@ -151,10 +151,13 @@ export const AppStore = types
 
     invokeAction: flow(function* (actionId, options = {}) {
       const view = self.currentView;
+      const { selected } = view;
 
       const actionParams = {
         ordering: view.ordering,
-        selectedItems: Array.from(view.selected),
+        selectedItems: selected.hasSelected
+          ? selected.snapshot
+          : { all: true, excluded: [] },
         filters: {
           conjunction: view.conjunction,
           items: view.serializedFilters,

@@ -32,8 +32,8 @@ export const TableHead = observer(
           <TableHeadWrapper style={style}>
             <TableCheckboxCell
               enabled={!!onRowSelect}
-              checked={selected.isAllSelected()}
-              indeterminate={selected.isIndeterminate()}
+              checked={selected.isAllSelected}
+              indeterminate={selected.isIndeterminate}
               onChange={(checked) => onRowSelect("update", null, checked)}
             />
 

@@ -27,11 +27,15 @@ const SelectedItems = types
       return self.all ? "excluded" : "included";
     },
 
-    isAllSelected() {
+    get hasSelected() {
+      return self.isAllSelected || self.isIndeterminate;
+    },
+
+    get isAllSelected() {
       return self.all && self.list.length === 0;
     },
 
-    isIndeterminate() {
+    get isIndeterminate() {
       return self.list.length > 0;
     },
 
@@ -308,35 +312,6 @@ export const View = types
         self.hiddenColumns = self.hiddenColumns ?? ViewHiddenColumns.create();
       }
     },
-
-    invokeAction: flow(function* (actionId, options = {}) {
-      const actionParams = {
-        ordering: self.ordering,
-        selectedItems: self.selected.snapshot,
-        filters: {
-          conjunction: self.conjunction,
-          items: self.serializedFilters,
-        },
-      };
-
-      const result = yield getRoot(self).apiCall(
-        "invokeAction",
-        {
-          id: actionId,
-          tabID: self.id,
-        },
-        {
-          body: actionParams,
-        }
-      );
-
-      if (options.reload !== false) {
-        self.reload();
-        self.setSelected([]);
-      }
-
-      return result;
-    }),
 
     save: flow(function* ({ reload } = {}) {
       if (self.virtual) return;
