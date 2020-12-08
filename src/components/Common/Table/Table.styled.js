@@ -46,10 +46,6 @@ export const TableRowWrapper = styled.div`
     background-color: #f3f9ff;
   }
 
-  &.selected {
-    pointer-events: default;
-  }
-
   &:not(.selected).highlighted::after {
     top: 0;
     left: 0;

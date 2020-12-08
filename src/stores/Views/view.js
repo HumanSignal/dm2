@@ -232,6 +232,15 @@ export const View = types
       self.parent.setTask(params);
     },
 
+    closeLabeling() {
+      const store = self.root;
+
+      store.unsetTask();
+      store.SDK.setMode("explorer");
+      store.SDK.destroyLSF();
+      store.dataStore.reload();
+    },
+
     setFilters(filters) {
       self.filters.push(...(filters ?? []));
     },

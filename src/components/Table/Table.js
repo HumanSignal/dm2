@@ -248,6 +248,8 @@ export const DataView = observer(
             id: currentTask.id,
             taskID: currentTask.task_id,
           });
+        } else {
+          view.closeLabeling();
         }
       },
       [view]

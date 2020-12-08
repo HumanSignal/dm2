@@ -56,12 +56,7 @@ const LabelingComponent = observer(({ store }) => {
     store.SDK.lsf?.currentCompletion
   );
 
-  const closeLabeling = () => {
-    store.unsetTask();
-    store.SDK.setMode("explorer");
-    store.SDK.destroyLSF();
-    store.dataStore.reload();
-  };
+  const closeLabeling = () => view.closeLabeling();
 
   React.useEffect(() => {
     const callback = (completion) => {
@@ -78,7 +73,10 @@ const LabelingComponent = observer(({ store }) => {
   }, []);
 
   React.useEffect(() => {
-    console.log("Loading LSF");
+    setCompletion(store.SDK.lsf?.currentCompletion);
+  }, [store.SDK.lsf?.currentCompletion?.id]);
+
+  React.useEffect(() => {
     store.SDK.startLabeling(lsfRef.current, store.dataStore.selected);
   }, [store.dataStore.selected]);
 
