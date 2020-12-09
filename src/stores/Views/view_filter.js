@@ -90,11 +90,12 @@ export const ViewFilter = types
     setFilter(value) {
       const previousFilterType = self.filter.type;
       self.filter = value;
-      self.setOperator(self.component[0].key);
 
       if (previousFilterType !== value.type) {
         self.setDefaultValue();
       }
+
+      self.setOperator(self.component[0].key);
 
       self.save();
     },
