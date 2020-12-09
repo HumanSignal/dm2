@@ -69,7 +69,7 @@ export const TableStyles = styled.div`
     }
 
     &__table-heading {
-      font-weight: 500;
+      font-weight: 400;
     }
 
     &__table-heading-group {
