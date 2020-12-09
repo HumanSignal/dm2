@@ -53,9 +53,12 @@ export const create = (columns) => {
     listItemType: TaskModel,
   }).actions((self) => ({
     loadTask: flow(function* (taskID) {
+      if (self.loadingItem) return;
+
       let remoteTask,
         task = null;
       const rootStore = getRoot(self);
+      self.loadingItem = true;
 
       if (taskID !== undefined) {
         remoteTask = yield rootStore.apiCall("task", { taskID });
@@ -75,6 +78,8 @@ export const create = (columns) => {
       }
 
       self.setSelected(task);
+
+      self.loadingItem = false;
 
       return task;
     }),
