@@ -90,6 +90,7 @@ export class LSFWrapper {
     const newTask = await tasks.loadTask(taskID);
 
     this.task = newTask;
+    this.task.mergeCompletions(this.completions);
 
     /**
      * Add new data from received task
@@ -128,11 +129,6 @@ export class LSFWrapper {
       completion = cs.addCompletionFromPrediction(this.predictions[0]);
     } else if (this.completions.length) {
       console.log("Existing ID taken");
-      console.log({
-        id,
-        ids: this.completions.map((c) => c.id),
-        pks: this.completions.map((c) => c.pk),
-      });
 
       completion =
         id !== null
@@ -199,6 +195,10 @@ export class LSFWrapper {
 
   /**@private */
   onDeleteCompletion = async (ls, completion) => {
+    if (completion.userGenerate && completion.sentUserGenerate === false) {
+      return;
+    }
+
     this.setLoading(true);
 
     const { task } = this;

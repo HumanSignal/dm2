@@ -157,8 +157,6 @@ export const DataView = observer(
     const [showSource, setShowSource] = React.useState();
     const { selected: selectedItems } = view;
 
-    console.log({ selectedItems });
-
     const {
       rows,
       prepareRow,

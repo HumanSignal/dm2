@@ -73,6 +73,11 @@ const SelectedItems = types
       self.all = data?.all ?? self.all;
       self.list = data?.[self.listName] ?? self.list;
     },
+
+    clear() {
+      self.all = false;
+      self.list = [];
+    },
   }));
 
 export const View = types

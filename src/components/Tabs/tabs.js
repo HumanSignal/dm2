@@ -52,7 +52,7 @@ const FiltersSidebar = observer(({ views }) => {
           height: 24,
         }}
       />
-      <Filters sidebar={true} />
+      <Filters sidebar={true} filters={Array.from(views.selected.filters)} />
     </div>
   ) : null;
 });

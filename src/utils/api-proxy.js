@@ -159,8 +159,6 @@ export class APIProxy {
           }
         }
 
-        console.log({ request });
-
         /** @type {Response} */
         let rawResponse;
 

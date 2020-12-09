@@ -141,10 +141,6 @@ export class DataManager {
    * @param {"explorer" | "labelstream"} mode
    */
   async setMode(mode) {
-    // if (mode === "labelstream") {
-    //   await this.lsf.loadTask();
-    // }
-
     this.mode = mode;
     this.store.setMode(mode);
   }
@@ -186,6 +182,7 @@ export class DataManager {
     ];
 
     if (!this.lsf) {
+      console.log("Initializing new label studio");
       this.lsf = new LSFWrapper(this, element, {
         ...this.labelStudioOptions,
         task,

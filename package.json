@@ -21,7 +21,7 @@
   "dependencies": {
     "antd": "^4.2.5",
     "babel-preset-react": "^6.24.1",
-    "label-studio": "../label-studio-frontend",
+    "label-studio": "^0.8.2-rc1",
     "less": "^3.12",
     "less-loader": "^6.1.0",
     "match-sorter": "^4.2.0",

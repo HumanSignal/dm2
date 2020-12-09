@@ -8,11 +8,37 @@ export const create = (columns) => {
     /* TODO: might need to be converted to a store at some point */
     completions: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
-  }).views((self) => ({
-    get lastCompletion() {
-      return self.completions[this.completions.length - 1];
-    },
-  }));
+  })
+    .views((self) => ({
+      get lastCompletion() {
+        return self.completions[this.completions.length - 1];
+      },
+    }))
+    .actions((self) => ({
+      mergeCompletions(completions) {
+        console.log("Merging completions");
+
+        self.completions = completions.map((c) => {
+          const existingCompletion = self.completions.find(
+            (ec) => ec.id === Number(c.pk)
+          );
+          const completionSnapshot = {
+            id: c.id,
+            pk: c.pk,
+            result: c.serializeCompletion(),
+            leadTime: c.leadTime,
+            userGenerate: c.userGenerate,
+            sentUserGenerate: c.sentUserGenerate,
+          };
+
+          if (existingCompletion) {
+            return { ...existingCompletion, ...completionSnapshot };
+          } else {
+            return completionSnapshot;
+          }
+        });
+      },
+    }));
 
   const TaskModel = types.compose("TaskModel", TaskModelBase, InfiniteListItem);
 

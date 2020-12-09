@@ -6,15 +6,26 @@ import { View } from "./view";
 import { ViewColumn } from "./view_column";
 import { ViewFilterType } from "./view_filter_type";
 
+const storeValue = (name, value) => {
+  window.localStorage.setItem(name, value);
+  return value;
+};
+
+const restoreValue = (name) => {
+  const value = window.localStorage.getItem(name);
+
+  return value ? (value === "true" ? true : false) : false;
+};
+
 export const ViewsStore = types
   .model("ViewsStore", {
     selected: types.safeReference(View),
     views: types.optional(types.array(View), []),
     availableFilters: types.optional(types.array(ViewFilterType), []),
     columnsTargetMap: types.map(types.array(ViewColumn)),
-    sidebarEnabled: types.optional(types.boolean, false),
-    sidebarVisible: types.optional(types.boolean, false),
     columnsRaw: types.optional(CustomJSON, []),
+    sidebarVisible: restoreValue("sidebarVisible"),
+    sidebarEnabled: restoreValue("sidebarEnabled"),
   })
   .views((self) => ({
     get all() {
@@ -118,17 +129,17 @@ export const ViewsStore = types
     },
 
     expandFilters() {
-      self.sidebarEnabled = true;
-      self.sidebarVisible = true;
+      self.sidebarEnabled = storeValue("sidebarEnabled", true);
+      self.sidebarVisible = storeValue("sidebarVisible", true);
     },
 
     collapseFilters() {
-      self.sidebarEnabled = false;
-      self.sidebarVisible = false;
+      self.sidebarEnabled = storeValue("sidebarEnabled", false);
+      self.sidebarVisible = storeValue("sidebarVisible", false);
     },
 
     toggleSidebar() {
-      self.sidebarVisible = !self.sidebarVisible;
+      self.sidebarVisible = storeValue("sidebarVisible", !self.sidebarVisible);
     },
 
     fetchColumns() {

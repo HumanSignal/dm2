@@ -11,7 +11,6 @@ import { prepareColumns } from "./utils";
 
 export const Table = observer(
   ({ data, onRowSelect, selected, cellViews, headerRenderers, ...props }) => {
-    console.log({ selected });
     const columns = prepareColumns(props.columns, props.hiddenColumns);
 
     const contextValue = {
@@ -21,10 +20,6 @@ export const Table = observer(
       cellViews,
       headerRenderers,
     };
-
-    const selectedItems = React.useMemo(() => {
-      return selected;
-    }, [selected.list, selected.all]);
 
     const selectedRowIndex = data.findIndex(
       (r) => r.original?.isSelected || r.original?.isHighlighted
