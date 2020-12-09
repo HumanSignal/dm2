@@ -1,9 +1,10 @@
 import {
   AppstoreOutlined,
   BarsOutlined,
+  LoadingOutlined,
   PlayCircleOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Radio, Space } from "antd";
+import { Button, Divider, Radio, Space, Spin } from "antd";
 import { observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
@@ -30,6 +31,10 @@ export const TablePanel = observer(({ views, view }) => {
           sidebar={views.sidebarEnabled}
           filters={Array.from(view.filters ?? [])}
         />
+
+        {view.dataStore.loading && (
+          <Spin indicator={<LoadingOutlined />} size="small" />
+        )}
 
         <ErrorBox errors={getRoot(view).serverError} />
       </Space>

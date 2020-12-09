@@ -268,6 +268,7 @@ export const DataView = observer(
           selected={selectedItems}
           onRowSelect={onRowSelect}
           onRowClick={onRowClick}
+          stopInteractions={view.dataStore.loading}
         />
       );
     };

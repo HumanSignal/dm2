@@ -25,10 +25,17 @@ const OrderButton = observer(({ desc }) => {
 });
 
 export const TableHead = observer(
-  ({ style, columnHeaderExtra, onSetOrder, sortingEnabled, selected }) => {
+  ({
+    style,
+    columnHeaderExtra,
+    onSetOrder,
+    sortingEnabled,
+    selected,
+    ...props
+  }) => {
     return (
       <TableContext.Consumer>
-        {({ columns, headerRenderers, data, onRowSelect, cellViews }) => (
+        {({ columns, headerRenderers, onRowSelect, cellViews }) => (
           <TableHeadWrapper style={style}>
             <TableCheckboxCell
               enabled={!!onRowSelect}
@@ -54,6 +61,7 @@ export const TableHead = observer(
                     canOrder={canOrder}
                     className="th-content"
                     onClick={() => canOrder && onSetOrder?.(col)}
+                    disabled={props.stopInteractions}
                   >
                     {Renderer ? <Renderer column={col} /> : col.title}
 

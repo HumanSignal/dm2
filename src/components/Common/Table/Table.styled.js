@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 export const TableWrapper = styled.div`
   width: ${({ fitToContent }) => (fitToContent ? "min-content" : "100%")};
@@ -84,6 +84,14 @@ export const TableCellContent = styled.div`
   white-space: nowrap;
   align-items: center;
   cursor: ${({ canOrder }) => (canOrder ? "pointer" : "default")};
+
+  ${({ disabled }) =>
+    disabled
+      ? css`
+          pointer-events: "none";
+          opacity: 0.6;
+        `
+      : null}
 `;
 
 export const TableHeadExtra = styled.div`

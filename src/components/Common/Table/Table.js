@@ -47,6 +47,7 @@ export const Table = observer(
             isHighlighted={row.isHighlighted}
             onClick={props.onRowClick}
             selected={selectedItems}
+            stopInteractions={props.stopInteractions}
             style={{
               ...style,
               height: props.rowHeight,
@@ -55,7 +56,14 @@ export const Table = observer(
           />
         );
       },
-      [data, props.fitContent, props.onRowClick, props.rowHeight, selectedItems]
+      [
+        data,
+        props.fitContent,
+        props.onRowClick,
+        props.rowHeight,
+        props.stopInteractions,
+        selectedItems,
+      ]
     );
 
     const renderStickyComponent = React.useCallback(
@@ -67,6 +75,7 @@ export const Table = observer(
           sortingEnabled={props.sortingEnabled}
           onSetOrder={props.onSetOrder}
           selected={selectedItems}
+          stopInteractions={props.stopInteractions}
         />
       ),
       [
@@ -74,6 +83,7 @@ export const Table = observer(
         props.columnHeaderExtra,
         props.sortingEnabled,
         props.onSetOrder,
+        props.stopInteractions,
         selectedItems,
       ]
     );
