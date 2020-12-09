@@ -5,8 +5,9 @@ const MixinBase = types
     page: types.optional(types.integer, 0),
     pageSize: types.optional(types.integer, 30),
     total: types.optional(types.integer, 0),
-    loading: types.optional(types.boolean, false),
-    loaded: types.optional(types.boolean, false),
+    loading: false,
+    loaded: false,
+    loadingItem: false,
   })
   .views((self) => ({
     get API() {

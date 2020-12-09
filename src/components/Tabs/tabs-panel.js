@@ -19,7 +19,7 @@ export const TablePanel = observer(({ views, view }) => {
   return (
     <div className="tab-panel">
       <Space>
-        {/* {false && (<ViewToggle view={view}/>} */}
+        <ViewToggle view={view} />
 
         {/* {false && (<DataStoreToggle view={view}/>)} */}
 
