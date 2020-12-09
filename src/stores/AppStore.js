@@ -177,7 +177,7 @@ export const AppStore = types
 
       if (options.reload !== false) {
         view.reload();
-        view.selected.clear();
+        view.clearSelection();
       }
 
       return result;

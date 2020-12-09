@@ -272,6 +272,11 @@ export const View = types
       self.updateSelectedList("setSelectedItems");
     },
 
+    clearSelection() {
+      self.selected.clear();
+      self.updateSelectedList("setSelectedItems");
+    },
+
     toggleSelected(id) {
       const isSelected = self.selected.list.includes(id);
       const action = isSelected ? "deleteSelectedItem" : "addSelectedItem";

@@ -88,9 +88,11 @@ export class LSFWrapper {
     this.setLoading(true);
     const tasks = this.datamanager.store.taskStore;
     const newTask = await tasks.loadTask(taskID);
+    const needsCompletionsMerge = this.task?.id === newTask.id;
 
     this.task = newTask;
-    this.task.mergeCompletions(this.completions);
+
+    if (needsCompletionsMerge) this.task.mergeCompletions(this.completions);
 
     /**
      * Add new data from received task
@@ -164,10 +166,8 @@ export class LSFWrapper {
 
   /** @private */
   onSubmitCompletion = async (ls, completion) => {
-    this.datamanager.invoke("submitCompletion", [ls, completion]);
-
     await this.submitCurrentCompletion("submitCompletion", (taskID, body) =>
-      this.datamanager.api.submitCompletion({ taskID }, { body })
+      this.datamanager.apiCall("submitCompletion", { taskID }, { body })
     );
   };
 
@@ -176,7 +176,8 @@ export class LSFWrapper {
     this.setLoading(true);
     const { task } = this;
 
-    const result = await this.datamanager.api.updateCompletion(
+    const result = await this.datamanager.apiCall(
+      "updateCompletion",
       {
         taskID: task.id,
         completionID: completion.pk,
@@ -203,7 +204,7 @@ export class LSFWrapper {
 
     const { task } = this;
 
-    const response = await this.datamanager.api.deleteCompletion({
+    const response = await this.datamanager.apiCall("deleteCompletion", {
       taskID: task.id,
       completionID: completion.pk,
     });
@@ -216,11 +217,14 @@ export class LSFWrapper {
     this.setLoading(false);
   };
 
-  onSkipTask = async (ls) => {
-    await this.submitCurrentCompletion("skipTask", (taskID) => {
-      this.datamanager.api.skipTask({ taskID, was_cancelled: 1 });
-      this.datamanager.invoke("skipTask", [ls]);
-    });
+  onSkipTask = async () => {
+    await this.submitCurrentCompletion("skipTask", (taskID, body) =>
+      this.datamanager.apiCall(
+        "skipTask",
+        { taskID, was_cancelled: 1 },
+        { body }
+      )
+    );
   };
 
   async submitCurrentCompletion(eventName, submit) {
@@ -228,6 +232,8 @@ export class LSFWrapper {
 
     const { taskID, currentCompletion } = this;
     const result = await submit(taskID, this.prepareData(currentCompletion));
+
+    console.log({ [eventName]: result });
 
     if (result && result.id !== undefined) {
       currentCompletion.updatePersonalKey(result.id.toString());

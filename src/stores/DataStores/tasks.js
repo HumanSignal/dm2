@@ -22,17 +22,23 @@ export const create = (columns) => {
           const existingCompletion = self.completions.find(
             (ec) => ec.id === Number(c.pk)
           );
+
           const completionSnapshot = {
             id: c.id,
             pk: c.pk,
             result: c.serializeCompletion(),
             leadTime: c.leadTime,
-            userGenerate: c.userGenerate,
-            sentUserGenerate: c.sentUserGenerate,
+            userGenerate: !!c.userGenerate,
+            sentUserGenerate: !!c.sentUserGenerate,
           };
 
           if (existingCompletion) {
-            return { ...existingCompletion, ...completionSnapshot };
+            return {
+              ...completionSnapshot,
+              ...existingCompletion,
+              userGenerate: false,
+              sentUserGenerate: false,
+            };
           } else {
             return completionSnapshot;
           }

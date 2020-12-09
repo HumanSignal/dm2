@@ -202,4 +202,8 @@ export class DataManager {
     this.lsf.resetLabelStudio();
     this.lsf = undefined;
   }
+
+  async apiCall(...args) {
+    return this.store.apiCall(...args);
+  }
 }

@@ -1,4 +1,8 @@
-import { CheckCircleOutlined, CheckOutlined } from "@ant-design/icons";
+import {
+  CheckCircleOutlined,
+  CheckOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
 import { Button, Space, Tooltip } from "antd";
 import ButtonGroup from "antd/lib/button/button-group";
 import { observer } from "mobx-react";
@@ -14,7 +18,7 @@ export const LabelToolbar = observer(
   ({ view, history, completion, lsf, isLabelStream }) => {
     const task = view.dataStore.selected;
     return task ? (
-      <Toolbar style={{ paddingRight: 340 }}>
+      <Toolbar>
         <CurrentTaskWrapper>
           <Space size="large">
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -29,15 +33,29 @@ export const LabelToolbar = observer(
           </Space>
         </CurrentTaskWrapper>
 
-        <LabelActions>
-          {!!lsf && !!completion && (
+        {!!lsf && !!completion && (
+          <LabelActions>
             <SubmissionButtons
               lsf={lsf}
               completion={completion}
               isLabelStream={isLabelStream}
             />
-          )}
-        </LabelActions>
+
+            <LabelTools>
+              <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+                <Button type="primary" onClick={() => lsf.toggleDescription()}>
+                  {!lsf.showingDescription ? "Show " : "Hide "}
+                  instructions
+                </Button>
+
+                <Button
+                  icon={<SettingOutlined />}
+                  onClick={() => lsf.toggleSettings()}
+                />
+              </Space>
+            </LabelTools>
+          </LabelActions>
+        )}
       </Toolbar>
     ) : null;
   }
@@ -79,19 +97,17 @@ const SubmissionButtons = observer(({ lsf, completion, isLabelStream }) => {
     buttons.update = <Hint> [ Alt+Enter] </Hint>;
   }
 
-  if (isLabelStream) {
-    buttons.push(
-      <Tooltip
-        key="skip"
-        title="Reject task: [ Ctrl+Space ]"
-        mouseEnterDelay={TOOLTIP_DELAY}
-      >
-        <Button onClick={lsf.skipTask} danger>
-          Reject {buttons.skip}
-        </Button>
-      </Tooltip>
-    );
-  }
+  buttons.push(
+    <Tooltip
+      key="skip"
+      title="Reject task: [ Ctrl+Space ]"
+      mouseEnterDelay={TOOLTIP_DELAY}
+    >
+      <Button onClick={lsf.skipTask} danger>
+        {isLabelStream ? "Skip & Next" : "Skip"} {buttons.skip}
+      </Button>
+    </Tooltip>
+  );
 
   if ((userGenerate && !sentUserGenerate) || (lsf.explore && !userGenerate)) {
     buttons.push(
@@ -181,5 +197,13 @@ const Toolbar = styled.div`
   justify-content: space-between;
   padding-bottom: 10px;
 `;
+
 const CurrentTaskWrapper = styled.div``;
-const LabelActions = styled.div``;
+const LabelActions = styled.div`
+  display: flex;
+`;
+
+const LabelTools = styled.div`
+  width: 320px;
+  margin-left: 20px;
+`;
