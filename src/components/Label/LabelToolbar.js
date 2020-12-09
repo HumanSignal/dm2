@@ -191,14 +191,20 @@ const History = observer(({ history, children }) => {
 });
 
 const Toolbar = styled.div`
+  top: 0;
   flex: 0;
+  z-index: 100;
   display: flex;
+  position: sticky;
+  padding-left: 15px;
   align-items: center;
-  justify-content: space-between;
   padding-bottom: 10px;
+  justify-content: space-between;
+  background-color: #fff;
 `;
 
 const CurrentTaskWrapper = styled.div``;
+
 const LabelActions = styled.div`
   display: flex;
 `;

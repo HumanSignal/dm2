@@ -5,7 +5,12 @@ export const ImageCell = (column) => (
     key={column.value}
     src={column.value}
     alt={column.value}
-    style={{ maxHeight: "100%", objectFit: "contain", borderRadius: 3 }}
+    style={{
+      maxHeight: "100%",
+      maxWidth: "100px",
+      objectFit: "contain",
+      borderRadius: 3,
+    }}
   />
 );
 

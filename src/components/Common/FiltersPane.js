@@ -4,16 +4,16 @@ import React from "react";
 import { VscListFilter } from "react-icons/vsc";
 import { Filters } from "../Filters/Filters";
 
-const FiltersButton = observer(({ onClick, active }) => {
+const FiltersButton = observer(({ onClick, active, size }) => {
   return (
-    <Button onClick={onClick} type={active ? "primary" : "default"}>
+    <Button onClick={onClick} type={active ? "primary" : "default"} size={size}>
       <VscListFilter style={{ marginBottom: -2, marginRight: 7 }} />
       Filters
     </Button>
   );
 });
 
-export const FiltersPane = ({ sidebar, viewStore, filters }) => {
+export const FiltersPane = ({ sidebar, viewStore, filters, size }) => {
   const view = viewStore?.selected;
 
   if (!view) return null;
@@ -25,7 +25,7 @@ export const FiltersPane = ({ sidebar, viewStore, filters }) => {
     />
   ) : (
     <Dropdown overlay={<Filters filters={filters} />} trigger="click">
-      <FiltersButton active={view.filtersApplied} />
+      <FiltersButton size={size} active={view.filtersApplied} />
     </Dropdown>
   );
 };

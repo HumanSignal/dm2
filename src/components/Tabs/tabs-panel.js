@@ -13,30 +13,35 @@ import { FiltersPane } from "../Common/FiltersPane";
 import { TabsActions } from "./tabs-actions";
 
 export const TablePanel = observer(({ views, view }) => {
+  const toolbarSize = "middle";
+
   return (
     <div className="tab-panel">
-      <Space size="middle">
+      <Space>
         {/* {false && (<ViewToggle view={view}/>} */}
 
         {/* {false && (<DataStoreToggle view={view}/>)} */}
 
-        <FieldsButton columns={view.targetColumns} />
+        <FieldsButton size={toolbarSize} columns={view.targetColumns} />
 
         <FiltersPane
-          sidebar={views.sidebarEnabled}
+          size={toolbarSize}
           viewStore={views}
+          sidebar={views.sidebarEnabled}
           filters={Array.from(view.filters ?? [])}
         />
 
         <ErrorBox errors={getRoot(view).serverError} />
       </Space>
 
-      <Space size="middle">
-        <TabsActions />
+      <Space>
+        <TabsActions size={toolbarSize} />
 
-        <Divider />
+        {view.selected.hasSelected && <Divider type="vertical" />}
 
         <Button
+          type="primary"
+          size={toolbarSize}
           disabled={view.target === "annotations"}
           onClick={() => view.labelAll()}
         >

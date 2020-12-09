@@ -13,7 +13,6 @@ export const Styles = styled.div`
   .table {
     display: flex;
     flex: 200px 0 0;
-    margin-right: 1em;
     flex-direction: column;
   }
 
@@ -51,6 +50,18 @@ export const Styles = styled.div`
       padding-top: 0;
     }
   }
+`;
+
+export const LabelStudioWrapper = styled.div`
+  flex: 1;
+  overflow: auto;
+  box-sizing: border-box;
+  padding-bottom: 50px;
+  overflow: auto;
+`;
+
+export const LabelStudioContent = styled.div`
+  padding-left: 15px;
 `;
 
 export const Hint = styled.sup`

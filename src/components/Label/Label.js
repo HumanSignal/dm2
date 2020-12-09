@@ -6,7 +6,7 @@ import { inject, observer } from "mobx-react";
 import React from "react";
 import { FieldsButton } from "../Common/FieldsButton";
 import { DataView } from "../Table/Table";
-import { Styles } from "./Label.styles";
+import { LabelStudioContent, LabelStudioWrapper, Styles } from "./Label.styles";
 import { LabelToolbar } from "./LabelToolbar";
 
 /**
@@ -69,7 +69,8 @@ const LabelingComponent = observer(({ store }) => {
             />
           </div>
         )}
-        <div key="lsf-root" className="label-studio">
+
+        <LabelStudioWrapper>
           <LabelToolbar
             view={view}
             history={history}
@@ -77,10 +78,8 @@ const LabelingComponent = observer(({ store }) => {
             completion={completion}
             isLabelStream={store.isLabelStreamMode}
           />
-          <div className="label-studio__content">
-            <div id="label-studio" ref={lsfRef}></div>
-          </div>
-        </div>
+          <LabelStudioContent id="label-studio" ref={lsfRef} />
+        </LabelStudioWrapper>
       </PageHeader>
     </Styles>
   );

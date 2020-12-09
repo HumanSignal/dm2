@@ -3,7 +3,7 @@ import { inject, observer } from "mobx-react";
 import React from "react";
 
 export const TabsActions = inject("store")(
-  observer(({ store }) => {
+  observer(({ store, size }) => {
     const selected = store.currentView.selectedLength;
     const actions = store.availableActions
       .filter((a) => !a.hidden)
@@ -16,6 +16,7 @@ export const TabsActions = inject("store")(
           {actions.map((action) => {
             return (
               <Button
+                size={size}
                 key={action.id}
                 onClick={() => store.invokeAction(action.id)}
               >

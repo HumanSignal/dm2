@@ -183,6 +183,7 @@ export class DataManager {
 
     if (!this.lsf) {
       console.log("Initializing new label studio");
+
       this.lsf = new LSFWrapper(this, element, {
         ...this.labelStudioOptions,
         task,
