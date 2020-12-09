@@ -21,9 +21,11 @@ export const Table = observer(
       headerRenderers,
     };
 
-    const selectedItems = React.useMemo(() => {
-      return selected;
-    }, [selected.list, selected.all]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const selectedItems = React.useMemo(() => selected, [
+      selected.list,
+      selected.all,
+    ]);
 
     const selectedRowIndex = data.findIndex(
       (r) => r.original?.isSelected || r.original?.isHighlighted

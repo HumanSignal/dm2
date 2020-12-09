@@ -157,11 +157,7 @@ export const DataView = observer(
     const [showSource, setShowSource] = React.useState();
     const { selected: selectedItems } = view;
 
-    const {
-      rows,
-      prepareRow,
-      state: { selectedRowIds },
-    } = useTable(
+    const { rows, prepareRow } = useTable(
       {
         columns,
         data,

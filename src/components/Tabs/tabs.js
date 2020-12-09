@@ -61,9 +61,12 @@ export const TabsWrapper = inject("store")(
   observer(({ store }) => {
     const views = store.viewsStore;
     const activeTab = store.viewsStore.selected;
-    const columns = React.useMemo(() => {
-      return activeTab.fieldsAsColumns;
-    }, [activeTab, activeTab.target]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const columns = React.useMemo(() => activeTab.fieldsAsColumns, [
+      activeTab,
+      activeTab.target,
+    ]);
 
     return (
       <TabsStyles>
