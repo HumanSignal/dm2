@@ -72,7 +72,7 @@ export class SharedAudio extends Component {
         >
           {paused ? <FaPlay /> : <FaPause />}
         </Button>
-        {this.audio && !this.state.idle ? (
+        {this.audio && (
           <div style={{ display: "flex", flex: 1, alignItems: "center" }}>
             <PlaybackControl
               units="seconds"
@@ -81,8 +81,6 @@ export class SharedAudio extends Component {
               onChange={(time) => (this.audio.currentTime = time)}
             />
           </div>
-        ) : (
-          <div>{this.props.src}</div>
         )}
       </div>
     );
@@ -108,7 +106,6 @@ export class SharedAudio extends Component {
 
     const audio = new Audio(this.props.src);
     document.body.appendChild(audio);
-    console.log({ audio });
 
     audio.classList.add("dm-audio");
     audio.currentTime = 0;
