@@ -31,10 +31,23 @@ class ErrorBoundary extends React.Component {
  * @param {{app: AppStore} param0
  */
 const AppComponent = ({ app }) => {
+  // make full screen for label stream
+  const rootStyle =
+    app.SDK.mode === "labelstream"
+      ? {
+          padding: 15,
+          position: "absolute",
+          width: "100%",
+          top: 0,
+          "z-index": 1000,
+          "background-color": "white",
+        }
+      : { padding: 15 };
+
   return (
     <ErrorBoundary>
       <Provider store={app}>
-        <Styles fullScreen={app.isLabeling} style={{ padding: 15 }}>
+        <Styles fullScreen={app.isLabeling} style={rootStyle}>
           {app.loading ? (
             <div className="app-loader">
               <Spin indicator={<LoadingOutlined />} size="large" />

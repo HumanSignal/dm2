@@ -103,7 +103,7 @@ export const ViewsStore = types
     addView: flow(function* (viewSnapshot) {
       const lastView = self.views[self.views.length - 1];
 
-      const newTitle = `New tab ${self.views.length + 1}`;
+      const newTitle = `New Tab ${self.views.length + 1}`;
 
       const newView = self.createView({
         ...(viewSnapshot ?? {}),

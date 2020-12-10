@@ -206,7 +206,7 @@ const GridCellWrapper = styled.div`
             "0 0 2px 2px rgba(26, 144, 255, 0.44)",
             "0 0 0 1px rgba(26, 144, 255, 0.6)",
           ]
-        : ["0 0 4px 0 rgba(0,0,0,0.32)"]
+        : ["0 0 2px 0 rgba(0,0,0,0.32)"]
       ).join(", ")};
   }
 `;

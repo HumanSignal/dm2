@@ -10,7 +10,9 @@ export const StringCell = (column) => {
         lineHeight: "16px",
       }}
     >
-      {column.value}
+      {typeof column.value === "string"
+        ? column.value
+        : JSON.stringify(column.value)}
     </div>
   );
 };

@@ -51,7 +51,7 @@ export const TablePanel = observer(({ views, view }) => {
           onClick={() => view.labelAll()}
         >
           <PlayCircleOutlined />
-          Label All
+          Label
         </Button>
       </Space>
     </div>
