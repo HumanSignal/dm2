@@ -218,20 +218,29 @@ export class LSFWrapper {
   };
 
   onSkipTask = async () => {
-    await this.submitCurrentCompletion("skipTask", (taskID, body) =>
-      this.datamanager.apiCall(
-        "skipTask",
-        { taskID, was_cancelled: 1 },
-        { body }
-      )
+    await this.submitCurrentCompletion(
+      "skipTask",
+      (taskID, body) => {
+        const { id, ...completion } = body;
+        const params = { taskID, was_cancelled: 1 };
+        const options = { body: completion };
+
+        if (id !== undefined) params.completionID = id;
+
+        return this.datamanager.apiCall("skipTask", params, options);
+      },
+      true
     );
   };
 
-  async submitCurrentCompletion(eventName, submit) {
+  async submitCurrentCompletion(eventName, submit, includeID = false) {
     this.setLoading(true);
 
     const { taskID, currentCompletion } = this;
-    const result = await submit(taskID, this.prepareData(currentCompletion));
+    const result = await submit(
+      taskID,
+      this.prepareData(currentCompletion, includeID)
+    );
 
     console.log({ [eventName]: result });
 
@@ -263,7 +272,7 @@ export class LSFWrapper {
     };
 
     if (includeId) {
-      result.id = parseInt(completion.id);
+      result.id = parseInt(completion.pk);
     }
 
     return result;

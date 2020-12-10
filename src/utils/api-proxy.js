@@ -243,7 +243,7 @@ export class APIProxy {
     const url = new URL(this.gateway);
     const usedKeys = [];
     const path = []
-      .concat(...(parentPath ?? []), endpoint)
+      .concat(...(parentPath ?? []), this.resolveEndpoint(endpoint, data))
       .filter((p) => p !== undefined)
       .join("/")
       .replace(/([/]+)/g, "/");
@@ -271,6 +271,19 @@ export class APIProxy {
     }
 
     return url.toString();
+  }
+
+  /**
+   * Resolves an endpoint
+   * @param {string|Function} endpoint
+   * @param {Dict} data
+   */
+  resolveEndpoint(endpoint, data) {
+    if (endpoint instanceof Function) {
+      return endpoint(data);
+    } else {
+      return endpoint;
+    }
   }
 
   /**

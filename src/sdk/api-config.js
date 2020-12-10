@@ -1,3 +1,5 @@
+import { isDefined } from "../utils/utils";
+
 /** @type {import("../utils/api-proxy").APIProxyOptions} */
 export const APIConfig = {
   gateway: "/api",
@@ -22,7 +24,11 @@ export const APIConfig = {
 
     completion: "/tasks/:taskID/completions/:id",
     skipTask: {
-      path: "/tasks/:taskID/completions",
+      path: (params) => {
+        const pathBase = "/tasks/:taskID/completions";
+        const isNewCompletion = !isDefined(params.completionID);
+        return isNewCompletion ? pathBase : `${pathBase}/:completionID`;
+      },
       method: "post",
     },
     submitCompletion: {
