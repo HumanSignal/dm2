@@ -1,4 +1,4 @@
-import { Checkbox } from "antd";
+import { Checkbox, Space } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -11,10 +11,10 @@ import * as DataGroups from "./DataGroups";
 const GridHeader = observer(({ row, view, selected }) => {
   return (
     <GridCellHeader>
-      <div style={{ display: "flex", width: "100%", flex: 1 }}>
+      <Space>
         <Checkbox checked={selected.isSelected(row.id)} />
-        <span style={{ marginLeft: 5 }}>{row.id}</span>
-      </div>
+        <span>{row.id}</span>
+      </Space>
     </GridCellHeader>
   );
 });
@@ -172,7 +172,7 @@ export const GridView = observer(
                   ref={ref}
                   width={width}
                   height={height}
-                  rowHeight={rowHeight + 10}
+                  rowHeight={rowHeight + 52}
                   overscanRowCount={10}
                   columnCount={columnCount}
                   columnWidth={width / columnCount}
@@ -197,8 +197,10 @@ const GridCellWrapper = styled.div`
   & > div {
     width: 100%;
     height: 100%;
+    cursor: pointer;
+    overflow: hidden;
     position: relative;
-    border-radius: 3px;
+    border-radius: 2px;
     background: ${({ selected }) => (selected ? "#eff7ff" : "none")};
     box-shadow: ${({ selected }) =>
       (selected
@@ -206,18 +208,15 @@ const GridCellWrapper = styled.div`
             "0 0 2px 2px rgba(26, 144, 255, 0.44)",
             "0 0 0 1px rgba(26, 144, 255, 0.6)",
           ]
-        : ["0 0 4px 0 rgba(0,0,0,0.32)"]
+        : ["0 0 0 0.5px rgba(0,0,0,0.2)"]
       ).join(", ")};
   }
 `;
 
 const GridCellHeader = styled.div`
-  top: 0;
   padding: 5px;
   width: 100%;
-  color: #fff;
   display: flex;
-  position: absolute;
+  background: #f9f9f9;
   justify-content: space-between;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4), transparent);
 `;

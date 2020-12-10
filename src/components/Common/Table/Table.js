@@ -21,19 +21,43 @@ export const Table = observer(
       headerRenderers,
     };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const selectedItems = React.useMemo(() => selected, [
-      selected.list,
-      selected.all,
-    ]);
+    const selectedItems = React.useMemo(() => {
+      console.log("recalculate selected items");
+      return selected;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selected.list, selected.all]);
 
-    const selectedRowIndex = data.findIndex(
-      (r) => r.original?.isSelected || r.original?.isHighlighted
+    const selectedRowIndex = React.useMemo(
+      () =>
+        data.findIndex(
+          (r) => r.original?.isSelected || r.original?.isHighlighted
+        ),
+      [data]
     );
 
-    const initialScrollOffset = selectedRowIndex * 100;
-
     const headerHeight = 42;
+
+    const renderTableHeader = React.useCallback(
+      ({ style }) => (
+        <TableHead
+          style={style}
+          order={props.order}
+          columnHeaderExtra={props.columnHeaderExtra}
+          sortingEnabled={props.sortingEnabled}
+          onSetOrder={props.onSetOrder}
+          selected={selectedItems}
+          stopInteractions={props.stopInteractions}
+        />
+      ),
+      [
+        props.order,
+        props.columnHeaderExtra,
+        props.sortingEnabled,
+        props.onSetOrder,
+        props.stopInteractions,
+        selectedItems,
+      ]
+    );
 
     const renderRow = React.useCallback(
       ({ style, index }) => {
@@ -66,33 +90,25 @@ export const Table = observer(
       ]
     );
 
-    const renderStickyComponent = React.useCallback(
-      ({ style }) => (
-        <TableHead
-          style={style}
-          order={props.order}
-          columnHeaderExtra={props.columnHeaderExtra}
-          sortingEnabled={props.sortingEnabled}
-          onSetOrder={props.onSetOrder}
-          selected={selectedItems}
-          stopInteractions={props.stopInteractions}
-        />
-      ),
-      [
-        props.order,
-        props.columnHeaderExtra,
-        props.sortingEnabled,
-        props.onSetOrder,
-        props.stopInteractions,
-        selectedItems,
-      ]
-    );
-
     const isItemLoaded = React.useCallback(
       (index) => {
         return props.isItemLoaded(data, index);
       },
       [props, data]
+    );
+
+    const initialScrollOffset = React.useCallback(
+      (height) => {
+        return selectedRowIndex * 100 - height / 2 + headerHeight;
+      },
+      [selectedRowIndex]
+    );
+
+    const itemKey = React.useCallback(
+      (index) => {
+        return data[index]?.key ?? index;
+      },
+      [data]
     );
 
     return (
@@ -104,14 +120,12 @@ export const Table = observer(
             itemHeight={props.rowHeight}
             totalCount={props.total}
             itemCount={data.length + 1}
-            itemKey={(index) => data[index]?.key ?? index}
+            itemKey={itemKey}
             innerElementType={innerElementType}
             stickyItems={[0]}
             stickyItemsHeight={[headerHeight]}
-            stickyComponent={renderStickyComponent}
-            initialScrollOffset={(height) =>
-              initialScrollOffset - height / 2 + headerHeight
-            }
+            stickyComponent={renderTableHeader}
+            initialScrollOffset={initialScrollOffset}
             isItemLoaded={isItemLoaded}
             loadMore={props.loadMore}
           >
