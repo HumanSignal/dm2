@@ -53,7 +53,7 @@ export const ViewFilter = types
     },
 
     get component() {
-      return Filters[self.filter.type];
+      return Filters[self.filter.type] ?? Filters.String;
     },
 
     get componentValueType() {

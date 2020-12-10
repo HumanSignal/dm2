@@ -7,4 +7,6 @@ export const AudioCell = (column) => {
 
 AudioCell.style = {
   width: 50,
+  minWidth: 150,
+  maxWidth: 150,
 };
