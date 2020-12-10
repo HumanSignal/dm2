@@ -48,9 +48,13 @@ export const create = (columns) => {
 
   const TaskModel = types.compose("TaskModel", TaskModelBase, InfiniteListItem);
 
-  return InfiniteList("TasksStore", {
+  const TaskStoreModel = InfiniteList("TasksStore", {
     apiMethod: "tasks",
     listItemType: TaskModel,
+    properties: {
+      totalCompletions: 0,
+      totalPredictions: 0,
+    },
   }).actions((self) => ({
     loadTask: flow(function* (taskID) {
       if (self.loadingItem) return;
@@ -87,5 +91,24 @@ export const create = (columns) => {
     unsetTask() {
       self.unset();
     },
+
+    postProcessData(data) {
+      const { total_completions, total_predictions } = data;
+
+      self.totalCompletions = total_completions;
+      self.totalPredictions = total_predictions;
+    },
   }));
+
+  return types.snapshotProcessor(TaskStoreModel, {
+    preProcessor(snapshot) {
+      const { total_completions, total_predictions, ...sn } = snapshot;
+
+      return {
+        ...sn,
+        totalCompletions: total_completions,
+        totalPredictions: total_predictions,
+      };
+    },
+  });
 };

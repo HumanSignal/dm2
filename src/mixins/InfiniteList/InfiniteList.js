@@ -53,9 +53,13 @@ const MixinBase = types
     },
   }));
 
-export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
+export const InfiniteList = (
+  modelName,
+  { listItemType, apiMethod, properties }
+) => {
   const model = types
     .model(modelName, {
+      ...(properties ?? {}),
       list: types.optional(types.array(listItemType), []),
       selected: types.maybeNull(types.safeReference(listItemType)),
       highlighted: types.maybeNull(types.safeReference(listItemType)),
@@ -103,6 +107,8 @@ export const InfiniteList = (modelName, { listItemType, apiMethod }) => {
         const { total, [apiMethod]: list } = data;
 
         if (list) self.setList({ total, list, reload });
+
+        self.postProcessData?.(data);
 
         if (selected) self.selected = selected;
         if (highlighted) self.highlighted = highlighted;
