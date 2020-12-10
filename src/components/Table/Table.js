@@ -1,7 +1,6 @@
 import { Tag, Tooltip } from "antd";
 import Modal from "antd/lib/modal/Modal";
-import { observer } from "mobx-react";
-import { getRoot } from "mobx-state-tree";
+import { inject } from "mobx-react";
 import React from "react";
 import { VscQuestion } from "react-icons/vsc";
 import { Table } from "../Common/Table/Table";
@@ -9,24 +8,35 @@ import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
 import { TableStyles } from "./Table.styles";
 
-export const DataView = observer(
-  ({ data, columns, view, hiddenColumns = [] }) => {
-    const { dataStore, isLabeling } = getRoot(view);
-    const { total, selected } = dataStore;
-    const [showSource, setShowSource] = React.useState();
-    const { selected: selectedItems } = view;
+const injector = inject(({ store }) => {
+  const { dataStore, currentView } = store;
+  const props = {
+    view: currentView,
+    data: dataStore?.list ?? [],
+    viewType: currentView?.type ?? "list",
+    columns: currentView?.fieldsAsColumns ?? [],
+    hiddenColumns: currentView?.hiddenColumnsList,
+    selectedItems: currentView?.selected,
+    selectedCount: currentView?.selected?.length ?? 0,
+    total: dataStore?.total ?? 0,
+    isLabeling: dataStore?.isLabeling ?? false,
+  };
 
-    const gridView = () => {
-      return (
-        <GridView
-          view={view}
-          data={data}
-          fields={columns}
-          loadMore={loadMore}
-          selected={selected}
-        />
-      );
-    };
+  return props;
+});
+
+export const DataView = injector(
+  ({
+    data,
+    columns,
+    view,
+    selectedItems,
+    viewType,
+    total,
+    isLabeling,
+    hiddenColumns = [],
+  }) => {
+    const [showSource, setShowSource] = React.useState();
 
     const loadMore = React.useCallback(() => {
       if (view.dataStore.hasNextPage) {
@@ -63,16 +73,11 @@ export const DataView = observer(
       []
     );
 
-    const onRowSelect = React.useCallback(
-      (state, data) => {
-        if (state === "update") {
-          view.selectAll();
-        } else {
-          view.toggleSelected(data);
-        }
-      },
-      [view]
-    );
+    const onSelectAll = React.useCallback(() => view.selectAll(), [view]);
+
+    const onRowSelect = React.useCallback((id) => view.toggleSelected(id), [
+      view,
+    ]);
 
     const onRowClick = React.useCallback(
       (currentTask) => {
@@ -90,35 +95,38 @@ export const DataView = observer(
       [view]
     );
 
-    const listView = () => {
-      return (
+    const content =
+      view.root.isLabeling || viewType === "list" ? (
         <Table
+          view={view}
           data={data}
           rowHeight={70}
           total={total}
           loadMore={loadMore}
           fitContent={isLabeling}
+          columns={columns}
           hiddenColumns={hiddenColumns}
           cellViews={CellViews}
-          columns={columns}
           order={view.ordering}
           isItemLoaded={isItemLoaded}
           sortingEnabled={view.type === "list"}
           onSetOrder={(col) => view.setOrdering(col.id)}
           columnHeaderExtra={columnHeaderExtra}
-          selected={selectedItems}
-          onRowSelect={onRowSelect}
+          selectedItems={selectedItems}
+          onSelectAll={onSelectAll}
+          onSelectRow={onRowSelect}
           onRowClick={onRowClick}
           stopInteractions={view.dataStore.loading}
         />
+      ) : (
+        <GridView
+          view={view}
+          data={data}
+          fields={columns}
+          loadMore={loadMore}
+          onChange={(id) => view.toggleSelected(id)}
+        />
       );
-    };
-
-    const content = view.root.isLabeling
-      ? listView()
-      : view.type === "list"
-      ? listView()
-      : gridView();
 
     // Render the UI for your table
     return (

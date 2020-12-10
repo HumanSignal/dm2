@@ -8,25 +8,13 @@ import { TabTitle } from "./tabs-pane";
 import { TablePanel } from "./tabs-panel";
 import { TabsStyles } from "./Tabs.styles";
 
-const TabContent = observer(({ views, view, data, columns }) => {
-  return (
-    <DataView
-      key={`data-${view.target}`}
-      view={view}
-      data={Array.from(data)}
-      columns={columns}
-      hiddenColumns={view.hiddenColumnsList}
-    />
-  );
-});
-
 const createTab = (views, data, columns) => (view) => {
   const title = <TabTitle item={view} data={data} />;
 
   return (
     <Tabs.TabPane key={view.key} closable={false} tab={title}>
       <TablePanel views={views} view={view} />
-      <TabContent views={views} view={view} data={data} columns={columns} />
+      <DataView />
     </Tabs.TabPane>
   );
 };

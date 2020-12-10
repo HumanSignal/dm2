@@ -10,30 +10,51 @@ import { TableRow } from "./TableRow";
 import { prepareColumns } from "./utils";
 
 export const Table = observer(
-  ({ data, onRowSelect, selected, cellViews, headerRenderers, ...props }) => {
+  ({ view, data, cellViews, selectedItems, headerRenderers, ...props }) => {
     const columns = prepareColumns(props.columns, props.hiddenColumns);
 
     const contextValue = {
       columns,
-      onRowSelect,
       data,
       cellViews,
       headerRenderers,
     };
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const selectedItems = React.useMemo(() => selected, [
-      selected.list,
-      selected.all,
-    ]);
-
-    const selectedRowIndex = data.findIndex(
-      (r) => r.original?.isSelected || r.original?.isHighlighted
+    const selectedRowIndex = React.useMemo(
+      () =>
+        data.findIndex(
+          (r) => r.original?.isSelected || r.original?.isHighlighted
+        ),
+      [data]
     );
 
-    const initialScrollOffset = selectedRowIndex * 100;
-
     const headerHeight = 42;
+
+    const renderTableHeader = React.useCallback(
+      ({ style }) => (
+        <TableHead
+          style={style}
+          order={props.order}
+          columnHeaderExtra={props.columnHeaderExtra}
+          sortingEnabled={props.sortingEnabled}
+          onSetOrder={props.onSetOrder}
+          selected={view.selected}
+          stopInteractions={props.stopInteractions}
+          onSelect={props.onSelectAll}
+        />
+      ),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [
+        props.order,
+        props.columnHeaderExtra,
+        props.sortingEnabled,
+        props.onSetOrder,
+        props.stopInteractions,
+        view,
+        view.selected.list,
+        view.selected.all,
+      ]
+    );
 
     const renderRow = React.useCallback(
       ({ style, index }) => {
@@ -46,8 +67,9 @@ export const Table = observer(
             isSelected={row.isSelected}
             isHighlighted={row.isHighlighted}
             onClick={props.onRowClick}
-            selected={selectedItems}
+            selected={view.selected}
             stopInteractions={props.stopInteractions}
+            onSelect={props.onSelectRow}
             style={{
               ...style,
               height: props.rowHeight,
@@ -56,6 +78,7 @@ export const Table = observer(
           />
         );
       },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         data,
         props.fitContent,
@@ -63,28 +86,9 @@ export const Table = observer(
         props.rowHeight,
         props.stopInteractions,
         selectedItems,
-      ]
-    );
-
-    const renderStickyComponent = React.useCallback(
-      ({ style }) => (
-        <TableHead
-          style={style}
-          order={props.order}
-          columnHeaderExtra={props.columnHeaderExtra}
-          sortingEnabled={props.sortingEnabled}
-          onSetOrder={props.onSetOrder}
-          selected={selectedItems}
-          stopInteractions={props.stopInteractions}
-        />
-      ),
-      [
-        props.order,
-        props.columnHeaderExtra,
-        props.sortingEnabled,
-        props.onSetOrder,
-        props.stopInteractions,
-        selectedItems,
+        view,
+        view.selected.list,
+        view.selected.all,
       ]
     );
 
@@ -93,6 +97,20 @@ export const Table = observer(
         return props.isItemLoaded(data, index);
       },
       [props, data]
+    );
+
+    const initialScrollOffset = React.useCallback(
+      (height) => {
+        return selectedRowIndex * 100 - height / 2 + headerHeight;
+      },
+      [selectedRowIndex]
+    );
+
+    const itemKey = React.useCallback(
+      (index) => {
+        return data[index]?.key ?? index;
+      },
+      [data]
     );
 
     return (
@@ -104,14 +122,12 @@ export const Table = observer(
             itemHeight={props.rowHeight}
             totalCount={props.total}
             itemCount={data.length + 1}
-            itemKey={(index) => data[index]?.key ?? index}
+            itemKey={itemKey}
             innerElementType={innerElementType}
             stickyItems={[0]}
             stickyItemsHeight={[headerHeight]}
-            stickyComponent={renderStickyComponent}
-            initialScrollOffset={(height) =>
-              initialScrollOffset - height / 2 + headerHeight
-            }
+            stickyComponent={renderTableHeader}
+            initialScrollOffset={initialScrollOffset}
             isItemLoaded={isItemLoaded}
             loadMore={props.loadMore}
           >

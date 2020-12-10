@@ -12,7 +12,7 @@ import { ViewHiddenColumns } from "./view_hidden_columns";
 
 const SelectedItems = types
   .model("SelectedItems", {
-    all: types.optional(types.boolean, false),
+    all: false,
     list: types.optional(types.array(types.number), []),
   })
   .views((self) => ({
@@ -39,6 +39,10 @@ const SelectedItems = types
       return self.list.length > 0;
     },
 
+    get length() {
+      return self.list.length;
+    },
+
     isSelected(id) {
       if (self.all) {
         return !self.list.includes(id);
@@ -49,7 +53,10 @@ const SelectedItems = types
   }))
   .actions((self) => ({
     toggleSelectedAll() {
-      self.all = !self.all;
+      if (!self.all || !(self.all && self.isIndeterminate)) {
+        self.all = !self.all;
+      }
+
       self.list = [];
     },
 

@@ -60,13 +60,7 @@ const LabelingComponent = observer(({ store }) => {
       >
         {store.isExplorerMode && (
           <div className="table" style={{ maxWidth: "35vw" }}>
-            <DataView
-              key={`data-${view.target}`}
-              view={view}
-              columns={columns}
-              data={Array.from(store.dataStore.list)}
-              hiddenColumns={view.hiddenColumnsList}
-            />
+            <DataView />
           </div>
         )}
 
