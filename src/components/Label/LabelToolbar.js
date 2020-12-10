@@ -131,7 +131,10 @@ const SubmissionButtons = observer(({ lsf, completion, isLabelStream }) => {
         </Button>
       </Tooltip>
     );
-  } else if ((userGenerate && sentUserGenerate) || !sentUserGenerate) {
+  } else if (
+    ((userGenerate && sentUserGenerate) || !sentUserGenerate) &&
+    !isLabelStream
+  ) {
     buttons.push(
       <Tooltip
         key="update"
