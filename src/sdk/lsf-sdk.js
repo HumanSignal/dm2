@@ -271,7 +271,10 @@ export class LSFWrapper {
       result: completion.serializeCompletion(),
     };
 
-    if (includeId) {
+    if (
+      includeId &&
+      (!completion.userGenerate || completion.sentUserGenerate)
+    ) {
       result.id = parseInt(completion.pk);
     }
 

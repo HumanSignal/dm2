@@ -13,6 +13,7 @@ export const ViewColumnType = types.enumeration([
   "Text",
   "HyperText",
   "TimeSeries",
+  "Unknown",
 ]);
 
 export const ViewColumn = types
