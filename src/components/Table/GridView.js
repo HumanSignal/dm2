@@ -28,8 +28,7 @@ const GridBody = observer(({ row, fields }) => {
 
     return (
       <GridDataGroup
-        key={row.id}
-        id={`${row.id}-${index}`}
+        key={`${row.id}-${index}`}
         type={field.type}
         value={value}
       />
@@ -51,6 +50,33 @@ const GridDataGroup = observer(({ type, value }) => {
   );
 });
 
+const GridCell = observer(
+  ({ view, selected, row, fields, onClick, ...props }) => {
+    return (
+      <GridCellWrapper
+        {...props}
+        selected={selected.isSelected(row.id)}
+        onClick={onClick}
+      >
+        <div>
+          <GridHeader
+            view={view}
+            row={row}
+            fields={fields}
+            selected={view.selected}
+          />
+          <GridBody
+            view={view}
+            row={row}
+            fields={fields}
+            selected={view.selected}
+          />
+        </div>
+      </GridCellWrapper>
+    );
+  }
+);
+
 export const GridView = observer(
   ({
     data,
@@ -64,12 +90,6 @@ export const GridView = observer(
     const getCellIndex = (row, column) => {
       return columnCount * row + column;
     };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const selected = React.useMemo(() => view.selected, [
-      view.selected.length,
-      view.selected.list,
-    ]);
 
     const fieldsData = React.useMemo(() => prepareColumns(fields), [fields]);
 
@@ -96,27 +116,23 @@ export const GridView = observer(
         return (
           <GridCell
             {...props}
-            selected={selected.isSelected(row.id)}
+            view={view}
+            row={row}
+            fields={fieldsData}
+            selected={view.selected}
             onClick={() => view.toggleSelected(row.id)}
-          >
-            <div>
-              <GridHeader
-                view={view}
-                row={row}
-                fields={fieldsData}
-                selected={selected}
-              />
-              <GridBody
-                view={view}
-                row={row}
-                fields={fieldsData}
-                selected={selected}
-              />
-            </div>
-          </GridCell>
+          />
         );
       },
-      [data, fieldsData, selected, view]
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [
+        data,
+        fieldsData,
+        view.selected,
+        view,
+        view.selected.list,
+        view.selected.all,
+      ]
     );
 
     const onItemsRenderedWrap = (cb) => ({
@@ -174,7 +190,7 @@ export const GridView = observer(
   }
 );
 
-const GridCell = styled.div`
+const GridCellWrapper = styled.div`
   padding: 5px;
   box-sizing: border-box;
 
@@ -182,7 +198,15 @@ const GridCell = styled.div`
     width: 100%;
     height: 100%;
     position: relative;
-    box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.4);
+    background: ${({ selected }) => (selected ? "#eff7ff" : "none")};
+    box-shadow: ${({ selected }) =>
+      (selected
+        ? [
+            "0 0 2px 2px rgba(26, 144, 255, 0.44)",
+            "0 0 0 1px rgba(26, 144, 255, 0.6)",
+          ]
+        : ["0 0 0 1px rgba(0, 0, 0, 0.4)"]
+      ).join(", ")};
   }
 `;
 

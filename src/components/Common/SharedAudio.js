@@ -51,6 +51,7 @@ export class SharedAudio extends Component {
     current: 0,
     volume: 0.5,
     audio: null,
+    idle: true,
   };
 
   componentWillUnmount() {
@@ -71,7 +72,7 @@ export class SharedAudio extends Component {
         >
           {paused ? <FaPlay /> : <FaPause />}
         </Button>
-        {this.audio && (
+        {this.audio && !this.state.idle ? (
           <div style={{ display: "flex", flex: 1, alignItems: "center" }}>
             <PlaybackControl
               units="seconds"
@@ -80,12 +81,15 @@ export class SharedAudio extends Component {
               onChange={(time) => (this.audio.currentTime = time)}
             />
           </div>
+        ) : (
+          <div>{this.props.src}</div>
         )}
       </div>
     );
   }
 
   play = () => {
+    this.setState({ ...this.state, idle: false });
     this.createAudioElement(() => this.audio.play());
   };
 
@@ -104,6 +108,7 @@ export class SharedAudio extends Component {
 
     const audio = new Audio(this.props.src);
     document.body.appendChild(audio);
+    console.log({ audio });
 
     audio.classList.add("dm-audio");
     audio.currentTime = 0;
