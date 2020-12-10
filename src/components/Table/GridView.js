@@ -21,7 +21,6 @@ const GridHeader = observer(({ row, selected }) => {
 
 const GridBody = observer(({ row, fields }) => {
   const dataFields = fields.filter((f) => f.parent?.alias === "data");
-
   return dataFields.map((field, index) => {
     const valuePath = field.id.split(":")[1] ?? field.id;
     const value = getProperty(row, valuePath);
@@ -79,15 +78,18 @@ export const GridView = observer(
     loadMore,
     fields,
     onChange,
+    hiddenFields,
     // isItemLoaded,
   }) => {
     const columnCount = 4;
 
     const getCellIndex = (row, column) => columnCount * row + column;
 
-    const fieldsData = React.useMemo(() => prepareColumns(fields), [fields]);
+    const fieldsData = React.useMemo(() => {
+      return prepareColumns(fields, hiddenFields);
+    }, [fields, hiddenFields]);
 
-    const rowHeight = fields
+    const rowHeight = fieldsData
       .filter((f) => f.parent?.alias === "data")
       .reduce((res, f) => {
         const height = (DataGroups[f.type] ?? DataGroups.TextDataGroup).height;

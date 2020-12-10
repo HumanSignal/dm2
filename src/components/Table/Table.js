@@ -125,6 +125,7 @@ export const DataView = injector(
           fields={columns}
           loadMore={loadMore}
           onChange={(id) => view.toggleSelected(id)}
+          hiddenFields={hiddenColumns}
         />
       );
 
