@@ -1,7 +1,6 @@
 import { Tag, Tooltip } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
-import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { VscQuestion } from "react-icons/vsc";
 import { Table } from "../Common/Table/Table";
@@ -19,15 +18,24 @@ const injector = inject(({ store }) => {
     hiddenColumns: currentView?.hiddenColumnsList,
     selectedItems: currentView?.selected,
     selectedCount: currentView?.selected?.length ?? 0,
+    total: dataStore?.total ?? 0,
+    isLabeling: dataStore?.isLabeling ?? false,
   };
-  console.log("INJECTOR", { props, store });
+
   return props;
 });
 
 export const DataView = injector(
-  ({ data, columns, view, selectedItems, viewType, hiddenColumns = [] }) => {
-    const { dataStore, isLabeling } = getRoot(view);
-    const { total, selected } = dataStore;
+  ({
+    data,
+    columns,
+    view,
+    selectedItems,
+    viewType,
+    total,
+    isLabeling,
+    hiddenColumns = [],
+  }) => {
     const [showSource, setShowSource] = React.useState();
 
     const loadMore = React.useCallback(() => {
@@ -65,16 +73,11 @@ export const DataView = injector(
       []
     );
 
-    const onRowSelect = React.useCallback(
-      (state, data) => {
-        if (state === "update") {
-          view.selectAll();
-        } else {
-          view.toggleSelected(data);
-        }
-      },
-      [view]
-    );
+    const onSelectAll = React.useCallback(() => view.selectAll(), [view]);
+
+    const onRowSelect = React.useCallback((id) => view.toggleSelected(id), [
+      view,
+    ]);
 
     const onRowClick = React.useCallback(
       (currentTask) => {
@@ -95,6 +98,7 @@ export const DataView = injector(
     const content =
       view.root.isLabeling || viewType === "list" ? (
         <Table
+          view={view}
           data={data}
           rowHeight={70}
           total={total}
@@ -108,8 +112,9 @@ export const DataView = injector(
           sortingEnabled={view.type === "list"}
           onSetOrder={(col) => view.setOrdering(col.id)}
           columnHeaderExtra={columnHeaderExtra}
-          selected={selectedItems}
-          onRowSelect={onRowSelect}
+          selectedItems={selectedItems}
+          onSelectAll={onSelectAll}
+          onSelectRow={onRowSelect}
           onRowClick={onRowClick}
           stopInteractions={view.dataStore.loading}
         />
@@ -119,7 +124,7 @@ export const DataView = injector(
           data={data}
           fields={columns}
           loadMore={loadMore}
-          selected={selected}
+          onChange={(id) => view.toggleSelected(id)}
         />
       );
 

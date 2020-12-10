@@ -31,17 +31,18 @@ export const TableHead = observer(
     onSetOrder,
     sortingEnabled,
     selected,
+    onSelect,
     ...props
   }) => {
     return (
       <TableContext.Consumer>
-        {({ columns, headerRenderers, onRowSelect, cellViews }) => (
+        {({ columns, headerRenderers, cellViews }) => (
           <TableHeadWrapper style={style}>
             <TableCheckboxCell
-              enabled={!!onRowSelect}
+              enabled={!!onSelect}
               checked={selected.isAllSelected}
               indeterminate={selected.isIndeterminate}
-              onChange={(checked) => onRowSelect("update", null, checked)}
+              onChange={() => onSelect?.()}
             />
 
             {columns.map((col) => {

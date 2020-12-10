@@ -10,22 +10,15 @@ import { TableRow } from "./TableRow";
 import { prepareColumns } from "./utils";
 
 export const Table = observer(
-  ({ data, onRowSelect, selected, cellViews, headerRenderers, ...props }) => {
+  ({ view, data, cellViews, selectedItems, headerRenderers, ...props }) => {
     const columns = prepareColumns(props.columns, props.hiddenColumns);
 
     const contextValue = {
       columns,
-      onRowSelect,
       data,
       cellViews,
       headerRenderers,
     };
-
-    const selectedItems = React.useMemo(() => {
-      console.log("recalculate selected items");
-      return selected;
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selected.list, selected.all]);
 
     const selectedRowIndex = React.useMemo(
       () =>
@@ -45,17 +38,21 @@ export const Table = observer(
           columnHeaderExtra={props.columnHeaderExtra}
           sortingEnabled={props.sortingEnabled}
           onSetOrder={props.onSetOrder}
-          selected={selectedItems}
+          selected={view.selected}
           stopInteractions={props.stopInteractions}
+          onSelect={props.onSelectAll}
         />
       ),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         props.order,
         props.columnHeaderExtra,
         props.sortingEnabled,
         props.onSetOrder,
         props.stopInteractions,
-        selectedItems,
+        view,
+        view.selected.list,
+        view.selected.all,
       ]
     );
 
@@ -70,8 +67,9 @@ export const Table = observer(
             isSelected={row.isSelected}
             isHighlighted={row.isHighlighted}
             onClick={props.onRowClick}
-            selected={selectedItems}
+            selected={view.selected}
             stopInteractions={props.stopInteractions}
+            onSelect={props.onSelectRow}
             style={{
               ...style,
               height: props.rowHeight,
@@ -80,6 +78,7 @@ export const Table = observer(
           />
         );
       },
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         data,
         props.fitContent,
@@ -87,6 +86,9 @@ export const Table = observer(
         props.rowHeight,
         props.stopInteractions,
         selectedItems,
+        view,
+        view.selected.list,
+        view.selected.all,
       ]
     );
 

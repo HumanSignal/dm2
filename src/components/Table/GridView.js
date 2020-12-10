@@ -8,7 +8,7 @@ import styled from "styled-components";
 import { getProperty, prepareColumns } from "../Common/Table/utils";
 import * as DataGroups from "./DataGroups";
 
-const GridHeader = observer(({ row, view, selected }) => {
+const GridHeader = observer(({ row, selected }) => {
   return (
     <GridCellHeader>
       <Space>
@@ -38,15 +38,10 @@ const GridBody = observer(({ row, fields }) => {
 
 const GridDataGroup = observer(({ type, value }) => {
   const DataTypeComponent = DataGroups[type];
-
-  return (
-    <div>
-      {DataTypeComponent ? (
-        <DataTypeComponent value={value} />
-      ) : (
-        <DataGroups.TextDataGroup value={value} />
-      )}
-    </div>
+  return DataTypeComponent ? (
+    <DataTypeComponent value={value} />
+  ) : (
+    <DataGroups.TextDataGroup value={value} />
   );
 });
 
@@ -83,13 +78,12 @@ export const GridView = observer(
     view,
     loadMore,
     fields,
+    onChange,
     // isItemLoaded,
   }) => {
     const columnCount = 4;
 
-    const getCellIndex = (row, column) => {
-      return columnCount * row + column;
-    };
+    const getCellIndex = (row, column) => columnCount * row + column;
 
     const fieldsData = React.useMemo(() => prepareColumns(fields), [fields]);
 
@@ -120,7 +114,7 @@ export const GridView = observer(
             row={row}
             fields={fieldsData}
             selected={view.selected}
-            onClick={() => view.toggleSelected(row.id)}
+            onClick={() => onChange?.(row.id)}
           />
         );
       },
@@ -172,7 +166,7 @@ export const GridView = observer(
                   ref={ref}
                   width={width}
                   height={height}
-                  rowHeight={rowHeight + 52}
+                  rowHeight={rowHeight + 42}
                   overscanRowCount={10}
                   columnCount={columnCount}
                   columnWidth={width / columnCount}
