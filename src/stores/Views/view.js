@@ -185,7 +185,10 @@ export const View = types
     },
 
     get serializedFilters() {
-      return self.validFilters.map((el) => getSnapshot(el));
+      return self.validFilters.map((el) => ({
+        ...getSnapshot(el),
+        type: el.filter.type,
+      }));
     },
 
     get selectedLength() {
