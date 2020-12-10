@@ -40,9 +40,12 @@ export const TablePanel = observer(({ views, view }) => {
       </Space>
 
       <Space>
-        <TabsActions size={toolbarSize} />
-
-        {view.selected.hasSelected && <Divider type="vertical" />}
+        {view.selected.hasSelected && (
+          <>
+            <TabsActions size="small" />
+            <Divider type="vertical" />
+          </>
+        )}
 
         <Button
           type="primary"
