@@ -1,4 +1,4 @@
-import { Button, PageHeader, Tabs } from "antd";
+import { Button, PageHeader, Space, Tabs, Tag } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { RiCloseLine } from "react-icons/ri";
@@ -8,7 +8,7 @@ import { TabTitle } from "./tabs-pane";
 import { TablePanel } from "./tabs-panel";
 import { TabsStyles } from "./Tabs.styles";
 
-const createTab = (views, data, columns) => (view) => {
+const createTab = (views, data) => (view) => {
   const title = <TabTitle item={view} data={data} />;
 
   return (
@@ -45,16 +45,20 @@ const FiltersSidebar = observer(({ views }) => {
   ) : null;
 });
 
+const ProjectSummary = observer(({ store }) => {
+  return (
+    <Space size="small">
+      <Tag>Tasks: {store.total}</Tag>
+      <Tag>Completions: {store.totalCompletions}</Tag>
+      <Tag>Predictions: {store.totalPredictions}</Tag>
+    </Space>
+  );
+});
+
 export const TabsWrapper = inject("store")(
   observer(({ store }) => {
     const views = store.viewsStore;
     const activeTab = store.viewsStore.selected;
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const columns = React.useMemo(() => activeTab.fieldsAsColumns, [
-      activeTab,
-      activeTab.target,
-    ]);
 
     return (
       <TabsStyles>
@@ -63,10 +67,9 @@ export const TabsWrapper = inject("store")(
           activeKey={activeTab.key}
           onEdit={() => store.viewsStore.addView()}
           onChange={(key) => store.viewsStore.setSelected(key)}
+          tabBarExtraContent={<ProjectSummary store={store.taskStore} />}
         >
-          {store.viewsStore.all.map(
-            createTab(views, store.dataStore.list, columns)
-          )}
+          {store.viewsStore.all.map(createTab(views, store.dataStore.list))}
         </Tabs>
         <FiltersSidebar views={views} />
       </TabsStyles>
