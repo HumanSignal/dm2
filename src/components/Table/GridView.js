@@ -198,6 +198,7 @@ const GridCellWrapper = styled.div`
     width: 100%;
     height: 100%;
     position: relative;
+    border-radius: 3px;
     background: ${({ selected }) => (selected ? "#eff7ff" : "none")};
     box-shadow: ${({ selected }) =>
       (selected
@@ -205,7 +206,7 @@ const GridCellWrapper = styled.div`
             "0 0 2px 2px rgba(26, 144, 255, 0.44)",
             "0 0 0 1px rgba(26, 144, 255, 0.6)",
           ]
-        : ["0 0 0 1px rgba(0, 0, 0, 0.4)"]
+        : ["0 0 4px 0 rgba(0,0,0,0.32)"]
       ).join(", ")};
   }
 `;
