@@ -50,6 +50,10 @@ export const Styles = styled.div`
       padding-top: 0;
     }
   }
+
+  .ant-page-header-heading-title {
+    font-weight: 400;
+  }
 `;
 
 export const LabelStudioWrapper = styled.div`

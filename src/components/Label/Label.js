@@ -45,13 +45,13 @@ const LabelingComponent = observer(({ store }) => {
   return (
     <Styles>
       <PageHeader
-        title="Labeling"
+        title={store.isExplorerMode ? "Quickview" : "Labeling"}
         onBack={closeLabeling}
         style={{ padding: 0 }}
         tags={
           store.isExplorerMode ? (
             <div style={{ paddingLeft: 20 }}>
-              <FieldsButton size="small" columns={view.targetColumns} />
+              <FieldsButton columns={view.targetColumns} />
             </div>
           ) : (
             []

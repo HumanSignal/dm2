@@ -42,7 +42,13 @@ export const LabelToolbar = observer(
             />
 
             <LabelTools>
-              <Space style={{ width: "100%", justifyContent: "flex-end" }}>
+              <Space
+                style={{
+                  width: "100%",
+                  justifyContent: "flex-end",
+                  paddingRight: "10px",
+                }}
+              >
                 <Button type="primary" onClick={() => lsf.toggleDescription()}>
                   {!lsf.showingDescription ? "Show " : "Hide "}
                   instructions
@@ -100,7 +106,7 @@ const SubmissionButtons = observer(({ lsf, completion, isLabelStream }) => {
   buttons.push(
     <Tooltip
       key="skip"
-      title="Reject task: [ Ctrl+Space ]"
+      title="Mark task as cancelled: [ Ctrl+Space ]"
       mouseEnterDelay={TOOLTIP_DELAY}
     >
       <Button onClick={lsf.skipTask} danger>
@@ -125,7 +131,10 @@ const SubmissionButtons = observer(({ lsf, completion, isLabelStream }) => {
         </Button>
       </Tooltip>
     );
-  } else if ((userGenerate && sentUserGenerate) || !sentUserGenerate) {
+  } else if (
+    ((userGenerate && sentUserGenerate) || !sentUserGenerate) &&
+    !isLabelStream
+  ) {
     buttons.push(
       <Tooltip
         key="update"
