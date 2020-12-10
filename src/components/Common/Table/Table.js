@@ -21,11 +21,8 @@ export const Table = observer(
     };
 
     const selectedRowIndex = React.useMemo(
-      () =>
-        data.findIndex(
-          (r) => r.original?.isSelected || r.original?.isHighlighted
-        ),
-      [data]
+      () => (view.selected ? data.indexOf(view.selected) : -1),
+      [data, view.selected]
     );
 
     const headerHeight = 42;
@@ -101,9 +98,10 @@ export const Table = observer(
 
     const initialScrollOffset = React.useCallback(
       (height) => {
-        return selectedRowIndex * 100 - height / 2 + headerHeight;
+        const { rowHeight: h } = props;
+        return selectedRowIndex * h - h / 2 - height / 2 + headerHeight;
       },
-      [selectedRowIndex]
+      [props, selectedRowIndex]
     );
 
     const itemKey = React.useCallback(

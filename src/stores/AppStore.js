@@ -130,7 +130,7 @@ export const AppStore = types
     apiCall: flow(function* (methodName, params, body) {
       let result = yield self.API[methodName](params, body);
 
-      if (result.error) {
+      if (result.error && result.status !== 404) {
         if (result.response) {
           self.serverError.set(methodName, {
             error: "Something went wrong",

@@ -316,6 +316,7 @@ export class APIProxy {
     })();
 
     return {
+      status: fetchResponse.status,
       error: fetchResponse.statusText,
       response: await result,
     };

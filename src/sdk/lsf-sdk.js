@@ -88,7 +88,7 @@ export class LSFWrapper {
     this.setLoading(true);
     const tasks = this.datamanager.store.taskStore;
     const newTask = await tasks.loadTask(taskID);
-    const needsCompletionsMerge = this.task?.id === newTask.id;
+    const needsCompletionsMerge = newTask && this.task?.id === newTask.id;
 
     this.task = newTask;
 
