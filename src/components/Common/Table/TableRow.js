@@ -35,7 +35,7 @@ export const TableRow = observer(
               const renderProps = { column: col, original: data, value: value };
 
               return (
-                <TableCellWrapper key={col.alias} {...style}>
+                <TableCellWrapper key={col.alias} {...style} className="td">
                   {Renderer ? <Renderer {...renderProps} /> : value}
                 </TableCellWrapper>
               );

@@ -44,6 +44,10 @@ export const TableRowWrapper = styled.div`
   &:hover {
     z-index: 50;
     background-color: #f3f9ff;
+
+    .td {
+      background-color: #f3f9ff;
+    }
   }
 
   &:not(.selected).highlighted::after {
