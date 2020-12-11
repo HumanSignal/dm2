@@ -155,8 +155,8 @@ export const GridView = observer(
     };
 
     return (
-      <div className="grid" style={{ flex: 1, padding: 5 }}>
-        <AutoSizer>
+      <div className="grid" style={{ flex: 1 }}>
+        <AutoSizer className="grid-view-resize">
           {({ width, height }) => (
             <InfiniteLoader
               itemCount={itemCount}
@@ -168,12 +168,14 @@ export const GridView = observer(
                   ref={ref}
                   width={width}
                   height={height}
+                  className="grid-view-list"
                   rowHeight={rowHeight + 42}
                   overscanRowCount={10}
                   columnCount={columnCount}
                   columnWidth={width / columnCount}
                   rowCount={itemCount}
                   onItemsRendered={onItemsRenderedWrap(onItemsRendered)}
+                  style={{ overflowX: "hidden" }}
                 >
                   {renderItem}
                 </FixedSizeGrid>

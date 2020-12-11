@@ -16,10 +16,6 @@ const LabelingComponent = observer(({ store }) => {
   const lsfRef = React.createRef();
   const view = store.viewsStore.selected;
   const history = store.SDK.lsf?.history;
-  const columns = React.useMemo(() => view.fieldsAsColumns, [
-    view,
-    view.target,
-  ]);
 
   const [completion, setCompletion] = React.useState(
     store.SDK.lsf?.currentCompletion
@@ -72,7 +68,11 @@ const LabelingComponent = observer(({ store }) => {
             completion={completion}
             isLabelStream={store.isLabelStreamMode}
           />
-          <LabelStudioContent id="label-studio" ref={lsfRef} />
+          <LabelStudioContent
+            ref={lsfRef}
+            key="label-studio"
+            id="label-studio"
+          />
         </LabelStudioWrapper>
       </PageHeader>
     </Styles>

@@ -70,6 +70,7 @@ export class LSFWrapper {
     };
 
     try {
+      console.log({ lsfProperties });
       new LabelStudio(this.root, lsfProperties);
     } catch (err) {
       console.error("Failed to initialize LabelStudio", lsfProperties);
@@ -98,7 +99,6 @@ export class LSFWrapper {
      * Add new data from received task
      */
     try {
-      this.resetLabelStudio();
       this.setTask(newTask);
       this.setCompletion(completionID);
     } catch (err) {
@@ -109,13 +109,9 @@ export class LSFWrapper {
   }
 
   /** @private */
-  resetLabelStudio() {
-    this.lsf.resetState();
-  }
-
-  /** @private */
   setTask(task) {
     console.log("The store is being re-initiailized", { task });
+    this.lsf.resetState();
     this.lsf.assignTask(task);
     this.lsf.initializeStore(taskToLSFormat(task));
   }

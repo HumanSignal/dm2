@@ -175,13 +175,23 @@ export class DataManager {
    * @param {HTMLElement} element Root element LSF will be rendered into
    * @param {import("../stores/Tasks").TaskModel} task
    */
-  startLabeling(element) {
-    const [task, completion] = [
+  async startLabeling(element) {
+    let [task, completion] = [
       this.store.taskStore.selected,
       this.store.annotationStore.selected,
     ];
 
-    if (!this.lsf) {
+    if (this.lsf?.task && task && this.lsf.task.id === task.id) {
+      return;
+    }
+
+    if (!task) {
+      task = await this.store.taskStore.loadTask();
+    }
+
+    console.log("Starting labeling", { task });
+
+    if (!this.lsf && task) {
       console.log("Initializing new label studio");
 
       this.lsf = new LSFWrapper(this, element, {
@@ -193,7 +203,8 @@ export class DataManager {
       return;
     }
 
-    if (this.lsf.task !== task || completion !== undefined) {
+    if (this.lsf && (this.lsf.task !== task || completion !== undefined)) {
+      console.log("Reloading task", { task });
       const completionID = completion?.id ?? task.lastCompletion?.id;
       this.lsf.loadTask(task.id, completionID);
     }
