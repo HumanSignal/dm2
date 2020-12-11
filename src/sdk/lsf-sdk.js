@@ -278,8 +278,8 @@ export class LSFWrapper {
   }
 
   /** @private */
-  setLoading(loading) {
-    this.lsf.setFlags({ loading });
+  setLoading(isLoading) {
+    this.lsf.setFlags({ isLoading });
   }
 
   get taskID() {

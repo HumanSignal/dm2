@@ -15,7 +15,6 @@ export const Styles = styled.div`
 
   .grid {
     flex: 1;
-    box-shadow: 0 0 0 1px #ccc inset;
   }
 
   .grid__item {
