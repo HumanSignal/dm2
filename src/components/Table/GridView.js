@@ -155,8 +155,8 @@ export const GridView = observer(
     };
 
     return (
-      <div className="grid" style={{ flex: 1, padding: 5 }}>
-        <AutoSizer>
+      <div className="grid" style={{ flex: 1 }}>
+        <AutoSizer className="grid-view-resize">
           {({ width, height }) => (
             <InfiniteLoader
               itemCount={itemCount}
@@ -168,12 +168,14 @@ export const GridView = observer(
                   ref={ref}
                   width={width}
                   height={height}
+                  className="grid-view-list"
                   rowHeight={rowHeight + 42}
                   overscanRowCount={10}
                   columnCount={columnCount}
                   columnWidth={width / columnCount}
                   rowCount={itemCount}
                   onItemsRendered={onItemsRenderedWrap(onItemsRendered)}
+                  style={{ overflowX: "hidden" }}
                 >
                   {renderItem}
                 </FixedSizeGrid>
@@ -187,8 +189,12 @@ export const GridView = observer(
 );
 
 const GridCellWrapper = styled.div`
-  padding: 5px;
+  padding: 0 10px 10px 0;
   box-sizing: border-box;
+
+  &:nth-child(4n) {
+    padding-right: 0;
+  }
 
   & > div {
     width: 100%;
@@ -199,12 +205,23 @@ const GridCellWrapper = styled.div`
     border-radius: 2px;
     background: ${({ selected }) => (selected ? "#eff7ff" : "none")};
     box-shadow: ${({ selected }) =>
+      (selected ? ["0 0 2px 2px rgba(26, 144, 255, 0.44)"] : ["none"]).join(
+        ", "
+      )};
+  }
+
+  & > div::after {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: "";
+    border-radius: 2px;
+    position: absolute;
+    box-shadow: ${({ selected }) =>
       (selected
-        ? [
-            "0 0 2px 2px rgba(26, 144, 255, 0.44)",
-            "0 0 0 1px rgba(26, 144, 255, 0.6)",
-          ]
-        : ["0 0 0 0.5px rgba(0,0,0,0.2)"]
+        ? ["0 0 0 1px rgba(26, 144, 255, 0.6) inset"]
+        : ["0 0 0 1px rgba(0,0,0,0.2) inset"]
       ).join(", ")};
   }
 `;
