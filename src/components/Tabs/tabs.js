@@ -1,5 +1,16 @@
-import { Button, PageHeader, Space, Tabs, Tag } from "antd";
+import { DeleteOutlined } from "@ant-design/icons";
+import {
+  Button,
+  Divider,
+  Modal,
+  PageHeader,
+  Space,
+  Tabs,
+  Tag,
+  Tooltip,
+} from "antd";
 import { inject, observer } from "mobx-react";
+import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { RiCloseLine } from "react-icons/ri";
 import { Filters } from "../Filters/Filters";
@@ -48,9 +59,32 @@ const FiltersSidebar = observer(({ views }) => {
 const ProjectSummary = observer(({ store }) => {
   return (
     <Space size="small">
-      <Tag>Tasks: {store.total}</Tag>
-      <Tag>Completions: {store.totalCompletions}</Tag>
-      <Tag>Predictions: {store.totalPredictions}</Tag>
+      <Tag>
+        Tasks: {store.total}
+        <Divider type="vertical" />
+        Completions: {store.totalCompletions}
+        <Divider type="vertical" />
+        Predictions: {store.totalPredictions}
+      </Tag>
+
+      <Tooltip title="Delete all tasks" placement="left">
+        <Button
+          size="small"
+          danger
+          ghost
+          onClick={() => {
+            Modal.confirm({
+              title: `Deleting all tasks`,
+              content: `Are you sure you want to delete all ${store.total} tasks?`,
+              onOk() {
+                getRoot(store).invokeAction("delete_tasks");
+              },
+            });
+          }}
+        >
+          <DeleteOutlined />
+        </Button>
+      </Tooltip>
     </Space>
   );
 });

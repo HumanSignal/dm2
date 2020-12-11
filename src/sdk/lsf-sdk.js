@@ -93,7 +93,14 @@ export class LSFWrapper {
 
     this.task = newTask;
 
-    if (needsCompletionsMerge) this.task.mergeCompletions(this.completions);
+    /* If we're in label stream and there's no task – end stream */
+    if (taskID === undefined && !newTask) {
+      this.lsf.setFlags({ noTask: true });
+    }
+
+    if (needsCompletionsMerge) {
+      this.task.mergeCompletions(this.completions);
+    }
 
     /**
      * Add new data from received task
