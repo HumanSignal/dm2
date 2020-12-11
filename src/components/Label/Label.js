@@ -41,7 +41,7 @@ const LabelingComponent = observer(({ store }) => {
   return (
     <Styles>
       <PageHeader
-        title={store.isExplorerMode ? "Quickview" : "Labeling"}
+        title="Back"
         onBack={closeLabeling}
         style={{ padding: 0 }}
         tags={
