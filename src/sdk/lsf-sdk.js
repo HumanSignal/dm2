@@ -105,11 +105,9 @@ export class LSFWrapper {
     /**
      * Add new data from received task
      */
-    try {
+    if (newTask) {
       this.setTask(newTask);
       this.setCompletion(completionID);
-    } catch (err) {
-      console.error("Failed to attach new task", err);
     }
 
     this.setLoading(false);
