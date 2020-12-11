@@ -25,7 +25,16 @@ const GroupWrapper = ({ children, wrap = false }) => {
 };
 
 export const FilterLine = observer(
-  ({ filter, availableFilters, index, view, sidebar, dropdownClassName }) => {
+  ({
+    filter,
+    availableFilters,
+    index,
+    view,
+    sidebar,
+    value,
+    dropdownClassName,
+  }) => {
+    console.log("Filter changed", { value });
     return (
       <div className="filter-line">
         <div className="filter-line__settings">
@@ -62,7 +71,7 @@ export const FilterLine = observer(
           <GroupWrapper wrap={sidebar}>
             <FilterOperation
               filter={filter}
-              value={filter.value}
+              value={value}
               operator={filter.operator}
               field={filter.field}
             />

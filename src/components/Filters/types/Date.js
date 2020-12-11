@@ -19,48 +19,45 @@ const Picker = styled(StyleWrapper)`
   ${cssOverride}
 `;
 
-export const DateTimeInput = ({ value, range, onChange }) => {
-  const props = {
-    size: "small",
-    onChange(value) {
-      if (Array.isArray(value)) {
-        const [min, max] = value.map((d) => d.toISOString());
-        onChange({ min, max });
+export const DateTimeInput = ({ value, range, time, onChange }) => {
+  const onValueChange = React.useCallback(
+    (selectedDate) => {
+      let value;
+      if (Array.isArray(selectedDate)) {
+        const [min, max] = selectedDate.map((d) => d.toISOString());
+        value = { min, max };
       } else {
-        onChange(value?.toISOString());
+        value = selectedDate?.toISOString();
       }
-    },
-    style: {
-      flex: 1,
-    },
-  };
 
-  const dateValue = range
-    ? [
-        value?.min ? moment(value?.min) : undefined,
-        value?.max ? moment(value?.max) : undefined,
-      ]
-    : value
-    ? moment(value)
-    : undefined;
+      onChange(value);
+    },
+    [onChange]
+  );
+
+  const dateValue = React.useMemo(() => {
+    if (range) {
+      const { min, max } = value ?? {};
+      return [min, max].map((d) => (d ? moment(d) : undefined));
+    } else {
+      return value ? moment(value) : undefined;
+    }
+  }, [range, value]);
+
+  const DateComponent = range ? DatePicker.RangePicker : DatePicker;
 
   return (
     <Picker>
-      {({ className }) =>
-        range ? (
-          <DatePicker.RangePicker
-            {...props}
-            value={dateValue}
-            dropdownClassName={className}
-          />
-        ) : (
-          <DatePicker
-            {...props}
-            value={dateValue}
-            dropdownClassName={className}
-          />
-        )
-      }
+      {({ className }) => (
+        <DateComponent
+          size="small"
+          value={dateValue}
+          dropdownClassName={className}
+          showTime={time === true}
+          style={{ flex: 1 }}
+          onChange={onValueChange}
+        />
+      )}
     </Picker>
   );
 };

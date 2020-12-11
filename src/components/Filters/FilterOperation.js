@@ -18,6 +18,7 @@ export const FilterOperation = observer(
     const types = React.useMemo(() => {
       const filterTypes = FilterInputs[field.type] ?? FilterInputs.String;
       return [...filterTypes, ...Common];
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [field, operator]);
 
     const selected = React.useMemo(() => {
@@ -30,12 +31,15 @@ export const FilterOperation = observer(
       }
     }, [operator, types, filter]);
 
-    const Input = selected.input;
+    const onChange = React.useCallback(
+      (value) => {
+        filter.setValue(value);
+        filter.saveDelayed();
+      },
+      [filter]
+    );
 
-    const onChange = (value) => {
-      filter.setValue(value);
-      filter.saveDelayed();
-    };
+    const Input = selected.input;
 
     return (
       <>
@@ -50,8 +54,8 @@ export const FilterOperation = observer(
         </div>
         <div className="filter-line__column filter-line__value">
           <Input
-            key={filter.filter.id}
             {...field}
+            key={filter.filter.id}
             schema={filter.schema}
             value={value}
             onChange={onChange}

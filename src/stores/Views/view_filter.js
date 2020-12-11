@@ -33,10 +33,10 @@ const getOperatorDefaultValue = (operator) => {
 export const ViewFilter = types
   .model("ViewFilter", {
     filter: types.reference(ViewFilterType),
+    operator: types.maybeNull(Operators),
     value: types.maybeNull(
       types.union(FilterValue, FilterValueRange, types.array(FilterValue))
     ),
-    operator: types.maybeNull(Operators),
   })
   .views((self) => ({
     get field() {
@@ -75,6 +75,10 @@ export const ViewFilter = types
       }
 
       return true;
+    },
+
+    get currentValue() {
+      return self.value.value ?? self.value;
     },
   }))
   .actions((self) => ({

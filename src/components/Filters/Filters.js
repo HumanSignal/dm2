@@ -1,98 +1,105 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { Button, Tooltip } from "antd";
-import { inject, observer } from "mobx-react";
+import { inject } from "mobx-react";
 import React from "react";
 import { BsLayoutSidebarInsetReverse } from "react-icons/bs";
 import { FilterLine } from "./FilterLine";
 import { FiltersStyles } from "./Filters.styles";
 
-export const Filters = inject("store")(
-  observer(({ store, sidebar, filters }) => {
-    const views = store.viewsStore;
-    const currentView = views.selected;
+const injector = inject(({ store }) => ({
+  store,
+  views: store.viewsStore,
+  currentView: store.currentView,
+}));
 
-    const fields = React.useMemo(
-      () =>
-        currentView.availableFilters.reduce((res, filter) => {
-          const target = filter.field.target;
-          const groupTitle = target
-            .split("_")
-            .map((s) =>
-              s
-                .split("")
-                .map((c, i) => (i === 0 ? c.toUpperCase() : c))
-                .join("")
-            )
-            .join(" ");
+export const Filters = injector(({ views, currentView }) => {
+  const { sidebarEnabled } = views;
+  const filters = React.useMemo(() => {
+    return currentView.filters;
+  }, [currentView.filters]);
 
-          const group = res[target] ?? {
-            id: target,
-            title: groupTitle,
-            options: [],
-          };
+  const fields = React.useMemo(
+    () =>
+      currentView.availableFilters.reduce((res, filter) => {
+        const target = filter.field.target;
+        const groupTitle = target
+          .split("_")
+          .map((s) =>
+            s
+              .split("")
+              .map((c, i) => (i === 0 ? c.toUpperCase() : c))
+              .join("")
+          )
+          .join(" ");
 
-          group.options.push({
-            value: filter.id,
-            title: filter.field.title,
-            original: filter,
-          });
+        const group = res[target] ?? {
+          id: target,
+          title: groupTitle,
+          options: [],
+        };
 
-          return { ...res, [target]: group };
-        }, {}),
-      [currentView.availableFilters]
-    );
+        group.options.push({
+          value: filter.id,
+          title: filter.field.title,
+          original: filter,
+        });
 
-    return (
-      <FiltersStyles
-        className={["filters", sidebar ? "filters__sidebar" : null]}
-      >
-        {({ className }) => (
-          <>
-            <div className="filters__list">
-              {filters.length ? (
-                filters.map((filter, i) => (
-                  <FilterLine
-                    index={i}
-                    filter={filter}
-                    view={currentView}
-                    sidebar={sidebar}
-                    key={`${filter.filter.id}-${i}`}
-                    availableFilters={Object.values(fields)}
-                    dropdownClassName={className.split(" ")[1]}
-                  />
-                ))
-              ) : (
-                <div className="filters__empty">No filters applied</div>
-              )}
-            </div>
-            <div className="filters__actions">
-              <Button
-                ghost
-                type="primary"
-                size="small"
-                onClick={() => currentView.createFilter()}
-              >
-                <PlusOutlined />
-                Add {filters.length ? "another filter" : "filter"}
-              </Button>
+        return { ...res, [target]: group };
+      }, {}),
+    [currentView.availableFilters]
+  );
 
-              {!sidebar ? (
-                <Tooltip title="Pin to sidebar">
-                  <Button
-                    type="link"
-                    size="small"
-                    about="Pin to sidebar"
-                    onClick={() => views.expandFilters()}
-                    style={{ display: "inline-flex", alignItems: "center" }}
-                  >
-                    <BsLayoutSidebarInsetReverse />
-                  </Button>
-                </Tooltip>
-              ) : null}
-            </div>
-          </>
-        )}
-      </FiltersStyles>
-    );
-  })
-);
+  return (
+    <FiltersStyles
+      className={["filters", sidebarEnabled ? "filters__sidebar" : null]}
+    >
+      {({ className }) => (
+        <>
+          <div className="filters__list">
+            {filters.length ? (
+              filters.map((filter, i) => (
+                <FilterLine
+                  index={i}
+                  filter={filter}
+                  value={filter.currentValue}
+                  view={currentView}
+                  sidebar={sidebarEnabled}
+                  key={`${filter.filter.id}-${i}`}
+                  availableFilters={Object.values(fields)}
+                  dropdownClassName={className.split(" ")[1]}
+                />
+              ))
+            ) : (
+              <div className="filters__empty">No filters applied</div>
+            )}
+          </div>
+          <div className="filters__actions">
+            <Button
+              ghost
+              type="primary"
+              size="small"
+              onClick={() => currentView.createFilter()}
+            >
+              <PlusOutlined />
+              Add {filters.length ? "another filter" : "filter"}
+            </Button>
+
+            {!sidebarEnabled ? (
+              <Tooltip title="Pin to sidebar">
+                <Button
+                  type="link"
+                  size="small"
+                  about="Pin to sidebar"
+                  onClick={() => views.expandFilters()}
+                  style={{ display: "inline-flex", alignItems: "center" }}
+                >
+                  <BsLayoutSidebarInsetReverse />
+                </Button>
+              </Tooltip>
+            ) : null}
+          </div>
+        </>
+      )}
+    </FiltersStyles>
+  );
+});

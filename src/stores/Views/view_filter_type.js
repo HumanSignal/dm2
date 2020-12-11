@@ -23,14 +23,26 @@ export const FilterItemType = types.union({
   },
 });
 
-export const FilterValueList = types.model("FilterValueList", {
-  items: types.array(FilterItemType),
-});
+export const FilterValueList = types
+  .model("FilterValueList", {
+    items: types.array(FilterItemType),
+  })
+  .views((self) => ({
+    get value() {
+      return Array.from(self.items);
+    },
+  }));
 
-export const FilterValueRange = types.model("FilterValueRange", {
-  min: types.maybeNull(FilterValue),
-  max: types.maybeNull(FilterValue),
-});
+export const FilterValueRange = types
+  .model("FilterValueRange", {
+    min: types.maybeNull(FilterValue),
+    max: types.maybeNull(FilterValue),
+  })
+  .views((self) => ({
+    get value() {
+      return { min: self.min, max: self.max };
+    },
+  }));
 
 export const FilterSchema = types.union({
   dispatcher(s) {
