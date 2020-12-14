@@ -25,16 +25,13 @@ const GroupWrapper = ({ children, wrap = false }) => {
 };
 
 export const FilterLine = observer(
-  ({
-    filter,
-    availableFilters,
-    index,
-    view,
-    sidebar,
-    value,
-    dropdownClassName,
-  }) => {
-    console.log("Filter changed", { value });
+  ({ filter, availableFilters, index, view, sidebar, dropdownClassName }) => {
+    const value = React.useMemo(() => {
+      return filter.currentValue;
+    }, [filter.currentValue]);
+
+    console.log({ value });
+
     return (
       <div className="filter-line">
         <div className="filter-line__settings">

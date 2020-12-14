@@ -10,13 +10,14 @@ const injector = inject(({ store }) => ({
   store,
   views: store.viewsStore,
   currentView: store.currentView,
+  filters: store.currentView?.currentFilters ?? [],
 }));
 
-export const Filters = injector(({ views, currentView }) => {
+export const Filters = injector(({ views, currentView, filters }) => {
   const { sidebarEnabled } = views;
-  const filters = React.useMemo(() => {
-    return currentView.filters;
-  }, [currentView.filters]);
+  // const filters = React.useMemo(() => {
+  //   return currentView.filters;
+  // }, [currentView.filters]);
 
   const fields = React.useMemo(
     () =>
@@ -49,6 +50,8 @@ export const Filters = injector(({ views, currentView }) => {
     [currentView.availableFilters]
   );
 
+  console.log("Filters were changed");
+
   return (
     <FiltersStyles
       className={["filters", sidebarEnabled ? "filters__sidebar" : null]}
@@ -61,9 +64,9 @@ export const Filters = injector(({ views, currentView }) => {
                 <FilterLine
                   index={i}
                   filter={filter}
-                  value={filter.currentValue}
                   view={currentView}
                   sidebar={sidebarEnabled}
+                  value={filter.currentValue}
                   key={`${filter.filter.id}-${i}`}
                   availableFilters={Object.values(fields)}
                   dropdownClassName={className.split(" ")[1]}

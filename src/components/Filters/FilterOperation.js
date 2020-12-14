@@ -33,8 +33,7 @@ export const FilterOperation = observer(
 
     const onChange = React.useCallback(
       (value) => {
-        filter.setValue(value);
-        filter.saveDelayed();
+        filter.setValueDelayed(value);
       },
       [filter]
     );

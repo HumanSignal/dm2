@@ -78,7 +78,11 @@ export const ViewFilter = types
     },
 
     get currentValue() {
-      return self.value?.value ?? self.value;
+      if (self.filter.schema === null) {
+        return self.value;
+      } else {
+        return self.value?.value ?? null;
+      }
     },
   }))
   .actions((self) => ({
@@ -134,6 +138,12 @@ export const ViewFilter = types
       self.setValue(
         getOperatorDefaultValue(self.operator) ?? self.filter.defaultValue
       );
+    },
+
+    setValueDelayed(value) {
+      self.value = value;
+      setTimeout(self.saveDelayed);
+      console.log("value set");
     },
 
     saveDelayed: debounce(() => {
