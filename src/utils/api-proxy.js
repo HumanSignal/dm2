@@ -76,9 +76,11 @@ export class APIProxy {
       const gateway = new URL(window.location.href);
 
       if (url[0] === "/") {
-        gateway.pathname = url;
+        gateway.pathname = url.replace(/([/])$/, "");
       } else {
-        gateway.pathname = `${gateway.pathname}/${url}`.replace(/([/]+)/g, "/");
+        gateway.pathname = `${gateway.pathname}/${url}`
+          .replace(/([/]+)/g, "/")
+          .replace(/([/])$/, "");
       }
       return gateway.toString();
     }
