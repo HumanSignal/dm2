@@ -149,7 +149,8 @@ export const AppStore = types
       if (!self.labelingIsConfigured) {
         Modal.confirm({
           title: "Labeling is not configured.",
-          content: "You need to setup labeling config first.",
+          content:
+            "There are no labeling controls in the project labeling config. You need to setup it first.",
           onOk() {
             window.location.href = "/settings";
           },
