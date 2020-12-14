@@ -62,7 +62,7 @@ export const create = (columns) => {
       let remoteTask,
         task = null;
       const rootStore = getRoot(self);
-      self.loadingItem = true;
+      self.setLoading(taskID);
 
       if (taskID !== undefined) {
         remoteTask = yield rootStore.apiCall("task", { taskID });
@@ -83,7 +83,7 @@ export const create = (columns) => {
 
       self.setSelected(task);
 
-      self.loadingItem = false;
+      self.finishLoading(taskID);
 
       return task;
     }),

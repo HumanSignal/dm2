@@ -4,6 +4,7 @@ import { guidGenerator } from "../../utils/random";
 export const InfiniteListItem = types
   .model("InfiniteListItem", {
     updated: guidGenerator(),
+    loading: false,
   })
   .views((self) => ({
     get parent() {
@@ -21,11 +22,19 @@ export const InfiniteListItem = types
         return undefined;
       }
     },
+
+    get isLoading() {
+      return self.parent.itemIsLoading(self.id) || self.parent.isLoading;
+    },
   }))
   .actions((self) => ({
     update(newData) {
       for (let key in newData) self[key] = newData[key];
       self.updated = guidGenerator();
       return self;
+    },
+
+    setLoading(loading) {
+      self.loading = loading;
     },
   }));

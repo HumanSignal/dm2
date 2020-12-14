@@ -50,6 +50,11 @@ export const TableRowWrapper = styled.div`
     }
   }
 
+  &.loading {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
   &:not(.selected).highlighted::after {
     top: 0;
     left: 0;

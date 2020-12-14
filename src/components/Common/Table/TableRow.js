@@ -10,6 +10,9 @@ export const TableRow = observer(
     const classNames = [];
     if (isSelected) classNames.push("selected");
     if (isHighlighted) classNames.push("highlighted");
+    if (data.isLoading) classNames.push("loading");
+
+    console.log({ data });
 
     return (
       <TableContext.Consumer>

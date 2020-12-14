@@ -8,6 +8,7 @@ const MixinBase = types
     loading: false,
     loaded: false,
     loadingItem: false,
+    loadingItems: types.optional(types.array(types.number), []),
   })
   .views((self) => ({
     get API() {
@@ -20,6 +21,14 @@ const MixinBase = types
 
     get hasNextPage() {
       return self.totalPages > self.page;
+    },
+
+    get isLoading() {
+      return self.loadingItem || self.loadingItems.length > 0;
+    },
+
+    itemIsLoading(id) {
+      return self.loadingItems.includes(id);
     },
   }))
   .actions((self) => ({
@@ -50,6 +59,22 @@ const MixinBase = types
 
       if (reload) self.list = [];
       self.list.push(...newEntity);
+    },
+
+    setLoading(id) {
+      if (id !== undefined) {
+        self.loadingItems.push(id);
+      } else {
+        self.loadingItem = true;
+      }
+    },
+
+    finishLoading(id) {
+      if (id !== undefined) {
+        self.loadingItems = self.loadingItems.filter((item) => item !== id);
+      } else {
+        self.loadingItem = false;
+      }
     },
   }));
 

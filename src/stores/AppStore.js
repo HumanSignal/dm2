@@ -240,6 +240,7 @@ export const AppStore = types
       if (options.reload !== false) {
         view.reload();
         view.clearSelection();
+        self.fetchProject();
       }
 
       return result;
