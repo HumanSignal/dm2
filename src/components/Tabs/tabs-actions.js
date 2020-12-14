@@ -1,4 +1,4 @@
-import { Button, Divider, Space } from "antd";
+import { Button, Divider, Modal, Space } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 
@@ -9,6 +9,21 @@ export const TabsActions = inject("store")(
     const actions = store.availableActions
       .filter((a) => !a.hidden)
       .sort((a, b) => a.order - b.order);
+
+    const invokeAction = (action) => {
+      if (action.dialog) {
+        const { type: dialogType, text } = action.dialog;
+        const dialog = Modal[dialogType] ?? Modal.confirm;
+
+        dialog({
+          title: "Destructive action.",
+          content: text,
+          onOk() {
+            store.invokeAction(action.id);
+          },
+        });
+      }
+    };
 
     return (
       <Space>
@@ -27,7 +42,7 @@ export const TabsActions = inject("store")(
               <Button
                 size={size}
                 key={action.id}
-                onClick={() => store.invokeAction(action.id)}
+                onClick={() => invokeAction(action)}
               >
                 {action.title}
               </Button>
