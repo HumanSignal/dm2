@@ -1,4 +1,4 @@
-import { notification } from "antd";
+import { Modal, notification } from "antd";
 import { flow, types } from "mobx-state-tree";
 import { isDefined } from "../utils/utils";
 import * as DataStores from "./DataStores";
@@ -122,26 +122,41 @@ export const AppStore = types
     },
 
     startLabeling(item) {
-      if (!item && !self.dataStore.selected) {
-        self.SDK.setMode("labelstream");
-        return;
-      }
-
-      if (self.dataStore.loadingItem) return;
-
-      if (item && !item.isSelected) {
-        if (isDefined(item.task_id)) {
-          self.setTask({
-            completionID: item.id,
-            taskID: item.task_id,
-          });
-        } else {
-          self.setTask({
-            taskID: item.id,
-          });
+      const processLabeling = () => {
+        if (!item && !self.dataStore.selected) {
+          self.SDK.setMode("labelstream");
+          return;
         }
+
+        if (self.dataStore.loadingItem) return;
+
+        if (item && !item.isSelected) {
+          if (isDefined(item.task_id)) {
+            self.setTask({
+              completionID: item.id,
+              taskID: item.task_id,
+            });
+          } else {
+            self.setTask({
+              taskID: item.id,
+            });
+          }
+        } else {
+          self.closeLabeling();
+        }
+      };
+
+      if (!self.labelingIsConfigured) {
+        Modal.confirm({
+          title: "Labeling is not configured.",
+          content: "You need to setup labeling config first.",
+          onOk() {
+            window.location.href = "/settings";
+          },
+          okText: "Go to setup",
+        });
       } else {
-        self.closeLabeling();
+        processLabeling.call(self);
       }
     },
 
