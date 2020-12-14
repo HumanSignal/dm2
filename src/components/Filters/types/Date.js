@@ -46,6 +46,8 @@ export const DateTimeInput = ({ value, range, time, onChange }) => {
 
   const DateComponent = range ? DatePicker.RangePicker : DatePicker;
 
+  console.log("Datepicker with time", time);
+
   return (
     <Picker>
       {({ className }) => (
@@ -68,37 +70,41 @@ export const DateFields = (extraProps) => {
       key: "equal",
       label: "is at",
       valueType: "single",
-      input: (props) => <DateTimeInput {...props} />,
+      input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
     },
     {
       key: "not_equal",
       label: "not at",
       valueType: "single",
-      input: (props) => <DateTimeInput {...props} />,
+      input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
     },
     {
       key: "less",
       label: "is before",
       valueType: "single",
-      input: (props) => <DateTimeInput {...props} />,
+      input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
     },
     {
       key: "greater",
       label: "is after",
       valueType: "single",
-      input: (props) => <DateTimeInput {...props} />,
+      input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
     },
     {
       key: "in",
       label: "is between",
       valueType: "range",
-      input: (props) => <DateTimeInput range {...props} />,
+      input: (props) => (
+        <DateTimeInput range {...props} {...(extraProps ?? {})} />
+      ),
     },
     {
       key: "not_in",
       label: "not between",
       valueType: "range",
-      input: (props) => <DateTimeInput range {...props} />,
+      input: (props) => (
+        <DateTimeInput range {...props} {...(extraProps ?? {})} />
+      ),
     },
   ];
 };

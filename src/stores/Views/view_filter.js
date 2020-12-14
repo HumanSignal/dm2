@@ -78,7 +78,7 @@ export const ViewFilter = types
     },
 
     get currentValue() {
-      return self.value.value ?? self.value;
+      return self.value?.value ?? self.value;
     },
   }))
   .actions((self) => ({
