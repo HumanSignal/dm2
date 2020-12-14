@@ -152,7 +152,7 @@ export const AppStore = types
           content:
             "There are no labeling controls in the project labeling config. You need to setup it first.",
           onOk() {
-            window.location.href = "/settings";
+            window.location.href = "./settings";
           },
           okText: "Go to setup",
         });
