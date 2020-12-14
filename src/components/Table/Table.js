@@ -117,7 +117,7 @@ export const DataView = injector(
               }}
             >
               {!hasData && (
-                <Button type="primary" href="/import">
+                <Button type="primary" href="./import">
                   Go to import
                 </Button>
               )}
