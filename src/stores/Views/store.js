@@ -1,4 +1,11 @@
-import { destroy, flow, getRoot, getSnapshot, types } from "mobx-state-tree";
+import {
+  clone,
+  destroy,
+  flow,
+  getRoot,
+  getSnapshot,
+  types,
+} from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 import { unique } from "../../utils/utils";
 import { CustomJSON } from "../types";
@@ -96,15 +103,16 @@ export const ViewsStore = types
     }),
 
     addView: flow(function* (viewSnapshot) {
+      const snapshot = viewSnapshot ?? {};
       const lastView = self.views[self.views.length - 1];
-
       const newTitle = `New Tab ${self.views.length + 1}`;
 
       const newView = self.createView({
-        ...(viewSnapshot ?? {}),
+        ...snapshot,
         id: lastView?.id ? lastView.id + 1 : 0,
         title: newTitle,
         key: guidGenerator(),
+        hiddenColumns: snapshot.hiddenColumns ?? clone(self.defaultHidden),
       });
 
       self.views.push(newView);

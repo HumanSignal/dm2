@@ -252,10 +252,8 @@ export const View = types
     },
 
     afterAttach() {
-      if (self.saved) {
-        self.hiddenColumns =
-          self.hiddenColumns ?? clone(self.parent.defaultHidden);
-      }
+      self.hiddenColumns =
+        self.hiddenColumns ?? clone(self.parent.defaultHidden);
     },
 
     save: flow(function* ({ reload } = {}) {
