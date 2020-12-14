@@ -74,15 +74,6 @@ export const ViewsStore = types
       }
     },
 
-    setTask: flow(function* (params = {}) {
-      if (params.taskID !== undefined) {
-        yield self.taskStore.loadTask(params.taskID);
-        self.annotationStore.setSelected(params.id);
-      } else {
-        self.taskStore.setSelected(params.id);
-      }
-    }),
-
     deleteView: flow(function* (view) {
       if (self.selected === view) {
         let newView;

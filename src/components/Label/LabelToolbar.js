@@ -133,7 +133,7 @@ const SubmissionButtons = observer(
           icon={isNewTask ? <CheckOutlined /> : <CheckCircleOutlined />}
           onClick={submitFunction}
         >
-          {isNewTask ? "Submit" : "Update"}
+          {isNewTask || isLabelStream ? "Submit" : "Update"}
         </Button>
       </Tooltip>
     );

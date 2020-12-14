@@ -51,7 +51,7 @@ export const TablePanel = observer(({ views, view }) => {
           type="primary"
           size={toolbarSize}
           disabled={view.target === "annotations"}
-          onClick={() => view.labelAll()}
+          onClick={() => getRoot(view).startLabeling()}
         >
           <PlayCircleOutlined />
           Label

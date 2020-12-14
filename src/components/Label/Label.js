@@ -21,7 +21,7 @@ const LabelingComponent = observer(({ store }) => {
     store.SDK.lsf?.currentCompletion
   );
 
-  const closeLabeling = () => view.closeLabeling();
+  const closeLabeling = () => store.closeLabeling();
 
   React.useEffect(() => {
     const callback = (completion) => setCompletion(completion);

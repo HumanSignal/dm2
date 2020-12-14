@@ -1,5 +1,6 @@
 import { notification } from "antd";
 import { flow, types } from "mobx-state-tree";
+import { isDefined } from "../utils/utils";
 import * as DataStores from "./DataStores";
 import { DynamicModel, registerModel } from "./DynamicModel";
 import { CustomJSON } from "./types";
@@ -77,11 +78,24 @@ export const AppStore = types
     get target() {
       return self.viewsStore.selected?.target ?? "tasks";
     },
+
+    get labelingIsConfigured() {
+      return self.project?.config_has_control_tags === true;
+    },
   }))
   .actions((self) => ({
     setMode(mode) {
       self.mode = mode;
     },
+
+    setTask: flow(function* ({ taskID, completionID }) {
+      if (completionID !== undefined) {
+        yield self.taskStore.loadTask(taskID);
+        self.annotationStore.setSelected(completionID);
+      } else {
+        self.taskStore.setSelected(taskID);
+      }
+    }),
 
     unsetTask() {
       self.annotationStore.unset();
@@ -105,6 +119,39 @@ export const AppStore = types
         const dataStore = DataStores[target].create?.(columns);
         if (dataStore) registerModel(`${target}Store`, dataStore);
       });
+    },
+
+    startLabeling(item) {
+      if (!item && !self.dataStore.selected) {
+        self.SDK.setMode("labelstream");
+        return;
+      }
+
+      if (self.dataStore.loadingItem) return;
+
+      if (item && !item.isSelected) {
+        if (isDefined(item.task_id)) {
+          self.setTask({
+            completionID: item.id,
+            taskID: item.task_id,
+          });
+        } else {
+          self.setTask({
+            taskID: item.id,
+          });
+        }
+      } else {
+        self.closeLabeling();
+      }
+    },
+
+    closeLabeling() {
+      const { SDK, dataStore } = self;
+
+      self.unsetTask();
+      SDK.setMode("explorer");
+      SDK.destroyLSF();
+      dataStore.reload();
     },
 
     fetchProject: flow(function* () {

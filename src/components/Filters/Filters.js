@@ -15,9 +15,6 @@ const injector = inject(({ store }) => ({
 
 export const Filters = injector(({ views, currentView, filters }) => {
   const { sidebarEnabled } = views;
-  // const filters = React.useMemo(() => {
-  //   return currentView.filters;
-  // }, [currentView.filters]);
 
   const fields = React.useMemo(
     () =>

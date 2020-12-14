@@ -1,6 +1,7 @@
 import { Tag, Tooltip } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
+import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { VscQuestion } from "react-icons/vsc";
 import { Table } from "../Common/Table/Table";
@@ -80,17 +81,8 @@ export const DataView = injector(
     ]);
 
     const onRowClick = React.useCallback(
-      (currentTask) => {
-        if (view.dataStore.loadingItem) return;
-
-        if (!currentTask.isSelected) {
-          view.setTask({
-            id: currentTask.id,
-            taskID: currentTask.task_id,
-          });
-        } else {
-          view.closeLabeling();
-        }
+      (item) => {
+        getRoot(view).startLabeling(item);
       },
       [view]
     );
