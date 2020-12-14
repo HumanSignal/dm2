@@ -212,8 +212,10 @@ export class LSFWrapper {
 
     this.datamanager.invoke("deleteCompletion", [ls, completion]);
 
-    task.update(response);
-    await this.loadTask(task.id, task.lastCompletion?.id);
+    if (response.ok) {
+      const { id, pk } = this.completions[this.completions.length - 1] ?? {};
+      await this.loadTask(task.id, pk || id);
+    }
 
     this.setLoading(false);
   };
