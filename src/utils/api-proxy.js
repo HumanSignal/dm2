@@ -52,11 +52,12 @@ export class APIProxy {
    */
   constructor(options) {
     this.commonHeaders = options.commonHeaders ?? {};
-    this.gateway = this.resolvegateway(options.gateway);
+    this.gateway = this.resolveGateway(options.gateway);
     this.requestMode = this.detectMode();
     this.mockDelay = options.mockDelay ?? 0;
     this.mockDisabled = options.mockDisabled ?? false;
 
+    console.log("API gateway: ", this.gateway);
     this.resolveMethods(options.endpoints);
   }
 
@@ -64,7 +65,7 @@ export class APIProxy {
    * Resolves gateway to a full URL
    * @returns {string}
    */
-  resolvegateway(url) {
+  resolveGateway(url) {
     if (url instanceof URL) {
       return url.toString();
     }
@@ -73,10 +74,11 @@ export class APIProxy {
       return new URL(url).toString();
     } catch {
       const gateway = new URL(window.location.href);
+
       if (url[0] === "/") {
         gateway.pathname = url;
       } else {
-        gateway.pathname += url;
+        gateway.pathname = `${gateway.pathname}/${url}`.replace(/([/]+)/g, "/");
       }
       return gateway.toString();
     }

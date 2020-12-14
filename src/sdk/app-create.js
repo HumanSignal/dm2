@@ -17,7 +17,6 @@ const createDynamicModels = (columns) => {
   }, new Map());
 
   grouppedColumns.forEach((columns, target) => {
-    console.log({ target, columns });
     const dataStore = DataStores[target].create?.(columns);
     if (dataStore) registerModel(`${target}Store`, dataStore);
   });
@@ -33,7 +32,6 @@ const createDynamicModels = (columns) => {
  * @returns {Promise<AppStore>}
  */
 export const createApp = async (rootNode, datamanager) => {
-  console.log(`DataManager is loading in ${datamanager.mode} mode`);
   const { columns } = await datamanager.api.columns();
 
   createDynamicModels(columns);

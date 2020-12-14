@@ -104,9 +104,6 @@ export class DataManager {
 
     Object.assign(APIConfig.endpoints, apiEndpoints ?? {});
 
-    console.log({ apiGateway, apiEndpoints, apiMockDisabled });
-    console.log({ config });
-
     return config;
   }
 
