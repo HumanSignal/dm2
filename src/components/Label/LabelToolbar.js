@@ -1,6 +1,7 @@
 import {
   CheckCircleOutlined,
   CheckOutlined,
+  InfoCircleOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
 import { Button, Space, Tooltip } from "antd";
@@ -10,7 +11,6 @@ import React from "react";
 import { BiRedo, BiReset, BiUndo } from "react-icons/bi";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import styled from "styled-components";
-import { Hint } from "./Label.styles";
 
 const TOOLTIP_DELAY = 0.8;
 
@@ -39,6 +39,7 @@ export const LabelToolbar = observer(
               lsf={lsf}
               completion={completion}
               isLabelStream={isLabelStream}
+              disabled={lsf.isLoading}
             />
 
             <LabelTools>
@@ -49,12 +50,15 @@ export const LabelToolbar = observer(
                   paddingRight: "10px",
                 }}
               >
-                <Button type="primary" onClick={() => lsf.toggleDescription()}>
-                  {!lsf.showingDescription ? "Show " : "Hide "}
-                  instructions
-                </Button>
+                <Button
+                  type={lsf.showingDescription ? "primary" : "dashed"}
+                  ghost={lsf.showingDescription}
+                  icon={<InfoCircleOutlined />}
+                  onClick={() => lsf.toggleDescription()}
+                />
 
                 <Button
+                  type="dashed"
                   icon={<SettingOutlined />}
                   onClick={() => lsf.toggleSettings()}
                 />
@@ -84,38 +88,39 @@ const LSFOperations = observer(({ history }) => {
       >
         <BiRedo size={18} />
       </Button>
-      <Button className="flex-button" onClick={() => history.reset()}>
+      <Button
+        className="flex-button"
+        disabled={!history.canUndo}
+        onClick={() => history.reset()}
+      >
         <BiReset size={16} />
       </Button>
     </ButtonGroup>
   ) : null;
 });
 
-const SubmissionButtons = observer(({ lsf, completion, isLabelStream }) => {
-  const { userGenerate, sentUserGenerate, versions } = completion;
-  const { enableHotkeys, enableTooltips } = lsf.settings;
+const SubmissionButtons = observer(
+  ({ lsf, completion, isLabelStream, disabled }) => {
+    const { userGenerate, sentUserGenerate } = completion;
+    const isNewTask = userGenerate && !sentUserGenerate;
+    const submitFunction = isNewTask
+      ? lsf.submitCompletion
+      : lsf.updateCompletion;
 
-  const buttons = [];
+    const buttons = [];
 
-  if (enableHotkeys && enableTooltips) {
-    buttons.submit = <Hint> [ Ctrl+Enter ]</Hint>;
-    buttons.skip = <Hint> [ Ctrl+Space ]</Hint>;
-    buttons.update = <Hint> [ Alt+Enter] </Hint>;
-  }
+    buttons.push(
+      <Tooltip
+        key="skip"
+        title="Mark task as cancelled: [ Ctrl+Space ]"
+        mouseEnterDelay={TOOLTIP_DELAY}
+      >
+        <Button danger onClick={lsf.skipTask} disabled={disabled}>
+          Skip
+        </Button>
+      </Tooltip>
+    );
 
-  buttons.push(
-    <Tooltip
-      key="skip"
-      title="Mark task as cancelled: [ Ctrl+Space ]"
-      mouseEnterDelay={TOOLTIP_DELAY}
-    >
-      <Button onClick={lsf.skipTask} danger>
-        {isLabelStream ? "Skip & Next" : "Skip"} {buttons.skip}
-      </Button>
-    </Tooltip>
-  );
-
-  if ((userGenerate && !sentUserGenerate) || (lsf.explore && !userGenerate)) {
     buttons.push(
       <Tooltip
         key="submit"
@@ -124,34 +129,18 @@ const SubmissionButtons = observer(({ lsf, completion, isLabelStream }) => {
       >
         <Button
           type="primary"
-          icon={<CheckOutlined />}
-          onClick={lsf.submitCompletion}
+          disabled={disabled}
+          icon={isNewTask ? <CheckOutlined /> : <CheckCircleOutlined />}
+          onClick={submitFunction}
         >
-          {isLabelStream ? "Submit & Next" : "Submit"} {buttons.submit}
+          {isNewTask ? "Submit" : "Update"}
         </Button>
       </Tooltip>
     );
-  } else if ((userGenerate && sentUserGenerate) || !sentUserGenerate) {
-    buttons.push(
-      <Tooltip
-        key="update"
-        title="Update this task: [ Alt+Enter ]"
-        mouseEnterDelay={TOOLTIP_DELAY}
-      >
-        <Button
-          type="primary"
-          icon={<CheckCircleOutlined />}
-          onClick={lsf.updateCompletion}
-        >
-          {sentUserGenerate || versions.result ? "Update" : "Submit"}{" "}
-          {buttons.update}
-        </Button>
-      </Tooltip>
-    );
-  }
 
-  return <Space>{buttons}</Space>;
-});
+    return <Space>{buttons}</Space>;
+  }
+);
 
 const HistoryButton = ({ children, ...rest }) => (
   <Button {...rest} className="flex-button" shape="circle">

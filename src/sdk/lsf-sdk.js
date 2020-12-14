@@ -93,7 +93,7 @@ export class LSFWrapper {
 
     this.task = newTask;
 
-    /* If we're in label stream and there's no task – end stream */
+    /* If we're in label stream and there's no task – end the stream */
     if (taskID === undefined && !newTask) {
       this.lsf.setFlags({ noTask: true });
     }
@@ -315,6 +315,6 @@ export class LSFWrapper {
 
   /** @returns {string|null} */
   get instructions() {
-    return (this.project.instructions ?? "").trim() || null;
+    return (this.project.instruction ?? "").trim() || null;
   }
 }
