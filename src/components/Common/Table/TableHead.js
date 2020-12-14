@@ -32,6 +32,7 @@ export const TableHead = observer(
     sortingEnabled,
     selected,
     onSelect,
+    stopInteractions,
     ...props
   }) => {
     return (

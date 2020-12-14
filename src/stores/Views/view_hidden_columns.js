@@ -1,4 +1,4 @@
-import { getParent, getRoot, types } from "mobx-state-tree";
+import { getRoot, types } from "mobx-state-tree";
 import { ViewColumn } from "./view_column";
 
 const ColumnsList = types.maybeNull(
@@ -33,27 +33,6 @@ export const ViewHiddenColumns = types
     },
   }))
   .actions((self) => ({
-    afterAttach() {
-      const { columns } = getParent(self).parent;
-      const { tableConfig } = getRoot(self).SDK;
-
-      ["explore", "labeling"].forEach((mode) => {
-        if (self[mode].length !== 0) return;
-
-        const hidden = tableConfig.hiddenColumns?.[mode] ?? [];
-        const visible = tableConfig.visibleColumns?.[mode] ?? [];
-        let result = [];
-
-        if (hidden.length) {
-          result = columns.filter((c) => hidden.includes(c.id));
-        } else if (visible.length) {
-          result = columns.filter((c) => !visible.includes(c.id));
-        }
-
-        self[mode].push(...result);
-      });
-    },
-
     add(column) {
       const set = new Set(self.activeList);
       set.add(column);

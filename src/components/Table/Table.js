@@ -1,4 +1,4 @@
-import { Button, Empty, Tag, Tooltip } from "antd";
+import { Button, Empty, Spin, Tag, Tooltip } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
@@ -20,7 +20,8 @@ const injector = inject(({ store }) => {
     selectedItems: currentView?.selected,
     selectedCount: currentView?.selected?.length ?? 0,
     total: dataStore?.total ?? 0,
-    isLabeling: dataStore?.isLabeling ?? false,
+    isLabeling: store.isLabeling ?? false,
+    isLoading: dataStore?.isLoading ?? true,
     hasData: (store.project?.task_count ?? 0) > 0,
   };
 
@@ -36,6 +37,7 @@ export const DataView = injector(
     viewType,
     total,
     isLabeling,
+    isLoading,
     hiddenColumns = [],
     hasData = false,
   }) => {
@@ -91,7 +93,9 @@ export const DataView = injector(
 
     const renderContent = React.useCallback(
       (content) => {
-        if (total === 0 || !hasData) {
+        if (isLoading && !isLabeling) {
+          return <Spin />;
+        } else if (total === 0 || !hasData) {
           return (
             <Empty
               description={
@@ -119,11 +123,11 @@ export const DataView = injector(
               )}
             </Empty>
           );
-        } else {
-          return content;
         }
+
+        return content;
       },
-      [hasData, total]
+      [hasData, isLabeling, isLoading, total]
     );
 
     const content =

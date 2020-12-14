@@ -12,8 +12,6 @@ export const TableRow = observer(
     if (isHighlighted) classNames.push("highlighted");
     if (data.isLoading) classNames.push("loading");
 
-    console.log({ data });
-
     return (
       <TableContext.Consumer>
         {({ columns, cellViews }) => (

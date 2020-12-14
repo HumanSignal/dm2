@@ -5,6 +5,7 @@ import { CustomJSON } from "../types";
 import { View } from "./view";
 import { ViewColumn } from "./view_column";
 import { ViewFilterType } from "./view_filter_type";
+import { ViewHiddenColumns } from "./view_hidden_columns";
 
 const storeValue = (name, value) => {
   window.localStorage.setItem(name, value);
@@ -27,6 +28,9 @@ export const ViewsStore = types
     sidebarVisible: restoreValue("sidebarVisible"),
     sidebarEnabled: restoreValue("sidebarEnabled"),
   })
+  .volatile((self) => ({
+    defaultHidden: types.optional(ViewHiddenColumns, {}),
+  }))
   .views((self) => ({
     get all() {
       return self.views;
@@ -136,6 +140,7 @@ export const ViewsStore = types
     fetchColumns() {
       const columns = self.columnsRaw;
       const targets = unique(columns.map((c) => c.target));
+      const hiddenColumns = {};
 
       const createColumnPath = (columns, column) => {
         const result = [];
@@ -165,7 +170,7 @@ export const ViewsStore = types
       });
 
       columns.forEach((c) => {
-        const { target } = c;
+        const { target, visibility_defaults: visibility } = c;
 
         const { columnPath, parentPath } = createColumnPath(columns, c);
 
@@ -194,7 +199,16 @@ export const ViewsStore = types
             schema: c.schema ?? null,
           });
         }
+
+        Object.entries(visibility ?? {}).forEach(([key, visible]) => {
+          if (!visible) {
+            hiddenColumns[key] = hiddenColumns[key] ?? [];
+            hiddenColumns[key].push(column.id);
+          }
+        });
       });
+
+      self.defaultHidden = ViewHiddenColumns.create(hiddenColumns);
     },
 
     fetchViews: flow(function* () {

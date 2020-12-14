@@ -97,7 +97,7 @@ export const TableCellContent = styled.div`
   ${({ disabled }) =>
     disabled
       ? css`
-          pointer-events: "none";
+          pointer-events: none;
           opacity: 0.6;
         `
       : null}
