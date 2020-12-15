@@ -91,7 +91,7 @@ export const AppStore = types
         self._poll = setTimeout(() => poll(self), 5000);
       };
 
-      poll(self);
+      // poll(self);
     },
 
     beforeDestroy() {

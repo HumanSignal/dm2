@@ -3,6 +3,8 @@ import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
+import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
+import { GiMonoWheelRobot } from "react-icons/gi";
 import { VscQuestion } from "react-icons/vsc";
 import { Spinner } from "../Common/Spinner";
 import { Table } from "../Common/Table/Table";
@@ -151,6 +153,38 @@ export const DataView = injector(
           columns={columns}
           hiddenColumns={hiddenColumns}
           cellViews={CellViews}
+          cellDecoration={{
+            total_completions: {
+              content(col) {
+                return (
+                  <Tooltip title={col.title}>
+                    <AiOutlineCheck />
+                  </Tooltip>
+                );
+              },
+              style: { width: 85, minWidth: 85, maxWidth: 85 },
+            },
+            cancelled_completions: {
+              content(col) {
+                return (
+                  <Tooltip title={col.title}>
+                    <AiOutlineClose />
+                  </Tooltip>
+                );
+              },
+              style: { width: 85, minWidth: 85, maxWidth: 85 },
+            },
+            total_predictions: {
+              content(col) {
+                return (
+                  <Tooltip title={col.title}>
+                    <GiMonoWheelRobot />
+                  </Tooltip>
+                );
+              },
+              style: { width: 85, minWidth: 85, maxWidth: 85 },
+            },
+          }}
           order={view.ordering}
           focusedItem={focusedItem}
           isItemLoaded={isItemLoaded}

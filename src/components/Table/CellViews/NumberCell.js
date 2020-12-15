@@ -11,6 +11,7 @@ NumberCell.style = (col) => {
     Object.assign(result, {
       minWidth: 110,
       maxWidth: 110,
+      justifyContent: "flex-end",
     });
   }
 

@@ -33,6 +33,7 @@ export const TableHead = observer(
     selected,
     onSelect,
     stopInteractions,
+    cellDecoration,
     ...props
   }) => {
     return (
@@ -44,13 +45,18 @@ export const TableHead = observer(
               checked={selected.isAllSelected}
               indeterminate={selected.isIndeterminate}
               onChange={() => onSelect?.()}
+              className="th"
             />
 
             {columns.map((col) => {
               const Renderer = headerRenderers?.[col.id];
-              const style = getStyle(cellViews, col);
               const extra = columnHeaderExtra ? columnHeaderExtra(col) : null;
               const canOrder = sortingEnabled && col.original?.canOrder;
+              const Decoration = cellDecoration[col.alias];
+              const content = Decoration?.content
+                ? Decoration.content(col)
+                : col.title;
+              const style = getStyle(cellViews, col, Decoration);
 
               return (
                 <TableCellWrapper
@@ -65,7 +71,7 @@ export const TableHead = observer(
                     onClick={() => canOrder && onSetOrder?.(col)}
                     disabled={props.stopInteractions}
                   >
-                    {Renderer ? <Renderer column={col} /> : col.title}
+                    {Renderer ? <Renderer column={col} /> : content}
 
                     {canOrder && <OrderButton desc={col.original.order} />}
                   </TableCellContent>
