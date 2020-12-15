@@ -10,7 +10,15 @@ import { TableRow } from "./TableRow";
 import { prepareColumns } from "./utils";
 
 export const Table = observer(
-  ({ view, data, cellViews, selectedItems, headerRenderers, ...props }) => {
+  ({
+    view,
+    data,
+    cellViews,
+    selectedItems,
+    headerRenderers,
+    focusedItem,
+    ...props
+  }) => {
     const columns = prepareColumns(props.columns, props.hiddenColumns);
 
     const contextValue = {
@@ -19,11 +27,6 @@ export const Table = observer(
       cellViews,
       headerRenderers,
     };
-
-    const selectedRowIndex = React.useMemo(
-      () => (view.selected ? data.indexOf(view.selected) : -1),
-      [data, view.selected]
-    );
 
     const headerHeight = 42;
 
@@ -96,13 +99,17 @@ export const Table = observer(
       [props, data]
     );
 
-    const initialScrollOffset = React.useCallback(
-      (height) => {
-        const { rowHeight: h } = props;
-        return selectedRowIndex * h - h / 2 - height / 2 + headerHeight;
-      },
-      [props, selectedRowIndex]
-    );
+    const initialScrollOffset = (height) => {
+      const { rowHeight: h } = props;
+      const index = data.indexOf(focusedItem);
+
+      if (index >= 0) {
+        const scrollOffset = index * h - height / 2 + h / 2; // + headerHeight
+        return scrollOffset;
+      } else {
+        return 0;
+      }
+    };
 
     const itemKey = React.useCallback(
       (index) => {

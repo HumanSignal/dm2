@@ -162,12 +162,11 @@ export const AppStore = types
     },
 
     closeLabeling() {
-      const { SDK, dataStore } = self;
+      const { SDK } = self;
 
       self.unsetTask();
       SDK.setMode("explorer");
       SDK.destroyLSF();
-      dataStore.reload();
     },
 
     fetchProject: flow(function* () {

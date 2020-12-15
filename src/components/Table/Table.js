@@ -12,17 +12,19 @@ import { TableStyles } from "./Table.styles";
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
   const props = {
+    dataStore,
     view: currentView,
-    data: dataStore?.list ?? [],
     viewType: currentView?.type ?? "list",
     columns: currentView?.fieldsAsColumns ?? [],
     hiddenColumns: currentView?.hiddenColumnsList,
     selectedItems: currentView?.selected,
     selectedCount: currentView?.selected?.length ?? 0,
-    total: dataStore?.total ?? 0,
     isLabeling: store.isLabeling ?? false,
+    data: dataStore?.list ?? [],
+    total: dataStore?.total ?? 0,
     isLoading: dataStore?.isLoading ?? true,
     hasData: (store.project?.task_count ?? 0) > 0,
+    focusedItem: dataStore?.selected ?? dataStore?.highlighted,
   };
 
   return props;
@@ -34,14 +36,19 @@ export const DataView = injector(
     columns,
     view,
     selectedItems,
+    dataStore,
     viewType,
     total,
     isLabeling,
-    isLoading,
     hiddenColumns = [],
     hasData = false,
+    ...props
   }) => {
     const [showSource, setShowSource] = React.useState();
+
+    const focusedItem = React.useMemo(() => {
+      return props.focusedItem;
+    }, [props.focusedItem]);
 
     const loadMore = React.useCallback(() => {
       if (view.dataStore.hasNextPage) {
@@ -125,7 +132,7 @@ export const DataView = injector(
 
         return content;
       },
-      [hasData, isLabeling, isLoading, total]
+      [hasData, total]
     );
 
     const content =
@@ -141,6 +148,7 @@ export const DataView = injector(
           hiddenColumns={hiddenColumns}
           cellViews={CellViews}
           order={view.ordering}
+          focusedItem={focusedItem}
           isItemLoaded={isItemLoaded}
           sortingEnabled={view.type === "list"}
           onSetOrder={(col) => view.setOrdering(col.id)}
