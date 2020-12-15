@@ -135,6 +135,7 @@ export const View = types
           items: self.serializedFilters,
         },
         hiddenColumns: getSnapshot(self.hiddenColumns),
+        selectedItems: self.selected.snapshot,
       };
     },
   }))
