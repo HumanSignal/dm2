@@ -84,6 +84,20 @@ export const AppStore = types
     },
   }))
   .actions((self) => ({
+    startPolling() {
+      const poll = async (self) => {
+        console.log("Updating project");
+        await self.fetchProject();
+        self._poll = setTimeout(() => poll(self), 5000);
+      };
+
+      poll(self);
+    },
+
+    beforeDestroy() {
+      clearTimeout(self._poll);
+    },
+
     setMode(mode) {
       self.mode = mode;
     },
@@ -187,6 +201,8 @@ export const AppStore = types
       yield self.viewsStore.fetchViews();
 
       self.loading = false;
+
+      self.startPolling();
     }),
 
     apiCall: flow(function* (methodName, params, body) {
