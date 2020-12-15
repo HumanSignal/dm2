@@ -19,7 +19,6 @@ const resolveStyle = (col, decoration, cellView) => {
 
   [cellView, decoration].forEach((item) => {
     const cellStyle = (item ?? {}).style;
-    console.log({ item, cellStyle });
 
     if (cellStyle instanceof Function) {
       Object.assign(result, cellStyle(col) ?? {});
@@ -36,8 +35,6 @@ export const getStyle = (cellViews, col, decoration) => {
   const style = { width: 150 };
 
   Object.assign(style, resolveStyle(col, decoration, cellView));
-
-  console.log(col.id, style);
 
   return style;
 };

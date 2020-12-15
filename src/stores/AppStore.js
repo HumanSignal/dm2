@@ -184,7 +184,12 @@ export const AppStore = types
     },
 
     fetchProject: flow(function* () {
-      self.project = yield self.apiCall("project");
+      const oldProject = JSON.stringify(self.project ?? {});
+      const newProject = yield self.apiCall("project");
+
+      if (JSON.stringify(newProject ?? {}) !== oldProject) {
+        self.project = newProject;
+      }
     }),
 
     fetchActions: flow(function* () {

@@ -38,7 +38,6 @@ export const TableRow = observer(
               className="td"
             />
 
-            {console.group("Render cell")}
             {columns.map((col) => {
               const valuePath = col.id.split(":")[1] ?? col.id;
               const Renderer = cellViews?.[col.type] ?? cellViews.String;
@@ -53,7 +52,6 @@ export const TableRow = observer(
                 </TableCellWrapper>
               );
             })}
-            {console.groupEnd("Render cell")}
           </TableRowWrapper>
         )}
       </TableContext.Consumer>

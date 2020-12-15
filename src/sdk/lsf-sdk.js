@@ -98,7 +98,6 @@ export class LSFWrapper {
     /* If we're in label stream and there's no task – end the stream */
     if (taskID === undefined && !newTask) {
       this.lsf.setFlags({ noTask: true });
-      console.log("Stream finished");
       return;
     }
 
@@ -119,7 +118,6 @@ export class LSFWrapper {
 
   /** @private */
   setTask(task) {
-    console.log("The store is being re-initiailized", { task });
     this.lsf.resetState();
     this.lsf.assignTask(task);
     this.lsf.initializeStore(taskToLSFormat(task));
@@ -132,17 +130,13 @@ export class LSFWrapper {
     let completion;
 
     if (this.predictions.length > 0) {
-      console.log("Added from prediction");
       completion = cs.addCompletionFromPrediction(this.predictions[0]);
     } else if (this.completions.length) {
-      console.log("Existing ID taken");
-
       completion =
         id !== null
           ? this.completions.find((c) => c.pk === id || c.id === id)
           : this.completions[0];
     } else {
-      console.log("Completion generated");
       completion = cs.addCompletion({ userGenerate: true });
     }
 

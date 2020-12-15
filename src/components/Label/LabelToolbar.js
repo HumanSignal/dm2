@@ -8,6 +8,7 @@ import { Button, Space, Tooltip } from "antd";
 import ButtonGroup from "antd/lib/button/button-group";
 import { observer } from "mobx-react";
 import React from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { BiRedo, BiReset, BiUndo } from "react-icons/bi";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import styled from "styled-components";
@@ -72,6 +73,16 @@ export const LabelToolbar = observer(
 );
 
 const LSFOperations = observer(({ history }) => {
+  useHotkeys("ctrl+z,cmd+z", () => history?.undo(), { keyup: false }, [
+    history,
+  ]);
+  useHotkeys(
+    "ctrl+shift+z,cmd+shift+z",
+    () => history?.redo(),
+    { keyup: false },
+    [history]
+  );
+
   return history ? (
     <ButtonGroup>
       <Button
@@ -103,9 +114,22 @@ const SubmissionButtons = observer(
   ({ lsf, completion, isLabelStream, disabled }) => {
     const { userGenerate, sentUserGenerate } = completion;
     const isNewTask = userGenerate && !sentUserGenerate;
-    const submitFunction = isNewTask
-      ? lsf.submitCompletion
-      : lsf.updateCompletion;
+
+    const saveCompletion = React.useCallback(() => {
+      if (!disabled) {
+        isNewTask ? lsf.submitCompletion() : lsf.updateCompletion();
+      } else {
+        console.log("Action disabled!");
+      }
+    }, [disabled, isNewTask, lsf]);
+
+    const skipTask = React.useCallback(() => {
+      if (!disabled) {
+        lsf.skipTask();
+      } else {
+        console.log("Action disabled!");
+      }
+    }, [disabled, lsf]);
 
     const buttons = [];
 
@@ -115,7 +139,7 @@ const SubmissionButtons = observer(
         title="Mark task as cancelled: [ Ctrl+Space ]"
         mouseEnterDelay={TOOLTIP_DELAY}
       >
-        <Button danger onClick={lsf.skipTask} disabled={disabled}>
+        <Button danger onClick={skipTask} disabled={disabled}>
           Skip
         </Button>
       </Tooltip>
@@ -131,12 +155,17 @@ const SubmissionButtons = observer(
           type="primary"
           disabled={disabled}
           icon={isNewTask ? <CheckOutlined /> : <CheckCircleOutlined />}
-          onClick={submitFunction}
+          onClick={saveCompletion}
         >
           {isNewTask || isLabelStream ? "Submit" : "Update"}
         </Button>
       </Tooltip>
     );
+
+    useHotkeys("ctrl+enter,cmd+alt+enter", saveCompletion, { keyup: false }, [
+      disabled,
+    ]);
+    useHotkeys("ctrl+space,cmd+alt+ ", skipTask, { keyup: false }, [disabled]);
 
     return <Space>{buttons}</Space>;
   }
