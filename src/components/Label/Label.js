@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { PageHeader } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { Button, PageHeader } from "antd";
 import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
 import React from "react";
@@ -41,8 +42,17 @@ const LabelingComponent = observer(({ store }) => {
   return (
     <Styles>
       <PageHeader
-        title="Back"
-        onBack={closeLabeling}
+        title={
+          <Button
+            icon={<ArrowLeftOutlined />}
+            type="link"
+            onClick={closeLabeling}
+            className="flex-button"
+            style={{ fontSize: 18, padding: 0, color: "black" }}
+          >
+            Back
+          </Button>
+        }
         style={{ padding: 0 }}
         tags={
           store.isExplorerMode ? (
