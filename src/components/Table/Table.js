@@ -1,4 +1,5 @@
-import { Button, Empty, Tag, Tooltip } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
+import { Button, Empty, Spin, Tag, Tooltip } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
@@ -22,7 +23,7 @@ const injector = inject(({ store }) => {
     isLabeling: store.isLabeling ?? false,
     data: dataStore?.list ?? [],
     total: dataStore?.total ?? 0,
-    isLoading: dataStore?.isLoading ?? true,
+    isLoading: dataStore?.loading ?? true,
     hasData: (store.project?.task_count ?? 0) > 0,
     focusedItem: dataStore?.selected ?? dataStore?.highlighted,
   };
@@ -39,6 +40,7 @@ export const DataView = injector(
     dataStore,
     viewType,
     total,
+    isLoading,
     isLabeling,
     hiddenColumns = [],
     hasData = false,
@@ -100,7 +102,9 @@ export const DataView = injector(
 
     const renderContent = React.useCallback(
       (content) => {
-        if (total === 0 || !hasData) {
+        if (isLoading && total === 0 && !isLabeling) {
+          return <Spin indicator={<LoadingOutlined />} size="large" />;
+        } else if (total === 0 || !hasData) {
           return (
             <Empty
               description={
@@ -132,7 +136,7 @@ export const DataView = injector(
 
         return content;
       },
-      [hasData, total]
+      [hasData, isLabeling, isLoading, total]
     );
 
     const content =
