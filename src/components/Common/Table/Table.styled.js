@@ -7,6 +7,7 @@ export const TableWrapper = styled.div`
   flex-direction: column;
   box-shadow: 0 0 0 1px #f0f0f0 inset;
   overflow: auto;
+  background-color: #f9f9f9;
 
   .table-auto-size,
   .virtual-table {
@@ -25,6 +26,7 @@ export const TableHeadWrapper = styled.div`
   font-weight: bold;
   position: sticky;
   background-color: #fafafa;
+  overflow: hidden;
 `;
 
 export const TableBody = styled.div`
@@ -35,15 +37,15 @@ export const TableBody = styled.div`
 `;
 
 export const TableRowWrapper = styled.div`
-  display: flex;
-  width: 100%;
+  width: auto;
   z-index: 5;
   cursor: pointer;
+  position: relative;
+  display: inline-flex;
 
   &.selected,
   &:hover {
     z-index: 50;
-    background-color: #f3f9ff;
 
     .td {
       background-color: #f3f9ff;
@@ -72,15 +74,16 @@ export const TableCellWrapper = styled.div`
   flex: ${({ width }) => `${width ?? 150} 0 auto`};
   width: ${({ width }) => width ?? 150}px;
   min-width: ${({ width, minWidth }) => minWidth ?? width ?? 150}px;
-  max-width: ${({ maxWidth }) => `${maxWidth}px` ?? "auto"};
+  max-width: ${({ width, minWidth, maxWidth }) =>
+    `${maxWidth ?? minWidth ?? width}px` ?? "auto"};
   padding: 10px;
   box-sizing: border-box;
   box-shadow: 0 0 0 0.5px #f0f0f0 inset;
   display: flex;
   align-items: center;
   justify-content: ${({ justifyContent }) => justifyContent ?? "space-between"};
-  overflow: hidden;
   position: relative;
+  background-color: #fff;
 
   &.th {
     background-color: #fafafa;

@@ -6,7 +6,16 @@ import { TableContext } from "./TableContext";
 import { getProperty, getStyle } from "./utils";
 
 export const TableRow = observer(
-  ({ data, onClick, style, isSelected, isHighlighted, selected, onSelect }) => {
+  ({
+    data,
+    onClick,
+    style,
+    isSelected,
+    isHighlighted,
+    selected,
+    onSelect,
+    cellDecoration,
+  }) => {
     const classNames = [];
     if (isSelected) classNames.push("selected");
     if (isHighlighted) classNames.push("highlighted");
@@ -26,14 +35,17 @@ export const TableRow = observer(
               enabled={!!onSelect}
               checked={selected.isSelected(data.id)}
               onChange={() => onSelect?.(data.id)}
+              className="td"
             />
 
+            {console.group("Render cell")}
             {columns.map((col) => {
               const valuePath = col.id.split(":")[1] ?? col.id;
               const Renderer = cellViews?.[col.type] ?? cellViews.String;
-              const style = getStyle(cellViews, col);
               const value = getProperty(data, valuePath);
               const renderProps = { column: col, original: data, value: value };
+              const Decoration = cellDecoration[col.alias];
+              const style = getStyle(cellViews, col, Decoration);
 
               return (
                 <TableCellWrapper key={col.alias} {...style} className="td">
@@ -41,6 +53,7 @@ export const TableRow = observer(
                 </TableCellWrapper>
               );
             })}
+            {console.groupEnd("Render cell")}
           </TableRowWrapper>
         )}
       </TableContext.Consumer>

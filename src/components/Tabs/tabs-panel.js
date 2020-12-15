@@ -45,15 +45,17 @@ export const TablePanel = observer(({ views, view }) => {
           </>
         )}
 
-        <Button
-          type="primary"
-          size={toolbarSize}
-          disabled={view.target === "annotations"}
-          onClick={() => getRoot(view).startLabeling()}
-        >
-          <PlayCircleOutlined />
-          Label
-        </Button>
+        {getRoot(view).project.task_count > 0 && (
+          <Button
+            type="primary"
+            size={toolbarSize}
+            disabled={view.target === "annotations"}
+            onClick={() => getRoot(view).startLabeling()}
+          >
+            <PlayCircleOutlined />
+            Label
+          </Button>
+        )}
       </Space>
     </div>
   );

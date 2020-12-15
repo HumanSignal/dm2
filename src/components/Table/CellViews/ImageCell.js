@@ -15,7 +15,6 @@ export const ImageCell = (column) => (
 );
 
 ImageCell.style = {
-  width: 40,
   minWidth: 150,
   maxWidth: 150,
   justifyContent: "center",

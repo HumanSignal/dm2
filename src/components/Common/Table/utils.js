@@ -14,19 +14,30 @@ export const getProperty = (object, path) => {
   }
 };
 
-export const getStyle = (cellViews, col) => {
+const resolveStyle = (col, decoration, cellView) => {
+  let result = {};
+
+  [cellView, decoration].forEach((item) => {
+    const cellStyle = (item ?? {}).style;
+    console.log({ item, cellStyle });
+
+    if (cellStyle instanceof Function) {
+      Object.assign(result, cellStyle(col) ?? {});
+    } else {
+      Object.assign(result, cellStyle ?? {});
+    }
+  });
+
+  return result ?? {};
+};
+
+export const getStyle = (cellViews, col, decoration) => {
   const cellView = cellViews?.[col.type];
   const style = { width: 150 };
 
-  if (cellView) {
-    const { style: cellStyle } = cellView;
+  Object.assign(style, resolveStyle(col, decoration, cellView));
 
-    if (cellStyle instanceof Function) {
-      Object.assign(style, cellStyle(col));
-    } else {
-      Object.assign(style, cellStyle);
-    }
-  }
+  console.log(col.id, style);
 
   return style;
 };

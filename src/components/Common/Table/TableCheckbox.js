@@ -30,11 +30,13 @@ export const TableCheckboxCell = ({
   checked,
   indeterminate,
   onChange,
+  className,
 }) => {
   return enabled ? (
     <TableCellWrapper
       width={40}
       maxWidth={40}
+      className={className}
       justifyContent="center"
       onClick={(e) => e.stopPropagation()}
     >

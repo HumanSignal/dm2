@@ -17,6 +17,7 @@ export const Table = observer(
     selectedItems,
     headerRenderers,
     focusedItem,
+    cellDecoration,
     ...props
   }) => {
     const columns = prepareColumns(props.columns, props.hiddenColumns);
@@ -41,6 +42,7 @@ export const Table = observer(
           selected={view.selected}
           stopInteractions={props.stopInteractions}
           onSelect={props.onSelectAll}
+          cellDecoration={cellDecoration}
         />
       ),
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -61,21 +63,23 @@ export const Table = observer(
         const row = data[index - 1];
 
         return (
-          <TableRow
-            key={row.id}
-            data={row}
-            isSelected={row.isSelected}
-            isHighlighted={row.isHighlighted}
-            onClick={props.onRowClick}
-            selected={view.selected}
-            stopInteractions={props.stopInteractions}
-            onSelect={props.onSelectRow}
-            style={{
-              ...style,
-              height: props.rowHeight,
-              width: props.fitContent ? "fit-content" : "100%",
-            }}
-          />
+          <div style={style}>
+            <TableRow
+              key={row.id}
+              data={row}
+              isSelected={row.isSelected}
+              isHighlighted={row.isHighlighted}
+              onClick={props.onRowClick}
+              selected={view.selected}
+              stopInteractions={props.stopInteractions}
+              onSelect={props.onSelectRow}
+              style={{
+                height: props.rowHeight,
+                width: props.fitContent ? "fit-content" : "auto",
+              }}
+              cellDecoration={cellDecoration}
+            />
+          </div>
         );
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
