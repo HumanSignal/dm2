@@ -1,4 +1,4 @@
-import { Button, Empty, Spin, Tag, Tooltip } from "antd";
+import { Button, Empty, Tag, Tooltip } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
@@ -93,9 +93,7 @@ export const DataView = injector(
 
     const renderContent = React.useCallback(
       (content) => {
-        if (isLoading && !isLabeling) {
-          return <Spin />;
-        } else if (total === 0 || !hasData) {
+        if (total === 0 || !hasData) {
           return (
             <Empty
               description={

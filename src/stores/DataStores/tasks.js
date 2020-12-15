@@ -57,25 +57,23 @@ export const create = (columns) => {
     },
   }).actions((self) => ({
     loadTask: flow(function* (taskID) {
-      if (self.loadingItem) return;
-
       let remoteTask,
         task = null;
       const rootStore = getRoot(self);
       self.setLoading(taskID);
 
       if (taskID !== undefined) {
+        console.log("Loading task", taskID);
         remoteTask = yield rootStore.apiCall("task", { taskID });
       } else {
+        console.log("Loading next task");
         remoteTask = yield rootStore.invokeAction("next_task", {
           reload: false,
         });
       }
 
       if (remoteTask && !remoteTask?.error) {
-        taskID = taskID ?? remoteTask.id;
-
-        task = self.updateItem(taskID, {
+        task = self.updateItem(taskID ?? remoteTask.id, {
           ...remoteTask,
           source: JSON.stringify(remoteTask),
         });
@@ -84,6 +82,7 @@ export const create = (columns) => {
       self.setSelected(task);
 
       self.finishLoading(taskID);
+      console.log("Loading finished");
 
       return task;
     }),

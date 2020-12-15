@@ -93,9 +93,13 @@ export class LSFWrapper {
 
     this.task = newTask;
 
+    console.log({ taskID, newTask });
+
     /* If we're in label stream and there's no task – end the stream */
     if (taskID === undefined && !newTask) {
       this.lsf.setFlags({ noTask: true });
+      console.log("Stream finished");
+      return;
     }
 
     if (needsCompletionsMerge) {
