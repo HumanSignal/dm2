@@ -130,7 +130,7 @@ export const ViewFilter = types
     save() {
       if (self.isValidFilter) {
         getRoot(self).unsetSelection();
-        self.view.save();
+        self.view.save({ interaction: "filter" });
       }
     },
 

@@ -54,7 +54,7 @@ export const DataView = injector(
 
     const loadMore = React.useCallback(() => {
       if (view.dataStore.hasNextPage) {
-        view.dataStore.fetch();
+        view.dataStore.fetch({ interaction: "scroll" });
       }
     }, [view.dataStore]);
 

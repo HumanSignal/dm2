@@ -177,7 +177,7 @@ export const View = types
       }
 
       self.ordering[0] = ordering;
-      self.save();
+      self.save({ iteraction: "ordering" });
     },
 
     setSelected(ids) {
@@ -237,10 +237,10 @@ export const View = types
       self.save({ reload: false });
     },
 
-    reload() {
+    reload({ interaction } = {}) {
       if (self.saved) {
-        getRoot(self).unsetSelection();
-        self.dataStore.reload();
+        self.root.unsetSelection();
+        self.dataStore.reload({ interaction });
       }
     },
 
@@ -256,16 +256,19 @@ export const View = types
         self.hiddenColumns ?? clone(self.parent.defaultHidden);
     },
 
-    save: flow(function* ({ reload } = {}) {
+    save: flow(function* ({ reload, interaction } = {}) {
       if (self.virtual) return;
 
       const { id: tabID } = self;
-      const body = self.serialize();
+      const body = { body: self.serialize() };
+      const params = { tabID };
 
-      yield getRoot(self).apiCall("updateTab", { tabID }, { body });
+      if (interaction !== undefined) Object.assign(params, { interaction });
+
+      yield getRoot(self).apiCall("updateTab", params, body);
 
       self.saved = true;
-      if (reload !== false) self.reload();
+      if (reload !== false) self.reload({ interaction });
     }),
 
     delete: flow(function* () {

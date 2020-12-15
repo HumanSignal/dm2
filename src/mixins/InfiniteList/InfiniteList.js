@@ -105,7 +105,7 @@ export const InfiniteList = (
         return item;
       },
 
-      fetch: flow(function* ({ reload = false } = {}) {
+      fetch: flow(function* ({ reload = false, interaction } = {}) {
         if (self.loading) return;
 
         let selected, highlighted;
@@ -123,11 +123,15 @@ export const InfiniteList = (
 
         self.page++;
 
-        const data = yield getRoot(self).apiCall(apiMethod, {
+        const params = {
           page: self.page,
           page_size: self.pageSize,
           tabID: getRoot(self).viewsStore.selected.id,
-        });
+        };
+
+        if (interaction) Object.assign(params, { interaction });
+
+        const data = yield getRoot(self).apiCall(apiMethod, params);
 
         const { total, [apiMethod]: list } = data;
 
@@ -142,8 +146,8 @@ export const InfiniteList = (
         self.loaded = true;
       }),
 
-      reload: flow(function* () {
-        yield self.fetch({ reload: true });
+      reload: flow(function* ({ interaction } = {}) {
+        yield self.fetch({ reload: true, interaction });
       }),
     }));
 
