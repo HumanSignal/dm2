@@ -184,6 +184,9 @@ export const DataView = injector(
               },
               style: { width: 85, minWidth: 85, maxWidth: 85 },
             },
+            completed_at: {
+              style: { width: 180, minWidth: 180, maxWidth: 180 },
+            },
           }}
           order={view.ordering}
           focusedItem={focusedItem}

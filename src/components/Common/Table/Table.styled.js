@@ -84,6 +84,7 @@ export const TableCellWrapper = styled.div`
   justify-content: ${({ justifyContent }) => justifyContent ?? "space-between"};
   position: relative;
   background-color: #fff;
+  overflow: hidden;
 
   &.th {
     background-color: #fafafa;
