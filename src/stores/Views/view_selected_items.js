@@ -1,6 +1,6 @@
 import { types } from "mobx-state-tree";
 
-export const SelectedItems = types
+const SelectedItemsModel = types
   .model("SelectedItems", {
     all: false,
     list: types.optional(types.array(types.number), []),
@@ -76,3 +76,11 @@ export const SelectedItems = types
       self.list = [];
     },
   }));
+
+export const SelectedItems = types.snapshotProcessor(SelectedItemsModel, {
+  preProcessor(sn) {
+    console.log("PreProcess selected items", sn);
+    const { included, excluded, ...rest } = sn ?? {};
+    return { ...sn, list: rest.all ? excluded : included };
+  },
+});

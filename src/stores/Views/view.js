@@ -1,4 +1,5 @@
 import {
+  applySnapshot,
   clone,
   destroy,
   flow,
@@ -266,7 +267,12 @@ export const View = types
 
       if (interaction !== undefined) Object.assign(params, { interaction });
 
-      yield getRoot(self).apiCall("updateTab", params, body);
+      const { filters: _, ...result } = yield getRoot(self).apiCall(
+        "updateTab",
+        params,
+        body
+      );
+      applySnapshot(self, result);
 
       self.saved = true;
       if (reload !== false) self.reload({ interaction });
