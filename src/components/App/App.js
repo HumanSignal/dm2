@@ -1,7 +1,6 @@
-import { LoadingOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
 import { observer, Provider } from "mobx-react";
 import React from "react";
+import { Spinner } from "../Common/Spinner";
 import { Labeling } from "../Label/Label";
 import { TabsWrapper } from "../Tabs/tabs";
 import { Styles } from "./App.styles";
@@ -50,7 +49,7 @@ const AppComponent = ({ app }) => {
         <Styles fullScreen={app.isLabeling} style={rootStyle}>
           {app.loading ? (
             <div className="app-loader">
-              <Spin indicator={<LoadingOutlined />} size="large" />
+              <Spinner size="large" />
             </div>
           ) : app.isLabeling ? (
             <Labeling />

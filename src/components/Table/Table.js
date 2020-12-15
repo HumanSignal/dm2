@@ -1,10 +1,10 @@
-import { LoadingOutlined } from "@ant-design/icons";
-import { Button, Empty, Spin, Tag, Tooltip } from "antd";
+import { Button, Empty, Tag, Tooltip } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { VscQuestion } from "react-icons/vsc";
+import { Spinner } from "../Common/Spinner";
 import { Table } from "../Common/Table/Table";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
@@ -103,7 +103,7 @@ export const DataView = injector(
     const renderContent = React.useCallback(
       (content) => {
         if (isLoading && total === 0 && !isLabeling) {
-          return <Spin indicator={<LoadingOutlined />} size="large" />;
+          return <Spinner size="large" />;
         } else if (total === 0 || !hasData) {
           return (
             <Empty

@@ -2,6 +2,7 @@ import { Button, Divider, PageHeader, Space, Tabs, Tag } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { RiCloseLine } from "react-icons/ri";
+import { Spinner } from "../Common/Spinner";
 import { Filters } from "../Filters/Filters";
 import { DataView } from "../Table/Table";
 import { TabTitle } from "./tabs-pane";
@@ -45,9 +46,16 @@ const FiltersSidebar = observer(({ views }) => {
   ) : null;
 });
 
-const ProjectSummary = observer(({ store }) => {
+const ProjectSummary = observer(({ store, project }) => {
+  const cloudSync = project.target_syncing || project.source_syncing;
   return (
     <Space size="small">
+      {cloudSync && (
+        <span>
+          Cloud sync
+          <Spinner size="small" />
+        </span>
+      )}
       <Tag>
         Tasks: {store.total}
         <Divider type="vertical" />
@@ -71,7 +79,9 @@ export const TabsWrapper = inject("store")(
           activeKey={activeTab.key}
           onEdit={() => store.viewsStore.addView()}
           onChange={(key) => store.viewsStore.setSelected(key)}
-          tabBarExtraContent={<ProjectSummary store={store.taskStore} />}
+          tabBarExtraContent={
+            <ProjectSummary store={store.taskStore} project={store.project} />
+          }
         >
           {store.viewsStore.all.map(createTab(views, store.dataStore.list))}
         </Tabs>
