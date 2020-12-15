@@ -94,8 +94,8 @@ export const create = (columns) => {
     postProcessData(data) {
       const { total_completions, total_predictions } = data;
 
-      self.totalCompletions = total_completions;
-      self.totalPredictions = total_predictions;
+      if (total_completions !== null) self.totalCompletions = total_completions;
+      if (total_predictions !== null) self.totalPredictions = total_predictions;
     },
   }));
 
