@@ -52,7 +52,7 @@ const ProjectSummary = observer(({ store, project }) => {
     <Space size="small">
       {cloudSync && (
         <Space style={{ fontSize: 12, fontWeight: 400, opacity: 0.8 }}>
-          Cloud sync
+          Storage sync
           <Spinner size="small" />
         </Space>
       )}
