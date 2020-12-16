@@ -34,7 +34,7 @@ export const LabelToolbar = observer(
           </Space>
         </CurrentTaskWrapper>
 
-        {!!lsf && !!completion && (
+        {!!lsf && !!completion && completion.type === "completion" && (
           <LabelActions>
             <SubmissionButtons
               lsf={lsf}
