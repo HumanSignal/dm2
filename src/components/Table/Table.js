@@ -71,7 +71,7 @@ export const DataView = injector(
     );
 
     const columnHeaderExtra = React.useCallback(
-      ({ parent, help }) => (
+      ({ parent, help }, decoration) => (
         <>
           {parent && (
             <Tag color="blue" style={{ fontWeight: "bold" }}>
@@ -79,7 +79,7 @@ export const DataView = injector(
             </Tag>
           )}
 
-          {help && (
+          {help && decoration?.help !== false && (
             <Tooltip title={help}>
               <VscQuestion size={16} style={{ opacity: 0.5 }} />
             </Tooltip>
@@ -137,6 +137,20 @@ export const DataView = injector(
       [hasData, isLabeling, isLoading, total]
     );
 
+    const decorationContent = (Icon) => (col) => {
+      return (
+        <Tooltip title={col.help ?? col.title}>
+          <Icon />
+        </Tooltip>
+      );
+    };
+
+    const commonDecoration = (Icon, size) => ({
+      content: decorationContent(Icon),
+      style: { width: size, minWidth: size, maxWidth: size },
+      help: false,
+    });
+
     const content =
       view.root.isLabeling || viewType === "list" ? (
         <Table
@@ -150,36 +164,9 @@ export const DataView = injector(
           hiddenColumns={hiddenColumns}
           cellViews={CellViews}
           cellDecoration={{
-            total_completions: {
-              content(col) {
-                return (
-                  <Tooltip title={col.title}>
-                    <AiOutlineCheck />
-                  </Tooltip>
-                );
-              },
-              style: { width: 85, minWidth: 85, maxWidth: 85 },
-            },
-            cancelled_completions: {
-              content(col) {
-                return (
-                  <Tooltip title={col.title}>
-                    <AiOutlineClose />
-                  </Tooltip>
-                );
-              },
-              style: { width: 85, minWidth: 85, maxWidth: 85 },
-            },
-            total_predictions: {
-              content(col) {
-                return (
-                  <Tooltip title={col.title}>
-                    <GiMonoWheelRobot />
-                  </Tooltip>
-                );
-              },
-              style: { width: 85, minWidth: 85, maxWidth: 85 },
-            },
+            total_completions: commonDecoration(AiOutlineCheck, 60),
+            cancelled_completions: commonDecoration(AiOutlineClose, 60),
+            total_predictions: commonDecoration(GiMonoWheelRobot, 60),
             completed_at: {
               style: { width: 180, minWidth: 180, maxWidth: 180 },
             },

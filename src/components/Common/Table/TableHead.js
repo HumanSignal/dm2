@@ -50,13 +50,15 @@ export const TableHead = observer(
 
             {columns.map((col) => {
               const Renderer = headerRenderers?.[col.id];
-              const extra = columnHeaderExtra ? columnHeaderExtra(col) : null;
               const canOrder = sortingEnabled && col.original?.canOrder;
-              const Decoration = cellDecoration[col.alias];
-              const content = Decoration?.content
-                ? Decoration.content(col)
+              const decoration = cellDecoration[col.alias];
+              const extra = columnHeaderExtra
+                ? columnHeaderExtra(col, decoration)
+                : null;
+              const content = decoration?.content
+                ? decoration.content(col)
                 : col.title;
-              const style = getStyle(cellViews, col, Decoration);
+              const style = getStyle(cellViews, col, decoration);
 
               return (
                 <TableCellWrapper
