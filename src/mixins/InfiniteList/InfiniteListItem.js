@@ -24,7 +24,7 @@ export const InfiniteListItem = types
     },
 
     get isLoading() {
-      return self.parent.itemIsLoading(self.id) || self.parent.isLoading;
+      return self.parent.itemIsLoading(self.id);
     },
   }))
   .actions((self) => ({
