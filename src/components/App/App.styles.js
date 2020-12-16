@@ -72,3 +72,10 @@ export const HorizontalShadow = css`
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), transparent);
   }
 `;
+
+export const FillContainer = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;

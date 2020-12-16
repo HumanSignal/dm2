@@ -2,7 +2,7 @@ import { observer, Provider } from "mobx-react";
 import React from "react";
 import { Spinner } from "../Common/Spinner";
 import { Labeling } from "../Label/Label";
-import { TabsWrapper } from "../Tabs/tabs";
+import { DMTabs } from "../Tabs/tabs";
 import { Styles } from "./App.styles";
 
 /** @typedef {import("../../stores/AppStore").AppStore} AppStore */
@@ -53,7 +53,7 @@ const AppComponent = ({ app }) => {
           ) : app.isLabeling ? (
             <Labeling />
           ) : (
-            <TabsWrapper />
+            <DMTabs />
           )}
         </Styles>
       </Provider>

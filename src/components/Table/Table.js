@@ -6,6 +6,7 @@ import React from "react";
 import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
 import { GiMonoWheelRobot } from "react-icons/gi";
 import { VscQuestion } from "react-icons/vsc";
+import { FillContainer } from "../App/App.styles";
 import { Spinner } from "../Common/Spinner";
 import { Table } from "../Common/Table/Table";
 import * as CellViews from "./CellViews";
@@ -105,7 +106,11 @@ export const DataView = injector(
     const renderContent = React.useCallback(
       (content) => {
         if (isLoading && total === 0 && !isLabeling) {
-          return <Spinner size="large" />;
+          return (
+            <FillContainer>
+              <Spinner size="large" />
+            </FillContainer>
+          );
         } else if (total === 0 || !hasData) {
           return (
             <Empty

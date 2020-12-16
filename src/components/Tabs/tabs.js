@@ -1,27 +1,37 @@
 import { Button, Divider, PageHeader, Space, Tabs, Tag } from "antd";
-import { inject, observer } from "mobx-react";
+import { inject } from "mobx-react";
 import React from "react";
 import { RiCloseLine } from "react-icons/ri";
 import { Spinner } from "../Common/Spinner";
 import { Filters } from "../Filters/Filters";
 import { DataView } from "../Table/Table";
-import { TabTitle } from "./tabs-pane";
 import { TablePanel } from "./tabs-panel";
-import { TabsStyles } from "./Tabs.styles";
+import { TabTitle } from "./tabs-title";
+import { TabsStyles, TabsWrapper } from "./Tabs.styles";
 
-const createTab = (data) => (view) => {
-  const title = <TabTitle item={view} data={data} />;
+const sidebarInjector = inject(({ store }) => {
+  return {
+    viewsStore: store.viewsStore,
+  };
+});
 
-  return (
-    <Tabs.TabPane key={view.key} closable={false} tab={title}>
-      <TablePanel />
-      <DataView />
-    </Tabs.TabPane>
-  );
-};
+const summaryInjector = inject(({ store }) => {
+  return {
+    tasks: store.taskStore,
+    project: store.project,
+  };
+});
 
-const FiltersSidebar = observer(({ views }) => {
-  return views.sidebarEnabled && views.sidebarVisible ? (
+const switchInjector = inject(({ store }) => {
+  return {
+    views: store.viewsStore,
+    tabs: store.viewsStore?.all ?? [],
+    selectedKey: store.viewsStore?.selected?.key,
+  };
+});
+
+const FiltersSidebar = sidebarInjector(({ viewsStore }) => {
+  return viewsStore.sidebarEnabled && viewsStore.sidebarVisible ? (
     <div className="sidebar">
       <PageHeader
         title="Filters"
@@ -29,7 +39,7 @@ const FiltersSidebar = observer(({ views }) => {
           <Button
             key="close-filters"
             type="link"
-            onClick={() => views.collapseFilters()}
+            onClick={() => viewsStore.collapseFilters()}
             style={{ display: "inline-flex", alignItems: "center" }}
           >
             <RiCloseLine size={24} />
@@ -41,13 +51,13 @@ const FiltersSidebar = observer(({ views }) => {
           height: 24,
         }}
       />
-      <Filters sidebar={true} filters={Array.from(views.selected.filters)} />
+      <Filters sidebar={true} />
     </div>
   ) : null;
 });
 
-const ProjectSummary = observer(({ store, project }) => {
-  const cloudSync = project.target_syncing || project.source_syncing;
+const ProjectSummary = summaryInjector(({ tasks, project }) => {
+  const cloudSync = project.target_syncing ?? project.source_syncing ?? false;
   return (
     <Space size="small" style={{ paddingRight: "1em" }}>
       {cloudSync && (
@@ -57,42 +67,47 @@ const ProjectSummary = observer(({ store, project }) => {
         </Space>
       )}
       <Tag style={{ marginRight: 0 }}>
-        Tasks: {store.total}
+        Tasks: {tasks.total}
         <Divider type="vertical" />
-        Completions: {store.totalCompletions}
+        Completions: {tasks.totalCompletions}
         <Divider type="vertical" />
-        Predictions: {store.totalPredictions}
+        Predictions: {tasks.totalPredictions}
       </Tag>
     </Space>
   );
 });
 
-const injector = inject(({ store }) => {
-  return {
-    store,
-    tabs: Array.from(store.viewsStore?.all ?? []),
-    selectedKey: store.viewsStore?.selected?.key,
-  };
-});
-
-export const TabsWrapper = injector(({ store, tabs, selectedKey }) => {
-  const views = store.viewsStore;
-
+const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
   return (
-    <TabsStyles>
-      <Tabs
-        type="editable-card"
-        activeKey={selectedKey}
-        onEdit={() => store.viewsStore.addView()}
-        onChange={(key) => store.viewsStore.setSelected(key)}
-        tabBarExtraContent={
-          <ProjectSummary store={store.taskStore} project={store.project} />
-        }
-        tabBarStyle={{ paddingLeft: "1em" }}
-      >
-        {tabs.map(createTab(store.dataStore.list))}
-      </Tabs>
-      <FiltersSidebar views={views} />
-    </TabsStyles>
+    <Tabs
+      type="editable-card"
+      activeKey={selectedKey}
+      onEdit={() => views.addView()}
+      onChange={(key) => views.setSelected(key)}
+      tabBarExtraContent={<ProjectSummary />}
+      tabBarStyle={{ paddingLeft: "1em" }}
+      style={{ width: "100%", maxHeight: 42 }}
+    >
+      {tabs.map((tab) => (
+        <Tabs.TabPane
+          key={tab.key}
+          closable={false}
+          tab={<TabTitle item={tab} />}
+        />
+      ))}
+    </Tabs>
   );
 });
+
+export const DMTabs = () => {
+  return (
+    <TabsStyles>
+      <TabsWrapper>
+        <TabsSwitch />
+        <TablePanel />
+        <DataView />
+      </TabsWrapper>
+      <FiltersSidebar />
+    </TabsStyles>
+  );
+};

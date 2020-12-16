@@ -1,8 +1,9 @@
 import { CaretDownOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Dropdown, Menu } from "antd";
+import { Button, Checkbox, Menu } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
+import { TableDropdown } from "./TableDropdown";
 
 const injector = inject(({ store }) => {
   return {
@@ -67,18 +68,14 @@ const FieldsMenu = observer(({ columns }) => {
 });
 
 export const FieldsButton = injector(({ columns, size }) => {
-  const [visible, setVisible] = React.useState(false);
-
   return (
-    <Dropdown
+    <TableDropdown
       trigger="click"
-      overlay={<FieldsMenu columns={columns} />}
-      visible={visible}
-      onVisibleChange={setVisible}
+      overlay={() => <FieldsMenu columns={columns} />}
     >
       <Button size={size}>
         <EyeOutlined /> Fields <CaretDownOutlined />
       </Button>
-    </Dropdown>
+    </TableDropdown>
   );
 });

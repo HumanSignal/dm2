@@ -12,12 +12,9 @@ export const TabsStyles = styled.div`
 
   .ant-tabs {
     flex: 1;
-    height: 100%;
 
     &-tabpane {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
+      display: none;
     }
   }
 
@@ -40,4 +37,10 @@ export const TabsStyles = styled.div`
 
     ${HorizontalShadow}
   }
+`;
+
+export const TabsWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 `;
