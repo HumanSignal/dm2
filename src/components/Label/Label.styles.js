@@ -80,4 +80,5 @@ export const LabelHeader = styled.div`
 export const LabelContent = styled.div`
   flex: 1;
   display: flex;
+  height: calc(100% - 46px);
 `;

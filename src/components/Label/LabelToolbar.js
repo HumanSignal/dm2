@@ -19,7 +19,7 @@ export const LabelToolbar = observer(
   ({ view, history, completion, lsf, isLabelStream }) => {
     const task = view.dataStore.selected;
     return task ? (
-      <Toolbar>
+      <Toolbar className="label-toolbar">
         <CurrentTaskWrapper>
           <Space size="large">
             <div style={{ display: "flex", alignItems: "center" }}>

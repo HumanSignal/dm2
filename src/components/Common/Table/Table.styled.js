@@ -46,6 +46,10 @@ export const TableRowWrapper = styled.div`
   position: relative;
   display: inline-flex;
 
+  &.even .td {
+    background-color: #fafafa;
+  }
+
   &.selected,
   &:hover {
     z-index: 50;

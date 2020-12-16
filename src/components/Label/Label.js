@@ -47,7 +47,7 @@ const LabelingComponent = observer(({ store }) => {
 
   return (
     <Styles>
-      <LabelHeader>
+      <LabelHeader className="label-header">
         <Space>
           <Button
             icon={<ArrowLeftOutlined />}
@@ -66,14 +66,14 @@ const LabelingComponent = observer(({ store }) => {
         </Space>
       </LabelHeader>
 
-      <LabelContent>
+      <LabelContent className="label-content">
         {store.isExplorerMode && (
-          <div className="table" style={{ maxWidth: "35vw" }}>
+          <div className="table label-table" style={{ maxWidth: "35vw" }}>
             <DataView />
           </div>
         )}
 
-        <LabelStudioWrapper>
+        <LabelStudioWrapper className="label-wrapper">
           <LabelToolbar
             view={view}
             history={history}
@@ -86,6 +86,7 @@ const LabelingComponent = observer(({ store }) => {
             ref={lsfRef}
             key="label-studio"
             id="label-studio-dm"
+            className="label-studio"
           />
         </LabelStudioWrapper>
       </LabelContent>

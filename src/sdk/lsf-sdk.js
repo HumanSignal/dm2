@@ -14,6 +14,7 @@ import { completionToServer, taskToLSFormat } from "./lsf-utils";
 
 const DEFAULT_INTERFACES = [
   "basic",
+  "skip",
   "predictions",
   "predictions:menu", // right menu with prediction items
   "completions:menu", // right menu with completion items
@@ -60,6 +61,7 @@ export class LSFWrapper {
       task: taskToLSFormat(this.task),
       description: this.instructions,
       interfaces: DEFAULT_INTERFACES,
+      /* EVENTS */
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
       onSubmitCompletion: this.onSubmitCompletion,
@@ -86,14 +88,14 @@ export class LSFWrapper {
     if (taskID === undefined) console.info("Load next task");
     else console.info(`Reloading task ${taskID}`);
 
-    this.setLoading(true);
     const tasks = this.datamanager.store.taskStore;
-    const newTask = await tasks.loadTask(taskID);
+    const newTask = await this.withinLoadingState(async () => {
+      return tasks.loadTask(taskID);
+    });
     const needsCompletionsMerge = newTask && this.task?.id === newTask.id;
+    const completions = needsCompletionsMerge ? [...this.completions] : [];
 
     this.task = newTask;
-
-    console.log({ taskID, newTask });
 
     /* If we're in label stream and there's no task – end the stream */
     if (taskID === undefined && !newTask) {
@@ -101,8 +103,8 @@ export class LSFWrapper {
       return;
     }
 
-    if (needsCompletionsMerge) {
-      this.task.mergeCompletions(this.completions);
+    if (completions.length) {
+      this.task.mergeCompletions(completions);
     }
 
     /**
@@ -112,8 +114,6 @@ export class LSFWrapper {
       this.setTask(newTask);
       this.setCompletion(completionID);
     }
-
-    this.setLoading(false);
   }
 
   /** @private */
@@ -149,7 +149,6 @@ export class LSFWrapper {
     this.datamanager.invoke("labelStudioLoad", [ls]);
 
     this.lsf = ls;
-    this.setLoading(true);
 
     if (this.datamanager.mode === "labelstream") {
       await this.loadTask();
@@ -159,8 +158,6 @@ export class LSFWrapper {
 
       await this.loadTask(this.task.id, completionID);
     }
-
-    this.setLoading(false);
   };
 
   /** @private */
@@ -172,25 +169,25 @@ export class LSFWrapper {
 
   /** @private */
   onUpdateCompletion = async (ls, completion) => {
-    this.setLoading(true);
     const { task } = this;
+    const serializedCompletion = this.prepareData(completion);
 
-    const result = await this.datamanager.apiCall(
-      "updateCompletion",
-      {
-        taskID: task.id,
-        completionID: completion.pk,
-      },
-      {
-        body: this.prepareData(completion),
-      }
-    );
+    const result = await this.withinLoadingState(async () => {
+      return this.datamanager.apiCall(
+        "updateCompletion",
+        {
+          taskID: task.id,
+          completionID: completion.pk,
+        },
+        {
+          body: serializedCompletion,
+        }
+      );
+    });
 
     this.datamanager.invoke("updateCompletion", [ls, completion, result]);
 
     await this.loadTask(this.task.id, completion.pk);
-
-    this.setLoading(false);
   };
 
   /**@private */
@@ -199,23 +196,22 @@ export class LSFWrapper {
       return;
     }
 
-    this.setLoading(true);
-
     const { task } = this;
 
-    const response = await this.datamanager.apiCall("deleteCompletion", {
-      taskID: task.id,
-      completionID: completion.pk,
+    const response = await this.withinLoadingState(async () => {
+      return this.datamanager.apiCall("deleteCompletion", {
+        taskID: task.id,
+        completionID: completion.pk,
+      });
     });
 
+    this.task.deleteCompletion(completion);
     this.datamanager.invoke("deleteCompletion", [ls, completion]);
 
     if (response.ok) {
       const { id, pk } = this.completions[this.completions.length - 1] ?? {};
       await this.loadTask(task.id, pk || id);
     }
-
-    this.setLoading(false);
   };
 
   onSkipTask = async () => {
@@ -238,10 +234,9 @@ export class LSFWrapper {
     const { taskID, currentCompletion } = this;
     const serializedCompletion = this.prepareData(currentCompletion, includeID);
 
-    this.setLoading(true);
-    const result = await submit(taskID, serializedCompletion);
-
-    console.log({ [eventName]: result });
+    const result = await this.withinLoadingState(async () => {
+      return submit(taskID, serializedCompletion);
+    });
 
     if (result && result.id !== undefined) {
       currentCompletion.updatePersonalKey(result.id.toString());
@@ -259,8 +254,6 @@ export class LSFWrapper {
       console.log(`Load next task as DataManager is in LabelStream mode`);
       await this.loadTask();
     }
-
-    this.setLoading(false);
   }
 
   /** @private */
@@ -283,6 +276,18 @@ export class LSFWrapper {
   /** @private */
   setLoading(isLoading) {
     this.lsf.setFlags({ isLoading });
+  }
+
+  async withinLoadingState(callback) {
+    let result;
+
+    this.setLoading(true);
+    if (callback) {
+      result = await callback.call(this);
+    }
+    this.setLoading(false);
+
+    return result;
   }
 
   get taskID() {

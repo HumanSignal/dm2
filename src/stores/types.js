@@ -13,7 +13,7 @@ export const CustomJSON = types.custom({
     }
   },
   isTargetType(value) {
-    return typeof value === "object";
+    return typeof value === "object" || typeof value === "string";
   },
   getValidationMessage() {
     return "Error parsing JSON";

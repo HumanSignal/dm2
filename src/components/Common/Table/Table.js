@@ -66,10 +66,11 @@ export const Table = observer(
         const row = data[index - 1];
 
         return (
-          <div style={style}>
+          <div className="row-wrapper" style={style}>
             <TableRow
               key={row.id}
               data={row}
+              even={index % 2 === 0}
               isSelected={row.isSelected}
               isHighlighted={row.isHighlighted}
               onClick={props.onRowClick}

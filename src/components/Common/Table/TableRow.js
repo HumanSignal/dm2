@@ -15,11 +15,13 @@ export const TableRow = observer(
     selected,
     onSelect,
     cellDecoration,
+    even,
   }) => {
-    const classNames = [];
+    const classNames = ["table-row"];
     if (isSelected) classNames.push("selected");
     if (isHighlighted) classNames.push("highlighted");
     if (data.isLoading) classNames.push("loading");
+    if (even === true) classNames.push("even");
 
     return (
       <TableContext.Consumer>

@@ -34,6 +34,7 @@ export const TabsStyles = styled.div`
     padding: 1em;
     z-index: 100;
     position: relative;
+    background-color: #fff;
 
     ${HorizontalShadow}
   }

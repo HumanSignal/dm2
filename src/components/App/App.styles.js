@@ -3,7 +3,9 @@ import styled, { css } from "styled-components";
 export const Styles = styled.div`
   height: 100%;
   min-height: 500px;
+  padding: 1em 0 0;
   box-sizing: border-box;
+  background-color: #fafafa;
 
   .tab-panel {
     display: flex;

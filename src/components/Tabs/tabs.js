@@ -1,4 +1,4 @@
-import { Button, Divider, PageHeader, Space, Tabs, Tag } from "antd";
+import { Button, PageHeader, Space, Tabs } from "antd";
 import { inject } from "mobx-react";
 import React from "react";
 import { RiCloseLine } from "react-icons/ri";
@@ -18,7 +18,7 @@ const sidebarInjector = inject(({ store }) => {
 const summaryInjector = inject(({ store }) => {
   return {
     tasks: store.taskStore,
-    project: store.project,
+    project: { ...(store.project ?? {}) },
   };
 });
 
@@ -66,13 +66,17 @@ const ProjectSummary = summaryInjector(({ tasks, project }) => {
           <Spinner size="small" />
         </Space>
       )}
-      <Tag style={{ marginRight: 0 }}>
-        Tasks: {tasks.total}
-        <Divider type="vertical" />
-        Completions: {tasks.totalCompletions}
-        <Divider type="vertical" />
-        Predictions: {tasks.totalPredictions}
-      </Tag>
+      <span
+        style={{ display: "inline-flex", alignItems: "center", fontSize: 12 }}
+      >
+        <Space size="large">
+          <span>
+            Tasks: {tasks.total} / {project.task_count}
+          </span>
+          <span>Completions: {tasks.totalCompletions}</span>
+          <span>Predictions: {tasks.totalPredictions}</span>
+        </Space>
+      </span>
     </Space>
   );
 });

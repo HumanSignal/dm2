@@ -53,3 +53,12 @@ export const completionToServer = (completion) => {
     lead_time: completion.leadTime,
   };
 };
+
+export const getCompletionSnapshot = (c) => ({
+  id: c.id,
+  pk: c.pk,
+  result: c.serializeCompletion(),
+  leadTime: c.leadTime,
+  userGenerate: !!c.userGenerate,
+  sentUserGenerate: !!c.sentUserGenerate,
+});

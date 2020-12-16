@@ -1,5 +1,6 @@
 import { flow, types } from "mobx-state-tree";
 import { InfiniteList, InfiniteListItem } from "../../mixins/InfiniteList";
+import { getCompletionSnapshot } from "../../sdk/lsf-utils";
 import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 
@@ -20,26 +21,39 @@ export const create = (columns) => {
             (ec) => ec.id === Number(c.pk)
           );
 
-          const completionSnapshot = {
-            id: c.id,
-            pk: c.pk,
-            result: c.serializeCompletion(),
-            leadTime: c.leadTime,
-            userGenerate: !!c.userGenerate,
-            sentUserGenerate: !!c.sentUserGenerate,
-          };
-
           if (existingCompletion) {
-            return {
-              ...completionSnapshot,
-              ...existingCompletion,
-              userGenerate: false,
-              sentUserGenerate: false,
-            };
+            return existingCompletion;
           } else {
-            return completionSnapshot;
+            return {
+              id: c.id,
+              pk: c.pk,
+              result: c.serializeCompletion(),
+              leadTime: c.leadTime,
+              userGenerate: !!c.userGenerate,
+              sentUserGenerate: !!c.sentUserGenerate,
+            };
           }
         });
+      },
+
+      updateCompletion(completion) {
+        const existingCompletion = self.completions.find((c) => {
+          return c.id === Number(completion.pk) || c.pk === completion.pk;
+        });
+
+        if (existingCompletion) {
+          Object.assign(existingCompletion, getCompletionSnapshot(completion));
+        } else {
+          self.completions.push(getCompletionSnapshot(completion));
+        }
+      },
+
+      deleteCompletion(completion) {
+        const index = self.completions.findIndex((c) => {
+          return c.id === Number(completion.pk) || c.pk === completion.pk;
+        });
+
+        if (index > 0) self.completions.splice(index, 1);
       },
     }));
 
