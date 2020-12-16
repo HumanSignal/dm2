@@ -117,7 +117,7 @@ export const DataView = injector(
                     Try adjusting the filter.
                   </span>
                 ) : (
-                  "Before you can start labeling, you need to import tasks."
+                  "Server returns no tasks, maybe you need to import them?"
                 )
               }
               style={{
