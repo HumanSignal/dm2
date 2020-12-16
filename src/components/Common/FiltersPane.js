@@ -1,10 +1,10 @@
 import { Button, Dropdown } from "antd";
-import { observer } from "mobx-react";
+import { inject, observer } from "mobx-react";
 import React from "react";
 import { VscListFilter } from "react-icons/vsc";
 import { Filters } from "../Filters/Filters";
 
-const FiltersButton = observer(({ onClick, active, size }) => {
+export const FiltersButton = observer(({ onClick, active, size }) => {
   return (
     <Button onClick={onClick} type={active ? "primary" : "default"} size={size}>
       <VscListFilter style={{ marginBottom: -2, marginRight: 7 }} />
@@ -13,19 +13,31 @@ const FiltersButton = observer(({ onClick, active, size }) => {
   );
 });
 
-export const FiltersPane = ({ sidebar, viewStore, size }) => {
-  const view = viewStore?.selected;
+const injector = inject(({ store }) => {
+  const { viewsStore, currentView } = store;
 
-  if (!view) return null;
+  return {
+    viewsStore,
+    view: currentView ?? null,
+    sidebarEnabled: viewsStore?.sidebarEnabled ?? false,
+    filtersApplied: currentView?.filtersApplied ?? false,
+  };
+});
 
-  return sidebar ? (
-    <FiltersButton
-      onClick={() => viewStore.toggleSidebar()}
-      active={view.filtersApplied}
-    />
-  ) : (
-    <Dropdown overlay={<Filters />} trigger="click">
-      <FiltersButton size={size} active={view.filtersApplied} />
-    </Dropdown>
-  );
-};
+export const FiltersPane = injector(
+  ({ viewsStore, sidebarEnabled, size, filtersApplied }) => {
+    return (
+      <Dropdown
+        trigger="click"
+        overlay={() => <Filters />}
+        disabled={sidebarEnabled}
+      >
+        <FiltersButton
+          size={size}
+          active={filtersApplied}
+          onClick={sidebarEnabled && (() => viewsStore.toggleSidebar())}
+        />
+      </Dropdown>
+    );
+  }
+);

@@ -260,25 +260,44 @@ export const View = types
 
     save: flow(function* ({ reload, interaction } = {}) {
       if (self.virtual) return;
-
+      console.group("Save view");
       const { id: tabID } = self;
       const body = { body: self.serialize() };
       const params = { tabID };
 
       if (interaction !== undefined) Object.assign(params, { interaction });
 
-      const { filters: _, ...result } = yield getRoot(self).apiCall(
-        "updateTab",
-        params,
-        body
-      );
+      const result = yield getRoot(self).apiCall("updateTab", params, body);
       applySnapshot(self, result);
+      console.log("Snapshot applied");
 
       self.saved = true;
       if (reload !== false) self.reload({ interaction });
+      console.groupEnd("Save view");
     }),
 
     delete: flow(function* () {
       yield getRoot(self).apiCall("deleteTab", { tabID: self.id });
     }),
-  }));
+  }))
+  .preProcessSnapshot((snapshot) => {
+    console.log("Resolve view snapshot", { snapshot });
+    if (snapshot === null) return snapshot;
+
+    const { filters, selectedItems, ...sn } = snapshot ?? {};
+
+    if (filters && !Array.isArray(filters)) {
+      const { conjunction, items } = filters ?? {};
+
+      Object.assign(sn, {
+        filters: items ?? [],
+        conjunction: conjunction ?? "and",
+      });
+    }
+
+    if (selectedItems) {
+      Object.assign(sn, { selected: selectedItems });
+    }
+
+    return sn;
+  });

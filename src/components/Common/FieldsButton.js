@@ -1,6 +1,6 @@
 import { CaretDownOutlined, EyeOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Dropdown, Menu } from "antd";
-import { observer } from "mobx-react";
+import { inject } from "mobx-react";
 import React from "react";
 
 const menuItem = (col) => (
@@ -16,7 +16,13 @@ const menuItem = (col) => (
   </Menu.Item>
 );
 
-export const FieldsButton = observer(({ columns, size }) => {
+const injector = inject(({ store }) => {
+  return {
+    columns: store.currentView?.targetColumns ?? [],
+  };
+});
+
+export const FieldsButton = injector(({ columns, size }) => {
   const [isVisible, setVisible] = React.useState(false);
   const menu = columns.map((col) => {
     if (col.children) {

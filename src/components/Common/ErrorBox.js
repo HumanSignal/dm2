@@ -1,5 +1,5 @@
 import { Button, Dropdown, Menu } from "antd";
-import { observer } from "mobx-react";
+import { inject } from "mobx-react";
 import React from "react";
 import { RiErrorWarningFill } from "react-icons/ri";
 
@@ -11,7 +11,13 @@ const ErrorRenderer = (error, i) => {
   );
 };
 
-export const ErrorBox = observer(({ errors }) => {
+const injector = inject(({ store }) => {
+  return {
+    errors: store.serverErrors,
+  };
+});
+
+export const ErrorBox = injector(({ errors }) => {
   return errors?.size > 0 ? (
     <Dropdown
       overlay={<Menu>{Array.from(errors.values()).map(ErrorRenderer)}</Menu>}

@@ -4,8 +4,7 @@ import {
   PlayCircleOutlined,
 } from "@ant-design/icons";
 import { Button, Divider, Radio, Space } from "antd";
-import { observer } from "mobx-react";
-import { getRoot } from "mobx-state-tree";
+import { inject } from "mobx-react";
 import React from "react";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
@@ -13,55 +12,67 @@ import { FiltersPane } from "../Common/FiltersPane";
 import { Spinner } from "../Common/Spinner";
 import { TabsActions } from "./tabs-actions";
 
-export const TablePanel = observer(({ views, view }) => {
-  const toolbarSize = "middle";
+const injector = inject(({ store }) => {
+  const { dataStore, currentView } = store;
+  const totalTasks = store.project?.task_count ?? 0;
+  const foundTasks = dataStore?.total ?? 0;
 
-  return (
-    <div className="tab-panel">
-      <Space>
-        <ViewToggle view={view} />
-
-        {/* {false && (<DataStoreToggle view={view}/>)} */}
-
-        <FieldsButton size={toolbarSize} columns={view.targetColumns} />
-
-        <FiltersPane
-          size={toolbarSize}
-          viewStore={views}
-          sidebar={views.sidebarEnabled}
-          filters={Array.from(view.filters ?? [])}
-        />
-
-        {view.dataStore.loading && <Spinner size="small" />}
-
-        <ErrorBox errors={getRoot(view).serverError} />
-      </Space>
-
-      <Space>
-        {view.selected.hasSelected && (
-          <>
-            <TabsActions size="small" />
-            <Divider type="vertical" />
-          </>
-        )}
-
-        {getRoot(view).project.task_count > 0 && (
-          <Button
-            type="primary"
-            size={toolbarSize}
-            disabled={view.target === "annotations"}
-            onClick={() => getRoot(view).startLabeling()}
-          >
-            <PlayCircleOutlined />
-            Label
-          </Button>
-        )}
-      </Space>
-    </div>
-  );
+  return {
+    store,
+    labelingDisabled: totalTasks === 0 || foundTasks === 0,
+    selectedItems: currentView?.selected,
+    loading: dataStore?.loading,
+    target: currentView?.target ?? "tasks",
+    sidebarEnabled: store.viewsStore?.sidebarEnabled ?? false,
+  };
 });
 
-const ViewToggle = observer(({ view }) => {
+export const TablePanel = injector(
+  ({ store, selectedItems, labelingDisabled, loading, target }) => {
+    const toolbarSize = "middle";
+    console.log("Panel updated", selectedItems);
+
+    return (
+      <div className="tab-panel">
+        <Space>
+          <ViewToggle />
+
+          {/* {false && (<DataStoreToggle view={view}/>)} */}
+
+          <FieldsButton size={toolbarSize} />
+
+          <FiltersPane size={toolbarSize} />
+
+          {loading && <Spinner size="small" />}
+
+          <ErrorBox />
+        </Space>
+
+        <Space>
+          {<SelectedItems />}
+
+          {!labelingDisabled && (
+            <Button
+              type="primary"
+              size={toolbarSize}
+              disabled={target === "annotations"}
+              onClick={() => store.startLabeling()}
+            >
+              <PlayCircleOutlined />
+              Label
+            </Button>
+          )}
+        </Space>
+      </div>
+    );
+  }
+);
+
+const viewInjector = inject(({ store }) => ({
+  view: store.currentView,
+}));
+
+const ViewToggle = viewInjector(({ view }) => {
   return (
     <Radio.Group
       value={view.type}
@@ -77,7 +88,19 @@ const ViewToggle = observer(({ view }) => {
   );
 });
 
-const DataStoreToggle = observer(({ view }) => {
+const SelectedItems = inject(({ store }) => ({
+  hasSelected: store.currentView?.selected?.hasSelected ?? false,
+}))(
+  ({ hasSelected }) =>
+    hasSelected && (
+      <>
+        <TabsActions size="small" />
+        <Divider type="vertical" />
+      </>
+    )
+);
+
+const DataStoreToggle = viewInjector(({ view }) => {
   return (
     <Radio.Group
       value={view.target}

@@ -111,11 +111,7 @@ export const DataView = injector(
             <Empty
               description={
                 hasData ? (
-                  <span>
-                    Nothing's found.
-                    <br />
-                    Try adjusting the filter.
-                  </span>
+                  <span>Nothing's found.</span>
                 ) : (
                   "Before you can start labeling, you need to import tasks."
                 )

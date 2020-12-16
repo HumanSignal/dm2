@@ -27,7 +27,7 @@ const restoreValue = (name) => {
 
 export const ViewsStore = types
   .model("ViewsStore", {
-    selected: types.safeReference(View),
+    selected: types.maybeNull(types.reference(View)),
     views: types.optional(types.array(View), []),
     availableFilters: types.optional(types.array(ViewFilterType), []),
     columnsTargetMap: types.map(types.array(ViewColumn)),
@@ -35,7 +35,7 @@ export const ViewsStore = types
     sidebarVisible: restoreValue("sidebarVisible"),
     sidebarEnabled: restoreValue("sidebarEnabled"),
   })
-  .volatile((self) => ({
+  .volatile(() => ({
     defaultHidden: types.optional(ViewHiddenColumns, {}),
   }))
   .views((self) => ({
@@ -79,6 +79,7 @@ export const ViewsStore = types
       }
 
       if (self.selected !== selected) {
+        console.log(selected);
         self.selected = selected;
         self.selected.reload();
         localStorage.setItem("selectedTab", self.selected.id);
@@ -222,24 +223,9 @@ export const ViewsStore = types
     fetchViews: flow(function* () {
       const { tabs } = yield getRoot(self).apiCall("tabs");
 
-      self.views.push(
-        ...tabs.map((t) => {
-          const { filters, ...snapshot } = t;
-          const { conjunction, items } = filters ?? {};
+      const snapshots = tabs.map((t) => View.create({ ...t, saved: true }));
 
-          const selectedItems = t.selectedItems ?? { all: false, list: [] };
-          const listKey = selectedItems.all ? "excluded" : "included";
-          Object.assign(selectedItems, { list: selectedItems[listKey] ?? [] });
-
-          return self.createView({
-            ...snapshot,
-            filters: items ?? [],
-            conjunction: conjunction ?? "and",
-            selected: t.selectedItems ?? {},
-            saved: true,
-          });
-        })
-      );
+      self.views.push(...snapshots);
 
       const selected = localStorage.getItem("selectedTab");
       const selectedView = self.views.find((v) => v.id === Number(selected));

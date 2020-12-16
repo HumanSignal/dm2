@@ -9,12 +9,12 @@ import { TabTitle } from "./tabs-pane";
 import { TablePanel } from "./tabs-panel";
 import { TabsStyles } from "./Tabs.styles";
 
-const createTab = (views, data) => (view) => {
+const createTab = (data) => (view) => {
   const title = <TabTitle item={view} data={data} />;
 
   return (
     <Tabs.TabPane key={view.key} closable={false} tab={title}>
-      <TablePanel views={views} view={view} />
+      <TablePanel />
       <DataView />
     </Tabs.TabPane>
   );
@@ -67,26 +67,24 @@ const ProjectSummary = observer(({ store, project }) => {
   );
 });
 
-export const TabsWrapper = inject("store")(
-  observer(({ store }) => {
-    const views = store.viewsStore;
-    const activeTab = store.viewsStore.selected;
+export const TabsWrapper = inject("store")(({ store }) => {
+  const views = store.viewsStore;
+  const activeTab = store.viewsStore.selected;
 
-    return (
-      <TabsStyles>
-        <Tabs
-          type="editable-card"
-          activeKey={activeTab.key}
-          onEdit={() => store.viewsStore.addView()}
-          onChange={(key) => store.viewsStore.setSelected(key)}
-          tabBarExtraContent={
-            <ProjectSummary store={store.taskStore} project={store.project} />
-          }
-        >
-          {store.viewsStore.all.map(createTab(views, store.dataStore.list))}
-        </Tabs>
-        <FiltersSidebar views={views} />
-      </TabsStyles>
-    );
-  })
-);
+  return (
+    <TabsStyles>
+      <Tabs
+        type="editable-card"
+        activeKey={activeTab.key}
+        onEdit={() => store.viewsStore.addView()}
+        onChange={(key) => store.viewsStore.setSelected(key)}
+        tabBarExtraContent={
+          <ProjectSummary store={store.taskStore} project={store.project} />
+        }
+      >
+        {store.viewsStore.all.map(createTab(store.dataStore.list))}
+      </Tabs>
+      <FiltersSidebar views={views} />
+    </TabsStyles>
+  );
+});
