@@ -49,14 +49,14 @@ const FiltersSidebar = observer(({ views }) => {
 const ProjectSummary = observer(({ store, project }) => {
   const cloudSync = project.target_syncing || project.source_syncing;
   return (
-    <Space size="small">
+    <Space size="small" style={{ paddingRight: "1em" }}>
       {cloudSync && (
         <Space style={{ fontSize: 12, fontWeight: 400, opacity: 0.8 }}>
           Storage sync
           <Spinner size="small" />
         </Space>
       )}
-      <Tag>
+      <Tag style={{ marginRight: 0 }}>
         Tasks: {store.total}
         <Divider type="vertical" />
         Completions: {store.totalCompletions}
@@ -81,6 +81,7 @@ export const TabsWrapper = inject("store")(({ store }) => {
         tabBarExtraContent={
           <ProjectSummary store={store.taskStore} project={store.project} />
         }
+        tabBarStyle={{ paddingLeft: "1em" }}
       >
         {store.viewsStore.all.map(createTab(store.dataStore.list))}
       </Tabs>

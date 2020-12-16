@@ -71,3 +71,13 @@ export const LabelStudioContent = styled.div`
 export const Hint = styled.sup`
   font-size: 9px;
 `;
+
+export const LabelHeader = styled.div`
+  flex: 0;
+  padding: 0 1em 1em;
+`;
+
+export const LabelContent = styled.div`
+  flex: 1;
+  display: flex;
+`;

@@ -1,4 +1,5 @@
 import styled, { css } from "styled-components";
+import { HorizontalShadow } from "../../App/App.styles";
 
 export const TableWrapper = styled.div`
   width: ${({ fitToContent }) => (fitToContent ? "min-content" : "100%")};
@@ -7,7 +8,7 @@ export const TableWrapper = styled.div`
   flex-direction: column;
   box-shadow: 0 0 0 1px #f0f0f0 inset;
   overflow: auto;
-  background-color: #f9f9f9;
+  background-color: #efefef;
 
   .table-auto-size,
   .virtual-table {
@@ -25,8 +26,10 @@ export const TableHeadWrapper = styled.div`
   z-index: 150;
   font-weight: bold;
   position: sticky;
+  overflow: visible;
   background-color: #fafafa;
-  overflow: hidden;
+
+  ${HorizontalShadow}
 `;
 
 export const TableBody = styled.div`

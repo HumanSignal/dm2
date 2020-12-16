@@ -34,14 +34,13 @@ const AppComponent = ({ app }) => {
   const rootStyle =
     app.SDK.mode === "labelstream"
       ? {
-          padding: 15,
           position: "absolute",
           width: "100%",
           top: 0,
           "z-index": 1000,
           "background-color": "white",
         }
-      : { padding: 15 };
+      : null;
 
   return (
     <ErrorBoundary>

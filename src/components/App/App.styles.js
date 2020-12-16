@@ -1,8 +1,7 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 export const Styles = styled.div`
   height: 100%;
-  padding: ${(props) => (props.fullScreen ? "0" : "0")};
   min-height: 500px;
   box-sizing: border-box;
 
@@ -59,5 +58,17 @@ export const Styles = styled.div`
   .ant-picker-cell {
     padding: 3px 0 !important;
     border: none !important;
+  }
+`;
+
+export const HorizontalShadow = css`
+  &::after {
+    top: 100%;
+    width: 100%;
+    left: 0;
+    content: "";
+    position: absolute;
+    height: 2px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.15), transparent);
   }
 `;

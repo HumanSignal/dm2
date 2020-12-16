@@ -1,13 +1,19 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { Button, PageHeader } from "antd";
+import { Button, Space } from "antd";
 import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { FieldsButton } from "../Common/FieldsButton";
 import { DataView } from "../Table/Table";
-import { LabelStudioContent, LabelStudioWrapper, Styles } from "./Label.styles";
+import {
+  LabelContent,
+  LabelHeader,
+  LabelStudioContent,
+  LabelStudioWrapper,
+  Styles,
+} from "./Label.styles";
 import { LabelToolbar } from "./LabelToolbar";
 
 /**
@@ -41,8 +47,8 @@ const LabelingComponent = observer(({ store }) => {
 
   return (
     <Styles>
-      <PageHeader
-        title={
+      <LabelHeader>
+        <Space>
           <Button
             icon={<ArrowLeftOutlined />}
             type="link"
@@ -52,18 +58,15 @@ const LabelingComponent = observer(({ store }) => {
           >
             Back
           </Button>
-        }
-        style={{ padding: 0 }}
-        tags={
-          store.isExplorerMode ? (
+          {store.isExplorerMode ? (
             <div style={{ paddingLeft: 20 }}>
               <FieldsButton columns={view.targetColumns} />
             </div>
-          ) : (
-            []
-          )
-        }
-      >
+          ) : null}
+        </Space>
+      </LabelHeader>
+
+      <LabelContent>
         {store.isExplorerMode && (
           <div className="table" style={{ maxWidth: "35vw" }}>
             <DataView />
@@ -78,13 +81,14 @@ const LabelingComponent = observer(({ store }) => {
             completion={completion}
             isLabelStream={store.isLabelStreamMode}
           />
+
           <LabelStudioContent
             ref={lsfRef}
             key="label-studio"
             id="label-studio-dm"
           />
         </LabelStudioWrapper>
-      </PageHeader>
+      </LabelContent>
     </Styles>
   );
 });
