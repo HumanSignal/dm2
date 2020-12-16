@@ -235,13 +235,11 @@ export class LSFWrapper {
   };
 
   async submitCurrentCompletion(eventName, submit, includeID = false) {
-    this.setLoading(true);
-
     const { taskID, currentCompletion } = this;
-    const result = await submit(
-      taskID,
-      this.prepareData(currentCompletion, includeID)
-    );
+    const serializedCompletion = this.prepareData(currentCompletion, includeID);
+
+    this.setLoading(true);
+    const result = await submit(taskID, serializedCompletion);
 
     console.log({ [eventName]: result });
 
