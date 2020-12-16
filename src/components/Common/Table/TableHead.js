@@ -25,70 +25,75 @@ const OrderButton = observer(({ desc }) => {
 });
 
 export const TableHead = observer(
-  ({
-    style,
-    columnHeaderExtra,
-    onSetOrder,
-    sortingEnabled,
-    selected,
-    onSelect,
-    stopInteractions,
-    cellDecoration,
-    ...props
-  }) => {
-    return (
-      <TableContext.Consumer>
-        {({ columns, headerRenderers, cellViews }) => (
-          <TableHeadWrapper style={style}>
-            <TableCheckboxCell
-              enabled={!!onSelect}
-              checked={selected.isAllSelected}
-              indeterminate={selected.isIndeterminate}
-              onChange={() => onSelect?.()}
-              className="th"
-            />
+  React.forwardRef(
+    (
+      {
+        style,
+        columnHeaderExtra,
+        onSetOrder,
+        sortingEnabled,
+        selected,
+        onSelect,
+        stopInteractions,
+        cellDecoration,
+        ...props
+      },
+      ref
+    ) => {
+      return (
+        <TableContext.Consumer>
+          {({ columns, headerRenderers, cellViews }) => (
+            <TableHeadWrapper ref={ref} style={style}>
+              <TableCheckboxCell
+                enabled={!!onSelect}
+                checked={selected.isAllSelected}
+                indeterminate={selected.isIndeterminate}
+                onChange={() => onSelect?.()}
+                className="th"
+              />
 
-            {columns.map((col) => {
-              const Renderer = headerRenderers?.[col.id];
-              const canOrder = sortingEnabled && col.original?.canOrder;
-              const decoration = cellDecoration[col.alias];
-              const extra = columnHeaderExtra
-                ? columnHeaderExtra(col, decoration)
-                : null;
-              const content = decoration?.content
-                ? decoration.content(col)
-                : col.title;
-              const style = getStyle(cellViews, col, decoration);
+              {columns.map((col) => {
+                const Renderer = headerRenderers?.[col.id];
+                const canOrder = sortingEnabled && col.original?.canOrder;
+                const decoration = cellDecoration[col.alias];
+                const extra = columnHeaderExtra
+                  ? columnHeaderExtra(col, decoration)
+                  : null;
+                const content = decoration?.content
+                  ? decoration.content(col)
+                  : col.title;
+                const style = getStyle(cellViews, col, decoration);
 
-              return (
-                <TableCellWrapper
-                  key={col.id}
-                  {...style}
-                  className="th"
-                  data-id={col.id}
-                >
-                  <TableCellContent
-                    canOrder={canOrder}
-                    className="th-content"
-                    onClick={() => canOrder && onSetOrder?.(col)}
-                    disabled={props.stopInteractions}
+                return (
+                  <TableCellWrapper
+                    key={col.id}
+                    {...style}
+                    className={`th ${col.id.replace(/[:.]/g, "-")}`}
+                    data-id={col.id}
                   >
-                    {Renderer ? <Renderer column={col} /> : content}
+                    <TableCellContent
+                      canOrder={canOrder}
+                      className="th-content"
+                      onClick={() => canOrder && onSetOrder?.(col)}
+                      disabled={props.stopInteractions}
+                    >
+                      {Renderer ? <Renderer column={col} /> : content}
 
-                    {canOrder && <OrderButton desc={col.original.order} />}
-                  </TableCellContent>
+                      {canOrder && <OrderButton desc={col.original.order} />}
+                    </TableCellContent>
 
-                  {extra && (
-                    <TableHeadExtra className="th-extra">
-                      {extra}
-                    </TableHeadExtra>
-                  )}
-                </TableCellWrapper>
-              );
-            })}
-          </TableHeadWrapper>
-        )}
-      </TableContext.Consumer>
-    );
-  }
+                    {extra && (
+                      <TableHeadExtra className="th-extra">
+                        {extra}
+                      </TableHeadExtra>
+                    )}
+                  </TableCellWrapper>
+                );
+              })}
+            </TableHeadWrapper>
+          )}
+        </TableContext.Consumer>
+      );
+    }
+  )
 );

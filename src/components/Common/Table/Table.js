@@ -20,6 +20,7 @@ export const Table = observer(
     cellDecoration,
     ...props
   }) => {
+    const tableHead = React.useRef();
     const columns = prepareColumns(props.columns, props.hiddenColumns);
 
     const contextValue = {
@@ -34,6 +35,7 @@ export const Table = observer(
     const renderTableHeader = React.useCallback(
       ({ style }) => (
         <TableHead
+          ref={tableHead}
           style={style}
           order={props.order}
           columnHeaderExtra={props.columnHeaderExtra}
@@ -55,6 +57,7 @@ export const Table = observer(
         view,
         view.selected.list,
         view.selected.all,
+        tableHead,
       ]
     );
 
@@ -121,6 +124,10 @@ export const Table = observer(
       },
       [data]
     );
+
+    React.useEffect(() => {
+      console.log(tableHead.current);
+    }, [tableHead.current]);
 
     return (
       <TableWrapper fitToContent={props.fitToContent}>

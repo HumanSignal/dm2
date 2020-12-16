@@ -67,7 +67,14 @@ const ProjectSummary = observer(({ store, project }) => {
   );
 });
 
-export const TabsWrapper = inject("store")(({ store }) => {
+const injector = inject(({ store }) => {
+  return {
+    store,
+    tabs: Array.from(store.viewsStore?.all ?? []),
+  };
+});
+
+export const TabsWrapper = injector(({ store, tabs }) => {
   const views = store.viewsStore;
   const activeTab = store.viewsStore.selected;
 
@@ -83,7 +90,7 @@ export const TabsWrapper = inject("store")(({ store }) => {
         }
         tabBarStyle={{ paddingLeft: "1em" }}
       >
-        {store.viewsStore.all.map(createTab(store.dataStore.list))}
+        {tabs.map(createTab(store.dataStore.list))}
       </Tabs>
       <FiltersSidebar views={views} />
     </TabsStyles>

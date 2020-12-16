@@ -1,4 +1,4 @@
-import { applySnapshot, getParent, types } from "mobx-state-tree";
+import { applySnapshot, getParent, getSnapshot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 
 export const InfiniteListItem = types
@@ -29,7 +29,11 @@ export const InfiniteListItem = types
   }))
   .actions((self) => ({
     update(newData) {
-      applySnapshot(self, { ...newData, updated: guidGenerator() });
+      applySnapshot(self, {
+        ...getSnapshot(self),
+        ...newData,
+        updated: guidGenerator(),
+      });
       return self;
     },
 
