@@ -65,7 +65,7 @@ export const LabelStudioWrapper = styled.div`
 `;
 
 export const LabelStudioContent = styled.div`
-  padding-left: 15px;
+  padding: 0 1em;
 `;
 
 export const Hint = styled.sup`

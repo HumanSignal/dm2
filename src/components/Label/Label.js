@@ -81,7 +81,7 @@ const LabelingComponent = observer(({ store }) => {
           <LabelStudioContent
             ref={lsfRef}
             key="label-studio"
-            id="label-studio"
+            id="label-studio-dm"
           />
         </LabelStudioWrapper>
       </PageHeader>

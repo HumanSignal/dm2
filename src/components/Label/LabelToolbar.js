@@ -44,13 +44,7 @@ export const LabelToolbar = observer(
             />
 
             <LabelTools>
-              <Space
-                style={{
-                  width: "100%",
-                  justifyContent: "flex-end",
-                  paddingRight: "10px",
-                }}
-              >
+              <Space>
                 <Button
                   type={lsf.showingDescription ? "primary" : "dashed"}
                   ghost={lsf.showingDescription}
@@ -220,9 +214,8 @@ const Toolbar = styled.div`
   z-index: 100;
   display: flex;
   position: sticky;
-  padding-left: 15px;
   align-items: center;
-  padding-bottom: 10px;
+  padding: 0 1em 10px;
   justify-content: space-between;
   background-color: #fff;
 `;
@@ -230,10 +223,16 @@ const Toolbar = styled.div`
 const CurrentTaskWrapper = styled.div``;
 
 const LabelActions = styled.div`
+  flex: 1;
   display: flex;
+  justify-content: flex-end;
+  padding-left: 10px;
 `;
 
 const LabelTools = styled.div`
-  width: 320px;
+  flex: 1;
+  display: flex;
+  max-width: 320px;
   margin-left: 20px;
+  justify-content: flex-end;
 `;
