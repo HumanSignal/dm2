@@ -12,7 +12,11 @@ const MixinBase = types
   })
   .views((self) => ({
     get API() {
-      return getRoot(self).API;
+      return self.root.API;
+    },
+
+    get root() {
+      return getRoot(self);
     },
 
     get totalPages() {
