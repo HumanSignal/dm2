@@ -6,7 +6,6 @@ export const TableWrapper = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 0 0 1px #f0f0f0 inset;
   overflow: auto;
   background-color: #efefef;
 
@@ -27,7 +26,7 @@ export const TableHeadWrapper = styled.div`
   font-weight: bold;
   position: sticky;
   overflow: visible;
-  background-color: #fafafa;
+  background-color: #fff;
 
   ${HorizontalShadow}
 `;
@@ -85,7 +84,6 @@ export const TableCellWrapper = styled.div`
     `${maxWidth ?? minWidth ?? width}px` ?? "auto"};
   padding: 10px;
   box-sizing: border-box;
-  box-shadow: 0 0 0 0.5px #f0f0f0 inset;
   display: flex;
   align-items: center;
   justify-content: ${({ justifyContent }) => justifyContent ?? "space-between"};
@@ -94,7 +92,7 @@ export const TableCellWrapper = styled.div`
   overflow: hidden;
 
   &.th {
-    background-color: #fafafa;
+    background-color: #fff;
   }
 `;
 
