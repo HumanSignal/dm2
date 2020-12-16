@@ -71,18 +71,18 @@ const injector = inject(({ store }) => {
   return {
     store,
     tabs: Array.from(store.viewsStore?.all ?? []),
+    selectedKey: store.viewsStore?.selected?.key,
   };
 });
 
-export const TabsWrapper = injector(({ store, tabs }) => {
+export const TabsWrapper = injector(({ store, tabs, selectedKey }) => {
   const views = store.viewsStore;
-  const activeTab = store.viewsStore.selected;
 
   return (
     <TabsStyles>
       <Tabs
         type="editable-card"
-        activeKey={activeTab.key}
+        activeKey={selectedKey}
         onEdit={() => store.viewsStore.addView()}
         onChange={(key) => store.viewsStore.setSelected(key)}
         tabBarExtraContent={
