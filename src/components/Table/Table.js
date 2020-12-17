@@ -27,6 +27,7 @@ const injector = inject(({ store }) => {
     data: dataStore?.list ?? [],
     total: dataStore?.total ?? 0,
     isLoading: dataStore?.loading ?? true,
+    isLocked: currentView?.locked ?? false,
     hasData: (store.project?.task_count ?? 0) > 0,
     focusedItem: dataStore?.selected ?? dataStore?.highlighted,
   };
@@ -47,6 +48,7 @@ export const DataView = injector(
     isLabeling,
     hiddenColumns = [],
     hasData = false,
+    isLocked,
     ...props
   }) => {
     const [showSource, setShowSource] = React.useState();
@@ -192,7 +194,7 @@ export const DataView = injector(
           onSelectAll={onSelectAll}
           onSelectRow={onRowSelect}
           onRowClick={onRowClick}
-          stopInteractions={view.dataStore.loading || view.locked}
+          stopInteractions={isLocked}
         />
       ) : (
         <GridView

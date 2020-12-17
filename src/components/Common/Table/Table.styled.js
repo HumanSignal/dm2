@@ -54,7 +54,7 @@ export const TableRowWrapper = styled.div`
     z-index: 50;
 
     .td {
-      background-color: #f3f9ff;
+      background-color: #e3f1ff;
     }
   }
 

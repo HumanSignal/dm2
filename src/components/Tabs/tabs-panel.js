@@ -21,7 +21,7 @@ const injector = inject(({ store }) => {
     store,
     labelingDisabled: totalTasks === 0 || foundTasks === 0,
     selectedItems: currentView?.selected,
-    loading: dataStore?.loading,
+    loading: dataStore?.loading || currentView?.locked,
     target: currentView?.target ?? "tasks",
     sidebarEnabled: store.viewsStore?.sidebarEnabled ?? false,
   };

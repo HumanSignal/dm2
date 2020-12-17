@@ -143,9 +143,11 @@ export const View = types
   }))
   .actions((self) => ({
     lock() {
+      console.log("View is locked");
       self.locked = true;
     },
     unlock() {
+      console.log("View is unlocked");
       self.locked = false;
     },
 
@@ -247,12 +249,12 @@ export const View = types
       self.save({ reload: false });
     },
 
-    reload({ interaction } = {}) {
+    reload: flow(function* ({ interaction } = {}) {
       if (self.saved) {
         self.root.unsetSelection();
-        self.dataStore.reload({ interaction });
+        yield self.dataStore.reload({ interaction });
       }
-    },
+    }),
 
     deleteFilter(filter) {
       const index = self.filters.findIndex((f) => f === filter);

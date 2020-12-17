@@ -234,7 +234,11 @@ export const AppStore = types
 
     invokeAction: flow(function* (actionId, options = {}) {
       const view = self.currentView;
+      const needsLock =
+        self.availableActions.findIndex((a) => a.id === actionId) >= 0;
       const { selected } = view;
+
+      if (needsLock) view.lock();
 
       const actionParams = {
         ordering: view.ordering,
@@ -259,10 +263,12 @@ export const AppStore = types
       );
 
       if (options.reload !== false) {
-        view.reload();
-        view.clearSelection();
+        yield view.reload();
         self.fetchProject();
+        view.clearSelection();
       }
+
+      view.unlock();
 
       return result;
     }),
