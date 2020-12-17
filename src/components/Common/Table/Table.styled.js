@@ -104,6 +104,7 @@ export const TableCellWrapper = styled.div`
   position: relative;
   background-color: #fff;
   overflow: hidden;
+  word-break: break-word;
 
   &.th {
     background-color: #fff;
