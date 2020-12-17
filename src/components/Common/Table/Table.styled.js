@@ -17,6 +17,10 @@ export const TableWrapper = styled.div`
       fitToContent ? "fit-content" : "auto"} !important;
   }
 
+  .virtual-table > div {
+    min-width: fit-content;
+  }
+
   .row-wrapper {
     min-width: fit-content;
   }
@@ -31,6 +35,7 @@ export const TableHeadWrapper = styled.div`
   position: sticky;
   overflow: visible;
   background-color: #fff;
+  min-width: fit-content;
 
   ${HorizontalShadow}
 `;

@@ -215,6 +215,7 @@ export const Table = observer(
             initialScrollOffset={initialScrollOffset}
             isItemLoaded={isItemLoaded}
             loadMore={props.loadMore}
+            style={{ minWidth: "fit-content" }}
           >
             {renderRow}
           </StickyList>
