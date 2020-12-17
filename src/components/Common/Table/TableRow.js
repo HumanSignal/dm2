@@ -15,6 +15,7 @@ export const TableRow = observer(
     selected,
     onSelect,
     cellDecoration,
+    stopInteractions,
     even,
   }) => {
     const classNames = ["table-row"];
@@ -27,11 +28,12 @@ export const TableRow = observer(
       <TableContext.Consumer>
         {({ columns, cellViews }) => (
           <TableRowWrapper
+            style={style}
+            disabled={stopInteractions}
             className={classNames.join(" ")}
             onClick={(e) => {
               if (onClick) onClick(data, e);
             }}
-            style={style}
           >
             <TableCheckboxCell
               enabled={!!onSelect}

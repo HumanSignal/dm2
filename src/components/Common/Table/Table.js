@@ -18,6 +18,7 @@ export const Table = observer(
     headerRenderers,
     focusedItem,
     cellDecoration,
+    stopInteractions,
     ...props
   }) => {
     const tableHead = React.useRef();
@@ -42,7 +43,7 @@ export const Table = observer(
           sortingEnabled={props.sortingEnabled}
           onSetOrder={props.onSetOrder}
           selected={view.selected}
-          stopInteractions={props.stopInteractions}
+          stopInteractions={stopInteractions}
           onSelect={props.onSelectAll}
           cellDecoration={cellDecoration}
         />
@@ -53,7 +54,7 @@ export const Table = observer(
         props.columnHeaderExtra,
         props.sortingEnabled,
         props.onSetOrder,
-        props.stopInteractions,
+        stopInteractions,
         view,
         view.selected.list,
         view.selected.all,
@@ -75,7 +76,7 @@ export const Table = observer(
               isHighlighted={row.isHighlighted}
               onClick={props.onRowClick}
               selected={view.selected}
-              stopInteractions={props.stopInteractions}
+              stopInteractions={stopInteractions}
               onSelect={props.onSelectRow}
               style={{
                 height: props.rowHeight,
@@ -92,7 +93,7 @@ export const Table = observer(
         props.fitContent,
         props.onRowClick,
         props.rowHeight,
-        props.stopInteractions,
+        stopInteractions,
         selectedItems,
         view,
         view.selected.list,

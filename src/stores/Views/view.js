@@ -41,6 +41,7 @@ export const View = types
     renameMode: false,
     saved: false,
     virtual: false,
+    locked: false,
   })
   .views((self) => ({
     get root() {
@@ -141,6 +142,13 @@ export const View = types
     },
   }))
   .actions((self) => ({
+    lock() {
+      self.locked = true;
+    },
+    unlock() {
+      self.locked = false;
+    },
+
     setType(type) {
       self.type = type;
       self.save();
@@ -260,7 +268,9 @@ export const View = types
 
     save: flow(function* ({ reload, interaction } = {}) {
       if (self.virtual) return;
-      console.group("Save view");
+      const needsLock = ["ordering", "filter"].includes(interaction);
+
+      if (needsLock) self.lock();
       const { id: tabID } = self;
       const body = { body: self.serialize() };
       const params = { tabID };
@@ -269,11 +279,10 @@ export const View = types
 
       const result = yield getRoot(self).apiCall("updateTab", params, body);
       applySnapshot(self, result);
-      console.log("Snapshot applied");
 
       self.saved = true;
       if (reload !== false) self.reload({ interaction });
-      console.groupEnd("Save view");
+      self.unlock();
     }),
 
     delete: flow(function* () {

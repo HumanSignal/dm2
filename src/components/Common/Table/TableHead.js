@@ -75,7 +75,7 @@ export const TableHead = observer(
                       canOrder={canOrder}
                       className="th-content"
                       onClick={() => canOrder && onSetOrder?.(col)}
-                      disabled={props.stopInteractions}
+                      disabled={stopInteractions}
                     >
                       {Renderer ? <Renderer column={col} /> : content}
 

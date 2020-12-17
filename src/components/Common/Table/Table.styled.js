@@ -74,6 +74,11 @@ export const TableRowWrapper = styled.div`
     pointer-events: none;
     box-shadow: 0 0 0 1px rgba(24, 144, 255, 0.8) inset;
   }
+
+  &[disabled] {
+    pointer-events: none;
+    opacity: 0.6;
+  }
 `;
 
 export const TableCellWrapper = styled.div`

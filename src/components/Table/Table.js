@@ -192,7 +192,7 @@ export const DataView = injector(
           onSelectAll={onSelectAll}
           onSelectRow={onRowSelect}
           onRowClick={onRowClick}
-          stopInteractions={view.dataStore.loading}
+          stopInteractions={view.dataStore.loading || view.locked}
         />
       ) : (
         <GridView
