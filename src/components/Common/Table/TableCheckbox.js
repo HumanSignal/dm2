@@ -1,7 +1,6 @@
 import { Checkbox } from "antd";
 import React from "react";
 import styled from "styled-components";
-import { TableCellWrapper } from "./Table.styled";
 
 const StyledCheckbox = styled(Checkbox)`
   width: 100%;
@@ -25,31 +24,20 @@ const IndeterminateCheckbox = ({ checked, indeterminate, ...props }) => {
 };
 
 export const TableCheckboxCell = ({
-  enabled,
   hidden,
   checked,
   indeterminate,
   onChange,
   className,
 }) => {
-  return enabled ? (
-    <TableCellWrapper
-      width={40}
-      maxWidth={40}
-      className={className}
-      justifyContent="center"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {!hidden && (
-        <IndeterminateCheckbox
-          type="checkbox"
-          checked={checked ?? false}
-          indeterminate={indeterminate ?? false}
-          onChange={(e) => {
-            onChange(e.target.checked);
-          }}
-        />
-      )}
-    </TableCellWrapper>
-  ) : null;
+  return (
+    <IndeterminateCheckbox
+      type="checkbox"
+      checked={checked ?? false}
+      indeterminate={indeterminate ?? false}
+      onChange={(e) => {
+        onChange(e.target.checked);
+      }}
+    />
+  );
 };

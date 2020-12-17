@@ -100,8 +100,6 @@ export const ViewColumn = types
         result.push({
           ...self,
           id: self.key,
-          Header: self.title,
-          Cell: self.renderer,
           accessor: self.accessor,
           hidden: self.hidden,
           original: self,

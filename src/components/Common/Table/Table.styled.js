@@ -16,6 +16,10 @@ export const TableWrapper = styled.div`
     min-width: ${({ fitToContent }) =>
       fitToContent ? "fit-content" : "auto"} !important;
   }
+
+  .row-wrapper {
+    min-width: fit-content;
+  }
 `;
 
 export const TableHeadWrapper = styled.div`

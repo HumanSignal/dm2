@@ -1,9 +1,12 @@
+import { Button, Modal } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
+import { BsCode } from "react-icons/bs";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import { TableWrapper } from "./Table.styled";
+import { TableCheckboxCell } from "./TableCheckbox";
 import { TableContext } from "./TableContext";
 import { TableHead } from "./TableHead";
 import { TableRow } from "./TableRow";
@@ -24,6 +27,74 @@ export const Table = observer(
     const tableHead = React.useRef();
     const columns = prepareColumns(props.columns, props.hiddenColumns);
 
+    if (props.onSelectAll && props.onSelectRow) {
+      columns.unshift({
+        id: "select",
+        headerClassName: "th select-all",
+        cellClassName: "td select-row",
+        width: 40,
+        maxWidth: 40,
+        justifyContent: "center",
+        onClick: (e) => e.stopPropagation(),
+        Header: () => {
+          return (
+            <TableCheckboxCell
+              checked={selectedItems.isAllSelected}
+              indeterminate={selectedItems.isIndeterminate}
+              onChange={() => props.onSelectAll()}
+              className="th select-all"
+            />
+          );
+        },
+        Cell: ({ data }) => {
+          return (
+            <TableCheckboxCell
+              checked={selectedItems.isSelected(data.id)}
+              onChange={() => props.onSelectRow(data.id)}
+              className="td"
+            />
+          );
+        },
+      });
+    }
+
+    columns.push({
+      id: "show-source",
+      cellClassName: "td show-source",
+      width: 40,
+      maxWidth: 40,
+      justifyContent: "center",
+      onClick: (e) => e.stopPropagation(),
+      Header() {
+        return null;
+      },
+      Cell({ data }) {
+        return (
+          <Button
+            type="link"
+            className="flex-button"
+            onClick={() => {
+              Modal.info({
+                title: "Source",
+                width: 800,
+                content: (
+                  <pre>
+                    {JSON.stringify(
+                      JSON.parse(data.source ?? "{}"),
+                      null,
+                      "  "
+                    )}
+                  </pre>
+                ),
+              });
+            }}
+          >
+            <BsCode />
+          </Button>
+        );
+      },
+    });
+
     const contextValue = {
       columns,
       data,
@@ -42,9 +113,7 @@ export const Table = observer(
           columnHeaderExtra={props.columnHeaderExtra}
           sortingEnabled={props.sortingEnabled}
           onSetOrder={props.onSetOrder}
-          selected={view.selected}
           stopInteractions={stopInteractions}
-          onSelect={props.onSelectAll}
           cellDecoration={cellDecoration}
         />
       ),
@@ -75,9 +144,7 @@ export const Table = observer(
               isSelected={row.isSelected}
               isHighlighted={row.isHighlighted}
               onClick={props.onRowClick}
-              selected={view.selected}
               stopInteractions={stopInteractions}
-              onSelect={props.onSelectRow}
               style={{
                 height: props.rowHeight,
                 width: props.fitContent ? "fit-content" : "auto",

@@ -7,7 +7,6 @@ import {
   TableHeadExtra,
   TableHeadWrapper,
 } from "./Table.styled";
-import { TableCheckboxCell } from "./TableCheckbox";
 import { TableContext } from "./TableContext";
 import { getStyle } from "./utils";
 
@@ -32,11 +31,8 @@ export const TableHead = observer(
         columnHeaderExtra,
         onSetOrder,
         sortingEnabled,
-        selected,
-        onSelect,
         stopInteractions,
         cellDecoration,
-        ...props
       },
       ref
     ) => {
@@ -44,16 +40,20 @@ export const TableHead = observer(
         <TableContext.Consumer>
           {({ columns, headerRenderers, cellViews }) => (
             <TableHeadWrapper ref={ref} style={style}>
-              <TableCheckboxCell
-                enabled={!!onSelect}
-                checked={selected.isAllSelected}
-                indeterminate={selected.isIndeterminate}
-                onChange={() => onSelect?.()}
-                className="th"
-              />
-
               {columns.map((col) => {
-                const Renderer = headerRenderers?.[col.id];
+                console.log({ col });
+                const { Header, id } = col;
+
+                if (Header instanceof Function) {
+                  const { headerClassName, ...rest } = col;
+                  return (
+                    <TableCellWrapper {...rest} className={headerClassName}>
+                      <Header key={id} />
+                    </TableCellWrapper>
+                  );
+                }
+
+                const Renderer = headerRenderers?.[id];
                 const canOrder = sortingEnabled && col.original?.canOrder;
                 const decoration = cellDecoration[col.alias];
                 const extra = columnHeaderExtra
@@ -66,10 +66,10 @@ export const TableHead = observer(
 
                 return (
                   <TableCellWrapper
-                    key={col.id}
+                    key={id}
                     {...style}
-                    className={`th ${col.id.replace(/[:.]/g, "-")}`}
-                    data-id={col.id}
+                    className={`th ${id.replace(/[:.]/g, "-")}`}
+                    data-id={id}
                   >
                     <TableCellContent
                       canOrder={canOrder}

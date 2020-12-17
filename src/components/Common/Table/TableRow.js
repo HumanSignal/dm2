@@ -1,7 +1,6 @@
 import { observer } from "mobx-react";
 import React from "react";
 import { TableCellWrapper, TableRowWrapper } from "./Table.styled";
-import { TableCheckboxCell } from "./TableCheckbox";
 import { TableContext } from "./TableContext";
 import { getProperty, getStyle } from "./utils";
 
@@ -12,8 +11,6 @@ export const TableRow = observer(
     style,
     isSelected,
     isHighlighted,
-    selected,
-    onSelect,
     cellDecoration,
     stopInteractions,
     even,
@@ -35,14 +32,18 @@ export const TableRow = observer(
               if (onClick) onClick(data, e);
             }}
           >
-            <TableCheckboxCell
-              enabled={!!onSelect}
-              checked={selected.isSelected(data.id)}
-              onChange={() => onSelect?.(data.id)}
-              className="td"
-            />
-
             {columns.map((col) => {
+              const { Cell, id } = col;
+
+              if (Cell instanceof Function) {
+                const { cellClassName, ...rest } = col;
+                return (
+                  <TableCellWrapper {...rest} className={cellClassName}>
+                    <Cell key={id} data={data} />
+                  </TableCellWrapper>
+                );
+              }
+
               const valuePath = col.id.split(":")[1] ?? col.id;
               const Renderer = cellViews?.[col.type] ?? cellViews.String;
               const value = getProperty(data, valuePath);

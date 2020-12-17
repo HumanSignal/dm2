@@ -8,6 +8,7 @@ export const create = (columns) => {
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
     completions: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
+    source: types.maybeNull(types.string),
   })
     .views((self) => ({
       get lastCompletion() {
