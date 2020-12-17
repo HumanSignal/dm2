@@ -8,9 +8,11 @@
  * task: Task
  * }} LSFOptions */
 
-import { LabelStudio } from "label-studio";
+import { LabelStudio as ModuleLSF } from "label-studio";
 import { LSFHistory } from "./lsf-history";
 import { completionToServer, taskToLSFormat } from "./lsf-utils";
+
+const LabelStudio = window.LabelStudio ?? ModuleLSF;
 
 const DEFAULT_INTERFACES = [
   "basic",
