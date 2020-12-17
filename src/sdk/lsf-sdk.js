@@ -12,8 +12,6 @@ import { LabelStudio as ModuleLSF } from "label-studio";
 import { LSFHistory } from "./lsf-history";
 import { completionToServer, taskToLSFormat } from "./lsf-utils";
 
-const LabelStudio = window.LabelStudio ?? ModuleLSF;
-
 const DEFAULT_INTERFACES = [
   "basic",
   "skip",
@@ -74,7 +72,8 @@ export class LSFWrapper {
     };
 
     try {
-      new LabelStudio(this.root, lsfProperties);
+      this.LabelStudio = window.LabelStudio ?? ModuleLSF;
+      new this.LabelStudio(this.root, lsfProperties);
     } catch (err) {
       console.error("Failed to initialize LabelStudio", lsfProperties);
       console.error(err);
