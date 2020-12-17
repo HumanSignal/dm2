@@ -143,7 +143,6 @@ export const ViewFilter = types
     setValueDelayed(value) {
       self.value = value;
       setTimeout(self.saveDelayed);
-      console.log("value set");
     },
 
     saveDelayed: debounce(() => {

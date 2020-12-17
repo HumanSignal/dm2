@@ -86,7 +86,6 @@ export const AppStore = types
   .actions((self) => ({
     startPolling() {
       const poll = async (self) => {
-        console.log("Updating project");
         await self.fetchProject();
         self._poll = setTimeout(() => poll(self), 5000);
       };
@@ -129,7 +128,6 @@ export const AppStore = types
       }, new Map());
 
       grouppedColumns.forEach((columns, target) => {
-        console.log({ target, columns });
         const dataStore = DataStores[target].create?.(columns);
         if (dataStore) registerModel(`${target}Store`, dataStore);
       });

@@ -38,8 +38,12 @@ export const TableRow = observer(
               if (Cell instanceof Function) {
                 const { cellClassName, ...rest } = col;
                 return (
-                  <TableCellWrapper {...rest} className={cellClassName}>
-                    <Cell key={id} data={data} />
+                  <TableCellWrapper
+                    {...rest}
+                    key={id}
+                    className={cellClassName}
+                  >
+                    <Cell data={data} />
                   </TableCellWrapper>
                 );
               }

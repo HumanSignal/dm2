@@ -72,7 +72,6 @@ export class LSFWrapper {
     };
 
     try {
-      console.log({ lsfProperties });
       new LabelStudio(this.root, lsfProperties);
     } catch (err) {
       console.error("Failed to initialize LabelStudio", lsfProperties);

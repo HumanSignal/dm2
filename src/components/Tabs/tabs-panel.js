@@ -28,9 +28,8 @@ const injector = inject(({ store }) => {
 });
 
 export const TablePanel = injector(
-  ({ store, selectedItems, labelingDisabled, loading, target }) => {
+  ({ store, labelingDisabled, loading, target }) => {
     const toolbarSize = "middle";
-    console.log("Panel updated", selectedItems);
 
     return (
       <div className="tab-panel">

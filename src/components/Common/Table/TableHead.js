@@ -41,14 +41,17 @@ export const TableHead = observer(
           {({ columns, headerRenderers, cellViews }) => (
             <TableHeadWrapper ref={ref} style={style}>
               {columns.map((col) => {
-                console.log({ col });
                 const { Header, id } = col;
 
                 if (Header instanceof Function) {
                   const { headerClassName, ...rest } = col;
                   return (
-                    <TableCellWrapper {...rest} className={headerClassName}>
-                      <Header key={id} />
+                    <TableCellWrapper
+                      {...rest}
+                      key={id}
+                      className={headerClassName}
+                    >
+                      <Header />
                     </TableCellWrapper>
                   );
                 }

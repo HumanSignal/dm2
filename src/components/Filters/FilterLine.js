@@ -30,8 +30,6 @@ export const FilterLine = observer(
       return filter.currentValue;
     }, [filter.currentValue]);
 
-    console.log({ value });
-
     return (
       <div className="filter-line">
         <div className="filter-line__settings">

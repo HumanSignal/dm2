@@ -143,11 +143,9 @@ export const View = types
   }))
   .actions((self) => ({
     lock() {
-      console.log("View is locked");
       self.locked = true;
     },
     unlock() {
-      console.log("View is unlocked");
       self.locked = false;
     },
 
@@ -292,7 +290,6 @@ export const View = types
     }),
   }))
   .preProcessSnapshot((snapshot) => {
-    console.log("Resolve view snapshot", { snapshot });
     if (snapshot === null) return snapshot;
 
     const { filters, selectedItems, ...sn } = snapshot ?? {};

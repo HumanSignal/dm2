@@ -194,9 +194,9 @@ export const Table = observer(
       [data]
     );
 
-    React.useEffect(() => {
-      console.log(tableHead.current);
-    }, [tableHead.current]);
+    // React.useEffect(() => {
+    //   console.log(tableHead.current);
+    // }, [tableHead.current]);
 
     return (
       <TableWrapper fitToContent={props.fitToContent}>
