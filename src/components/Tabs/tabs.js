@@ -30,7 +30,7 @@ const summaryInjector = inject(({ store }) => {
 const switchInjector = inject(({ store }) => {
   return {
     views: store.viewsStore,
-    tabs: store.viewsStore?.all ?? [],
+    tabs: Array.from(store.viewsStore?.all ?? []),
     selectedKey: store.viewsStore?.selected?.key,
   };
 });

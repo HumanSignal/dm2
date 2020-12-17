@@ -85,9 +85,11 @@ export const AppStore = types
   }))
   .actions((self) => ({
     startPolling() {
+      if (self._poll) return;
+
       const poll = async (self) => {
         await self.fetchProject();
-        self._poll = setTimeout(() => poll(self), 5000);
+        self._poll = setTimeout(() => poll(self), 10000);
       };
 
       poll(self);
