@@ -106,6 +106,7 @@ export const GridView = observer(
         const props = {
           style: {
             ...style,
+            marginLeft: "1em",
           },
         };
 
@@ -172,10 +173,10 @@ export const GridView = observer(
                   rowHeight={rowHeight + 42}
                   overscanRowCount={10}
                   columnCount={columnCount}
-                  columnWidth={width / columnCount}
+                  columnWidth={width / columnCount - 9.5}
                   rowCount={itemCount}
                   onItemsRendered={onItemsRenderedWrap(onItemsRendered)}
-                  style={{ overflowX: "hidden" }}
+                  style={{ overflowX: "hidden", padding: "0 1em" }}
                 >
                   {renderItem}
                 </FixedSizeGrid>
