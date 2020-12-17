@@ -3,8 +3,7 @@ import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
-import { AiOutlineCheck, AiOutlineClose } from "react-icons/ai";
-import { GiMonoWheelRobot } from "react-icons/gi";
+import { FaBan, FaBrain, FaCheckCircle } from "react-icons/fa";
 import { VscQuestion } from "react-icons/vsc";
 import { FillContainer } from "../App/App.styles";
 import { Spinner } from "../Common/Spinner";
@@ -151,11 +150,7 @@ export const DataView = injector(
     );
 
     const decorationContent = (Icon) => (col) => {
-      return (
-        <Tooltip title={col.help ?? col.title}>
-          <Icon />
-        </Tooltip>
-      );
+      return <Tooltip title={col.help ?? col.title}>{Icon}</Tooltip>;
     };
 
     const commonDecoration = (Icon, size) => ({
@@ -177,9 +172,15 @@ export const DataView = injector(
           hiddenColumns={hiddenColumns}
           cellViews={CellViews}
           cellDecoration={{
-            total_completions: commonDecoration(AiOutlineCheck, 60),
-            cancelled_completions: commonDecoration(AiOutlineClose, 60),
-            total_predictions: commonDecoration(GiMonoWheelRobot, 60),
+            total_completions: commonDecoration(
+              <FaCheckCircle color="green" />,
+              60
+            ),
+            cancelled_completions: commonDecoration(<FaBan color="red" />, 60),
+            total_predictions: commonDecoration(
+              <FaBrain color="#1890ff" />,
+              60
+            ),
             completed_at: {
               style: { width: 180, minWidth: 180, maxWidth: 180 },
             },
