@@ -79,7 +79,7 @@ export const ViewsStore = types
       }
 
       if (self.selected !== selected) {
-        console.log(selected);
+        self.dataStore.clear();
         self.selected = selected;
         self.selected.reload();
         localStorage.setItem("selectedTab", self.selected.id);

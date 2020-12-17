@@ -80,6 +80,13 @@ const MixinBase = types
         self.loadingItem = false;
       }
     },
+
+    clear() {
+      self.list = [];
+      self.page = 0;
+      self.total = 0;
+      self.loaded = false;
+    },
   }));
 
 export const InfiniteList = (
