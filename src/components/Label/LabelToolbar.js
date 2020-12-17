@@ -217,7 +217,7 @@ const Toolbar = styled.div`
   align-items: center;
   padding: 0 1em 10px;
   justify-content: space-between;
-  background-color: #fff;
+  background-color: #fafafa;
 `;
 
 const CurrentTaskWrapper = styled.div``;

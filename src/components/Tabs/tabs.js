@@ -16,9 +16,14 @@ const sidebarInjector = inject(({ store }) => {
 });
 
 const summaryInjector = inject(({ store }) => {
+  const { project, taskStore } = store;
+
   return {
-    tasks: store.taskStore,
-    project: { ...(store.project ?? {}) },
+    totalTasks: project?.task_count ?? 0,
+    totalFoundTasks: taskStore?.total ?? 0,
+    totalCompletions: taskStore?.totalCompletions ?? 0,
+    totalPredictions: taskStore?.totalPredictions ?? 0,
+    cloudSync: project.target_syncing ?? project.source_syncing ?? false,
   };
 });
 
@@ -56,11 +61,10 @@ const FiltersSidebar = sidebarInjector(({ viewsStore }) => {
   ) : null;
 });
 
-const ProjectSummary = summaryInjector(({ tasks, project }) => {
-  const cloudSync = project.target_syncing ?? project.source_syncing ?? false;
+const ProjectSummary = summaryInjector((props) => {
   return (
     <Space size="small" style={{ paddingRight: "1em" }}>
-      {cloudSync && (
+      {props.cloudSync && (
         <Space style={{ fontSize: 12, fontWeight: 400, opacity: 0.8 }}>
           Storage sync
           <Spinner size="small" />
@@ -71,10 +75,10 @@ const ProjectSummary = summaryInjector(({ tasks, project }) => {
       >
         <Space size="large">
           <span>
-            Tasks: {tasks.total} / {project.task_count}
+            Tasks: {props.totalFoundTasks} / {props.totalTasks}
           </span>
-          <span>Completions: {tasks.totalCompletions}</span>
-          <span>Predictions: {tasks.totalPredictions}</span>
+          <span>Completions: {props.totalCompletions}</span>
+          <span>Predictions: {props.totalPredictions}</span>
         </Space>
       </span>
     </Space>
@@ -96,7 +100,7 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
         <Tabs.TabPane
           key={tab.key}
           closable={false}
-          tab={<TabTitle item={tab} />}
+          tab={<TabTitle item={tab} active={tab.key === selectedKey} />}
         />
       ))}
     </Tabs>

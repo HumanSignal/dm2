@@ -28,8 +28,8 @@ export const TableRow = observer(
         {({ columns, cellViews }) => (
           <TableRowWrapper
             className={classNames.join(" ")}
-            onClick={() => {
-              if (onClick) onClick(data);
+            onClick={(e) => {
+              if (onClick) onClick(data, e);
             }}
             style={style}
           >

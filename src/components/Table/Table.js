@@ -97,8 +97,14 @@ export const DataView = injector(
     ]);
 
     const onRowClick = React.useCallback(
-      (item) => {
-        getRoot(view).startLabeling(item);
+      (item, e) => {
+        if (e.metaKey || e.ctrlKey) {
+          console.log("open page");
+          window.location.href += `?task_id=${item.task_id ?? item.id}`;
+        } else {
+          console.log(e.metaKey);
+          getRoot(view).startLabeling(item);
+        }
       },
       [view]
     );
