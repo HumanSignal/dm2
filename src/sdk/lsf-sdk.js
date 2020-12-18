@@ -23,6 +23,16 @@ const DEFAULT_INTERFACES = [
   "side-column", // entity
 ];
 
+let LabelStudioDM;
+
+const resolveLabelStudio = () => {
+  if (LabelStudioDM) {
+    return LabelStudioDM;
+  } else {
+    return (LabelStudioDM = window.LabelStudio ?? ModuleLSF);
+  }
+};
+
 export class LSFWrapper {
   /** @type {HTMLElement} */
   root = null;
@@ -72,7 +82,7 @@ export class LSFWrapper {
     };
 
     try {
-      const LSF = window.LabelStudio ?? ModuleLSF;
+      const LSF = resolveLabelStudio();
       this.globalLSF = window.LabelStudio === LSF;
       new LSF(this.root, lsfProperties);
     } catch (err) {
@@ -199,6 +209,7 @@ export class LSFWrapper {
 
     if (completion.userGenerate && completion.sentUserGenerate === false) {
       response = { ok: true };
+      console.log({ completion });
     } else {
       response = await this.withinLoadingState(async () => {
         return this.datamanager.apiCall("deleteCompletion", {
@@ -206,10 +217,10 @@ export class LSFWrapper {
           completionID: completion.pk,
         });
       });
-    }
 
-    this.task.deleteCompletion(completion);
-    this.datamanager.invoke("deleteCompletion", [ls, completion]);
+      this.task.deleteCompletion(completion);
+      this.datamanager.invoke("deleteCompletion", [ls, completion]);
+    }
 
     if (response.ok) {
       const lastCompletion =
