@@ -206,12 +206,16 @@ export const DataView = injector(
           loadMore={loadMore}
           onChange={(id) => view.toggleSelected(id)}
           hiddenFields={hiddenColumns}
+          stopInteractions={isLocked}
         />
       );
 
     // Render the UI for your table
     return (
-      <TableStyles className="dm-content">
+      <TableStyles
+        className="dm-content"
+        style={{ pointerEvents: isLocked ? "none" : "auto" }}
+      >
         {renderContent(content)}
 
         <Modal

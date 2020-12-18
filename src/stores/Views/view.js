@@ -187,7 +187,7 @@ export const View = types
       }
 
       self.ordering[0] = ordering;
-      self.save({ iteraction: "ordering" });
+      self.save({ interaction: "ordering" });
     },
 
     setSelected(ids) {
@@ -270,6 +270,7 @@ export const View = types
       if (self.virtual) return;
       const needsLock = ["ordering", "filter"].includes(interaction);
 
+      console.log({ needsLock, interaction });
       if (needsLock) self.lock();
       const { id: tabID } = self;
       const body = { body: self.serialize() };
@@ -286,6 +287,7 @@ export const View = types
 
       self.saved = true;
       if (reload !== false) self.reload({ interaction });
+
       self.unlock();
     }),
 

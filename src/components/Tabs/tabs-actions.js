@@ -1,7 +1,7 @@
-import { BsTrash } from "react-icons/bs";
 import { Button, Divider, Modal, Space } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
+import { BsTrash } from "react-icons/bs";
 
 export const TabsActions = inject("store")(
   observer(({ store, size }) => {
@@ -39,22 +39,18 @@ export const TabsActions = inject("store")(
           <Divider type="vertical" />
 
           {actions.map((action) => {
+            const isDeleteAction = action.id.includes("delete");
             return (
               <Button
-                danger={action.id.includes("delete")}
+                className="flex-button"
+                danger={isDeleteAction}
                 size={size}
                 key={action.id}
-                icon={
-                  <BsTrash
-                    style={{
-                      "font-size": "14px",
-                      "margin-right": "5px",
-                      "padding-top": "3px",
-                    }}
-                  />
-                }
                 onClick={() => invokeAction(action)}
               >
+                {isDeleteAction && (
+                  <BsTrash style={{ fontSize: 14, marginRight: 5 }} />
+                )}
                 {action.title}
               </Button>
             );
