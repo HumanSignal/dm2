@@ -8,6 +8,7 @@ import { FaChevronLeft } from "react-icons/fa";
 import { FieldsButton } from "../Common/FieldsButton";
 import { DataView } from "../Table/Table";
 import {
+  DataViewWrapper,
   LabelContent,
   LabelHeader,
   LabelStudioContent,
@@ -15,6 +16,32 @@ import {
   Styles,
 } from "./Label.styles";
 import { LabelToolbar } from "./LabelToolbar";
+
+const LabelingHeader = ({ onClick, isExplorerMode, children }) => {
+  return (
+    <LabelHeader className="label-header">
+      <Space>
+        <Button
+          icon={<FaChevronLeft style={{ marginRight: 4, fontSize: 16 }} />}
+          type="link"
+          onClick={onClick}
+          className="flex-button"
+          style={{ fontSize: 18, padding: 0, color: "black" }}
+        >
+          Back
+        </Button>
+
+        {isExplorerMode ? (
+          <div style={{ paddingLeft: 20 }}>
+            <FieldsButton />
+          </div>
+        ) : null}
+      </Space>
+
+      {children}
+    </LabelHeader>
+  );
+};
 
 /**
  * @param {{store: import("../../stores/AppStore").AppStore}} param1
@@ -42,47 +69,49 @@ const LabelingComponent = observer(({ store }) => {
   }, [store.SDK.lsf?.currentCompletion?.id]);
 
   React.useEffect(() => {
+    console.log(lsfRef.current);
     store.SDK.startLabeling(lsfRef.current, store.dataStore.selected);
-  }, [store.dataStore.selected]);
+  }, [lsfRef, store.dataStore.selected]);
+
+  const toolbar = (
+    <LabelToolbar
+      view={view}
+      history={history}
+      lsf={store.SDK.lsf?.lsf}
+      completion={completion}
+      isLabelStream={store.isLabelStreamMode}
+    />
+  );
+
+  const header = (
+    <LabelingHeader
+      onClick={closeLabeling}
+      isExplorerMode={store.isExplorerMode}
+    >
+      {!store.isExplorerMode && toolbar}
+    </LabelingHeader>
+  );
 
   return (
     <Styles>
-      <LabelHeader className="label-header">
-        <Space>
-          <Button
-            icon={<FaChevronLeft style={{ marginRight: 4, fontSize: 16 }} />}
-            type="link"
-            onClick={closeLabeling}
-            className="flex-button"
-            style={{ fontSize: 18, padding: 0, color: "black" }}
-          >
-            Back
-          </Button>
-
-          {store.isExplorerMode ? (
-            <div style={{ paddingLeft: 20 }}>
-              <FieldsButton />
-            </div>
-          ) : null}
-        </Space>
-
-        <LabelToolbar
-          view={view}
-          history={history}
-          lsf={store.SDK.lsf?.lsf}
-          completion={completion}
-          isLabelStream={store.isLabelStreamMode}
-        />
-      </LabelHeader>
+      {!store.isExplorerMode && header}
 
       <LabelContent className="label-content">
         {store.isExplorerMode && (
-          <div className="table label-table">
-            <DataView />
+          <div
+            className="table label-table"
+            style={{ marginTop: "-1em", paddingTop: "1em" }}
+          >
+            {store.isExplorerMode && header}
+            <DataViewWrapper className="label-dataview-wrapper">
+              <DataView />
+            </DataViewWrapper>
           </div>
         )}
 
         <LabelStudioWrapper className="label-wrapper">
+          {store.isExplorerMode && toolbar}
+
           <LabelStudioContent
             ref={lsfRef}
             key="label-studio"

@@ -15,7 +15,7 @@ export const Styles = styled.div`
     flex: 200px 0 0;
     flex-direction: column;
     max-width: 35vw;
-    box-shadow: 0 0 0 1px #ccc;
+    /* box-shadow: 0 0 0 1px #ccc; */
   }
 
   .label-studio {
@@ -86,4 +86,11 @@ export const LabelContent = styled.div`
   flex: 1;
   display: flex;
   height: calc(100% - 46px);
+`;
+
+export const DataViewWrapper = styled.div`
+  flex: 1;
+  width: 100%;
+  display: flex;
+  box-shadow: 0 0 0 1px #ccc;
 `;

@@ -19,7 +19,7 @@ export const LabelToolbar = observer(
   ({ view, history, completion, lsf, isLabelStream }) => {
     const task = view.dataStore.selected;
     return task ? (
-      <Toolbar className="label-toolbar">
+      <Toolbar className="label-toolbar" isLabelStream={isLabelStream}>
         <CurrentTaskWrapper>
           <Space size="large">
             <div style={{ display: "flex", alignItems: "center" }}>
@@ -212,10 +212,12 @@ const Toolbar = styled.div`
   top: 0;
   flex: 1em;
   z-index: 100;
+  min-height: 32px;
   display: flex;
   position: sticky;
   align-items: center;
-  padding-left: 1em;
+  padding: ${({ isLabelStream }) =>
+    isLabelStream ? "0 0 0 1em" : "0 1em 13px"};
   justify-content: space-between;
   background-color: #fafafa;
 `;
