@@ -9,6 +9,13 @@ import { TablePanel } from "./tabs-panel";
 import { TabTitle } from "./tabs-title";
 import { TabsStyles, TabsWrapper } from "./Tabs.styles";
 
+const injector = inject(({ store }) => {
+  const { sidebarEnabled, sidebarVisible } = store.viewsStore ?? {};
+  return {
+    shrinkWidth: sidebarEnabled && sidebarVisible,
+  };
+});
+
 const sidebarInjector = inject(({ store }) => {
   const viewsStore = store.viewsStore;
   return {
@@ -40,6 +47,7 @@ const switchInjector = inject(({ store }) => {
 
 const FiltersSidebar = sidebarInjector(
   ({ viewsStore, sidebarEnabled, sidebarVisible }) => {
+    console.log({ sidebarEnabled, sidebarVisible });
     return sidebarEnabled && sidebarVisible ? (
       <div className="sidebar">
         <PageHeader
@@ -118,10 +126,10 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
   );
 });
 
-export const DMTabs = () => {
+export const DMTabs = injector(({ shrinkWidth }) => {
   return (
     <TabsStyles>
-      <TabsWrapper>
+      <TabsWrapper className="tabs-wrapper" shrinkWidth={shrinkWidth}>
         <TabsSwitch />
         <TablePanel />
         <DataView />
@@ -129,4 +137,4 @@ export const DMTabs = () => {
       <FiltersSidebar />
     </TabsStyles>
   );
-};
+});

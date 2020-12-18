@@ -26,12 +26,17 @@ const injector = inject(({ store }) => {
 
 export const FiltersPane = injector(
   ({ viewsStore, sidebarEnabled, size, filtersApplied }) => {
+    const dropdownProps = {};
+
+    if (sidebarEnabled) {
+      Object.assign(dropdownProps, {
+        visible: false,
+        disabled: true,
+      });
+    }
+
     return (
-      <Dropdown
-        trigger="click"
-        overlay={() => <Filters />}
-        disabled={sidebarEnabled}
-      >
+      <Dropdown trigger="click" overlay={() => <Filters />} {...dropdownProps}>
         <FiltersButton
           size={size}
           active={filtersApplied}

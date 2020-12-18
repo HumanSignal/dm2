@@ -44,6 +44,10 @@ export const AppStore = types
       return self._sdk;
     },
 
+    get LSF() {
+      return self.SDK.lsf;
+    },
+
     get API() {
       return self.SDK.api;
     },

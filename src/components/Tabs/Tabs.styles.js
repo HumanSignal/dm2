@@ -53,7 +53,7 @@ export const TabsStyles = styled.div`
 `;
 
 export const TabsWrapper = styled.div`
-  width: 100%;
   display: flex;
   flex-direction: column;
+  width: ${({ shrinkWidth }) => (shrinkWidth ? "calc(100% - 350px)" : "100%")};
 `;
