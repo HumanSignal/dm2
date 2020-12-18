@@ -32,6 +32,7 @@ export const completionToLSF = (completion) => {
     createdAgo: completion.created_ago,
     createdBy: completion.created_username,
     leadTime: completion.lead_time,
+    skipped: completion.was_cancelled,
   };
 };
 

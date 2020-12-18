@@ -1,4 +1,4 @@
-import { Button, Modal } from "antd";
+import { Button, Modal, Tooltip } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { BsCode } from "react-icons/bs";
@@ -69,28 +69,30 @@ export const Table = observer(
         return null;
       },
       Cell({ data }) {
+        let out = JSON.parse(data.source ?? "{}");
+        out = {
+          id: out?.id,
+          data: out?.data,
+          completions: out?.completions,
+          predictions: out?.predictions,
+        };
+
         return (
-          <Button
-            type="link"
-            className="flex-button"
-            onClick={() => {
-              Modal.info({
-                title: "Source",
-                width: 800,
-                content: (
-                  <pre>
-                    {JSON.stringify(
-                      JSON.parse(data.source ?? "{}"),
-                      null,
-                      "  "
-                    )}
-                  </pre>
-                ),
-              });
-            }}
-          >
-            <BsCode />
-          </Button>
+          <Tooltip title="Show task source">
+            <Button
+              type="link"
+              className="flex-button"
+              onClick={() => {
+                Modal.info({
+                  title: "Source for task " + out?.id,
+                  width: 800,
+                  content: <pre>{JSON.stringify(out, null, "  ")}</pre>,
+                });
+              }}
+            >
+              <BsCode />
+            </Button>
+          </Tooltip>
         );
       },
     });

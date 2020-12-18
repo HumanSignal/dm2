@@ -100,7 +100,7 @@ export const DataView = injector(
     const onRowClick = React.useCallback(
       (item, e) => {
         if (e.metaKey || e.ctrlKey) {
-          window.location.href += `?task_id=${item.task_id ?? item.id}`;
+          window.open(`./?task_id=${item.task_id ?? item.id}`, "_blank");
         } else {
           getRoot(view).startLabeling(item);
         }
@@ -171,12 +171,15 @@ export const DataView = injector(
           cellViews={CellViews}
           cellDecoration={{
             total_completions: commonDecoration(
-              <FaCheckCircle color="green" />,
+              <FaCheckCircle color="green" opacity="0.7" />,
               60
             ),
-            cancelled_completions: commonDecoration(<FaBan color="red" />, 60),
+            cancelled_completions: commonDecoration(
+              <FaBan color="red" opacity="0.7" />,
+              60
+            ),
             total_predictions: commonDecoration(
-              <FaBrain color="#1890ff" />,
+              <FaBrain color="#1890ff" opacity="0.7" />,
               60
             ),
             completed_at: {

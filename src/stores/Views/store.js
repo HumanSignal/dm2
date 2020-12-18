@@ -117,9 +117,9 @@ export const ViewsStore = types
       });
 
       self.views.push(newView);
-      self.setSelected(newView);
 
       yield newView.save();
+      self.setSelected(newView);
 
       return newView;
     }),

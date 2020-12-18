@@ -1,3 +1,4 @@
+import { BsTrash } from "react-icons/bs";
 import { Button, Divider, Modal, Space } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
@@ -40,8 +41,18 @@ export const TabsActions = inject("store")(
           {actions.map((action) => {
             return (
               <Button
+                danger={action.id.includes("delete")}
                 size={size}
                 key={action.id}
+                icon={
+                  <BsTrash
+                    style={{
+                      "font-size": "14px",
+                      "margin-right": "5px",
+                      "padding-top": "3px",
+                    }}
+                  />
+                }
                 onClick={() => invokeAction(action)}
               >
                 {action.title}
