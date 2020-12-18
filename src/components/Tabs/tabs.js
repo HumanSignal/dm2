@@ -10,8 +10,11 @@ import { TabTitle } from "./tabs-title";
 import { TabsStyles, TabsWrapper } from "./Tabs.styles";
 
 const sidebarInjector = inject(({ store }) => {
+  const viewsStore = store.viewsStore;
   return {
-    viewsStore: store.viewsStore,
+    viewsStore,
+    sidebarEnabled: viewsStore?.sidebarEnabled,
+    sidebarVisible: viewsStore?.sidebarVisible,
   };
 });
 
@@ -35,31 +38,33 @@ const switchInjector = inject(({ store }) => {
   };
 });
 
-const FiltersSidebar = sidebarInjector(({ viewsStore }) => {
-  return viewsStore.sidebarEnabled && viewsStore.sidebarVisible ? (
-    <div className="sidebar">
-      <PageHeader
-        title="Filters"
-        extra={
-          <Button
-            key="close-filters"
-            type="link"
-            onClick={() => viewsStore.collapseFilters()}
-            style={{ display: "inline-flex", alignItems: "center" }}
-          >
-            <RiCloseLine size={24} />
-          </Button>
-        }
-        style={{
-          margin: "0 0 10px",
-          padding: "0 10px",
-          height: 24,
-        }}
-      />
-      <Filters sidebar={true} />
-    </div>
-  ) : null;
-});
+const FiltersSidebar = sidebarInjector(
+  ({ viewsStore, sidebarEnabled, sidebarVisible }) => {
+    return sidebarEnabled && sidebarVisible ? (
+      <div className="sidebar">
+        <PageHeader
+          title="Filters"
+          extra={
+            <Button
+              key="close-filters"
+              type="link"
+              onClick={() => viewsStore.collapseFilters()}
+              style={{ display: "inline-flex", alignItems: "center" }}
+            >
+              <RiCloseLine size={24} />
+            </Button>
+          }
+          style={{
+            margin: "0 0 10px",
+            padding: "0 10px",
+            height: 24,
+          }}
+        />
+        <Filters sidebar={true} />
+      </div>
+    ) : null;
+  }
+);
 
 const ProjectSummary = summaryInjector((props) => {
   return (

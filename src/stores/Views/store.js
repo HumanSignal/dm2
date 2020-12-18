@@ -107,30 +107,34 @@ export const ViewsStore = types
       destroy(view);
     }),
 
-    addView: flow(function* (viewSnapshot) {
+    addView: flow(function* (viewSnapshot = {}) {
       const snapshot = viewSnapshot ?? {};
       const lastView = self.views[self.views.length - 1];
       const newTitle = `New Tab ${self.views.length + 1}`;
-      const newID = snapshot.id ?? (lastView?.id ? lastView.id + 1 : 0);
-
-      const newView = self.createView({
-        ...snapshot,
+      const newID = viewSnapshot.id ?? (lastView?.id ? lastView.id + 1 : 0);
+      const newSnapshot = {
+        ...viewSnapshot,
         id: newID,
         title: newTitle,
         key: guidGenerator(),
         hiddenColumns: snapshot.hiddenColumns ?? clone(self.defaultHidden),
-      });
+      };
+
+      const newView = self.createView(newSnapshot);
+
+      console.log({ newView, viewSnapshot, newSnapshot });
 
       self.views.push(newView);
+      self.setSelected(newView);
 
       yield newView.save();
-      self.setSelected(newView);
 
       return newView;
     }),
 
     duplicateView(view) {
       const sn = getSnapshot(view);
+      console.log({ duplicate: sn });
       self.addView({
         ...sn,
         id: self.lastView.id + 1,

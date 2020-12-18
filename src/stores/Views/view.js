@@ -305,6 +305,8 @@ export const View = types
         filters: items ?? [],
         conjunction: conjunction ?? "and",
       });
+    } else {
+      sn.filters = filters;
     }
 
     if (selectedItems) {
