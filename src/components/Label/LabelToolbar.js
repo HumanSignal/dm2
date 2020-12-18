@@ -210,12 +210,12 @@ const History = observer(({ history, children }) => {
 
 const Toolbar = styled.div`
   top: 0;
-  flex: 0;
+  flex: 1em;
   z-index: 100;
   display: flex;
   position: sticky;
   align-items: center;
-  padding: 0 1em 10px;
+  padding-left: 1em;
   justify-content: space-between;
   background-color: #fafafa;
 `;

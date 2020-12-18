@@ -1,10 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
-import { ArrowLeftOutlined } from "@ant-design/icons";
 import { Button, Space } from "antd";
 import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
 import React from "react";
+import { FaChevronLeft } from "react-icons/fa";
 import { FieldsButton } from "../Common/FieldsButton";
 import { DataView } from "../Table/Table";
 import {
@@ -50,7 +50,7 @@ const LabelingComponent = observer(({ store }) => {
       <LabelHeader className="label-header">
         <Space>
           <Button
-            icon={<ArrowLeftOutlined />}
+            icon={<FaChevronLeft style={{ marginRight: 4, fontSize: 16 }} />}
             type="link"
             onClick={closeLabeling}
             className="flex-button"
@@ -58,30 +58,31 @@ const LabelingComponent = observer(({ store }) => {
           >
             Back
           </Button>
+
           {store.isExplorerMode ? (
             <div style={{ paddingLeft: 20 }}>
-              <FieldsButton columns={view.targetColumns} />
+              <FieldsButton />
             </div>
           ) : null}
         </Space>
+
+        <LabelToolbar
+          view={view}
+          history={history}
+          lsf={store.SDK.lsf?.lsf}
+          completion={completion}
+          isLabelStream={store.isLabelStreamMode}
+        />
       </LabelHeader>
 
       <LabelContent className="label-content">
         {store.isExplorerMode && (
-          <div className="table label-table" style={{ maxWidth: "35vw" }}>
+          <div className="table label-table">
             <DataView />
           </div>
         )}
 
         <LabelStudioWrapper className="label-wrapper">
-          <LabelToolbar
-            view={view}
-            history={history}
-            lsf={store.SDK.lsf?.lsf}
-            completion={completion}
-            isLabelStream={store.isLabelStreamMode}
-          />
-
           <LabelStudioContent
             ref={lsfRef}
             key="label-studio"

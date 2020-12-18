@@ -14,6 +14,8 @@ export const Styles = styled.div`
     display: flex;
     flex: 200px 0 0;
     flex-direction: column;
+    max-width: 35vw;
+    box-shadow: 0 0 0 1px #ccc;
   }
 
   .label-studio {
@@ -74,7 +76,10 @@ export const Hint = styled.sup`
 
 export const LabelHeader = styled.div`
   flex: 0;
+  display: flex;
   padding: 0 1em 1em;
+  align-items: flex-start;
+  justify-content: space-between;
 `;
 
 export const LabelContent = styled.div`
