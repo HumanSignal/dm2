@@ -278,7 +278,11 @@ export const View = types
       if (interaction !== undefined) Object.assign(params, { interaction });
 
       const result = yield getRoot(self).apiCall("updateTab", params, body);
-      applySnapshot(self, result);
+
+      applySnapshot(self, {
+        ...getSnapshot(self),
+        ...result,
+      });
 
       self.saved = true;
       if (reload !== false) self.reload({ interaction });

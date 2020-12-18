@@ -63,6 +63,10 @@ export const ViewsStore = types
       return getRoot(self).annotationStore;
     },
 
+    get lastView() {
+      return self.views[self.views.length - 1];
+    },
+
     serialize() {
       return self.views.map((v) => v.serialize());
     },
@@ -107,10 +111,11 @@ export const ViewsStore = types
       const snapshot = viewSnapshot ?? {};
       const lastView = self.views[self.views.length - 1];
       const newTitle = `New Tab ${self.views.length + 1}`;
+      const newID = snapshot.id ?? (lastView?.id ? lastView.id + 1 : 0);
 
       const newView = self.createView({
         ...snapshot,
-        id: lastView?.id ? lastView.id + 1 : 0,
+        id: newID,
         title: newTitle,
         key: guidGenerator(),
         hiddenColumns: snapshot.hiddenColumns ?? clone(self.defaultHidden),
@@ -125,7 +130,12 @@ export const ViewsStore = types
     }),
 
     duplicateView(view) {
-      self.addView(getSnapshot(view));
+      const sn = getSnapshot(view);
+      self.addView({
+        ...sn,
+        id: self.lastView.id + 1,
+        saved: false,
+      });
     },
 
     createView(viewSnapshot) {

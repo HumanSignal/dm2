@@ -57,19 +57,19 @@ export const DataView = injector(
     }, [props.focusedItem]);
 
     const loadMore = React.useCallback(() => {
-      if (!view.dataStore.hasNextPage || view.dataStore.loading) return;
+      if (!dataStore.hasNextPage || dataStore.loading) return;
 
-      view.dataStore.fetch({ interaction: "scroll" });
-    }, [view.dataStore]);
+      dataStore.fetch({ interaction: "scroll" });
+    }, [dataStore]);
 
     const isItemLoaded = React.useCallback(
       (data, index) => {
         const rowExists = !!data[index];
-        const hasNextPage = view.dataStore.hasNextPage;
+        const hasNextPage = dataStore.hasNextPage;
 
         return !hasNextPage || rowExists;
       },
-      [view.dataStore.hasNextPage]
+      [dataStore.hasNextPage]
     );
 
     const columnHeaderExtra = React.useCallback(

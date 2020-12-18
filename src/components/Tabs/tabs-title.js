@@ -5,14 +5,17 @@ import { BsThreeDotsVertical } from "react-icons/bs";
 import { TabsMenu } from "./tabs-menu";
 
 export const TabTitle = observer(({ item, active }) => {
-  const saveTabTitle = (ev) => {
-    if (ev.type === "blur" || ev.key === "Enter") {
-      item.setRenameMode(false);
-    } else if (ev.key === "Escape") {
-      item.setRenameMode(false);
-      item.setTitle(item.oldTitle);
-    }
-  };
+  const saveTabTitle = React.useCallback(
+    (ev) => {
+      if (ev.type === "blur" || ev.key === "Enter") {
+        item.setRenameMode(false);
+      } else if (ev.key === "Escape") {
+        item.setRenameMode(false);
+        item.setTitle(item.oldTitle);
+      }
+    },
+    [item]
+  );
 
   return (
     <div
@@ -27,7 +30,7 @@ export const TabTitle = observer(({ item, active }) => {
           size="small"
           autoFocus={true}
           style={{ width: 100 }}
-          defaultValue={item.title}
+          value={item.title}
           onKeyDown={saveTabTitle}
           onBlur={saveTabTitle}
           onChange={(ev) => item.setTitle(ev.target.value)}

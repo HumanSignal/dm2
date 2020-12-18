@@ -100,7 +100,13 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
         <Tabs.TabPane
           key={tab.key}
           closable={false}
-          tab={<TabTitle item={tab} active={tab.key === selectedKey} />}
+          tab={
+            <TabTitle
+              key={`title-${tab.key}`}
+              item={tab}
+              active={tab.key === selectedKey}
+            />
+          }
         />
       ))}
     </Tabs>
