@@ -22,6 +22,7 @@ export const TabsStyles = styled.div`
     background: #fff;
     margin-top: -1em;
     padding-top: 1em;
+    position: relative;
   }
 
   .sidebar::before {

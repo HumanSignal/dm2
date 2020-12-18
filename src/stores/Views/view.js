@@ -280,6 +280,7 @@ export const View = types
 
       const result = yield getRoot(self).apiCall("updateTab", params, body);
       const viewSnapshot = getSnapshot(self);
+
       applySnapshot(self, {
         ...viewSnapshot,
         ...result,
