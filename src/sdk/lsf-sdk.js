@@ -72,8 +72,9 @@ export class LSFWrapper {
     };
 
     try {
-      this.LabelStudio = window.LabelStudio ?? ModuleLSF;
-      new this.LabelStudio(this.root, lsfProperties);
+      const LSF = window.LabelStudio ?? ModuleLSF;
+      this.globalLSF = window.LabelStudio === LSF;
+      new LSF(this.root, lsfProperties);
     } catch (err) {
       console.error("Failed to initialize LabelStudio", lsfProperties);
       console.error(err);
