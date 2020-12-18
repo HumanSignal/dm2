@@ -1,4 +1,4 @@
-import { Button, Divider, Modal, Space } from "antd";
+import { Button, Modal, Space } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { BsTrash } from "react-icons/bs";
@@ -30,13 +30,13 @@ export const TabsActions = inject("store")(
       <Space>
         Selected: {selectedLength}
         <Space size="small">
-          <Button size={size} onClick={() => store.currentView.selectAll()}>
+          {/* <Button size={size} onClick={() => store.currentView.selectAll()}>
             {selected.all && !selected.isIndeterminate
               ? "Unselect all"
               : "Select all"}
           </Button>
 
-          <Divider type="vertical" />
+          <Divider type="vertical" /> */}
 
           {actions.map((action) => {
             const isDeleteAction = action.id.includes("delete");
