@@ -111,6 +111,7 @@ export class LSFWrapper {
      * Add new data from received task
      */
     if (newTask) {
+      this.setLoading(false);
       this.setTask(newTask);
       this.setCompletion(completionID);
     }
@@ -234,6 +235,7 @@ export class LSFWrapper {
     const { taskID, currentCompletion } = this;
     const serializedCompletion = this.prepareData(currentCompletion, includeID);
 
+    this.setLoading(true);
     const result = await this.withinLoadingState(async () => {
       return submit(taskID, serializedCompletion);
     });
@@ -246,6 +248,7 @@ export class LSFWrapper {
 
       this.history?.add(taskID, currentCompletion.pk);
     }
+    this.setLoading(false);
 
     if (this.datamanager.isExplorer) {
       console.log(`Reload task ${taskID} as DataManager is in Explorer mode`);
@@ -295,7 +298,12 @@ export class LSFWrapper {
   }
 
   get currentCompletion() {
-    return this.lsf.completionStore.selected;
+    try {
+      return this.lsf.completionStore.selected;
+    } catch {
+      console.trace("Something went wrong when accessing current completion");
+      return null;
+    }
   }
 
   get completions() {
