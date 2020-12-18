@@ -193,25 +193,31 @@ export class LSFWrapper {
 
   /**@private */
   onDeleteCompletion = async (ls, completion) => {
-    if (completion.userGenerate && completion.sentUserGenerate === false) {
-      return;
-    }
-
     const { task } = this;
+    let response;
 
-    const response = await this.withinLoadingState(async () => {
-      return this.datamanager.apiCall("deleteCompletion", {
-        taskID: task.id,
-        completionID: completion.pk,
+    if (completion.userGenerate && completion.sentUserGenerate === false) {
+      response = { ok: true };
+    } else {
+      response = await this.withinLoadingState(async () => {
+        return this.datamanager.apiCall("deleteCompletion", {
+          taskID: task.id,
+          completionID: completion.pk,
+        });
       });
-    });
+    }
 
     this.task.deleteCompletion(completion);
     this.datamanager.invoke("deleteCompletion", [ls, completion]);
 
     if (response.ok) {
-      const { id, pk } = this.completions[this.completions.length - 1] ?? {};
-      await this.loadTask(task.id, pk || id);
+      const lastCompletion =
+        this.completions[this.completions.length - 1] ?? {};
+      const completionID = lastCompletion.pk ?? lastCompletion.id ?? undefined;
+
+      await this.loadTask(task.id, completionID);
+
+      if (this.completions.length === 0) this.setCompletion(null);
     }
   };
 
