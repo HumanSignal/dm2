@@ -123,7 +123,7 @@ export const DataView = injector(
                 hasData ? (
                   <span>Nothing's found.</span>
                 ) : (
-                  "Server returns no tasks, maybe you need to import them?"
+                  "Looks like you have not imported any data yet"
                 )
               }
               style={{
