@@ -8,7 +8,6 @@
  * task: Task
  * }} LSFOptions */
 
-import { LabelStudio as ModuleLSF } from "label-studio";
 import { LSFHistory } from "./lsf-history";
 import { completionToServer, taskToLSFormat } from "./lsf-utils";
 
@@ -25,11 +24,13 @@ const DEFAULT_INTERFACES = [
 
 let LabelStudioDM;
 
-const resolveLabelStudio = () => {
+const resolveLabelStudio = async () => {
   if (LabelStudioDM) {
     return LabelStudioDM;
+  } else if (window.LabelStudio) {
+    return (LabelStudioDM = window.LabelStudio);
   } else {
-    return (LabelStudioDM = window.LabelStudio ?? ModuleLSF);
+    return (LabelStudioDM = (await import("label-studio")).LabelStudio);
   }
 };
 
@@ -81,12 +82,17 @@ export class LSFWrapper {
       onGroundTruth: this.onGroundTruth,
     };
 
+    this.initLabelStudio(lsfProperties);
+  }
+
+  /** @private */
+  async initLabelStudio(settings) {
     try {
-      const LSF = resolveLabelStudio();
+      const LSF = await resolveLabelStudio();
       this.globalLSF = window.LabelStudio === LSF;
-      new LSF(this.root, lsfProperties);
+      new LSF(this.root, settings);
     } catch (err) {
-      console.error("Failed to initialize LabelStudio", lsfProperties);
+      console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
     }
   }
@@ -155,6 +161,7 @@ export class LSFWrapper {
     if (completion.id) cs.selectCompletion(completion.id);
 
     this.datamanager.invoke("completionSet", [completion]);
+    console.log("Completion set");
   }
 
   onLabelStudioLoad = async (ls) => {
@@ -228,8 +235,6 @@ export class LSFWrapper {
       const completionID = lastCompletion.pk ?? lastCompletion.id ?? undefined;
 
       await this.loadTask(task.id, completionID);
-
-      if (this.completions.length === 0) this.setCompletion(null);
     }
   };
 
