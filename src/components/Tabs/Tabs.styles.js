@@ -18,7 +18,21 @@ export const TabsStyles = styled.div`
   }
 
   .sidebar {
-    width: 330px;
+    width: 350px;
+    background: #fff;
+    margin-top: -1em;
+    padding-top: 1em;
+  }
+
+  .sidebar::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 100%;
+    width: 2px;
+    height: 100%;
+    background: linear-gradient(to right, #0000002e, transparent);
+    z-index: 100;
   }
 
   .ant-tabs-nav {
