@@ -5,7 +5,7 @@ import { BsTrash } from "react-icons/bs";
 
 export const TabsActions = inject("store")(
   observer(({ store, size }) => {
-    const { selected } = store.currentView;
+    // const { selected } = store.currentView;
     const selectedLength = store.currentView.selectedLength;
     const actions = store.availableActions
       .filter((a) => !a.hidden)

@@ -161,7 +161,6 @@ export const View = types
 
     setTitle(title) {
       self.title = title;
-      self.save();
     },
 
     setRenameMode(mode) {
