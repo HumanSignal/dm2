@@ -144,22 +144,23 @@ export class APIProxy {
 
         const requestHeaders = new Headers(initialheaders);
 
-        const request = new Request(apiCallURL, {
+        const requestParams = {
           method: requestMethod,
           headers: requestHeaders,
           mode: this.requestMode,
           credentials: this.requestMode === "cors" ? "omit" : "same-origin",
-        });
+        };
 
         if (requestMethod !== "GET") {
-          const contentType = request.headers.get("Content-Type");
+          const contentType = requestHeaders.get("Content-Type");
+          console.log({ requestParams, contentType });
 
           if (contentType === "multipart/form-data") {
-            request.body = this.createRequestBody(body);
+            requestParams.body = this.createRequestBody(body);
           } else if (contentType === "application/json") {
-            request.body = JSON.stringify(body);
+            requestParams.body = JSON.stringify(body);
           } else {
-            request.body = body;
+            requestParams.body = body;
           }
         }
 
@@ -174,11 +175,11 @@ export class APIProxy {
           rawResponse = await this.mockRequest(
             apiCallURL,
             urlParams,
-            request,
+            requestParams,
             methodSettings
           );
         } else {
-          rawResponse = await fetch(apiCallURL, request);
+          rawResponse = await fetch(apiCallURL, requestParams);
         }
 
         if (rawResponse.ok) {
