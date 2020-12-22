@@ -34,7 +34,6 @@ export const View = types
     hiddenColumns: types.maybeNull(types.optional(ViewHiddenColumns, {})),
     ordering: types.optional(types.array(types.string), []),
     selected: types.optional(SelectedItems, {}),
-    selecting: types.optional(types.boolean, false),
     opener: types.optional(types.maybeNull(types.late(() => View)), null),
 
     enableFilters: false,
@@ -145,6 +144,7 @@ export const View = types
     lock() {
       self.locked = true;
     },
+
     unlock() {
       self.locked = false;
     },

@@ -6,6 +6,7 @@ import {
   getSnapshot,
   types,
 } from "mobx-state-tree";
+import { History } from "../../utils/history";
 import { guidGenerator } from "../../utils/random";
 import { unique } from "../../utils/utils";
 import { CustomJSON } from "../types";
@@ -27,7 +28,7 @@ const restoreValue = (name) => {
 
 export const ViewsStore = types
   .model("ViewsStore", {
-    selected: types.maybeNull(types.reference(View)),
+    selected: types.maybeNull(types.late(() => types.reference(View))),
     views: types.optional(types.array(View), []),
     availableFilters: types.optional(types.array(ViewFilterType), []),
     columnsTargetMap: types.map(types.array(ViewColumn)),
@@ -72,7 +73,7 @@ export const ViewsStore = types
     },
   }))
   .actions((self) => ({
-    setSelected(view) {
+    setSelected: flow(function* (view, options = {}) {
       let selected;
       if (typeof view === "string") {
         selected = self.views.find((v) => v.key === view);
@@ -82,13 +83,16 @@ export const ViewsStore = types
         selected = self.views.find((v) => v.id === view.id);
       }
 
-      if (self.selected !== selected) {
+      if (selected && self.selected !== selected) {
         self.dataStore.clear();
         self.selected = selected;
-        self.selected.reload();
-        localStorage.setItem("selectedTab", self.selected.id);
+        yield self.selected.reload();
+
+        if (options.pushState !== false) {
+          History.navigate({ view: selected.id }, true);
+        }
       }
-    },
+    }),
 
     deleteView: flow(function* (view) {
       if (self.selected === view) {
@@ -234,15 +238,33 @@ export const ViewsStore = types
       self.defaultHidden = ViewHiddenColumns.create(hiddenColumns);
     },
 
-    fetchViews: flow(function* () {
+    fetchViews: flow(function* (viewID, taskID) {
       const { tabs } = yield getRoot(self).apiCall("tabs");
 
       const snapshots = tabs.map((t) => View.create({ ...t, saved: true }));
 
       self.views.push(...snapshots);
 
-      const selected = localStorage.getItem("selectedTab");
-      const selectedView = self.views.find((v) => v.id === Number(selected));
-      self.setSelected(selectedView ?? self.views[0]);
+      const defaultView = self.views[0];
+      const selected = viewID
+        ? self.views.find((view) => {
+            return view.id === parseInt(viewID);
+          })
+        : null;
+
+      yield self.setSelected(selected ?? defaultView, {
+        pushState: false,
+      });
+
+      console.log({ viewID, taskID });
+
+      if (taskID) {
+        getRoot(self).startLabeling(
+          {
+            id: parseInt(taskID),
+          },
+          { pushState: false }
+        );
+      }
     }),
   }));

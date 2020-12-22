@@ -37,7 +37,10 @@ export const createApp = async (rootNode, datamanager) => {
   createDynamicModels(columns);
 
   const appStore = AppStore.create({
-    viewsStore: { views: [], columnsRaw: columns },
+    viewsStore: {
+      views: [],
+      columnsRaw: columns,
+    },
     mode: datamanager.mode,
   });
 

@@ -100,7 +100,7 @@ export const DataView = injector(
     const onRowClick = React.useCallback(
       (item, e) => {
         if (e.metaKey || e.ctrlKey) {
-          window.open(`./?task_id=${item.task_id ?? item.id}`, "_blank");
+          window.open(`./?task=${item.task_id ?? item.id}`, "_blank");
         } else {
           getRoot(view).startLabeling(item);
         }

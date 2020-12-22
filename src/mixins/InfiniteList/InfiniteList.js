@@ -6,7 +6,6 @@ const MixinBase = types
     pageSize: types.optional(types.integer, 30),
     total: types.optional(types.integer, 0),
     loading: false,
-    loaded: false,
     loadingItem: false,
     loadingItems: types.optional(types.array(types.number), []),
   })
@@ -85,7 +84,6 @@ const MixinBase = types
       self.list = [];
       self.page = 0;
       self.total = 0;
-      self.loaded = false;
     },
   }));
 
@@ -127,7 +125,6 @@ export const InfiniteList = (
           highlighted = self.highlighted?.id;
 
           self.page = 0;
-          self.loaded = false;
           self.selected = null;
           self.highlighted = null;
         }
@@ -154,7 +151,6 @@ export const InfiniteList = (
         if (highlighted) self.highlighted = highlighted;
 
         self.loading = false;
-        self.loaded = true;
       }),
 
       reload: flow(function* ({ interaction } = {}) {

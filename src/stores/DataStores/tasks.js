@@ -69,7 +69,7 @@ export const create = (columns) => {
     },
   })
     .actions((self) => ({
-      loadTask: flow(function* (taskID) {
+      loadTask: flow(function* (taskID, { select = true } = {}) {
         let task = null;
 
         self.setLoading(taskID);
@@ -85,7 +85,7 @@ export const create = (columns) => {
           task = yield self.loadNextTask();
         }
 
-        self.setSelected(task);
+        if (select !== false) self.setSelected(task);
 
         self.finishLoading(taskID);
         console.log("Loading finished");

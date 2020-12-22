@@ -1,5 +1,6 @@
 import { Modal, notification } from "antd";
 import { flow, types } from "mobx-state-tree";
+import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import * as DataStores from "./DataStores";
 import { DynamicModel, registerModel } from "./DynamicModel";
@@ -107,9 +108,16 @@ export const AppStore = types
       self.mode = mode;
     },
 
-    setTask: flow(function* ({ taskID, completionID }) {
+    setTask: flow(function* ({ taskID, completionID, pushState }) {
+      if (pushState !== false) {
+        History.navigate({ task: taskID, annotation: completionID ?? null });
+      }
+
+      yield self.taskStore.loadTask(taskID, {
+        select: !!taskID && !!completionID,
+      });
+
       if (completionID !== undefined) {
-        yield self.taskStore.loadTask(taskID);
         self.annotationStore.setSelected(completionID);
       } else {
         self.taskStore.setSelected(taskID);
@@ -119,6 +127,7 @@ export const AppStore = types
     unsetTask() {
       self.annotationStore.unset();
       self.taskStore.unset();
+      History.navigate({ task: null, annotation: null });
     },
 
     unsetSelection() {
@@ -139,7 +148,7 @@ export const AppStore = types
       });
     },
 
-    startLabeling(item) {
+    startLabeling(item, options = {}) {
       const processLabeling = () => {
         if (!item && !self.dataStore.selected) {
           self.SDK.setMode("labelstream");
@@ -149,16 +158,22 @@ export const AppStore = types
         if (self.dataStore.loadingItem) return;
 
         if (item && !item.isSelected) {
+          const labelingParams = {
+            pushState: options?.pushState,
+          };
+
           if (isDefined(item.task_id)) {
-            self.setTask({
+            Object.assign(labelingParams, {
               completionID: item.id,
               taskID: item.task_id,
             });
           } else {
-            self.setTask({
+            Object.assign(labelingParams, {
               taskID: item.id,
             });
           }
+
+          self.setTask(labelingParams);
         } else {
           self.closeLabeling();
         }
@@ -187,6 +202,28 @@ export const AppStore = types
       SDK.destroyLSF();
     },
 
+    resolveURLParams() {
+      window.addEventListener("popstate", () => {
+        const { view, task, annotation } = window.history.state;
+
+        if (view) self.viewsStore.setSelected(parseInt(view));
+
+        if (task) {
+          const params = {};
+          if (annotation) {
+            params.task_id = parseInt(task);
+            params.id = parseInt(annotation);
+          } else {
+            params.id = parseInt(task);
+          }
+
+          self.startLabeling(params, { pushState: false });
+        } else {
+          self.closeLabeling();
+        }
+      });
+    },
+
     fetchProject: flow(function* () {
       const oldProject = JSON.stringify(self.project ?? {});
       const newProject = yield self.apiCall("project");
@@ -203,11 +240,14 @@ export const AppStore = types
     fetchData: flow(function* () {
       self.loading = true;
 
+      const { view, task } = History.getParams();
+
       yield self.fetchProject();
       yield self.fetchActions();
       self.viewsStore.fetchColumns();
-      // self.createDataStores();
-      yield self.viewsStore.fetchViews();
+      yield self.viewsStore.fetchViews(view, task);
+
+      self.resolveURLParams();
 
       self.loading = false;
 
