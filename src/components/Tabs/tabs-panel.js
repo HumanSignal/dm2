@@ -1,10 +1,14 @@
 import {
   AppstoreOutlined,
   BarsOutlined,
+  CaretDownOutlined,
+  EyeOutlined,
   PlayCircleOutlined,
+  SortAscendingOutlined,
+  SortDescendingOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Radio, Space } from "antd";
-import { inject } from "mobx-react";
+import { Button, Checkbox, Divider, Radio, Space } from "antd";
+import { inject, observer } from "mobx-react";
 import React from "react";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
@@ -24,11 +28,26 @@ const injector = inject(({ store }) => {
     loading: dataStore?.loading || currentView?.locked,
     target: currentView?.target ?? "tasks",
     sidebarEnabled: store.viewsStore?.sidebarEnabled ?? false,
+    ordering: currentView?.currentOrder,
+    view: currentView,
   };
 });
 
+const FieldCheckbox = observer(({ column, children }) => {
+  return (
+    <Checkbox
+      size="small"
+      checked={!column.hidden}
+      onChange={column.toggleVisibility}
+      style={{ width: "100%", height: "100%" }}
+    >
+      {children}
+    </Checkbox>
+  );
+});
+
 export const TablePanel = injector(
-  ({ store, labelingDisabled, loading, target }) => {
+  ({ store, view, labelingDisabled, loading, target, ordering }) => {
     const toolbarSize = "middle";
 
     return (
@@ -38,9 +57,37 @@ export const TablePanel = injector(
 
           {/* {false && (<DataStoreToggle view={view}/>)} */}
 
-          <FieldsButton size={toolbarSize} />
+          <FieldsButton
+            size={toolbarSize}
+            wrapper={FieldCheckbox}
+            icon={<EyeOutlined />}
+            trailingIcon={<CaretDownOutlined />}
+            title={"Fields"}
+          />
 
           <FiltersPane size={toolbarSize} />
+
+          <FieldsButton
+            size={toolbarSize}
+            trailingIcon={
+              ordering?.desc ? (
+                <SortDescendingOutlined />
+              ) : (
+                <SortAscendingOutlined />
+              )
+            }
+            title={
+              ordering ? (
+                <>
+                  Order by: <b>{ordering.column.title}</b>
+                </>
+              ) : (
+                "Order"
+              )
+            }
+            onClick={(col) => view.setOrdering(col.id)}
+            filter={(col) => col.canOrder}
+          />
 
           {loading && <Spinner size="small" />}
 

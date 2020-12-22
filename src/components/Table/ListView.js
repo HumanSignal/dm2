@@ -209,7 +209,7 @@ export const ListView = observer(
                   ref={ref}
                   width={width}
                   height={height}
-                  overscanCount={10}
+                  overscanCount={30}
                   itemHeight={lineHeight}
                   itemCount={rows.length + 1}
                   itemKey={(index) => rows[index]?.original?.key ?? index}

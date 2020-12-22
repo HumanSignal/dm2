@@ -1,5 +1,4 @@
-import { CaretDownOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Menu } from "antd";
+import { Button, Menu } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
@@ -32,17 +31,14 @@ const MenuWrapper = styled.div`
   }
 `;
 
-const FieldsMenu = observer(({ columns }) => {
+const FieldsMenu = observer(({ columns, WrapperComponent, onClick }) => {
   const MenuItem = (col) => (
-    <Menu.Item key={col.key}>
-      <Checkbox
-        size="small"
-        checked={!col.hidden}
-        onChange={col.toggleVisibility}
-        style={{ width: "100%", height: "100%" }}
-      >
-        {col.title}
-      </Checkbox>
+    <Menu.Item key={col.key} onClick={() => onClick?.(col)}>
+      {WrapperComponent ? (
+        <WrapperComponent column={col}>{col.title}</WrapperComponent>
+      ) : (
+        col.title
+      )}
     </Menu.Item>
   );
 
@@ -67,15 +63,24 @@ const FieldsMenu = observer(({ columns }) => {
   );
 });
 
-export const FieldsButton = injector(({ columns, size }) => {
-  return (
-    <TableDropdown
-      trigger="click"
-      overlay={() => <FieldsMenu columns={columns} />}
-    >
-      <Button size={size}>
-        <EyeOutlined /> Fields <CaretDownOutlined />
-      </Button>
-    </TableDropdown>
-  );
-});
+export const FieldsButton = injector(
+  ({ columns, size, wrapper, title, icon, trailingIcon, onClick, filter }) => {
+    return (
+      <TableDropdown
+        trigger="click"
+        overlay={() => (
+          <FieldsMenu
+            columns={filter ? columns.filter(filter) : columns}
+            WrapperComponent={wrapper}
+            onClick={onClick}
+          />
+        )}
+      >
+        <Button size={size} icon={icon}>
+          <span>{title}</span>
+          {trailingIcon}
+        </Button>
+      </TableDropdown>
+    );
+  }
+);

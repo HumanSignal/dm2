@@ -117,6 +117,7 @@ export const Table = observer(
           onSetOrder={props.onSetOrder}
           stopInteractions={stopInteractions}
           cellDecoration={cellDecoration}
+          onTypeChange={props.onTypeChange}
         />
       ),
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,6 +126,7 @@ export const Table = observer(
         props.columnHeaderExtra,
         props.sortingEnabled,
         props.onSetOrder,
+        props.onTypeChange,
         stopInteractions,
         view,
         view.selected.list,

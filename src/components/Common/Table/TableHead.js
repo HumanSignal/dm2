@@ -1,6 +1,6 @@
+import { Button, Dropdown, Menu, Radio } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
-import { FaSort, FaSortDown, FaSortUp } from "react-icons/fa";
 import {
   TableCellContent,
   TableCellWrapper,
@@ -10,18 +10,47 @@ import {
 import { TableContext } from "./TableContext";
 import { getStyle } from "./utils";
 
-const OrderButton = observer(({ desc }) => {
-  let SortIcon = FaSort;
-  if (desc !== undefined) {
-    SortIcon = desc ? FaSortDown : FaSortUp;
+const DropdownWrapper = observer(
+  ({ column, cellViews, children, onChange }) => {
+    return (
+      <Dropdown
+        overlay={
+          <Menu title="Display as">
+            {Object.keys(cellViews).map((view) => {
+              return (
+                <Menu.Item key={view}>
+                  <Radio
+                    name={`${column.id}-type`}
+                    value={view}
+                    checked={view === column.type}
+                    onChange={(e) => onChange?.(column, e.target.value)}
+                  >
+                    {view}
+                  </Radio>
+                </Menu.Item>
+              );
+            })}
+          </Menu>
+        }
+        trigger="click"
+      >
+        <Button
+          type="text"
+          size="small"
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "none",
+          }}
+        >
+          {children}
+        </Button>
+      </Dropdown>
+    );
   }
-
-  return (
-    <SortIcon
-      style={{ marginLeft: 10, opacity: desc !== undefined ? 0.8 : 0.25 }}
-    />
-  );
-});
+);
 
 export const TableHead = observer(
   React.forwardRef(
@@ -29,10 +58,10 @@ export const TableHead = observer(
       {
         style,
         columnHeaderExtra,
-        onSetOrder,
         sortingEnabled,
         stopInteractions,
         cellDecoration,
+        onTypeChange,
       },
       ref
     ) => {
@@ -67,6 +96,24 @@ export const TableHead = observer(
                   : col.title;
                 const style = getStyle(cellViews, col, decoration);
 
+                const headContent = (
+                  <>
+                    <TableCellContent
+                      canOrder={canOrder}
+                      className="th-content"
+                      disabled={stopInteractions}
+                    >
+                      {Renderer ? <Renderer column={col} /> : content}
+                    </TableCellContent>
+
+                    {extra && (
+                      <TableHeadExtra className="th-extra">
+                        {extra}
+                      </TableHeadExtra>
+                    )}
+                  </>
+                );
+
                 return (
                   <TableCellWrapper
                     key={id}
@@ -74,21 +121,16 @@ export const TableHead = observer(
                     className={`th ${id.replace(/[:.]/g, "-")}`}
                     data-id={id}
                   >
-                    <TableCellContent
-                      canOrder={canOrder}
-                      className="th-content"
-                      onClick={() => canOrder && onSetOrder?.(col)}
-                      disabled={stopInteractions}
-                    >
-                      {Renderer ? <Renderer column={col} /> : content}
-
-                      {canOrder && <OrderButton desc={col.original.order} />}
-                    </TableCellContent>
-
-                    {extra && (
-                      <TableHeadExtra className="th-extra">
-                        {extra}
-                      </TableHeadExtra>
+                    {col.parent ? (
+                      <DropdownWrapper
+                        column={col}
+                        cellViews={cellViews}
+                        onChange={onTypeChange}
+                      >
+                        {headContent}
+                      </DropdownWrapper>
+                    ) : (
+                      headContent
                     )}
                   </TableCellWrapper>
                 );

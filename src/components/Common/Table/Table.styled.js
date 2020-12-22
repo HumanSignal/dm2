@@ -116,7 +116,6 @@ export const TableCellContent = styled.div`
   display: flex;
   white-space: nowrap;
   align-items: center;
-  cursor: ${({ canOrder }) => (canOrder ? "pointer" : "default")};
 
   ${({ disabled }) =>
     disabled

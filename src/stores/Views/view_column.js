@@ -113,4 +113,8 @@ export const ViewColumn = types
     toggleVisibility() {
       self.parentView.toggleColumn(self);
     },
+
+    setType(type) {
+      self.type = type;
+    },
   }));

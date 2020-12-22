@@ -190,13 +190,13 @@ export const DataView = injector(
           focusedItem={focusedItem}
           isItemLoaded={isItemLoaded}
           sortingEnabled={view.type === "list"}
-          onSetOrder={(col) => view.setOrdering(col.id)}
           columnHeaderExtra={columnHeaderExtra}
           selectedItems={selectedItems}
           onSelectAll={onSelectAll}
           onSelectRow={onRowSelect}
           onRowClick={onRowClick}
           stopInteractions={isLocked}
+          onTypeChange={(col, type) => col.original.setType(type)}
         />
       ) : (
         <GridView
