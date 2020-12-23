@@ -82,7 +82,7 @@ const ResizerHandle = styled.div`
   top: 0;
   left: 100%;
   height: 100%;
-  padding: 0 4px;
+  padding: 0 6px;
   position: absolute;
   cursor: col-resize;
   z-index: 100;
@@ -90,17 +90,21 @@ const ResizerHandle = styled.div`
   &::before {
     top: 0;
     left: 0;
+    bottom: 0;
     width: 1px;
     content: "";
-    height: 100%;
+    z-index: 5;
     display: block;
-    background: #000;
+    background: #bdbdbd;
     position: absolute;
   }
 
   &:hover::before {
-    background-color: blue;
-    box-shadow: -2px 0 0 0 rgba(0, 0, 255, 0.3), 2px 0 0 0 rgba(0, 0, 255, 0.3);
+    top: -5px;
+    bottom: -5px;
+    background-color: #1890ff;
+    box-shadow: -2px 0 0 0 rgba(24, 144, 255, 0.3),
+      2px 0 0 0 rgba(24, 144, 255, 0.3);
   }
 
   ${({ isResizing }) =>
@@ -111,6 +115,7 @@ const ResizerHandle = styled.div`
             left: 0;
             width: 1px;
             content: "";
+            z-index: 1;
             height: 9999px;
             position: absolute;
             background-color: #ccc;

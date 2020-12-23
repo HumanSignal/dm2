@@ -124,7 +124,7 @@ const ColumnRenderer = observer(
             overflow: "hidden",
           }}
           handleStyle={{
-            marginLeft: 5,
+            marginLeft: 9,
           }}
           initialWidth={style.width ?? 150}
           onResizeFinished={(width) => onResize?.(column, width)}
