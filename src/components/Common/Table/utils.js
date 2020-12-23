@@ -33,8 +33,11 @@ const resolveStyle = (col, decoration, cellView) => {
 export const getStyle = (cellViews, col, decoration) => {
   const cellView = cellViews?.[col.type];
   const style = { width: 150 };
+  const resolvedStyle = resolveStyle(col, decoration, cellView);
 
-  Object.assign(style, resolveStyle(col, decoration, cellView));
+  Object.assign(style, resolvedStyle, {
+    width: col.width ?? resolvedStyle.width ?? 150,
+  });
 
   return style;
 };

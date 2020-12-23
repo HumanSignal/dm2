@@ -92,22 +92,21 @@ export const TableRowWrapper = styled.div`
 
 export const TableCellWrapper = styled.div`
   flex: ${({ width }) => `${width ?? 150} 0 auto`};
-  width: ${({ width }) => width ?? 150}px;
-  min-width: ${({ width, minWidth }) => minWidth ?? width ?? 150}px;
-  max-width: ${({ width, minWidth, maxWidth }) =>
-    `${maxWidth ?? minWidth ?? width}px` ?? "auto"};
+  width: fit-content;
+  min-width: min-content;
+  max-width: min-content;
   padding: 10px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
-  justify-content: ${({ justifyContent }) => justifyContent ?? "space-between"};
   position: relative;
   background-color: #fff;
   overflow: hidden;
   word-break: break-word;
 
   &.th {
-    background-color: #fff;
+    background: none;
+    overflow: visible;
   }
 `;
 

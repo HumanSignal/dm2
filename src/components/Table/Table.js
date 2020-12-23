@@ -151,11 +151,58 @@ export const DataView = injector(
       return <Tooltip title={col.help ?? col.title}>{Icon}</Tooltip>;
     };
 
-    const commonDecoration = (Icon, size) => ({
-      content: decorationContent(Icon),
-      style: { width: size, minWidth: size, maxWidth: size },
-      help: false,
-    });
+    const commonDecoration = React.useCallback(
+      (alias, Icon, size, align = "flex-start") => ({
+        alias,
+        content: Icon ? decorationContent(Icon) : null,
+        style: (col) => ({ width: col.width ?? size, justifyContent: align }),
+        help: false,
+      }),
+      []
+    );
+
+    const decoration = React.useMemo(
+      () => [
+        commonDecoration(
+          "total_completions",
+          <FaCheckCircle color="green" opacity="0.7" />,
+          60,
+          "center"
+        ),
+        commonDecoration(
+          "cancelled_completions",
+          <FaBan color="red" opacity="0.7" />,
+          60,
+          "center"
+        ),
+        commonDecoration(
+          "total_predictions",
+          <FaBrain color="#1890ff" opacity="0.7" />,
+          60,
+          "center"
+        ),
+        commonDecoration("completed_at", null, 180),
+        {
+          resolver: (col) => col.type === "Number",
+          style(col) {
+            return /id/.test(col.id) ? { width: 110 } : { width: 50 };
+          },
+        },
+        {
+          resolver: (col) => col.type === "Image",
+          style: { width: 150, justifyContent: "center" },
+        },
+        {
+          resolver: (col) => ["Date", "Datetime"].includes(col.type),
+          style: { width: 240 },
+        },
+        {
+          resolver: (col) => ["Audio", "AudioPlus"].includes(col.type),
+          style: { width: 150 },
+        },
+      ],
+      [commonDecoration]
+    );
 
     const content =
       view.root.isLabeling || viewType === "list" ? (
@@ -169,23 +216,7 @@ export const DataView = injector(
           columns={columns}
           hiddenColumns={hiddenColumns}
           cellViews={CellViews}
-          cellDecoration={{
-            total_completions: commonDecoration(
-              <FaCheckCircle color="green" opacity="0.7" />,
-              60
-            ),
-            cancelled_completions: commonDecoration(
-              <FaBan color="red" opacity="0.7" />,
-              60
-            ),
-            total_predictions: commonDecoration(
-              <FaBrain color="#1890ff" opacity="0.7" />,
-              60
-            ),
-            completed_at: {
-              style: { width: 180, minWidth: 180, maxWidth: 180 },
-            },
-          }}
+          decoration={decoration}
           order={view.ordering}
           focusedItem={focusedItem}
           isItemLoaded={isItemLoaded}
@@ -197,6 +228,14 @@ export const DataView = injector(
           onRowClick={onRowClick}
           stopInteractions={isLocked}
           onTypeChange={(col, type) => col.original.setType(type)}
+          onColumnResize={(col, width) => {
+            console.log("resize", width);
+            col.original.setWidth(width);
+          }}
+          onColumnReset={(col) => {
+            console.log("reset");
+            col.original.resetWidth();
+          }}
         />
       ) : (
         <GridView

@@ -1,4 +1,4 @@
-import { Button, Menu } from "antd";
+import { Button, Checkbox, Menu } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
@@ -84,3 +84,16 @@ export const FieldsButton = injector(
     );
   }
 );
+
+FieldsButton.Checkbox = observer(({ column, children }) => {
+  return (
+    <Checkbox
+      size="small"
+      checked={!column.hidden}
+      onChange={column.toggleVisibility}
+      style={{ width: "100%", height: "100%" }}
+    >
+      {children}
+    </Checkbox>
+  );
+});

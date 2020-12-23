@@ -28,7 +28,7 @@ export const ViewColumn = types
       types.array(types.late(() => types.reference(ViewColumn)))
     ),
     target: types.enumeration(["tasks", "annotations"]),
-    width: types.optional(types.integer, 150),
+    width: types.optional(types.maybeNull(types.integer), null),
     orderable: types.optional(types.boolean, true),
     help: types.maybeNull(types.string),
   })
@@ -116,5 +116,13 @@ export const ViewColumn = types
 
     setType(type) {
       self.type = type;
+    },
+
+    setWidth(width) {
+      self.width = width ?? null;
+    },
+
+    resetWidth() {
+      self.width = null;
     },
   }));

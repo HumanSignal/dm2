@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
+import { CaretDownOutlined, EyeOutlined } from "@ant-design/icons";
 import { Button, Space } from "antd";
 import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
@@ -33,7 +34,12 @@ const LabelingHeader = ({ onClick, isExplorerMode, children }) => {
 
         {isExplorerMode ? (
           <div style={{ paddingLeft: 20 }}>
-            <FieldsButton />
+            <FieldsButton
+              wrapper={FieldsButton.Checkbox}
+              icon={<EyeOutlined />}
+              trailingIcon={<CaretDownOutlined />}
+              title={"Fields"}
+            />
           </div>
         ) : null}
       </Space>

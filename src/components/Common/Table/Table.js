@@ -5,12 +5,30 @@ import { BsCode } from "react-icons/bs";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
+import { isDefined } from "../../../utils/utils";
 import { TableWrapper } from "./Table.styled";
 import { TableCheckboxCell } from "./TableCheckbox";
 import { TableContext } from "./TableContext";
 import { TableHead } from "./TableHead";
 import { TableRow } from "./TableRow";
 import { prepareColumns } from "./utils";
+
+const Decorator = (decoration) => {
+  return {
+    get(col) {
+      return decoration.find((d) => {
+        let found = false;
+        if (isDefined(d.alias)) {
+          found = d.alias === col.alias;
+        } else if (d.resolver instanceof Function) {
+          found = d.resolver(col);
+        }
+
+        return found;
+      });
+    },
+  };
+};
 
 export const Table = observer(
   ({
@@ -20,12 +38,15 @@ export const Table = observer(
     selectedItems,
     headerRenderers,
     focusedItem,
-    cellDecoration,
+    decoration,
     stopInteractions,
+    onColumnResize,
+    onColumnReset,
     ...props
   }) => {
     const tableHead = React.useRef();
     const columns = prepareColumns(props.columns, props.hiddenColumns);
+    const Decoration = React.useMemo(() => Decorator(decoration), [decoration]);
 
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
@@ -38,21 +59,25 @@ export const Table = observer(
         onClick: (e) => e.stopPropagation(),
         Header: () => {
           return (
-            <TableCheckboxCell
-              checked={selectedItems.isAllSelected}
-              indeterminate={selectedItems.isIndeterminate}
-              onChange={() => props.onSelectAll()}
-              className="th select-all"
-            />
+            <div style={{ width: 30 }}>
+              <TableCheckboxCell
+                checked={selectedItems.isAllSelected}
+                indeterminate={selectedItems.isIndeterminate}
+                onChange={() => props.onSelectAll()}
+                className="th select-all"
+              />
+            </div>
           );
         },
         Cell: ({ data }) => {
           return (
-            <TableCheckboxCell
-              checked={selectedItems.isSelected(data.id)}
-              onChange={() => props.onSelectRow(data.id)}
-              className="td"
-            />
+            <div style={{ width: 30 }}>
+              <TableCheckboxCell
+                checked={selectedItems.isSelected(data.id)}
+                onChange={() => props.onSelectRow(data.id)}
+                className="td"
+              />
+            </div>
           );
         },
       });
@@ -66,7 +91,7 @@ export const Table = observer(
       justifyContent: "center",
       onClick: (e) => e.stopPropagation(),
       Header() {
-        return null;
+        return <div style={{ width: 40 }} />;
       },
       Cell({ data }) {
         let out = JSON.parse(data.source ?? "{}");
@@ -78,21 +103,23 @@ export const Table = observer(
         };
 
         return (
-          <Tooltip title="Show task source">
-            <Button
-              type="link"
-              className="flex-button"
-              onClick={() => {
-                Modal.info({
-                  title: "Source for task " + out?.id,
-                  width: 800,
-                  content: <pre>{JSON.stringify(out, null, "  ")}</pre>,
-                });
-              }}
-            >
-              <BsCode />
-            </Button>
-          </Tooltip>
+          <div style={{ width: 40 }}>
+            <Tooltip title="Show task source">
+              <Button
+                type="link"
+                className="flex-button"
+                onClick={() => {
+                  Modal.info({
+                    title: "Source for task " + out?.id,
+                    width: 800,
+                    content: <pre>{JSON.stringify(out, null, "  ")}</pre>,
+                  });
+                }}
+              >
+                <BsCode />
+              </Button>
+            </Tooltip>
+          </div>
         );
       },
     });
@@ -116,8 +143,10 @@ export const Table = observer(
           sortingEnabled={props.sortingEnabled}
           onSetOrder={props.onSetOrder}
           stopInteractions={stopInteractions}
-          cellDecoration={cellDecoration}
           onTypeChange={props.onTypeChange}
+          decoration={Decoration}
+          onResize={onColumnResize}
+          onReset={onColumnReset}
         />
       ),
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -153,7 +182,7 @@ export const Table = observer(
                 height: props.rowHeight,
                 width: props.fitContent ? "fit-content" : "auto",
               }}
-              cellDecoration={cellDecoration}
+              decoration={Decoration}
             />
           </div>
         );

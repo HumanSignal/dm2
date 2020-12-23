@@ -7,8 +7,8 @@ import {
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Divider, Radio, Space } from "antd";
-import { inject, observer } from "mobx-react";
+import { Button, Divider, Radio, Space } from "antd";
+import { inject } from "mobx-react";
 import React from "react";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
@@ -33,19 +33,6 @@ const injector = inject(({ store }) => {
   };
 });
 
-const FieldCheckbox = observer(({ column, children }) => {
-  return (
-    <Checkbox
-      size="small"
-      checked={!column.hidden}
-      onChange={column.toggleVisibility}
-      style={{ width: "100%", height: "100%" }}
-    >
-      {children}
-    </Checkbox>
-  );
-});
-
 export const TablePanel = injector(
   ({ store, view, labelingDisabled, loading, target, ordering }) => {
     const toolbarSize = "middle";
@@ -59,7 +46,7 @@ export const TablePanel = injector(
 
           <FieldsButton
             size={toolbarSize}
-            wrapper={FieldCheckbox}
+            wrapper={FieldsButton.Checkbox}
             icon={<EyeOutlined />}
             trailingIcon={<CaretDownOutlined />}
             title={"Fields"}

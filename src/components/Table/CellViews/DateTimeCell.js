@@ -8,8 +8,3 @@ export const DateTimeCell = (column) => {
     </div>
   );
 };
-
-DateTimeCell.style = {
-  width: 50,
-  minWidth: 240,
-};
