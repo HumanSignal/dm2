@@ -117,6 +117,7 @@ const LabelingComponent = observer(({ store }) => {
                 width: "100%",
               }}
               minWidth={200}
+              showResizerLine={false}
               maxWidth={window.innerWidth * 0.35}
               initialWidth={view.labelingTableWidth}
               onResizeFinished={(width) => view.setLabelingTableWidth(width)}
