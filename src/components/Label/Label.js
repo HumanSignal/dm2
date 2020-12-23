@@ -109,7 +109,18 @@ const LabelingComponent = observer(({ store }) => {
             style={{ marginTop: "-1em", paddingTop: "1em" }}
           >
             {store.isExplorerMode && header}
-            <DataViewWrapper className="label-dataview-wrapper">
+            <DataViewWrapper
+              className="label-dataview-wrapper"
+              style={{
+                flex: 1,
+                display: "flex",
+                width: "100%",
+              }}
+              minWidth={200}
+              maxWidth={window.innerWidth * 0.35}
+              initialWidth={view.labelingTableWidth}
+              onResizeFinished={(width) => view.setLabelingTableWidth(width)}
+            >
               <DataView />
             </DataViewWrapper>
           </div>

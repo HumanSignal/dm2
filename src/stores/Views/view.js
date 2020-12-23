@@ -42,6 +42,15 @@ export const View = types
     virtual: false,
     locked: false,
   })
+  .volatile(() => {
+    const defaultWidth = window.innerWidth * 0.35;
+    const labelingTableWidth = parseInt(
+      localStorage.getItem("labelingTableWidth") ?? defaultWidth
+    );
+    return {
+      labelingTableWidth,
+    };
+  })
   .views((self) => ({
     get root() {
       return getRoot(self);
@@ -142,6 +151,9 @@ export const View = types
         },
         hiddenColumns: getSnapshot(self.hiddenColumns),
         selectedItems: self.selected.snapshot,
+        columnsWidth: self.columns.reduce((res, col) => {
+          return col.width ? { ...res, [col.id]: col.width } : res;
+        }, {}),
       };
     },
   }))
@@ -192,6 +204,11 @@ export const View = types
 
       self.ordering[0] = ordering;
       self.save({ interaction: "ordering" });
+    },
+
+    setLabelingTableWidth(width) {
+      self.labelingTableWidth = width;
+      localStorage.setItem("labelingTableWidth", self.labelingTableWidth);
     },
 
     setSelected(ids) {

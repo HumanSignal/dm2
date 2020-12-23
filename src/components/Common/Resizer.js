@@ -1,11 +1,11 @@
 import React from "react";
 import styled, { css } from "styled-components";
 
-const calculateWidth = (width, initialX, currentX) => {
+const calculateWidth = (width, minWidth, maxWidth, initialX, currentX) => {
   const offset = currentX - initialX;
 
   // Limit the width
-  return Math.max(30, Math.min(width + offset, 400));
+  return Math.max(minWidth ?? 30, Math.min(width + offset, maxWidth ?? 400));
 };
 
 export const Resizer = ({
@@ -13,6 +13,10 @@ export const Resizer = ({
   style,
   handleStyle,
   initialWidth,
+  className,
+  minWidth,
+  maxWidth,
+  showResizerLine,
   onResize: onResizeCallback,
   onResizeFinished,
   onReset,
@@ -29,7 +33,13 @@ export const Resizer = ({
 
       /** @param {MouseEvent} evt */
       const onResize = (evt) => {
-        newWidth = calculateWidth(width, initialX, evt.pageX);
+        newWidth = calculateWidth(
+          width,
+          minWidth,
+          maxWidth,
+          initialX,
+          evt.pageX
+        );
 
         setWidth(newWidth);
         onResizeCallback?.(newWidth);
@@ -39,7 +49,13 @@ export const Resizer = ({
         document.removeEventListener("mousemove", onResize);
         document.removeEventListener("mouseup", stopResize);
 
-        newWidth = calculateWidth(width, initialX, evt.pageX);
+        newWidth = calculateWidth(
+          width,
+          minWidth,
+          maxWidth,
+          initialX,
+          evt.pageX
+        );
 
         setIsResizing(false);
 
@@ -53,11 +69,13 @@ export const Resizer = ({
       document.addEventListener("mouseup", stopResize);
       setIsResizing(true);
     },
-    [onResizeCallback, onResizeFinished, width]
+    [maxWidth, minWidth, onResizeCallback, onResizeFinished, width]
   );
 
+  const finalClassName = ["resizer", className].filter((c) => !!c).join(" ");
+
   return (
-    <ResizerWrapper className="resizer" style={{ width }}>
+    <ResizerWrapper className={finalClassName} style={{ width }}>
       <div className="resizer__content" style={style ?? {}}>
         {children}
       </div>
@@ -66,7 +84,7 @@ export const Resizer = ({
         ref={resizeHandler}
         className="resizer__handle"
         style={handleStyle}
-        isResizing={isResizing}
+        isResizing={showResizerLine !== false && isResizing}
         onMouseDown={handleResize}
         onDoubleClick={() => onReset?.()}
       />

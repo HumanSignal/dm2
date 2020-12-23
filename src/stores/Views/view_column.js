@@ -120,9 +120,11 @@ export const ViewColumn = types
 
     setWidth(width) {
       self.width = width ?? null;
+      self.parentView.save();
     },
 
     resetWidth() {
       self.width = null;
+      self.parentView.save();
     },
   }));

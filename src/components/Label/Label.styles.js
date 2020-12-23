@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { Resizer } from "../Common/Resizer";
 
 export const Styles = styled.div`
   height: 100%;
@@ -88,7 +89,7 @@ export const LabelContent = styled.div`
   height: calc(100% - 46px);
 `;
 
-export const DataViewWrapper = styled.div`
+export const DataViewWrapper = styled(Resizer)`
   flex: 1;
   width: 100%;
   display: flex;
