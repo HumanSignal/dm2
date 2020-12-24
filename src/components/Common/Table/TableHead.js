@@ -74,6 +74,7 @@ const ColumnRenderer = observer(
 
     if (Header instanceof Function) {
       const { headerClassName, ...rest } = column;
+
       return (
         <TableCellWrapper
           {...rest}
@@ -103,7 +104,7 @@ const ColumnRenderer = observer(
           className="th-content"
           disabled={stopInteractions}
         >
-          {Renderer ? <Renderer column={column} /> : content}
+          {Renderer ? <Renderer column={column} children={content} /> : content}
         </TableCellContent>
 
         {extra && <TableHeadExtra className="th-extra">{extra}</TableHeadExtra>}

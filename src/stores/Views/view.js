@@ -103,17 +103,20 @@ export const View = types
     },
 
     get currentOrder() {
-      return self.ordering.reduce((res, field) => {
-        const fieldName = field.replace(/^-/, "");
-        const desc = field[0] === "-";
+      return self.ordering.length
+        ? self.ordering.reduce((res, field) => {
+            const fieldName = field.replace(/^-/, "");
+            const desc = field[0] === "-";
 
-        return {
-          ...res,
-          [fieldName]: desc,
-          desc,
-          column: self.columns.find((c) => c.id === fieldName),
-        };
-      }, {});
+            return {
+              ...res,
+              [fieldName]: desc,
+              desc,
+              field: fieldName,
+              column: self.columns.find((c) => c.id === fieldName),
+            };
+          }, {})
+        : null;
     },
 
     get filtersApplied() {
@@ -195,7 +198,7 @@ export const View = types
     },
 
     setOrdering(value) {
-      const direction = self.currentOrder[value];
+      const direction = self.currentOrder?.[value];
       let ordering = value;
 
       if (direction !== undefined) {

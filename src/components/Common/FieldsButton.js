@@ -31,40 +31,57 @@ const MenuWrapper = styled.div`
   }
 `;
 
-const FieldsMenu = observer(({ columns, WrapperComponent, onClick }) => {
-  const MenuItem = (col) => (
-    <Menu.Item key={col.key} onClick={() => onClick?.(col)}>
-      {WrapperComponent ? (
-        <WrapperComponent column={col}>{col.title}</WrapperComponent>
-      ) : (
-        col.title
-      )}
-    </Menu.Item>
-  );
+const FieldsMenu = observer(
+  ({ columns, WrapperComponent, onClick, selected }) => {
+    const MenuItem = (col) => (
+      <Menu.Item key={col.key} onClick={() => onClick?.(col)} isSelected={true}>
+        {WrapperComponent ? (
+          <WrapperComponent column={col}>{col.title}</WrapperComponent>
+        ) : (
+          col.title
+        )}
+      </Menu.Item>
+    );
 
-  return (
-    <MenuWrapper>
-      <Menu size="small" style={{ padding: "4px 0" }}>
-        {columns.map((col) => {
-          if (col.children) {
-            return (
-              <Menu.ItemGroup key={col.key} title={col.title}>
-                {col.children.map(MenuItem)}
-              </Menu.ItemGroup>
-            );
-          } else if (!col.parent) {
-            return MenuItem(col);
-          }
+    return (
+      <MenuWrapper>
+        <Menu
+          size="small"
+          style={{ padding: "4px 0" }}
+          selectedKeys={selected ? [selected] : null}
+        >
+          {columns.map((col) => {
+            if (col.children) {
+              return (
+                <Menu.ItemGroup key={col.key} title={col.title}>
+                  {col.children.map(MenuItem)}
+                </Menu.ItemGroup>
+              );
+            } else if (!col.parent) {
+              return MenuItem(col);
+            }
 
-          return null;
-        })}
-      </Menu>
-    </MenuWrapper>
-  );
-});
+            return null;
+          })}
+        </Menu>
+      </MenuWrapper>
+    );
+  }
+);
 
 export const FieldsButton = injector(
-  ({ columns, size, wrapper, title, icon, trailingIcon, onClick, filter }) => {
+  ({
+    columns,
+    size,
+    style,
+    wrapper,
+    title,
+    icon,
+    trailingIcon,
+    onClick,
+    filter,
+    selected,
+  }) => {
     return (
       <TableDropdown
         trigger="click"
@@ -73,10 +90,11 @@ export const FieldsButton = injector(
             columns={filter ? columns.filter(filter) : columns}
             WrapperComponent={wrapper}
             onClick={onClick}
+            selected={selected}
           />
         )}
       >
-        <Button size={size} icon={icon}>
+        <Button size={size} icon={icon} style={style}>
           <span>{title}</span>
           {trailingIcon}
         </Button>

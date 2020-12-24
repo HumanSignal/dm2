@@ -4,12 +4,12 @@ import {
   CaretDownOutlined,
   EyeOutlined,
   PlayCircleOutlined,
-  SortAscendingOutlined,
-  SortDescendingOutlined,
 } from "@ant-design/icons";
 import { Button, Divider, Radio, Space } from "antd";
-import { inject } from "mobx-react";
+import ButtonGroup from "antd/lib/button/button-group";
+import { inject, observer } from "mobx-react";
 import React from "react";
+import { FaSortAmountDown, FaSortAmountUp } from "react-icons/fa";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
@@ -33,6 +33,48 @@ const injector = inject(({ store }) => {
   };
 });
 
+const OrderButton = observer(({ ordering, size, view }) => {
+  return (
+    <Space style={{ marginLeft: 20 }}>
+      Order
+      <ButtonGroup>
+        <FieldsButton
+          size={size}
+          style={{ minWidth: 105, textAlign: "left" }}
+          title={ordering ? ordering.column?.title : "ID"}
+          onClick={(col) => view.setOrdering(col.id)}
+          filter={(col) => col.canOrder}
+          selected={ordering?.field}
+          wrapper={({ column, children }) => (
+            <Space>
+              <div
+                style={{
+                  width: 24,
+                  height: 24,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {column?.icon}
+              </div>
+              {children}
+            </Space>
+          )}
+        />
+
+        {ordering && (
+          <Button
+            className="flex-button"
+            icon={ordering?.desc ? <FaSortAmountUp /> : <FaSortAmountDown />}
+            onClick={() => view.setOrdering(ordering?.field)}
+          />
+        )}
+      </ButtonGroup>
+    </Space>
+  );
+});
+
 export const TablePanel = injector(
   ({ store, view, labelingDisabled, loading, target, ordering }) => {
     const toolbarSize = "middle";
@@ -54,27 +96,7 @@ export const TablePanel = injector(
 
           <FiltersPane size={toolbarSize} />
 
-          <FieldsButton
-            size={toolbarSize}
-            trailingIcon={
-              ordering?.desc ? (
-                <SortDescendingOutlined />
-              ) : (
-                <SortAscendingOutlined />
-              )
-            }
-            title={
-              ordering ? (
-                <>
-                  Order by: <b>{ordering.column.title}</b>
-                </>
-              ) : (
-                "Order"
-              )
-            }
-            onClick={(col) => view.setOrdering(col.id)}
-            filter={(col) => col.canOrder}
-          />
+          <OrderButton view={view} ordering={ordering} size={toolbarSize} />
 
           {loading && <Spinner size="small" />}
 
@@ -83,6 +105,10 @@ export const TablePanel = injector(
 
         <Space>
           {<SelectedItems />}
+
+          <Button href="/import">Import</Button>
+
+          <Button href="/export">Export</Button>
 
           {!labelingDisabled && (
             <Button

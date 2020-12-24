@@ -3,7 +3,6 @@ import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
-import { FaBan, FaBrain, FaCheckCircle } from "react-icons/fa";
 import { VscQuestion } from "react-icons/vsc";
 import { FillContainer } from "../App/App.styles";
 import { Spinner } from "../Common/Spinner";
@@ -147,14 +146,20 @@ export const DataView = injector(
       [hasData, isLabeling, isLoading, total]
     );
 
-    const decorationContent = (Icon) => (col) => {
-      return <Tooltip title={col.help ?? col.title}>{Icon}</Tooltip>;
+    const decorationContent = (col) => {
+      const column = col.original;
+
+      if (column.icon) {
+        return (
+          <Tooltip title={column.help ?? col.title}>{column.icon}</Tooltip>
+        );
+      }
     };
 
     const commonDecoration = React.useCallback(
-      (alias, Icon, size, align = "flex-start") => ({
+      (alias, size, align = "flex-start") => ({
         alias,
-        content: Icon ? decorationContent(Icon) : null,
+        content: decorationContent,
         style: (col) => ({ width: col.width ?? size, justifyContent: align }),
         help: false,
       }),
@@ -163,25 +168,10 @@ export const DataView = injector(
 
     const decoration = React.useMemo(
       () => [
-        commonDecoration(
-          "total_completions",
-          <FaCheckCircle color="green" opacity="0.7" />,
-          60,
-          "center"
-        ),
-        commonDecoration(
-          "cancelled_completions",
-          <FaBan color="red" opacity="0.7" />,
-          60,
-          "center"
-        ),
-        commonDecoration(
-          "total_predictions",
-          <FaBrain color="#1890ff" opacity="0.7" />,
-          60,
-          "center"
-        ),
-        commonDecoration("completed_at", null, 180),
+        commonDecoration("total_completions", 60, "center"),
+        commonDecoration("cancelled_completions", 60, "center"),
+        commonDecoration("total_predictions", 60, "center"),
+        commonDecoration("completed_at", 180),
         {
           resolver: (col) => col.type === "Number",
           style(col) {
