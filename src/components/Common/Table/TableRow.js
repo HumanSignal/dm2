@@ -25,7 +25,14 @@ const CellRenderer = observer(({ col, data, decoration, cellViews }) => {
 
   return (
     <TableCellWrapper className="td">
-      <div style={{ ...(style ?? {}), display: "flex", height: "100%" }}>
+      <div
+        style={{
+          ...(style ?? {}),
+          display: "flex",
+          height: "100%",
+          alignItems: "center",
+        }}
+      >
         {Renderer ? <Renderer {...renderProps} /> : value}
       </div>
     </TableCellWrapper>

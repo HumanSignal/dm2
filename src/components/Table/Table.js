@@ -154,6 +154,8 @@ export const DataView = injector(
           <Tooltip title={column.help ?? col.title}>{column.icon}</Tooltip>
         );
       }
+
+      return column.title;
     };
 
     const commonDecoration = React.useCallback(
@@ -175,7 +177,7 @@ export const DataView = injector(
         {
           resolver: (col) => col.type === "Number",
           style(col) {
-            return /id/.test(col.id) ? { width: 110 } : { width: 50 };
+            return /id/.test(col.id) ? { width: 50 } : { width: 110 };
           },
         },
         {

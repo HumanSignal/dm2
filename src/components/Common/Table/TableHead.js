@@ -86,7 +86,6 @@ const ColumnRenderer = observer(
       );
     }
 
-    const Renderer = headerRenderers?.[id];
     const canOrder = sortingEnabled && column.original?.canOrder;
     const Decoration = decoration?.get?.(column);
     const extra = columnHeaderExtra
@@ -97,6 +96,8 @@ const ColumnRenderer = observer(
       : column.title;
     const style = getStyle(cellViews, column, Decoration);
 
+    console.log({ content });
+
     const headContent = (
       <>
         <TableCellContent
@@ -104,7 +105,7 @@ const ColumnRenderer = observer(
           className="th-content"
           disabled={stopInteractions}
         >
-          {Renderer ? <Renderer column={column} children={content} /> : content}
+          {content}
         </TableCellContent>
 
         {extra && <TableHeadExtra className="th-extra">{extra}</TableHeadExtra>}
