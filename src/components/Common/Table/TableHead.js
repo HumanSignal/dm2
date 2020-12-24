@@ -96,8 +96,6 @@ const ColumnRenderer = observer(
       : column.title;
     const style = getStyle(cellViews, column, Decoration);
 
-    console.log({ content });
-
     const headContent = (
       <>
         <TableCellContent
