@@ -9,7 +9,12 @@ import { Button, Divider, Radio, Space } from "antd";
 import ButtonGroup from "antd/lib/button/button-group";
 import { inject, observer } from "mobx-react";
 import React from "react";
-import { FaSortAmountDown, FaSortAmountUp } from "react-icons/fa";
+import {
+  FaDownload,
+  FaSortAmountDown,
+  FaSortAmountUp,
+  FaUpload,
+} from "react-icons/fa";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
@@ -35,13 +40,12 @@ const injector = inject(({ store }) => {
 
 const OrderButton = observer(({ ordering, size, view }) => {
   return (
-    <Space style={{ marginLeft: 20 }}>
-      Order
+    <Space>
       <ButtonGroup>
         <FieldsButton
           size={size}
           style={{ minWidth: 105, textAlign: "left" }}
-          title={ordering ? ordering.column?.title : "ID"}
+          title={ordering ? ordering.column?.title : "Select order"}
           onClick={(col) => view.setOrdering(col.id)}
           filter={(col) => col.canOrder}
           selected={ordering?.field}
@@ -63,13 +67,13 @@ const OrderButton = observer(({ ordering, size, view }) => {
           )}
         />
 
-        {ordering && (
-          <Button
-            className="flex-button"
-            icon={ordering?.desc ? <FaSortAmountUp /> : <FaSortAmountDown />}
-            onClick={() => view.setOrdering(ordering?.field)}
-          />
-        )}
+        <Button
+          className="flex-button"
+          style={{ color: "#595959" }}
+          disabled={!!ordering === false}
+          icon={ordering?.desc ? <FaSortAmountUp /> : <FaSortAmountDown />}
+          onClick={() => view.setOrdering(ordering?.field)}
+        />
       </ButtonGroup>
     </Space>
   );
@@ -106,9 +110,21 @@ export const TablePanel = injector(
         <Space>
           {<SelectedItems />}
 
-          <Button href="/import">Import</Button>
+          <Button
+            className="flex-button"
+            icon={<FaUpload color="#595959" style={{ marginRight: 10 }} />}
+            onClick={() => (window.location.href = "/import")}
+          >
+            Import
+          </Button>
 
-          <Button href="/export">Export</Button>
+          <Button
+            className="flex-button"
+            icon={<FaDownload color="#595959" style={{ marginRight: 10 }} />}
+            onClick={() => (window.location.href = "/export")}
+          >
+            Export
+          </Button>
 
           {!labelingDisabled && (
             <Button

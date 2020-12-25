@@ -27,7 +27,7 @@ const DropdownWrapper = observer(
                   <Radio
                     name={`${column.id}-type`}
                     value={type}
-                    checked={type === column.type}
+                    checked={type === column.currentType}
                     onChange={(e) => onChange?.(column, e.target.value)}
                   >
                     {type}

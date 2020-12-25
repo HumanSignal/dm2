@@ -17,7 +17,7 @@ const CellRenderer = observer(({ col, data, decoration, cellViews }) => {
   }
 
   const valuePath = col.id.split(":")[1] ?? col.id;
-  const Renderer = cellViews?.[col.type] ?? cellViews.String;
+  const Renderer = cellViews?.[col.original.currentType] ?? cellViews.String;
   const value = getProperty(data, valuePath);
   const renderProps = { column: col, original: data, value: value };
   const Decoration = decoration?.get?.(col);

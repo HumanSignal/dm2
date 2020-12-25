@@ -24,6 +24,7 @@ export const ViewColumn = types
     title: types.string,
     alias: types.string,
     type: types.optional(ViewColumnType, "String"),
+    displayType: types.optional(types.maybeNull(ViewColumnType), null),
     defaultHidden: types.optional(types.boolean, false),
     parent: types.maybeNull(types.late(() => types.reference(ViewColumn))),
     children: types.maybeNull(
@@ -90,6 +91,10 @@ export const ViewColumn = types
       return self.parentView.currentOrder[self.id];
     },
 
+    get currentType() {
+      return self.displayType ?? self.type;
+    },
+
     get asField() {
       const result = [];
 
@@ -105,6 +110,7 @@ export const ViewColumn = types
           accessor: self.accessor,
           hidden: self.hidden,
           original: self,
+          currentType: self.currentType,
         });
       }
 
@@ -130,7 +136,7 @@ export const ViewColumn = types
     },
 
     setType(type) {
-      self.type = type;
+      self.displayType = type;
     },
 
     setWidth(width) {
