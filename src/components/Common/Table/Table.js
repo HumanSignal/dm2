@@ -36,7 +36,6 @@ export const Table = observer(
     data,
     cellViews,
     selectedItems,
-    headerRenderers,
     focusedItem,
     decoration,
     stopInteractions,
@@ -128,7 +127,6 @@ export const Table = observer(
       columns,
       data,
       cellViews,
-      headerRenderers,
     };
 
     const headerHeight = 42;

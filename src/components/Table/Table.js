@@ -159,11 +159,11 @@ export const DataView = injector(
     };
 
     const commonDecoration = React.useCallback(
-      (alias, size, align = "flex-start") => ({
+      (alias, size, align = "flex-start", help = false) => ({
         alias,
         content: decorationContent,
         style: (col) => ({ width: col.width ?? size, justifyContent: align }),
-        help: false,
+        help,
       }),
       []
     );
@@ -173,7 +173,7 @@ export const DataView = injector(
         commonDecoration("total_completions", 60, "center"),
         commonDecoration("cancelled_completions", 60, "center"),
         commonDecoration("total_predictions", 60, "center"),
-        commonDecoration("completed_at", 180),
+        commonDecoration("completed_at", 180, "space-between", true),
         {
           resolver: (col) => col.type === "Number",
           style(col) {

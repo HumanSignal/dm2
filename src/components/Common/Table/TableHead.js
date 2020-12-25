@@ -60,7 +60,6 @@ const DropdownWrapper = observer(
 const ColumnRenderer = observer(
   ({
     column,
-    headerRenderers,
     cellViews,
     columnHeaderExtra,
     sortingEnabled,
