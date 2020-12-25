@@ -84,13 +84,13 @@ export const ViewsStore = types
       }
 
       if (selected && self.selected !== selected) {
-        self.dataStore.clear();
-        self.selected = selected;
-        yield self.selected.reload();
-
         if (options.pushState !== false) {
           History.navigate({ view: selected.id }, true);
         }
+
+        self.dataStore.clear();
+        self.selected = selected;
+        yield self.selected.reload();
       }
     }),
 
@@ -238,7 +238,7 @@ export const ViewsStore = types
       self.defaultHidden = ViewHiddenColumns.create(hiddenColumns);
     },
 
-    fetchViews: flow(function* (viewID, taskID) {
+    fetchViews: flow(function* (viewID, taskID, labeling) {
       const { tabs } = yield getRoot(self).apiCall("tabs");
 
       const snapshots = tabs.map((t) => View.create({ ...t, saved: true }));
@@ -253,16 +253,16 @@ export const ViewsStore = types
         : null;
 
       yield self.setSelected(selected ?? defaultView, {
-        pushState: false,
+        pushState: viewID === undefined,
       });
 
-      console.log({ viewID, taskID });
-
-      if (taskID) {
+      if (taskID || labeling) {
         getRoot(self).startLabeling(
-          {
-            id: parseInt(taskID),
-          },
+          taskID
+            ? {
+                id: parseInt(taskID),
+              }
+            : null,
           { pushState: false }
         );
       }

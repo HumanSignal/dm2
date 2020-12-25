@@ -1,6 +1,8 @@
+import { isDefined } from "./utils";
+
 export const History = {
-  getParams() {
-    const url = new URL(window.location.href);
+  getParams(urlInstance) {
+    const url = urlInstance ?? new URL(window.location.href);
     const result = {};
 
     url.searchParams.forEach((value, key) => {
@@ -22,17 +24,32 @@ export const History = {
       }
     });
 
-    return url.toString();
+    return url;
   },
 
   navigate(params = {}, replace = false) {
     const url = this.setParams(params);
     const title = document.title;
+    const state = this.getParams(url);
+
+    console.log({ url, title, state });
 
     if (replace) {
-      window.history.replaceState(params, title, url);
+      window.history.replaceState(state, title, url.toString());
     } else {
-      window.history.pushState(params, title, url);
+      window.history.pushState(state, title, url.toString());
     }
+  },
+
+  forceNavigate(params = {}, replace = false) {
+    const resultParams = params ?? {};
+
+    Object.entries(this.getParams()).forEach(([key, value]) => {
+      if (!isDefined(resultParams[key])) {
+        resultParams[key] = null;
+      }
+    });
+
+    this.navigate(resultParams, replace);
   },
 };

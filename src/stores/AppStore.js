@@ -124,10 +124,13 @@ export const AppStore = types
       }
     }),
 
-    unsetTask() {
+    unsetTask(options) {
       self.annotationStore.unset();
       self.taskStore.unset();
-      History.navigate({ task: null, annotation: null });
+
+      if (options?.pushState !== false) {
+        History.navigate({ task: null, annotation: null });
+      }
     },
 
     unsetSelection() {
@@ -152,6 +155,10 @@ export const AppStore = types
       const processLabeling = () => {
         if (!item && !self.dataStore.selected) {
           self.SDK.setMode("labelstream");
+
+          if (options?.pushState !== false) {
+            History.navigate({ labeling: 1 });
+          }
           return;
         }
 
@@ -194,20 +201,25 @@ export const AppStore = types
       }
     },
 
-    closeLabeling() {
+    closeLabeling(options) {
       console.log("close");
       const { SDK } = self;
 
-      self.unsetTask();
+      self.unsetTask(options);
       SDK.setMode("explorer");
       SDK.destroyLSF();
     },
 
     resolveURLParams() {
-      window.addEventListener("popstate", () => {
-        const { view, task, annotation } = window.history.state;
+      window.addEventListener("popstate", ({ state }) => {
+        const { view, task, annotation, labeling } = state ?? {};
+        console.log("state change", window.history.state);
 
-        if (view) self.viewsStore.setSelected(parseInt(view));
+        if (view) {
+          self.viewsStore.setSelected(parseInt(view), {
+            pushState: false,
+          });
+        }
 
         if (task) {
           const params = {};
@@ -219,8 +231,10 @@ export const AppStore = types
           }
 
           self.startLabeling(params, { pushState: false });
+        } else if (labeling) {
+          self.startLabeling(null, { pushState: false });
         } else {
-          self.closeLabeling();
+          self.closeLabeling({ pushState: false });
         }
       });
     },
@@ -241,12 +255,12 @@ export const AppStore = types
     fetchData: flow(function* () {
       self.loading = true;
 
-      const { view, task } = History.getParams();
+      const { view, task, labeling } = History.getParams();
 
       yield self.fetchProject();
       yield self.fetchActions();
       self.viewsStore.fetchColumns();
-      yield self.viewsStore.fetchViews(view, task);
+      yield self.viewsStore.fetchViews(view, task, labeling);
 
       self.resolveURLParams();
 

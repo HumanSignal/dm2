@@ -6,6 +6,7 @@ import "label-studio/build/static/css/main.css";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { FaChevronLeft } from "react-icons/fa";
+import { History } from "../../utils/history";
 import { FieldsButton } from "../Common/FieldsButton";
 import { DataView } from "../Table/Table";
 import {
@@ -63,6 +64,7 @@ const LabelingComponent = observer(({ store }) => {
 
   const closeLabeling = () => {
     store.closeLabeling();
+    History.forceNavigate({ view: view.id });
   };
 
   React.useEffect(() => {
