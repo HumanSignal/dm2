@@ -198,14 +198,19 @@ export const View = types
     },
 
     setOrdering(value) {
-      const direction = self.currentOrder?.[value];
-      let ordering = value;
+      if (value === null) {
+        self.ordering = [];
+      } else {
+        const direction = self.currentOrder?.[value];
+        let ordering = value;
 
-      if (direction !== undefined) {
-        ordering = direction ? value : `-${value}`;
+        if (direction !== undefined) {
+          ordering = direction ? value : `-${value}`;
+        }
+
+        self.ordering[0] = ordering;
       }
 
-      self.ordering[0] = ordering;
       self.save({ interaction: "ordering" });
     },
 

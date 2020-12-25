@@ -32,10 +32,10 @@ const MenuWrapper = styled.div`
 `;
 
 const FieldsMenu = observer(
-  ({ columns, WrapperComponent, onClick, selected }) => {
-    const MenuItem = (col) => (
-      <Menu.Item key={col.key} onClick={() => onClick?.(col)} isSelected={true}>
-        {WrapperComponent ? (
+  ({ columns, WrapperComponent, onClick, onReset, selected, resetTitle }) => {
+    const MenuItem = (col, onClick) => (
+      <Menu.Item key={col.key} onClick={onClick}>
+        {WrapperComponent && col.wra !== false ? (
           <WrapperComponent column={col}>{col.title}</WrapperComponent>
         ) : (
           col.title
@@ -48,17 +48,29 @@ const FieldsMenu = observer(
         <Menu
           size="small"
           style={{ padding: "4px 0" }}
-          selectedKeys={selected ? [selected] : null}
+          selectedKeys={selected ? [selected] : ["none"]}
         >
+          {onReset &&
+            MenuItem(
+              {
+                key: "none",
+                title: resetTitle ?? "Default",
+                wrap: false,
+              },
+              onReset
+            )}
+
           {columns.map((col) => {
             if (col.children) {
               return (
                 <Menu.ItemGroup key={col.key} title={col.title}>
-                  {col.children.map(MenuItem)}
+                  {col.children.map((col) =>
+                    MenuItem(col, () => onClick?.(col))
+                  )}
                 </Menu.ItemGroup>
               );
             } else if (!col.parent) {
-              return MenuItem(col);
+              return MenuItem(col, () => onClick?.(col));
             }
 
             return null;
@@ -79,6 +91,8 @@ export const FieldsButton = injector(
     icon,
     trailingIcon,
     onClick,
+    onReset,
+    resetTitle,
     filter,
     selected,
   }) => {
@@ -90,7 +104,9 @@ export const FieldsButton = injector(
             columns={filter ? columns.filter(filter) : columns}
             WrapperComponent={wrapper}
             onClick={onClick}
+            onReset={onReset}
             selected={selected}
+            resetTitle={resetTitle}
           />
         )}
       >

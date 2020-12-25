@@ -47,6 +47,8 @@ const OrderButton = observer(({ ordering, size, view }) => {
           style={{ minWidth: 105, textAlign: "left" }}
           title={ordering ? ordering.column?.title : "Select order"}
           onClick={(col) => view.setOrdering(col.id)}
+          onReset={() => view.setOrdering(null)}
+          resetTitle="Default"
           filter={(col) => col.canOrder}
           selected={ordering?.field}
           wrapper={({ column, children }) => (

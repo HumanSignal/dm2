@@ -61,6 +61,14 @@ const MixinBase = types
       self.total = total;
 
       if (reload) self.list = [];
+
+      newEntity.forEach((n) => {
+        const index = self.list.findIndex((i) => i.id === n.id);
+        if (index >= 0) {
+          self.list.splice(index, 1);
+        }
+      });
+
       self.list.push(...newEntity);
     },
 
@@ -133,17 +141,11 @@ export const InfiniteList = (
         const data = yield getRoot(self).apiCall(apiMethod, params);
 
         let selected, highlighted;
-        if (reload) {
-          selected = self.selected?.id;
-          highlighted = self.highlighted?.id;
-          self.selected = null;
-          self.highlighted = null;
 
-          console.log("Saved selected for further restoration", {
-            selected,
-            highlighted,
-          });
-        }
+        selected = self.selected?.id;
+        highlighted = self.highlighted?.id;
+        self.selected = null;
+        self.highlighted = null;
 
         const { total, [apiMethod]: list } = data;
 
