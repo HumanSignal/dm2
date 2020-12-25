@@ -195,6 +195,7 @@ export const AppStore = types
     },
 
     closeLabeling() {
+      console.log("close");
       const { SDK } = self;
 
       self.unsetTask();

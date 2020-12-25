@@ -273,7 +273,6 @@ export const View = types
 
     reload: flow(function* ({ interaction } = {}) {
       if (self.saved) {
-        self.root.unsetSelection();
         yield self.dataStore.reload({ interaction });
       }
     }),
@@ -294,7 +293,6 @@ export const View = types
       if (self.virtual) return;
       const needsLock = ["ordering", "filter"].includes(interaction);
 
-      console.log({ needsLock, interaction });
       if (needsLock) self.lock();
       const { id: tabID } = self;
       const body = { body: self.serialize() };

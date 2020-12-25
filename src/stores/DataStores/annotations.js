@@ -40,6 +40,7 @@ export const create = (columns) => {
     }),
 
     unsetTask() {
+      console.log("unset annotation");
       self.unset();
     },
   }));

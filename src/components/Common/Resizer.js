@@ -48,6 +48,7 @@ export const Resizer = ({
       const stopResize = (evt) => {
         document.removeEventListener("mousemove", onResize);
         document.removeEventListener("mouseup", stopResize);
+        document.body.style.removeProperty("user-select");
 
         newWidth = calculateWidth(
           width,
@@ -67,6 +68,7 @@ export const Resizer = ({
 
       document.addEventListener("mousemove", onResize);
       document.addEventListener("mouseup", stopResize);
+      document.body.style.userSelect = "none";
       setIsResizing(true);
     },
     [maxWidth, minWidth, onResizeCallback, onResizeFinished, width]

@@ -117,18 +117,9 @@ export const InfiniteList = (
       fetch: flow(function* ({ reload = false, interaction } = {}) {
         if (self.loading) return;
 
-        let selected, highlighted;
         self.loading = true;
 
-        if (reload) {
-          selected = self.selected?.id;
-          highlighted = self.highlighted?.id;
-
-          self.page = 0;
-          self.selected = null;
-          self.highlighted = null;
-        }
-
+        if (reload) self.page = 0;
         self.page++;
 
         const params = {
@@ -141,14 +132,34 @@ export const InfiniteList = (
 
         const data = yield getRoot(self).apiCall(apiMethod, params);
 
+        let selected, highlighted;
+        if (reload) {
+          selected = self.selected?.id;
+          highlighted = self.highlighted?.id;
+          self.selected = null;
+          self.highlighted = null;
+
+          console.log("Saved selected for further restoration", {
+            selected,
+            highlighted,
+          });
+        }
+
         const { total, [apiMethod]: list } = data;
 
         if (list) self.setList({ total, list, reload });
 
         self.postProcessData?.(data);
 
-        if (selected) self.selected = selected;
-        if (highlighted) self.highlighted = highlighted;
+        if (!!selected && self.selected !== selected) {
+          console.log("selected restored");
+          self.selected = selected;
+        }
+
+        if (!!highlighted && self.highlighted !== highlighted) {
+          console.log("highlighted restored");
+          self.highlighted = highlighted;
+        }
 
         self.loading = false;
       }),

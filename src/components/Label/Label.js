@@ -61,7 +61,9 @@ const LabelingComponent = observer(({ store }) => {
     store.SDK.lsf?.currentCompletion
   );
 
-  const closeLabeling = () => store.closeLabeling();
+  const closeLabeling = () => {
+    store.closeLabeling();
+  };
 
   React.useEffect(() => {
     const callback = (completion) => setCompletion(completion);
@@ -75,7 +77,6 @@ const LabelingComponent = observer(({ store }) => {
   }, [store.SDK.lsf?.currentCompletion?.id]);
 
   React.useEffect(() => {
-    console.log(lsfRef.current);
     store.SDK.startLabeling(lsfRef.current, store.dataStore.selected);
   }, [lsfRef, store.dataStore.selected]);
 
