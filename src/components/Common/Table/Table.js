@@ -44,6 +44,7 @@ export const Table = observer(
     ...props
   }) => {
     const tableHead = React.useRef();
+    const listRef = React.useRef();
     const columns = prepareColumns(props.columns, props.hiddenColumns);
     const Decoration = React.useMemo(() => Decorator(decoration), [decoration]);
 
@@ -225,6 +226,13 @@ export const Table = observer(
       [data]
     );
 
+    React.useEffect(() => {
+      const listComponent = listRef.current?._listRef;
+      if (listComponent) {
+        listComponent.scrollToItem(data.indexOf(focusedItem), "center");
+      }
+    }, [data, focusedItem]);
+
     // React.useEffect(() => {
     //   console.log(tableHead.current);
     // }, [tableHead.current]);
@@ -233,6 +241,7 @@ export const Table = observer(
       <TableWrapper fitToContent={props.fitToContent}>
         <TableContext.Provider value={contextValue}>
           <StickyList
+            ref={listRef}
             overscanCount={10}
             className="virtual-table"
             itemHeight={props.rowHeight}
@@ -270,62 +279,65 @@ const ItemWrapper = ({ data, index, style }) => {
   return <Renderer index={index} style={style} />;
 };
 
-const StickyList = observer((props) => {
-  const {
-    children,
-    stickyComponent,
-    stickyItems,
-    stickyItemsHeight,
-    totalCount,
-    isItemLoaded,
-    loadMore,
-    initialScrollOffset,
-    ...rest
-  } = props;
+const StickyList = observer(
+  React.forwardRef((props, listRef) => {
+    const {
+      children,
+      stickyComponent,
+      stickyItems,
+      stickyItemsHeight,
+      totalCount,
+      isItemLoaded,
+      loadMore,
+      initialScrollOffset,
+      ...rest
+    } = props;
 
-  const itemData = {
-    Renderer: children,
-    StickyComponent: stickyComponent,
-    stickyItems,
-    stickyItemsHeight,
-  };
+    const itemData = {
+      Renderer: children,
+      StickyComponent: stickyComponent,
+      stickyItems,
+      stickyItemsHeight,
+    };
 
-  const itemSize = (index) => {
-    if (stickyItems.includes(index)) {
-      return stickyItemsHeight[index] ?? rest.itemHeight;
-    }
-    return rest.itemHeight;
-  };
+    const itemSize = (index) => {
+      if (stickyItems.includes(index)) {
+        return stickyItemsHeight[index] ?? rest.itemHeight;
+      }
+      return rest.itemHeight;
+    };
 
-  return (
-    <StickyListContext.Provider value={itemData}>
-      <AutoSizer className="table-auto-size">
-        {({ width, height }) => (
-          <InfiniteLoader
-            itemCount={totalCount}
-            loadMoreItems={loadMore}
-            isItemLoaded={isItemLoaded}
-          >
-            {({ onItemsRendered, ref }) => (
-              <VariableSizeList
-                {...rest}
-                ref={ref}
-                width={width}
-                height={height}
-                itemData={itemData}
-                itemSize={itemSize}
-                onItemsRendered={onItemsRendered}
-                initialScrollOffset={initialScrollOffset?.(height) ?? 0}
-              >
-                {ItemWrapper}
-              </VariableSizeList>
-            )}
-          </InfiniteLoader>
-        )}
-      </AutoSizer>
-    </StickyListContext.Provider>
-  );
-});
+    return (
+      <StickyListContext.Provider value={itemData}>
+        <AutoSizer className="table-auto-size">
+          {({ width, height }) => (
+            <InfiniteLoader
+              ref={listRef}
+              itemCount={totalCount}
+              loadMoreItems={loadMore}
+              isItemLoaded={isItemLoaded}
+            >
+              {({ onItemsRendered, ref }) => (
+                <VariableSizeList
+                  {...rest}
+                  ref={ref}
+                  width={width}
+                  height={height}
+                  itemData={itemData}
+                  itemSize={itemSize}
+                  onItemsRendered={onItemsRendered}
+                  initialScrollOffset={initialScrollOffset?.(height) ?? 0}
+                >
+                  {ItemWrapper}
+                </VariableSizeList>
+              )}
+            </InfiniteLoader>
+          )}
+        </AutoSizer>
+      </StickyListContext.Provider>
+    );
+  })
+);
 
 StickyList.displayName = "StickyList";
 

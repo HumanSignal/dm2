@@ -1,5 +1,6 @@
 import { observer, Provider } from "mobx-react";
 import React from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { Spinner } from "../Common/Spinner";
 import { Labeling } from "../Label/Label";
 import { DMTabs } from "../Tabs/tabs";
@@ -40,6 +41,30 @@ const AppComponent = ({ app }) => {
           "z-index": 1000,
         }
       : null;
+
+  useHotkeys("w,up", () => {
+    if (document.activeElement !== document.body) return;
+    app.dataStore.focusPrev();
+  });
+
+  useHotkeys("a,left", () => {
+    if (document.activeElement !== document.body) return;
+
+    if (app.dataStore.selected) app.closeLabeling();
+  });
+
+  useHotkeys("s,down", () => {
+    if (document.activeElement !== document.body) return;
+
+    app.dataStore.focusNext();
+  });
+
+  useHotkeys("d,right,enter", () => {
+    if (document.activeElement !== document.body) return;
+
+    const { highlighted } = app.dataStore;
+    if (highlighted) app.startLabeling(highlighted);
+  });
 
   return (
     <ErrorBoundary>

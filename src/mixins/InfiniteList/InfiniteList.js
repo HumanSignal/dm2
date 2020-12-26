@@ -169,6 +169,19 @@ export const InfiniteList = (
       reload: flow(function* ({ interaction } = {}) {
         yield self.fetch({ reload: true, interaction });
       }),
+
+      focusPrev() {
+        const index = Math.max(0, self.list.indexOf(self.highlighted) - 1);
+        self.highlighted = self.list[index];
+      },
+
+      focusNext() {
+        const index = Math.min(
+          self.list.length - 1,
+          self.list.indexOf(self.highlighted) + 1
+        );
+        self.highlighted = self.list[index];
+      },
     }));
 
   return types.compose(MixinBase, model);
