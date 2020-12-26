@@ -1,7 +1,11 @@
-import { Button, Dropdown, Menu, Radio } from "antd";
+import { Button, Dropdown, Menu, Space, Tag } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
-import { ViewColumnType } from "../../../stores/Views/view_column";
+import {
+  ViewColumnType,
+  ViewColumnTypeName,
+  ViewColumnTypeShort,
+} from "../../../stores/Views/view_column";
 import { Resizer } from "../Resizer";
 import {
   TableCellContent,
@@ -20,18 +24,19 @@ const DropdownWrapper = observer(
     return (
       <Dropdown
         overlay={
-          <Menu title="Display as">
+          <Menu title="Display as" selectedKeys={[column.currentType]}>
             {types.map((type) => {
               return (
-                <Menu.Item key={type}>
-                  <Radio
-                    name={`${column.id}-type`}
-                    value={type}
-                    checked={type === column.currentType}
-                    onChange={(e) => onChange?.(column, e.target.value)}
-                  >
-                    {type}
-                  </Radio>
+                <Menu.Item key={type} onClick={(e) => onChange?.(column, type)}>
+                  <Space>
+                    <Tag
+                      color="blue"
+                      style={{ width: 45, textAlign: "center" }}
+                    >
+                      {ViewColumnTypeShort(type)}
+                    </Tag>
+                    {ViewColumnTypeName(type)}
+                  </Space>
                 </Menu.Item>
               );
             })}

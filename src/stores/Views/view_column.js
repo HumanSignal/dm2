@@ -11,12 +11,59 @@ export const ViewColumnType = types.enumeration([
   "List",
   "Image",
   "Audio",
-  "AudioPlus",
   "Text",
   "HyperText",
   "TimeSeries",
   "Unknown",
 ]);
+
+export const ViewColumnTypeShort = (type) => {
+  switch (type) {
+    default:
+    case "String":
+      return "str";
+    case "Number":
+      return "num";
+    case "Boolean":
+      return "bool";
+    case "Datetime":
+      return "date";
+    case "Image":
+      return "img";
+    case "Audio":
+      return "aud";
+    case "Text":
+      return "txt";
+    case "HyperText":
+      return "html";
+    case "TimeSeries":
+      return "ts";
+  }
+};
+
+export const ViewColumnTypeName = (type) => {
+  switch (type) {
+    default:
+    case "String":
+      return "String";
+    case "Number":
+      return "Number";
+    case "Boolean":
+      return "Boolean";
+    case "Datetime":
+      return "Date Time";
+    case "Image":
+      return "Image";
+    case "Audio":
+      return "Audio";
+    case "Text":
+      return "Text";
+    case "HyperText":
+      return "Hyper Text";
+    case "TimeSeries":
+      return "Time Series";
+  }
+};
 
 export const ViewColumn = types
   .model("ViewColumn", {
@@ -128,6 +175,10 @@ export const ViewColumn = types
         case "total_predictions":
           return <FaBrain color="#1890ff" opacity="0.7" />;
       }
+    },
+
+    get readableType() {
+      return ViewColumnTypeShort(self.currentType);
     },
   }))
   .actions((self) => ({

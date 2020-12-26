@@ -72,11 +72,11 @@ export const DataView = injector(
     );
 
     const columnHeaderExtra = React.useCallback(
-      ({ parent, help }, decoration) => (
+      ({ parent, original, help }, decoration) => (
         <>
           {parent && (
             <Tag color="blue" style={{ fontWeight: "bold" }}>
-              {parent.title}
+              {original?.readableType ?? parent.title}
             </Tag>
           )}
 
