@@ -1,8 +1,16 @@
 import { Tag } from "antd";
 import React from "react";
 
+const parseBoolean = (value) => {
+  if ([true, 1, "true", "1", "yes"].includes(value) || !!value === true) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export const BooleanCell = (column) => {
-  const boolValue = !!column.value;
+  const boolValue = parseBoolean(column.value);
 
   if (boolValue === true) {
     return <Tag color="#80c70d">true</Tag>;
