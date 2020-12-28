@@ -212,11 +212,11 @@ export const AppStore = types
 
     resolveURLParams() {
       window.addEventListener("popstate", ({ state }) => {
-        const { view, task, annotation, labeling } = state ?? {};
+        const { tab, task, annotation, labeling } = state ?? {};
         console.log("state change", window.history.state);
 
-        if (view) {
-          self.viewsStore.setSelected(parseInt(view), {
+        if (tab) {
+          self.viewsStore.setSelected(parseInt(tab), {
             pushState: false,
           });
         }
@@ -255,12 +255,12 @@ export const AppStore = types
     fetchData: flow(function* () {
       self.loading = true;
 
-      const { view, task, labeling } = History.getParams();
+      const { tab, task, labeling } = History.getParams();
 
       yield self.fetchProject();
       yield self.fetchActions();
       self.viewsStore.fetchColumns();
-      yield self.viewsStore.fetchViews(view, task, labeling);
+      yield self.viewsStore.fetchViews(tab, task, labeling);
 
       self.resolveURLParams();
 

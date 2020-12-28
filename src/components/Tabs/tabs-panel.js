@@ -15,6 +15,7 @@ import {
   FaSortAmountUp,
   FaUpload,
 } from "react-icons/fa";
+import styled from "styled-components";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
@@ -37,6 +38,19 @@ const injector = inject(({ store }) => {
     view: currentView,
   };
 });
+
+const StyledButton = styled(Button)`
+  --icon-color: #595959;
+
+  &:hover {
+    --icon-color: currentColor;
+  }
+
+  svg {
+    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+    transition-delay: 0ms;
+  }
+`;
 
 const OrderButton = observer(({ ordering, size, view }) => {
   return (
@@ -112,21 +126,28 @@ export const TablePanel = injector(
         <Space>
           {<SelectedItems />}
 
-          <Button
+          <StyledButton
             className="flex-button"
-            icon={<FaUpload color="#595959" style={{ marginRight: 10 }} />}
+            icon={
+              <FaUpload color="var(--icon-color)" style={{ marginRight: 10 }} />
+            }
             onClick={() => (window.location.href = "/import")}
           >
             Import
-          </Button>
+          </StyledButton>
 
-          <Button
+          <StyledButton
             className="flex-button"
-            icon={<FaDownload color="#595959" style={{ marginRight: 10 }} />}
+            icon={
+              <FaDownload
+                color="var(--icon-color)"
+                style={{ marginRight: 10 }}
+              />
+            }
             onClick={() => (window.location.href = "/export")}
           >
             Export
-          </Button>
+          </StyledButton>
 
           {!labelingDisabled && (
             <Button

@@ -35,6 +35,7 @@ export const View = types
     ordering: types.optional(types.array(types.string), []),
     selected: types.optional(SelectedItems, {}),
     opener: types.optional(types.maybeNull(types.late(() => View)), null),
+    columnsWidth: types.map(types.maybeNull(types.number)),
 
     enableFilters: false,
     renameMode: false,
@@ -154,9 +155,7 @@ export const View = types
         },
         hiddenColumns: getSnapshot(self.hiddenColumns),
         selectedItems: self.selected.snapshot,
-        columnsWidth: self.columns.reduce((res, col) => {
-          return col.width ? { ...res, [col.id]: col.width } : res;
-        }, {}),
+        columnsWidth: self.columnsWidth.toPOJO(),
       };
     },
   }))
@@ -243,6 +242,15 @@ export const View = types
       self.updateSelectedList(action, {
         [self.selected.listName]: [id],
       });
+    },
+
+    setColumnWidth(columnID, width) {
+      if (width) {
+        self.columnsWidth.set(columnID, width);
+      } else {
+        self.columnsWidth.delete(columnID);
+      }
+      console.log({ columnID, width, widths: self.columnsWidth.toPOJO() });
     },
 
     updateSelectedList: flow(function* (action, extraData) {

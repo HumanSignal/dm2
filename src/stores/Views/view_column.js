@@ -78,7 +78,6 @@ export const ViewColumn = types
       types.array(types.late(() => types.reference(ViewColumn)))
     ),
     target: types.enumeration(["tasks", "annotations"]),
-    width: types.optional(types.maybeNull(types.integer), null),
     orderable: types.optional(types.boolean, true),
     help: types.maybeNull(types.string),
   })
@@ -158,6 +157,7 @@ export const ViewColumn = types
           hidden: self.hidden,
           original: self,
           currentType: self.currentType,
+          width: self.width,
         });
       }
 
@@ -180,6 +180,10 @@ export const ViewColumn = types
     get readableType() {
       return ViewColumnTypeShort(self.currentType);
     },
+
+    get width() {
+      return self.parentView?.columnsWidth?.get(self.id) ?? null;
+    },
   }))
   .actions((self) => ({
     toggleVisibility() {
@@ -191,12 +195,14 @@ export const ViewColumn = types
     },
 
     setWidth(width) {
-      self.width = width ?? null;
-      self.parentView.save();
+      const view = self.parentView;
+
+      view.setColumnWidth(self.id, width ?? null);
+      view.save();
     },
 
     resetWidth() {
-      self.width = null;
+      self.parentView.setColumnWidth(self.id, null);
       self.parentView.save();
     },
   }));

@@ -85,7 +85,7 @@ export const ViewsStore = types
 
       if (selected && self.selected !== selected) {
         if (options.pushState !== false) {
-          History.navigate({ view: selected.id }, true);
+          History.navigate({ tab: selected.id }, true);
         }
 
         self.dataStore.clear();
@@ -238,7 +238,7 @@ export const ViewsStore = types
       self.defaultHidden = ViewHiddenColumns.create(hiddenColumns);
     },
 
-    fetchViews: flow(function* (viewID, taskID, labeling) {
+    fetchViews: flow(function* (tabID, taskID, labeling) {
       const { tabs } = yield getRoot(self).apiCall("tabs");
 
       const snapshots = tabs.map((t) => View.create({ ...t, saved: true }));
@@ -246,14 +246,14 @@ export const ViewsStore = types
       self.views.push(...snapshots);
 
       const defaultView = self.views[0];
-      const selected = viewID
+      const selected = tabID
         ? self.views.find((view) => {
-            return view.id === parseInt(viewID);
+            return view.id === parseInt(tabID);
           })
         : null;
 
       yield self.setSelected(selected ?? defaultView, {
-        pushState: viewID === undefined,
+        pushState: tabID === undefined,
       });
 
       if (taskID || labeling) {

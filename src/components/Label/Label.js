@@ -64,7 +64,7 @@ const LabelingComponent = observer(({ store }) => {
 
   const closeLabeling = () => {
     store.closeLabeling();
-    History.forceNavigate({ view: view.id });
+    History.forceNavigate({ tab: view.id });
   };
 
   React.useEffect(() => {
