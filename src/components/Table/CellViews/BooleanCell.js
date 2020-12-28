@@ -2,9 +2,11 @@ import { Tag } from "antd";
 import React from "react";
 
 export const BooleanCell = (column) => {
-  if (column.value === true) {
+  const boolValue = !!column.value;
+
+  if (boolValue === true) {
     return <Tag color="#80c70d">true</Tag>;
-  } else if (column.value === false) {
+  } else if (boolValue === false) {
     return <Tag color="#de3301">false</Tag>;
   }
 

@@ -138,7 +138,8 @@ export const ViewColumn = types
     },
 
     get currentType() {
-      return self.displayType ?? self.type;
+      const displayType = self.parentView?.columnsDisplayType?.get(self.id);
+      return displayType ?? self.type;
     },
 
     get asField() {
@@ -191,7 +192,8 @@ export const ViewColumn = types
     },
 
     setType(type) {
-      self.displayType = type;
+      self.parentView.setColumnDisplayType(self.id, type);
+      self.parentView.save();
     },
 
     setWidth(width) {
