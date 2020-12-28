@@ -42,24 +42,24 @@ const AppComponent = ({ app }) => {
         }
       : null;
 
-  useHotkeys("w,up", () => {
+  useHotkeys("w,shift+up", () => {
     if (document.activeElement !== document.body) return;
     app.dataStore.focusPrev();
   });
 
-  useHotkeys("a,left", () => {
+  useHotkeys("a,shift+left", () => {
     if (document.activeElement !== document.body) return;
 
     if (app.dataStore.selected) app.closeLabeling();
   });
 
-  useHotkeys("s,down", () => {
+  useHotkeys("s,shift+down", () => {
     if (document.activeElement !== document.body) return;
 
     app.dataStore.focusNext();
   });
 
-  useHotkeys("d,right,enter", () => {
+  useHotkeys("d,shift+right,enter", () => {
     if (document.activeElement !== document.body) return;
 
     const { highlighted } = app.dataStore;
