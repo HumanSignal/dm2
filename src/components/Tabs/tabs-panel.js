@@ -125,28 +125,21 @@ export const TablePanel = injector(
         <Space>
           {<SelectedItems />}
 
-          <StyledButton
+          <Button
             className="flex-button"
-            icon={
-              <FaUpload color="var(--icon-color)" style={{ marginRight: 10 }} />
-            }
+            icon={<FaUpload style={{ marginRight: 10 }} />}
             onClick={() => (window.location.href = "/import")}
           >
             Import
-          </StyledButton>
+          </Button>
 
-          <StyledButton
+          <Button
             className="flex-button"
-            icon={
-              <FaDownload
-                color="var(--icon-color)"
-                style={{ marginRight: 10 }}
-              />
-            }
+            icon={<FaDownload style={{ marginRight: 10 }} />}
             onClick={() => (window.location.href = "/export")}
           >
             Export
-          </StyledButton>
+          </Button>
 
           {!labelingDisabled && (
             <Button
