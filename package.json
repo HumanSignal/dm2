@@ -4,8 +4,8 @@
   "description": "",
   "main": "./build/static/js/main.js",
   "scripts": {
-    "build-bundle": "npm run build:final",
-    "build-notsourcemap": "GENERATE_SOURCEMAP=false npm run build",
+    "build:bundle": "npm run build:final",
+    "build:notsourcemap": "GENERATE_SOURCEMAP=false npm run build",
     "build:final": "BUILD_NO_CHUNKS=true npm run build",
     "build:no-hash": "BUILD_NO_HASH=true BUILD_NO_CHUNKS=true npm run build",
     "build:module": "REACT_APP_SC_DISABLE_SPEEDY=true BUILD_NO_HASH=true BUILD_NO_CHUNKS=true BUILD_MODULE=true npm run build",
