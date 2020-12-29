@@ -51,11 +51,13 @@ npm run build:module
 
 #### Build for Label Studio
 
-Wait until artifact is built, then navigate to the Label Studio directory and execute the following command in your command line:
+Wait until the artifact is built, then navigate to the Label Studio directory and execute the following command in your command line:
 
 ```
 node scripts/get-build dm [branch-name]
 ```
+
+`branch-name` – optional, default: `master`
 
 ## Ecosystem
 
