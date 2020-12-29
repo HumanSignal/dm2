@@ -79,9 +79,10 @@ export const GridView = observer(
     fields,
     onChange,
     hiddenFields,
+    width,
     // isItemLoaded,
   }) => {
-    const columnCount = 4;
+    const columnCount = view.gridWidth ?? 4;
 
     const getCellIndex = (row, column) => columnCount * row + column;
 

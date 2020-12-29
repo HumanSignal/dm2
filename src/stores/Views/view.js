@@ -37,6 +37,7 @@ export const View = types
     opener: types.optional(types.maybeNull(types.late(() => View)), null),
     columnsWidth: types.map(types.maybeNull(types.number)),
     columnsDisplayType: types.map(types.maybeNull(types.string)),
+    gridWidth: 4,
 
     enableFilters: false,
     renameMode: false,
@@ -158,6 +159,7 @@ export const View = types
         selectedItems: self.selected.snapshot,
         columnsWidth: self.columnsWidth.toPOJO(),
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
+        gridWidth: self.gridWidth,
       };
     },
   }))
@@ -218,6 +220,11 @@ export const View = types
     setLabelingTableWidth(width) {
       self.labelingTableWidth = width;
       localStorage.setItem("labelingTableWidth", self.labelingTableWidth);
+    },
+
+    setGridWidth(width) {
+      self.gridWidth = width;
+      self.save();
     },
 
     setSelected(ids) {

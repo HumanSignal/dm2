@@ -11,6 +11,8 @@ import { inject, observer } from "mobx-react";
 import React from "react";
 import {
   FaDownload,
+  FaMinus,
+  FaPlus,
   FaSortAmountDown,
   FaSortAmountUp,
   FaUpload,
@@ -102,6 +104,39 @@ const OrderButton = observer(({ ordering, size, view }) => {
   );
 });
 
+const GridWidthButton = observer(({ view, gridWidth }) => {
+  const [width, setWidth] = React.useState(gridWidth);
+
+  const setGridWidth = React.useCallback(
+    (width) => {
+      const newWidth = Math.max(3, Math.min(width, 10));
+      setWidth(newWidth);
+      view.setGridWidth(newWidth);
+    },
+    [view]
+  );
+
+  return (
+    <Space>
+      Columns: {width}
+      <ButtonGroup>
+        <Button
+          className="flex-button"
+          icon={<FaMinus />}
+          onClick={() => setGridWidth(width - 1)}
+          disabled={width === 3}
+        />
+        <Button
+          className="flex-button"
+          icon={<FaPlus />}
+          onClick={() => setGridWidth(width + 1)}
+          disabled={width === 10}
+        />
+      </ButtonGroup>
+    </Space>
+  );
+});
+
 export const TablePanel = injector(
   ({ store, view, labelingDisabled, loading, target, ordering }) => {
     const toolbarSize = "middle";
@@ -124,6 +159,10 @@ export const TablePanel = injector(
           <FiltersPane size={toolbarSize} />
 
           <OrderButton view={view} ordering={ordering} size={toolbarSize} />
+
+          {view.type === "grid" && (
+            <GridWidthButton view={view} gridWidth={view.gridWidth} />
+          )}
 
           {loading && <Spinner size="small" />}
 
