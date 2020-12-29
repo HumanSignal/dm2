@@ -18,6 +18,12 @@ const TOOLTIP_DELAY = 0.8;
 export const LabelToolbar = observer(
   ({ view, history, completion, lsf, isLabelStream }) => {
     const task = view.dataStore.selected;
+    const {
+      viewingAllCompletions,
+      viewingAllPredictions,
+    } = lsf.completionStore;
+    const viewAll = viewingAllCompletions || viewingAllPredictions;
+
     return task ? (
       <Toolbar className="label-toolbar" isLabelStream={isLabelStream}>
         <CurrentTaskWrapper>
@@ -30,18 +36,20 @@ export const LabelToolbar = observer(
               </History>
             </div>
 
-            <LSFOperations history={completion?.history} />
+            {!viewAll && <LSFOperations history={completion?.history} />}
           </Space>
         </CurrentTaskWrapper>
 
         {!!lsf && !!completion && completion.type === "completion" && (
           <LabelActions>
-            <SubmissionButtons
-              lsf={lsf}
-              completion={completion}
-              isLabelStream={isLabelStream}
-              disabled={lsf.isLoading}
-            />
+            {!viewAll && (
+              <SubmissionButtons
+                lsf={lsf}
+                completion={completion}
+                isLabelStream={isLabelStream}
+                disabled={lsf.isLoading}
+              />
+            )}
 
             <LabelTools>
               <Space>
