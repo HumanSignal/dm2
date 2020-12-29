@@ -2,7 +2,7 @@
 
 Data exploration tool for [Label Studio][ls].
 
-<img src="/docs/image.png" height="250" align="center"/>
+<img src="/docs/image.png" height="500" align="center"/>
 
 ## Summary
 
