@@ -1,1 +1,1 @@
-export const NumberCell = (column) => column.value;
+export const NumberCell = (column) => Number(column.value);

@@ -12,15 +12,11 @@ export const InfiniteListItem = types
     },
 
     get isSelected() {
-      return self.parent.selected === self;
+      return self.parent?.selected === self;
     },
 
     get isHighlighted() {
-      try {
-        return self.parent.highlighted === self;
-      } catch {
-        return undefined;
-      }
+      return self.parent?.highlighted === self;
     },
 
     get isLoading() {
@@ -39,5 +35,9 @@ export const InfiniteListItem = types
 
     setLoading(loading) {
       self.loading = loading;
+    },
+
+    markUpdated() {
+      self.updated = guidGenerator();
     },
   }));

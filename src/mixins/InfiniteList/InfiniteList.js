@@ -1,4 +1,5 @@
 import { flow, getRoot, types } from "mobx-state-tree";
+import { guidGenerator } from "../../utils/random";
 
 const MixinBase = types
   .model("InfiniteListMixin", {
@@ -8,6 +9,7 @@ const MixinBase = types
     loading: false,
     loadingItem: false,
     loadingItems: types.optional(types.array(types.number), []),
+    updated: guidGenerator(),
   })
   .views((self) => ({
     get API() {
@@ -103,8 +105,8 @@ export const InfiniteList = (
     .model(modelName, {
       ...(properties ?? {}),
       list: types.optional(types.array(listItemType), []),
-      selected: types.maybeNull(types.safeReference(listItemType)),
-      highlighted: types.maybeNull(types.safeReference(listItemType)),
+      selected: types.maybeNull(types.reference(listItemType)),
+      highlighted: types.maybeNull(types.reference(listItemType)),
     })
     .actions((self) => ({
       updateItem(itemID, patch) {
@@ -173,6 +175,8 @@ export const InfiniteList = (
       focusPrev() {
         const index = Math.max(0, self.list.indexOf(self.highlighted) - 1);
         self.highlighted = self.list[index];
+        self.updated = guidGenerator();
+        console.log("focused", self.highlighted.id);
       },
 
       focusNext() {
@@ -181,6 +185,8 @@ export const InfiniteList = (
           self.list.indexOf(self.highlighted) + 1
         );
         self.highlighted = self.list[index];
+        self.updated = guidGenerator();
+        console.log("focused", self.highlighted.id);
       },
     }));
 

@@ -3,7 +3,7 @@
 import { CaretDownOutlined, EyeOutlined } from "@ant-design/icons";
 import { Button, Space } from "antd";
 import "label-studio/build/static/css/main.css";
-import { inject, observer } from "mobx-react";
+import { inject } from "mobx-react";
 import React from "react";
 import { FaChevronLeft } from "react-icons/fa";
 import { History } from "../../utils/history";
@@ -50,99 +50,106 @@ const LabelingHeader = ({ onClick, isExplorerMode, children }) => {
   );
 };
 
+const injector = inject(({ store }) => {
+  return {
+    store,
+    view: store.viewsStore?.selected,
+    task: store.dataStore?.selected,
+    isLabelStreamMode: store.isLabelStreamMode,
+    isExplorerMode: store.isExplorerMode,
+    SDK: store.SDK,
+  };
+});
+
 /**
  * @param {{store: import("../../stores/AppStore").AppStore}} param1
  */
-const LabelingComponent = observer(({ store }) => {
-  const lsfRef = React.createRef();
-  const view = store.viewsStore.selected;
-  const history = store.SDK.lsf?.history;
+export const Labeling = injector(
+  ({ store, view, task, SDK, isLabelStreamMode, isExplorerMode }) => {
+    const lsfRef = React.createRef();
+    const history = SDK.lsf?.history;
 
-  const [completion, setCompletion] = React.useState(
-    store.SDK.lsf?.currentCompletion
-  );
+    const [completion, setCompletion] = React.useState(
+      SDK.lsf?.currentCompletion
+    );
 
-  const closeLabeling = () => {
-    store.closeLabeling();
-    History.forceNavigate({ tab: view.id });
-  };
+    const closeLabeling = () => {
+      store.closeLabeling();
+      History.forceNavigate({ tab: view.id });
+    };
 
-  React.useEffect(() => {
-    const callback = (completion) => setCompletion(completion);
-    store.SDK.on("completionSet", callback);
+    React.useEffect(() => {
+      const callback = (completion) => setCompletion(completion);
+      SDK.on("completionSet", callback);
 
-    return () => store.SDK.off("completionSet", callback);
-  }, []);
+      return () => SDK.off("completionSet", callback);
+    }, []);
 
-  React.useEffect(() => {
-    setCompletion(store.SDK.lsf?.currentCompletion);
-  }, [store.SDK.lsf?.currentCompletion?.id]);
+    React.useEffect(() => {
+      setCompletion(SDK.lsf?.currentCompletion);
+    }, [SDK.lsf?.currentCompletion?.id]);
 
-  React.useEffect(() => {
-    store.SDK.startLabeling(lsfRef.current, store.dataStore.selected);
-  }, [lsfRef, store.dataStore.selected]);
+    React.useEffect(() => {
+      SDK.startLabeling(lsfRef.current, task);
+    }, [lsfRef, task]);
 
-  const toolbar = (
-    <LabelToolbar
-      view={view}
-      history={history}
-      lsf={store.SDK.lsf?.lsf}
-      completion={completion}
-      isLabelStream={store.isLabelStreamMode}
-    />
-  );
+    const toolbar = (
+      <LabelToolbar
+        view={view}
+        history={history}
+        lsf={SDK.lsf?.lsf}
+        completion={completion}
+        isLabelStream={isLabelStreamMode}
+      />
+    );
 
-  const header = (
-    <LabelingHeader
-      onClick={closeLabeling}
-      isExplorerMode={store.isExplorerMode}
-    >
-      {!store.isExplorerMode && toolbar}
-    </LabelingHeader>
-  );
+    const header = (
+      <LabelingHeader onClick={closeLabeling} isExplorerMode={isExplorerMode}>
+        {!isExplorerMode && toolbar}
+      </LabelingHeader>
+    );
 
-  return (
-    <Styles>
-      {!store.isExplorerMode && header}
+    return (
+      <Styles>
+        {!isExplorerMode && header}
 
-      <LabelContent className="label-content">
-        {store.isExplorerMode && (
-          <div
-            className="table label-table"
-            style={{ marginTop: "-1em", paddingTop: "1em" }}
-          >
-            {store.isExplorerMode && header}
-            <DataViewWrapper
-              className="label-dataview-wrapper"
-              style={{
-                flex: 1,
-                display: "flex",
-                width: "100%",
-              }}
-              minWidth={200}
-              showResizerLine={false}
-              maxWidth={window.innerWidth * 0.35}
-              initialWidth={view.labelingTableWidth}
-              onResizeFinished={(width) => view.setLabelingTableWidth(width)}
+        <LabelContent className="label-content">
+          {isExplorerMode && (
+            <div
+              className="table label-table"
+              style={{ marginTop: "-1em", paddingTop: "1em" }}
             >
-              <DataView />
-            </DataViewWrapper>
-          </div>
-        )}
+              {isExplorerMode && header}
+              <DataViewWrapper
+                className="label-dataview-wrapper"
+                style={{
+                  flex: 1,
+                  display: "flex",
+                  width: "100%",
+                }}
+                minWidth={200}
+                showResizerLine={false}
+                maxWidth={window.innerWidth * 0.35}
+                initialWidth={view.labelingTableWidth}
+                onResizeFinished={(width) => view.setLabelingTableWidth(width)}
+              >
+                <DataView />
+              </DataViewWrapper>
+            </div>
+          )}
 
-        <LabelStudioWrapper className="label-wrapper">
-          {store.isExplorerMode && toolbar}
+          <LabelStudioWrapper className="label-wrapper">
+            {isExplorerMode && toolbar}
 
-          <LabelStudioContent
-            ref={lsfRef}
-            key="label-studio"
-            id="label-studio-dm"
-            className="label-studio"
-          />
-        </LabelStudioWrapper>
-      </LabelContent>
-    </Styles>
-  );
-});
-
-export const Labeling = inject("store")(LabelingComponent);
+            <LabelStudioContent
+              ref={lsfRef}
+              key="label-studio"
+              id="label-studio-dm"
+              className="label-studio"
+            />
+          </LabelStudioWrapper>
+        </LabelContent>
+      </Styles>
+    );
+  }
+);

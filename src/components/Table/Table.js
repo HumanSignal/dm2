@@ -3,6 +3,7 @@ import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { VscQuestion } from "react-icons/vsc";
 import { FillContainer } from "../App/App.styles";
 import { Spinner } from "../Common/Spinner";
@@ -14,7 +15,9 @@ import { TableStyles } from "./Table.styles";
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
   const props = {
+    store,
     dataStore,
+    updated: dataStore.updated,
     view: currentView,
     viewType: currentView?.type ?? "list",
     columns: currentView?.fieldsAsColumns ?? [],
@@ -35,6 +38,7 @@ const injector = inject(({ store }) => {
 
 export const DataView = injector(
   ({
+    store,
     data,
     columns,
     view,
@@ -49,6 +53,8 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
+    console.log("Table re-render", dataStore.updated);
+
     const [showSource, setShowSource] = React.useState();
 
     const focusedItem = React.useMemo(() => {
@@ -240,6 +246,30 @@ export const DataView = injector(
           stopInteractions={isLocked}
         />
       );
+
+    useHotkeys("w,shift+up", () => {
+      if (document.activeElement !== document.body) return;
+      dataStore.focusPrev();
+    });
+
+    useHotkeys("s,shift+down", () => {
+      if (document.activeElement !== document.body) return;
+
+      dataStore.focusNext();
+    });
+
+    useHotkeys("a,shift+left", () => {
+      if (document.activeElement !== document.body) return;
+
+      if (dataStore.selected) store.closeLabeling();
+    });
+
+    useHotkeys("d,shift+right,enter", () => {
+      if (document.activeElement !== document.body) return;
+
+      const { highlighted } = dataStore;
+      if (highlighted) store.startLabeling(highlighted);
+    });
 
     // Render the UI for your table
     return (

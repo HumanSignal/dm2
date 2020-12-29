@@ -61,10 +61,14 @@ export const TableRowWrapper = styled.div`
   &.selected,
   &:hover {
     z-index: 50;
+  }
 
-    .td {
-      background-color: #e3f1ff;
-    }
+  &.selected .td {
+    background-color: #e3f1ff;
+  }
+
+  &:hover .td {
+    background-color: #f3f9ff;
   }
 
   &.loading {

@@ -46,7 +46,6 @@ export const TableRow = observer(
     style,
     isSelected,
     isHighlighted,
-    cellDecoration,
     decoration,
     stopInteractions,
     even,
@@ -56,6 +55,8 @@ export const TableRow = observer(
     if (isHighlighted) classNames.push("highlighted");
     if (data.isLoading) classNames.push("loading");
     if (even === true) classNames.push("even");
+
+    console.log({ data, isSelected, isHighlighted });
 
     return (
       <TableContext.Consumer>

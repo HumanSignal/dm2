@@ -33,15 +33,17 @@ const MenuWrapper = styled.div`
 
 const FieldsMenu = observer(
   ({ columns, WrapperComponent, onClick, onReset, selected, resetTitle }) => {
-    const MenuItem = (col, onClick) => (
-      <Menu.Item key={col.key} onClick={onClick}>
-        {WrapperComponent && col.wra !== false ? (
-          <WrapperComponent column={col}>{col.title}</WrapperComponent>
-        ) : (
-          col.title
-        )}
-      </Menu.Item>
-    );
+    const MenuItem = (col, onClick) => {
+      return (
+        <Menu.Item key={col.key} onClick={onClick}>
+          {WrapperComponent && col.wra !== false ? (
+            <WrapperComponent column={col}>{col.title}</WrapperComponent>
+          ) : (
+            col.title
+          )}
+        </Menu.Item>
+      );
+    };
 
     return (
       <MenuWrapper>
