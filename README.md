@@ -1,6 +1,6 @@
 ## Data Manager 2.0
 
-Data exploration tool for Label Studio.
+Data exploration tool for [Label Studio](ls).
 
 <img src="/docs/image.png" height="250" align="center"/>
 
@@ -57,8 +57,23 @@ Wait until artifact is built, then navigate to the Label Studio directory and ex
 node scripts/get-build dm [branch-name]
 ```
 
+## Ecosystem
+
+| Project | Description |
+|-|-|
+| [label-studio](ls) | Server part, distributed as a pip package |
+| [label-studio-frontend](lsf) | Frontend part, written in JavaScript and React, can be embedded into your application |
+| [label-studio-converter](lsc) | Encode labels into the format of your favorite machine learning library |
+| [label-studio-transformers](lst) | Transformers library connected and configured for use with label studio |
+| datamanager | Data exploration tool for Label Studio |
+
 ## License
 
 This software is licensed under the [Apache 2.0 LICENSE](/LICENSE) © [Heartex](https://www.heartex.ai/). 2020
 
 <img src="https://github.com/heartexlabs/label-studio/blob/master/images/opossum_looking.png?raw=true" title="Hey everyone!" height="140" width="140" />
+
+[ls]: https://github.com/heartexlabs/label-studio
+[lsf]: https://github.com/heartexlabs/label-studio-frontend
+[lsc]: https://github.com/heartexlabs/label-studio-converter
+[lst]: https://github.com/heartexlabs/label-studio-transformers
