@@ -1,6 +1,6 @@
 ## Data Manager 2.0
 
-Data exploration tool for [Label Studio](ls).
+Data exploration tool for [Label Studio][ls].
 
 <img src="/docs/image.png" height="250" align="center"/>
 
@@ -61,10 +61,10 @@ node scripts/get-build dm [branch-name]
 
 | Project | Description |
 |-|-|
-| [label-studio](ls) | Server part, distributed as a pip package |
-| [label-studio-frontend](lsf) | Frontend part, written in JavaScript and React, can be embedded into your application |
-| [label-studio-converter](lsc) | Encode labels into the format of your favorite machine learning library |
-| [label-studio-transformers](lst) | Transformers library connected and configured for use with label studio |
+| [label-studio][ls] | Server part, distributed as a pip package |
+| [label-studio-frontend][lsf] | Frontend part, written in JavaScript and React, can be embedded into your application |
+| [label-studio-converter][lsf] | Encode labels into the format of your favorite machine learning library |
+| [label-studio-transformers][lst] | Transformers library connected and configured for use with label studio |
 | datamanager | Data exploration tool for Label Studio |
 
 ## License
