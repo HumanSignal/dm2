@@ -54,7 +54,7 @@ export const create = (columns) => {
           return c.id === Number(completion.pk) || c.pk === completion.pk;
         });
 
-        if (index > 0) self.completions.splice(index, 1);
+        if (index >= 0) self.completions.splice(index, 1);
       },
     }));
 
