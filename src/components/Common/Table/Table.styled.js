@@ -63,12 +63,12 @@ export const TableRowWrapper = styled.div`
     z-index: 50;
   }
 
-  &.selected .td {
-    background-color: #e3f1ff;
-  }
-
   &:hover .td {
     background-color: #f3f9ff;
+  }
+
+  &.selected .td {
+    background-color: #e3f1ff;
   }
 
   &.loading {
