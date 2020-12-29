@@ -18,10 +18,9 @@ const TOOLTIP_DELAY = 0.8;
 export const LabelToolbar = observer(
   ({ view, history, completion, lsf, isLabelStream }) => {
     const task = view.dataStore.selected;
-    const {
-      viewingAllCompletions,
-      viewingAllPredictions,
-    } = lsf.completionStore;
+    const { viewingAllCompletions, viewingAllPredictions } =
+      lsf?.completionStore ?? {};
+
     const viewAll = viewingAllCompletions || viewingAllPredictions;
 
     return task ? (
