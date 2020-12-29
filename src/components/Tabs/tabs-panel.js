@@ -59,7 +59,15 @@ const OrderButton = observer(({ ordering, size, view }) => {
         <FieldsButton
           size={size}
           style={{ minWidth: 105, textAlign: "left" }}
-          title={ordering ? ordering.column?.title : "Select order"}
+          title={
+            ordering ? (
+              <>
+                Order by <b>{ordering.column?.title}</b>
+              </>
+            ) : (
+              "Select order"
+            )
+          }
           onClick={(col) => view.setOrdering(col.id)}
           onReset={() => view.setOrdering(null)}
           resetTitle="Default"
