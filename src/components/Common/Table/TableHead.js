@@ -20,7 +20,7 @@ const DropdownWrapper = observer(
   ({ column, cellViews, children, onChange }) => {
     const types = ViewColumnType._types
       .map((t) => t.value)
-      .filter((t) => t in cellViews);
+      .filter((t) => t in cellViews && cellViews[t].userSelectable !== false);
     return (
       <Dropdown
         overlay={

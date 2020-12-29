@@ -20,3 +20,5 @@ export const BooleanCell = (column) => {
 
   return null;
 };
+
+BooleanCell.userSelectable = false;
