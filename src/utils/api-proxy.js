@@ -57,7 +57,6 @@ export class APIProxy {
     this.mockDelay = options.mockDelay ?? 0;
     this.mockDisabled = options.mockDisabled ?? false;
 
-    console.log("API gateway: ", this.gateway);
     this.resolveMethods(options.endpoints);
   }
 
@@ -153,7 +152,6 @@ export class APIProxy {
 
         if (requestMethod !== "GET") {
           const contentType = requestHeaders.get("Content-Type");
-          console.log({ requestParams, contentType });
 
           if (contentType === "multipart/form-data") {
             requestParams.body = this.createRequestBody(body);
@@ -348,11 +346,6 @@ export class APIProxy {
       let response = null;
       let ok = true;
 
-      const groupName = `Mock [${settings.method.toUpperCase()}: ${url}]`;
-      console.groupCollapsed(groupName);
-      console.log("URL params", params);
-      console.log("Body:", request);
-
       try {
         const fakeRequest = new Request(request);
 
@@ -365,10 +358,6 @@ export class APIProxy {
         console.error(err);
         ok = false;
       }
-
-      console.log("Response:", response);
-
-      console.groupEnd(groupName);
 
       setTimeout(() => {
         resolve({

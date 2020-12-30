@@ -32,8 +32,6 @@ export const History = {
     const title = document.title;
     const state = this.getParams(url);
 
-    console.log({ url, title, state });
-
     if (replace) {
       window.history.replaceState(state, title, url.toString());
     } else {

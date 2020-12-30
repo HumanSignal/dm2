@@ -56,8 +56,6 @@ export const TableRow = observer(
     if (data.isLoading) classNames.push("loading");
     if (even === true) classNames.push("even");
 
-    console.log({ data, isSelected, isHighlighted });
-
     return (
       <TableContext.Consumer>
         {({ columns, cellViews }) => (

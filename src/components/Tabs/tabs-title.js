@@ -13,7 +13,6 @@ export const TabTitle = observer(({ item, active }) => {
       item.setRenameMode(false);
       if (key === "Escape") {
         item.setTitle(item.oldTitle);
-        console.log("Cancel");
       }
 
       item.save();

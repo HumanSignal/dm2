@@ -119,16 +119,12 @@ const SubmissionButtons = observer(
     const saveCompletion = React.useCallback(() => {
       if (!disabled) {
         isNewTask ? lsf.submitCompletion() : lsf.updateCompletion();
-      } else {
-        console.log("Action disabled!");
       }
     }, [disabled, isNewTask, lsf]);
 
     const skipTask = React.useCallback(() => {
       if (!disabled) {
         lsf.skipTask();
-      } else {
-        console.log("Action disabled!");
       }
     }, [disabled, lsf]);
 

@@ -7,7 +7,7 @@ export const initDevApp = async (DataManager) => {
   const useExternalSource = !!REACT_APP_USE_LSB || !!REACT_APP_GATEWAY_API;
   const gatewayAPI = REACT_APP_GATEWAY_API ?? "http://localhost:8080/api";
 
-  const datamanager = new DataManager({
+  new DataManager({
     root: document.getElementById("app"),
     apiGateway: gatewayAPI,
     // apiGateway: "api/",
@@ -35,12 +35,4 @@ export const initDevApp = async (DataManager) => {
       },
     },
   });
-
-  datamanager.on("submitCompletion", (...args) =>
-    console.log("submitCompletion", args)
-  );
-
-  datamanager.on("updateCompletion", (...args) =>
-    console.log("updateCompletion", args)
-  );
 };

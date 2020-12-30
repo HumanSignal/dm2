@@ -1,6 +1,10 @@
 import { flow, getRoot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 
+const listIncludes = (list, id) => {
+  return list.findIndex((item) => item.id === id) >= 0;
+};
+
 const MixinBase = types
   .model("InfiniteListMixin", {
     page: types.optional(types.integer, 0),
@@ -45,8 +49,10 @@ const MixinBase = types
         selected = val;
       }
 
-      self.selected = selected;
-      self.highlighted = selected;
+      if (!!selected) {
+        self.selected = selected;
+        self.highlighted = selected;
+      }
     },
 
     unset({ withHightlight = false } = {}) {
@@ -62,8 +68,6 @@ const MixinBase = types
 
       self.total = total;
 
-      if (reload) self.list = [];
-
       newEntity.forEach((n) => {
         const index = self.list.findIndex((i) => i.id === n.id);
         if (index >= 0) {
@@ -71,7 +75,11 @@ const MixinBase = types
         }
       });
 
-      self.list.push(...newEntity);
+      if (reload) {
+        self.list = [...newEntity];
+      } else {
+        self.list.push(...newEntity);
+      }
     },
 
     setLoading(id) {
@@ -105,19 +113,21 @@ export const InfiniteList = (
     .model(modelName, {
       ...(properties ?? {}),
       list: types.optional(types.array(listItemType), []),
-      selected: types.maybeNull(types.reference(listItemType)),
-      highlighted: types.maybeNull(types.reference(listItemType)),
+      selected: types.maybeNull(
+        types.late(() => types.reference(listItemType))
+      ),
+      highlighted: types.maybeNull(
+        types.late(() => types.reference(listItemType))
+      ),
     })
     .actions((self) => ({
       updateItem(itemID, patch) {
         let item = self.list.find((t) => t.id === itemID);
 
         if (item) {
-          console.log(`Updating existing item [${self.type}#${itemID}]`, item);
           item.update(patch);
         } else {
           item = listItemType.create(patch);
-          console.log(`Created item [${self.type}#${itemID}]`, item);
           self.list.push(item);
         }
 
@@ -141,29 +151,19 @@ export const InfiniteList = (
         if (interaction) Object.assign(params, { interaction });
 
         const data = yield getRoot(self).apiCall(apiMethod, params);
-
-        let selected, highlighted;
-
-        selected = self.selected?.id;
-        highlighted = self.highlighted?.id;
-        self.selected = null;
-        self.highlighted = null;
-
         const { total, [apiMethod]: list } = data;
+
+        if (!listIncludes(list, self.selected?.id)) {
+          self.selected = null;
+        }
+
+        if (!listIncludes(list, self.highlighted?.id)) {
+          self.highlighted = null;
+        }
 
         if (list) self.setList({ total, list, reload });
 
         self.postProcessData?.(data);
-
-        if (!!selected && self.selected !== selected) {
-          console.log("selected restored");
-          self.selected = selected;
-        }
-
-        if (!!highlighted && self.highlighted !== highlighted) {
-          console.log("highlighted restored");
-          self.highlighted = highlighted;
-        }
 
         self.loading = false;
       }),
@@ -176,7 +176,6 @@ export const InfiniteList = (
         const index = Math.max(0, self.list.indexOf(self.highlighted) - 1);
         self.highlighted = self.list[index];
         self.updated = guidGenerator();
-        console.log("focused", self.highlighted.id);
       },
 
       focusNext() {
@@ -186,7 +185,6 @@ export const InfiniteList = (
         );
         self.highlighted = self.list[index];
         self.updated = guidGenerator();
-        console.log("focused", self.highlighted.id);
       },
     }));
 

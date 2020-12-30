@@ -75,10 +75,8 @@ export const create = (columns) => {
         self.setLoading(taskID);
 
         if (taskID !== undefined) {
-          console.log("Loading task", taskID);
           task = yield self.updateTaskByID(taskID);
         } else {
-          console.log("Loading next task");
           if (self.selected) {
             yield self.updateTaskByID(self.selected.id);
           }
@@ -88,7 +86,6 @@ export const create = (columns) => {
         if (select !== false) self.setSelected(task);
 
         self.finishLoading(taskID);
-        console.log("Loading finished");
 
         return task;
       }),
@@ -108,8 +105,6 @@ export const create = (columns) => {
       applyTaskSnapshot(taskData, taskID) {
         let task;
 
-        console.log("Processing snapshot", { taskID, taskData });
-
         if (taskData && !taskData?.error) {
           task = self.updateItem(taskID ?? taskData.id, {
             ...taskData,
@@ -121,7 +116,6 @@ export const create = (columns) => {
       },
 
       unsetTask() {
-        console.log("unset task");
         self.unset();
       },
 

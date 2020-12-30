@@ -47,8 +47,6 @@ export const Filters = injector(({ views, currentView, filters }) => {
     [currentView.availableFilters]
   );
 
-  console.log("Filters were changed");
-
   return (
     <FiltersStyles
       className={["filters", sidebarEnabled ? "filters__sidebar" : null]}

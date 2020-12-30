@@ -53,8 +53,6 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
-    console.log("Table re-render", dataStore.updated);
-
     const [showSource, setShowSource] = React.useState();
 
     const focusedItem = React.useMemo(() => {
@@ -227,11 +225,9 @@ export const DataView = injector(
           stopInteractions={isLocked}
           onTypeChange={(col, type) => col.original.setType(type)}
           onColumnResize={(col, width) => {
-            console.log("resize", width);
             col.original.setWidth(width);
           }}
           onColumnReset={(col) => {
-            console.log("reset");
             col.original.resetWidth();
           }}
         />

@@ -202,7 +202,6 @@ export const AppStore = types
     },
 
     closeLabeling(options) {
-      console.log("close");
       const { SDK } = self;
 
       self.unsetTask(options);
@@ -213,7 +212,6 @@ export const AppStore = types
     resolveURLParams() {
       window.addEventListener("popstate", ({ state }) => {
         const { tab, task, annotation, labeling } = state ?? {};
-        console.log("state change", window.history.state);
 
         if (tab) {
           self.viewsStore.setSelected(parseInt(tab), {

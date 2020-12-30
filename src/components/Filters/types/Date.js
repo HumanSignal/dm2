@@ -46,8 +46,6 @@ export const DateTimeInput = ({ value, range, time, onChange }) => {
 
   const DateComponent = range ? DatePicker.RangePicker : DatePicker;
 
-  console.log("Datepicker with time", time);
-
   return (
     <Picker>
       {({ className }) => (

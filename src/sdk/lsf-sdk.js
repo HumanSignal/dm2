@@ -161,7 +161,6 @@ export class LSFWrapper {
     if (completion.id) cs.selectCompletion(completion.id);
 
     this.datamanager.invoke("completionSet", [completion]);
-    console.log("Completion set");
   }
 
   onLabelStudioLoad = async (ls) => {
@@ -216,7 +215,6 @@ export class LSFWrapper {
 
     if (completion.userGenerate && completion.sentUserGenerate === false) {
       response = { ok: true };
-      console.log({ completion });
     } else {
       response = await this.withinLoadingState(async () => {
         return this.datamanager.apiCall("deleteCompletion", {
@@ -274,10 +272,8 @@ export class LSFWrapper {
     this.setLoading(false);
 
     if (this.datamanager.isExplorer) {
-      console.log(`Reload task ${taskID} as DataManager is in Explorer mode`);
       await this.loadTask(taskID, currentCompletion.pk);
     } else {
-      console.log(`Load next task as DataManager is in LabelStream mode`);
       await this.loadTask();
     }
   }

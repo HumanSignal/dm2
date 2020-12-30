@@ -126,8 +126,6 @@ export const ViewsStore = types
 
       const newView = self.createView(newSnapshot);
 
-      console.log({ newView, viewSnapshot, newSnapshot });
-
       self.views.push(newView);
       self.setSelected(newView);
 
@@ -138,7 +136,6 @@ export const ViewsStore = types
 
     duplicateView(view) {
       const sn = getSnapshot(view);
-      console.log({ duplicate: sn });
       self.addView({
         ...sn,
         id: self.lastView.id + 1,

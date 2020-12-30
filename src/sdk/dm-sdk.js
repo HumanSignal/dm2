@@ -186,11 +186,7 @@ export class DataManager {
       task = await this.store.taskStore.loadTask();
     }
 
-    console.log("Starting labeling", { task });
-
     if (!this.lsf) {
-      console.log("Initializing new label studio");
-
       this.lsf = new LSFWrapper(this, element, {
         ...this.labelStudioOptions,
         task,
@@ -201,7 +197,6 @@ export class DataManager {
     }
 
     if (this.lsf && (this.lsf.task !== task || completion !== undefined)) {
-      console.log("Reloading task", { task });
       const completionID = completion?.id ?? task.lastCompletion?.id;
       this.lsf.loadTask(task.id, completionID);
     }

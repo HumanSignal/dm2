@@ -47,7 +47,6 @@ const switchInjector = inject(({ store }) => {
 
 const FiltersSidebar = sidebarInjector(
   ({ viewsStore, sidebarEnabled, sidebarVisible }) => {
-    console.log({ sidebarEnabled, sidebarVisible });
     return sidebarEnabled && sidebarVisible ? (
       <div className="sidebar">
         <PageHeader
