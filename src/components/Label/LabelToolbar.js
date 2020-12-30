@@ -16,8 +16,11 @@ import styled from "styled-components";
 const TOOLTIP_DELAY = 0.8;
 
 export const LabelToolbar = observer(
-  ({ view, history, completion, lsf, isLabelStream }) => {
+  ({ view, history, lsf, isLabelStream }) => {
+    const completion = lsf?.completionStore?.selected;
+
     const task = view.dataStore.selected;
+
     const { viewingAllCompletions, viewingAllPredictions } =
       lsf?.completionStore ?? {};
 

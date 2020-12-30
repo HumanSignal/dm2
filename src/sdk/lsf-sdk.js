@@ -99,11 +99,9 @@ export class LSFWrapper {
 
   /** @private */
   async loadTask(taskID, completionID) {
-    if (!this.lsf)
+    if (!this.lsf) {
       return console.error("Make sure that LSF was properly initialized");
-
-    if (taskID === undefined) console.info("Load next task");
-    else console.info(`Reloading task ${taskID}`);
+    }
 
     const tasks = this.datamanager.store.taskStore;
     const newTask = await this.withinLoadingState(async () => {
@@ -158,7 +156,9 @@ export class LSFWrapper {
       completion = cs.addCompletion({ userGenerate: true });
     }
 
-    if (completion.id) cs.selectCompletion(completion.id);
+    if (completion) {
+      cs.selectCompletion(completion.id);
+    }
 
     this.datamanager.invoke("completionSet", [completion]);
   }
@@ -230,7 +230,7 @@ export class LSFWrapper {
     if (response.ok) {
       const lastCompletion =
         this.completions[this.completions.length - 1] ?? {};
-      const completionID = lastCompletion.pk ?? lastCompletion.id ?? undefined;
+      const completionID = lastCompletion.pk ?? undefined;
 
       await this.loadTask(task.id, completionID);
     }
@@ -280,15 +280,15 @@ export class LSFWrapper {
 
   /** @private */
   prepareData(completion, includeId) {
+    const userGenerate =
+      !completion.userGenerate || completion.sentUserGenerate;
+
     const result = {
       lead_time: (new Date() - completion.loadedDate) / 1000, // task execution time
       result: completion.serializeCompletion(),
     };
 
-    if (
-      includeId &&
-      (!completion.userGenerate || completion.sentUserGenerate)
-    ) {
+    if (includeId && userGenerate) {
       result.id = parseInt(completion.pk);
     }
 

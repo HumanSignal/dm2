@@ -15,8 +15,6 @@ export const Styles = styled.div`
     display: flex;
     flex: 200px 0 0;
     flex-direction: column;
-    max-width: 35vw;
-    /* box-shadow: 0 0 0 1px #ccc; */
   }
 
   .label-studio {
