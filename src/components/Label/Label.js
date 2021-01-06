@@ -93,6 +93,12 @@ export const Labeling = injector(
       SDK.startLabeling(lsfRef.current, task);
     }, [lsfRef, task]);
 
+    const onResize = (width) => {
+      view.setLabelingTableWidth(width);
+      // trigger resize events inside LSF
+      window.dispatchEvent(new Event("resize"));
+    };
+
     const toolbar = (
       <LabelToolbar
         view={view}
@@ -131,7 +137,7 @@ export const Labeling = injector(
                 showResizerLine={false}
                 maxWidth={window.innerWidth * 0.35}
                 initialWidth={view.labelingTableWidth}
-                onResizeFinished={(width) => view.setLabelingTableWidth(width)}
+                onResizeFinished={onResize}
               >
                 <DataView />
               </DataViewWrapper>

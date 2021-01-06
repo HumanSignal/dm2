@@ -27,9 +27,9 @@ export const TabsActions = inject("store")(
     };
 
     return (
-      <Space>
+      <Space style={{ flexWrap: "wrap" }}>
         Selected: {selectedLength}
-        <Space size="small">
+        <Space size="small" style={{ flexWrap: "wrap" }}>
           {/* <Button size={size} onClick={() => store.currentView.selectAll()}>
             {selected.all && !selected.isIndeterminate
               ? "Unselect all"

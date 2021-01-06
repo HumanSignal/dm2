@@ -214,6 +214,7 @@ const ViewToggle = viewInjector(({ view }) => {
     <Radio.Group
       value={view.type}
       onChange={(e) => view.setType(e.target.value)}
+      style={{ whiteSpace: "nowrap" }}
     >
       <Radio.Button value="list">
         <BarsOutlined /> List
