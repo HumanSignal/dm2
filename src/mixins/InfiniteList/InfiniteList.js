@@ -99,6 +99,7 @@ const MixinBase = types
     },
 
     clear() {
+      self.highlighted = undefined;
       self.list = [];
       self.page = 0;
       self.total = 0;
