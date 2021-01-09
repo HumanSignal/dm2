@@ -37,7 +37,7 @@ const AppComponent = ({ app }) => {
           position: "absolute",
           width: "100%",
           top: 0,
-          "z-index": 1000,
+          zIndex: 1000,
         }
       : null;
 

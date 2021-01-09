@@ -4,6 +4,7 @@ import {
   InfoCircleOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
+import { FaBan } from "react-icons/fa";
 import { Button, Space, Tooltip } from "antd";
 import ButtonGroup from "antd/lib/button/button-group";
 import { observer } from "mobx-react";
@@ -139,7 +140,12 @@ const SubmissionButtons = observer(
         title="Mark task as cancelled: [ Ctrl+Space ]"
         mouseEnterDelay={TOOLTIP_DELAY}
       >
-        <Button danger onClick={skipTask} disabled={disabled}>
+        <Button
+          danger
+          onClick={skipTask}
+          disabled={disabled}
+          icon={<FaBan style={{ marginRight: "7px", paddingTop: "2px" }} />}
+        >
           Skip
         </Button>
       </Tooltip>
