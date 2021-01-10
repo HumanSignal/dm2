@@ -2,7 +2,11 @@ import { flow, getRoot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 
 const listIncludes = (list, id) => {
-  return list.findIndex((item) => item.id === id) >= 0;
+  const index =
+    id !== undefined
+      ? Array.from(list).findIndex((item) => item.id === id)
+      : -1;
+  return index >= 0;
 };
 
 const MixinBase = types
@@ -151,18 +155,23 @@ export const InfiniteList = (
 
         if (interaction) Object.assign(params, { interaction });
 
+        const [selectedID, highlightedID] = [
+          self.selected?.id,
+          self.highlighted?.id,
+        ];
+
         const data = yield getRoot(self).apiCall(apiMethod, params);
         const { total, [apiMethod]: list } = data;
 
-        if (!listIncludes(list, self.selected?.id)) {
+        if (list) self.setList({ total, list, reload });
+
+        if (!listIncludes(self.list, selectedID)) {
           self.selected = null;
         }
 
-        if (!listIncludes(list, self.highlighted?.id)) {
+        if (!listIncludes(self.list, highlightedID)) {
           self.highlighted = null;
         }
-
-        if (list) self.setList({ total, list, reload });
 
         self.postProcessData?.(data);
 
