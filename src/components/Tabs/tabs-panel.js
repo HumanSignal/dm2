@@ -67,7 +67,7 @@ const OrderButton = observer(({ ordering, size, view }) => {
                 Order by <b>{ordering.column?.title}</b>
               </>
             ) : (
-              "Select order"
+              "Sort order"
             )
           }
           onClick={(col) => view.setOrdering(col.id)}
