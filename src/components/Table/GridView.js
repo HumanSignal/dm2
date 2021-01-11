@@ -45,12 +45,14 @@ const GridDataGroup = observer(({ type, value }) => {
 });
 
 const GridCell = observer(
-  ({ view, selected, row, fields, onClick, ...props }) => {
+  ({ view, selected, row, fields, columnCount, onClick, ...props }) => {
+    console.log({ columnCount });
     return (
       <GridCellWrapper
         {...props}
         selected={selected.isSelected(row.id)}
         onClick={onClick}
+        columnCount={columnCount}
       >
         <div>
           <GridHeader
@@ -116,6 +118,7 @@ export const GridView = observer(
             {...props}
             view={view}
             row={row}
+            columnCount={columnCount}
             fields={fieldsData}
             selected={view.selected}
             onClick={() => onChange?.(row.id)}
@@ -130,6 +133,7 @@ export const GridView = observer(
         view,
         view.selected.list,
         view.selected.all,
+        columnCount,
       ]
     );
 
@@ -195,7 +199,7 @@ const GridCellWrapper = styled.div`
   padding: 0 10px 10px 0;
   box-sizing: border-box;
 
-  &:nth-child(4n) {
+  &:nth-child(${({ columnCount }) => `${columnCount}n`}) {
     padding-right: 0;
   }
 
