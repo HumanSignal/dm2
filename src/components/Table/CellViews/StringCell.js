@@ -1,6 +1,16 @@
 import React from "react";
 
-export const StringCell = (column) => {
+const valueToString = (value) => {
+  if (typeof value === "string") return value;
+
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return value.toString();
+  }
+};
+
+export const StringCell = ({ column, value }) => {
   return (
     <div
       style={{
@@ -10,9 +20,7 @@ export const StringCell = (column) => {
         lineHeight: "16px",
       }}
     >
-      {typeof column.value === "string"
-        ? column.value
-        : JSON.stringify(column.value)}
+      {valueToString(value)}
     </div>
   );
 };

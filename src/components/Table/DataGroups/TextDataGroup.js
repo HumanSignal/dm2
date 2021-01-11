@@ -1,7 +1,7 @@
 import React from "react";
 
 const valueToString = (value) => {
-  if (typeof valye === "string") return value;
+  if (typeof value === "string") return value;
 
   try {
     return JSON.stringify(value);

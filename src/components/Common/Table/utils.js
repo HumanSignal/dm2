@@ -6,8 +6,13 @@ export const prepareColumns = (columns, hidden) => {
 
 export const getProperty = (object, path) => {
   try {
+    const normalizedPath = path
+      .split(".")
+      .map((p) => `["${p}"]`)
+      .join("");
+
     // eslint-disable-next-line no-new-func
-    const fn = new Function("object", `return object.${path}`);
+    const fn = new Function("object", `return object${normalizedPath}`);
     return fn(object);
   } catch {
     return undefined;
