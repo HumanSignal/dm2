@@ -221,6 +221,7 @@ const GridCellWrapper = styled.div`
     content: "";
     border-radius: 2px;
     position: absolute;
+    pointer-events: none;
     box-shadow: ${({ selected }) =>
       (selected
         ? ["0 0 0 1px rgba(26, 144, 255, 0.6) inset"]
