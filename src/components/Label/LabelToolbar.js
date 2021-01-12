@@ -4,7 +4,6 @@ import {
   InfoCircleOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { FaBan } from "react-icons/fa";
 import { Button, Space, Tooltip } from "antd";
 import ButtonGroup from "antd/lib/button/button-group";
 import { observer } from "mobx-react";
@@ -12,6 +11,7 @@ import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { BiRedo, BiReset, BiUndo } from "react-icons/bi";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
+import { FaBan } from "react-icons/fa";
 import styled from "styled-components";
 
 const TOOLTIP_DELAY = 0.8;
@@ -27,7 +27,7 @@ export const LabelToolbar = observer(
 
     const viewAll = viewingAllCompletions || viewingAllPredictions;
 
-    return task ? (
+    return lsf?.noTask === false && task ? (
       <Toolbar className="label-toolbar" isLabelStream={isLabelStream}>
         <CurrentTaskWrapper>
           <Space size="large">
