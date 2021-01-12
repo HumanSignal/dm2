@@ -1,6 +1,8 @@
+/* eslint-disable import/no-webpack-loader-syntax */
+
+import Running from "!!url-loader!../../assets/running.webm";
 import { Spin } from "antd";
 import React from "react";
-import Running from "../../assets/running2.webm";
 
 export const Spinner = ({ ...props }) => {
   const size = React.useMemo(() => {

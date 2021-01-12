@@ -49,7 +49,7 @@ module.exports = function override(config, env) {
       {
         loader: require.resolve("url-loader"),
         options: {
-          limit: false,
+          limit: 200000,
           encoding: "base64",
         },
       },
