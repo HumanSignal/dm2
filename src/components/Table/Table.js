@@ -76,21 +76,27 @@ export const DataView = injector(
     );
 
     const columnHeaderExtra = React.useCallback(
-      ({ parent, original, help }, decoration) => (
-        <>
-          {parent && (
-            <Tag color="blue" style={{ fontWeight: "bold" }}>
+      ({ parent, original, help }, decoration) => {
+        const children = [];
+
+        if (parent) {
+          children.push(
+            <Tag key="column-type" color="blue" style={{ fontWeight: "bold" }}>
               {original?.readableType ?? parent.title}
             </Tag>
-          )}
+          );
+        }
 
-          {help && decoration?.help !== false && (
-            <Tooltip title={help}>
+        if (help && decoration?.help !== false) {
+          children.push(
+            <Tooltip key="help-tooltip" title={help}>
               <VscQuestion size={16} style={{ opacity: 0.5 }} />
             </Tooltip>
-          )}
-        </>
-      ),
+          );
+        }
+
+        return children.length ? <>{children}</> : null;
+      },
       []
     );
 

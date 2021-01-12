@@ -1,7 +1,40 @@
-import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 import React from "react";
+import Running from "../../assets/running2.webm";
 
 export const Spinner = ({ ...props }) => {
-  return <Spin {...props} indicator={<LoadingOutlined />} />;
+  const size = React.useMemo(() => {
+    switch (props.size) {
+      case "large":
+        return 64;
+      default:
+      case "middle":
+        return 36;
+      case "small":
+        return 22;
+    }
+  }, [props.size]);
+
+  return (
+    <Spin
+      {...props}
+      style={{ width: size, height: size }}
+      indicator={
+        <div style={{ width: "100%", height: "100%" }}>
+          <video
+            src={Running}
+            autoPlay
+            loop
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              transform: "scale(1.3)",
+            }}
+          ></video>
+        </div>
+      }
+      spinning={true}
+    />
+  );
 };

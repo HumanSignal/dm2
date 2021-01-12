@@ -42,5 +42,29 @@ module.exports = function override(config, env) {
     config.output.libraryTarget = "commonjs";
   }
 
+  const rule = config.module.rules.find((r) => !!r.oneOf);
+  rule.oneOf.push({
+    test: /\.webm$/i,
+    use: [
+      {
+        loader: require.resolve("url-loader"),
+        options: {
+          limit: false,
+          encoding: "base64",
+        },
+      },
+    ],
+  });
+
+  // const f = false;
+  // config.module.rules.forEach(r => {
+  //   if (r.oneOf) {
+  //     r.oneOf.forEach(or => console.log(or))
+  //   } else {
+  //     console.log(r);
+  //   }
+  // });
+  // if (!f) throw Error("Fail");
+
   return config;
 };
