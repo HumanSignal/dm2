@@ -44,7 +44,7 @@ module.exports = function override(config, env) {
 
   const rule = config.module.rules.find((r) => !!r.oneOf);
   rule.oneOf.push({
-    test: /\.webm$/i,
+    test: /\.(webm|mov)$/i,
     use: [
       {
         loader: require.resolve("url-loader"),
