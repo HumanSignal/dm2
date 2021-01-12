@@ -166,7 +166,6 @@ export const TablePanel = injector(
           )}
 
           {loading && <Spinner size="small" />}
-          <Spinner size="small" />
 
           <ErrorBox />
         </Space>
