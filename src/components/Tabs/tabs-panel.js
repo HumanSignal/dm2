@@ -75,7 +75,9 @@ const OrderButton = observer(({ ordering, size, view }) => {
           resetTitle="Default"
           selected={ordering?.field}
           wrapper={({ column, children }) => (
-            <Space>
+            <Space style={{ width: "100%", justifyContent: "space-between" }}>
+              {children}
+
               <div
                 style={{
                   width: 24,
@@ -87,7 +89,6 @@ const OrderButton = observer(({ ordering, size, view }) => {
               >
                 {column?.icon}
               </div>
-              {children}
             </Space>
           )}
         />

@@ -81,7 +81,11 @@ export const DataView = injector(
 
         if (parent) {
           children.push(
-            <Tag key="column-type" color="blue" style={{ fontWeight: "bold" }}>
+            <Tag
+              key="column-type"
+              color="blue"
+              style={{ fontWeight: "bold", cursor: "pointer" }}
+            >
               {original?.readableType ?? parent.title}
             </Tag>
           );
