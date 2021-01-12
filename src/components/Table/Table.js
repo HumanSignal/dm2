@@ -124,7 +124,7 @@ export const DataView = injector(
             <Empty
               description={
                 hasData ? (
-                  <span>Nothing's found.</span>
+                  <span>Nothing found</span>
                 ) : (
                   "Looks like you have not imported any data yet"
                 )
