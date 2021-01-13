@@ -76,6 +76,7 @@ export const Hint = styled.sup`
 export const LabelHeader = styled.div`
   flex: 0;
   display: flex;
+  min-height: 46px;
   padding: 0 1em 1em;
   align-items: flex-start;
   justify-content: space-between;
