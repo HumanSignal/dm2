@@ -46,7 +46,6 @@ const GridDataGroup = observer(({ type, value }) => {
 
 const GridCell = observer(
   ({ view, selected, row, fields, columnCount, onClick, ...props }) => {
-    console.log({ columnCount });
     return (
       <GridCellWrapper
         {...props}
@@ -153,12 +152,15 @@ export const GridView = observer(
 
     const itemCount = Math.ceil(data.length / columnCount);
 
-    const isItemLoaded = (index) => {
-      const rowIndex = index * columnCount;
-      const rowFullfilled =
-        data.slice(rowIndex, columnCount).length === columnCount;
-      return !view.dataStore.hasNextPage || rowFullfilled;
-    };
+    const isItemLoaded = React.useCallback(
+      (index) => {
+        const rowIndex = index * columnCount;
+        const rowFullfilled =
+          data.slice(rowIndex, columnCount).length === columnCount;
+        return !view.dataStore.hasNextPage || rowFullfilled;
+      },
+      [columnCount, data, view.dataStore.hasNextPage]
+    );
 
     return (
       <div className="grid" style={{ flex: 1 }}>

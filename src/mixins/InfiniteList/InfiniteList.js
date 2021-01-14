@@ -29,11 +29,11 @@ const MixinBase = types
     },
 
     get totalPages() {
-      return Math.round(self.total / self.pageSize);
+      return Math.ceil(self.total / self.pageSize);
     },
 
     get hasNextPage() {
-      return self.totalPages > self.page;
+      return self.page !== self.totalPages;
     },
 
     get isLoading() {
