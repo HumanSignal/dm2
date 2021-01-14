@@ -10,3 +10,17 @@ AudioCell.style = {
   minWidth: 150,
   maxWidth: 150,
 };
+
+/* Audio Plus */
+
+export const AudioPlusCell = (column) => {
+  return <SharedAudio src={column.value} />;
+};
+
+AudioPlusCell.style = {
+  width: 50,
+  minWidth: 150,
+  maxWidth: 150,
+};
+
+AudioPlusCell.userSelectable = false;
