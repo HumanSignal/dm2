@@ -94,7 +94,8 @@ export const GridView = observer(
     const rowHeight = fieldsData
       .filter((f) => f.parent?.alias === "data")
       .reduce((res, f) => {
-        const height = (DataGroups[f.type] ?? DataGroups.TextDataGroup).height;
+        const height = (DataGroups[f.currentType] ?? DataGroups.TextDataGroup)
+          .height;
         return res + height;
       }, 0);
 
