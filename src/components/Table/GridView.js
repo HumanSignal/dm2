@@ -154,10 +154,9 @@ export const GridView = observer(
     const itemCount = Math.ceil(data.length / columnCount);
 
     const isItemLoaded = (index) => {
-      const rowIndex = Math.floor(index / columnCount);
+      const rowIndex = index * columnCount;
       const rowFullfilled =
-        data.slice(rowIndex * columnCount, (rowIndex + 1) * columnCount)
-          .length === columnCount;
+        data.slice(rowIndex, columnCount).length === columnCount;
       return !view.dataStore.hasNextPage || rowFullfilled;
     };
 
