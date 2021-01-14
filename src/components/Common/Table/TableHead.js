@@ -31,7 +31,11 @@ const DropdownWrapper = observer(
                   <Space>
                     <Tag
                       color="blue"
-                      style={{ width: 45, textAlign: "center" }}
+                      style={{
+                        width: 45,
+                        textAlign: "center",
+                        cursor: "pointer",
+                      }}
                     >
                       {ViewColumnTypeShort(type)}
                     </Tag>

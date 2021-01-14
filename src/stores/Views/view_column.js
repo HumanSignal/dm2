@@ -11,6 +11,7 @@ export const ViewColumnType = types.enumeration([
   "List",
   "Image",
   "Audio",
+  "AudioPlus",
   "Text",
   "HyperText",
   "TimeSeries",
@@ -31,6 +32,8 @@ export const ViewColumnTypeShort = (type) => {
     case "Image":
       return "img";
     case "Audio":
+      return "aud";
+    case "AudioPlus":
       return "aud";
     case "Text":
       return "txt";
@@ -56,6 +59,8 @@ export const ViewColumnTypeName = (type) => {
       return "Image";
     case "Audio":
       return "Audio";
+    case "AudioPlus":
+      return "AudioPlus";
     case "Text":
       return "Text";
     case "HyperText":
