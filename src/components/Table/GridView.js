@@ -28,7 +28,7 @@ const GridBody = observer(({ row, fields }) => {
     return (
       <GridDataGroup
         key={`${row.id}-${index}`}
-        type={field.type}
+        type={field.currentType}
         value={value}
       />
     );
