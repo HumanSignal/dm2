@@ -4,8 +4,8 @@ import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import * as DataStores from "./DataStores";
 import { DynamicModel, registerModel } from "./DynamicModel";
+import { ViewsStore } from "./Tabs";
 import { CustomJSON } from "./types";
-import { ViewsStore } from "./Views";
 
 export const AppStore = types
   .model("AppStore", {

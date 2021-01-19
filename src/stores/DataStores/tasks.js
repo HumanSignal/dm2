@@ -1,5 +1,5 @@
 import { flow, types } from "mobx-state-tree";
-import { InfiniteList, InfiniteListItem } from "../../mixins/InfiniteList";
+import { DataStore, DataStoreItem } from "../../mixins/DataStore";
 import { getCompletionSnapshot } from "../../sdk/lsf-utils";
 import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
@@ -58,9 +58,9 @@ export const create = (columns) => {
       },
     }));
 
-  const TaskModel = types.compose("TaskModel", TaskModelBase, InfiniteListItem);
+  const TaskModel = types.compose("TaskModel", TaskModelBase, DataStoreItem);
 
-  return InfiniteList("TasksStore", {
+  return DataStore("TasksStore", {
     apiMethod: "tasks",
     listItemType: TaskModel,
     properties: {

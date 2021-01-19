@@ -1,5 +1,5 @@
 import { flow, getRoot, types } from "mobx-state-tree";
-import { InfiniteList, InfiniteListItem } from "../../mixins/InfiniteList";
+import { DataStore, DataStoreItem } from "../../mixins/DataStore";
 import { DynamicModel } from "../DynamicModel";
 
 export const create = (columns) => {
@@ -8,10 +8,10 @@ export const create = (columns) => {
   const AnnotationModel = types.compose(
     "AnnotationModel",
     AnnotationModelBase,
-    InfiniteListItem
+    DataStoreItem
   );
 
-  return InfiniteList("AnnotationStore", {
+  return DataStore("AnnotationStore", {
     apiMethod: "annotations",
     listItemType: AnnotationModel,
   }).actions((self) => ({

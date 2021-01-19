@@ -110,7 +110,7 @@ const MixinBase = types
     },
   }));
 
-export const InfiniteList = (
+export const DataStore = (
   modelName,
   { listItemType, apiMethod, properties }
 ) => {

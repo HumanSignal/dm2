@@ -1,8 +1,8 @@
 import { applySnapshot, getParent, getSnapshot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 
-export const InfiniteListItem = types
-  .model("InfiniteListItem", {
+export const DataStoreItem = types
+  .model("DataStoreItem", {
     updated: guidGenerator(),
     loading: false,
   })
