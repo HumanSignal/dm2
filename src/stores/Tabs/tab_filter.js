@@ -5,8 +5,8 @@ import { isDefined } from "../../utils/utils";
 import {
   FilterValue,
   FilterValueRange,
-  ViewFilterType,
-} from "./view_filter_type";
+  TabFilterType,
+} from "./tab_filter_type";
 
 const operatorNames = Array.from(
   new Set(
@@ -30,9 +30,9 @@ const getOperatorDefaultValue = (operator) => {
   return null;
 };
 
-export const ViewFilter = types
-  .model("ViewFilter", {
-    filter: types.reference(ViewFilterType),
+export const TabFilter = types
+  .model("TabFilter", {
+    filter: types.reference(TabFilterType),
     operator: types.maybeNull(Operators),
     value: types.maybeNull(
       types.union(FilterValue, FilterValueRange, types.array(FilterValue))
@@ -47,7 +47,7 @@ export const ViewFilter = types
       return self.filter.schema;
     },
 
-    /** @returns {import("./view").View} */
+    /** @returns {import("./tab").View} */
     get view() {
       return getParent(getParent(self));
     },

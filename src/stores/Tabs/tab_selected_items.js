@@ -1,7 +1,7 @@
 import { types } from "mobx-state-tree";
 
-export const SelectedItems = types
-  .model("SelectedItems", {
+export const TabSelectedItems = types
+  .model("TabSelectedItems", {
     all: false,
     list: types.optional(types.array(types.number), []),
   })

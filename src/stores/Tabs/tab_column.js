@@ -70,7 +70,7 @@ export const ViewColumnTypeName = (type) => {
   }
 };
 
-export const ViewColumn = types
+export const TabColumn = types
   .model("ViewColumn", {
     id: types.identifier,
     title: types.string,
@@ -78,9 +78,9 @@ export const ViewColumn = types
     type: types.optional(ViewColumnType, "String"),
     displayType: types.optional(types.maybeNull(ViewColumnType), null),
     defaultHidden: types.optional(types.boolean, false),
-    parent: types.maybeNull(types.late(() => types.reference(ViewColumn))),
+    parent: types.maybeNull(types.late(() => types.reference(TabColumn))),
     children: types.maybeNull(
-      types.array(types.late(() => types.reference(ViewColumn)))
+      types.array(types.late(() => types.reference(TabColumn)))
     ),
     target: types.enumeration(["tasks", "annotations"]),
     orderable: types.optional(types.boolean, true),

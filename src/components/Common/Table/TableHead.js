@@ -5,7 +5,7 @@ import {
   ViewColumnType,
   ViewColumnTypeName,
   ViewColumnTypeShort,
-} from "../../../stores/Tabs/view_column";
+} from "../../../stores/Tabs/tab_column";
 import { Resizer } from "../Resizer";
 import {
   TableCellContent,

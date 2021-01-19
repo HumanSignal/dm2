@@ -1,5 +1,5 @@
 import { isPrimitiveType, types } from "mobx-state-tree";
-import { ViewColumn, ViewColumnType } from "./view_column";
+import { TabColumn, ViewColumnType } from "./tab_column";
 
 export const FilterValue = types.union(
   types.string,
@@ -56,10 +56,10 @@ export const FilterSchema = types.union({
   },
 });
 
-export const ViewFilterType = types
-  .model("ViewFilterType", {
+export const TabFilterType = types
+  .model("TabFilterType", {
     id: types.identifier,
-    field: types.reference(ViewColumn),
+    field: types.reference(TabColumn),
     type: ViewColumnType,
     schema: types.maybeNull(FilterSchema),
   })

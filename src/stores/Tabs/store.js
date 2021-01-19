@@ -10,10 +10,10 @@ import { History } from "../../utils/history";
 import { guidGenerator } from "../../utils/random";
 import { unique } from "../../utils/utils";
 import { CustomJSON } from "../types";
-import { View } from "./view";
-import { ViewColumn } from "./view_column";
-import { ViewFilterType } from "./view_filter_type";
-import { ViewHiddenColumns } from "./view_hidden_columns";
+import { Tab } from "./tab";
+import { TabColumn } from "./tab_column";
+import { TabFilterType } from "./tab_filter_type";
+import { TabHiddenColumns } from "./tab_hidden_columns";
 
 const storeValue = (name, value) => {
   window.localStorage.setItem(name, value);
@@ -28,16 +28,16 @@ const restoreValue = (name) => {
 
 export const ViewsStore = types
   .model("ViewsStore", {
-    selected: types.maybeNull(types.late(() => types.reference(View))),
-    views: types.optional(types.array(View), []),
-    availableFilters: types.optional(types.array(ViewFilterType), []),
-    columnsTargetMap: types.map(types.array(ViewColumn)),
+    selected: types.maybeNull(types.late(() => types.reference(Tab))),
+    views: types.optional(types.array(Tab), []),
+    availableFilters: types.optional(types.array(TabFilterType), []),
+    columnsTargetMap: types.map(types.array(TabColumn)),
     columnsRaw: types.optional(CustomJSON, []),
     sidebarVisible: restoreValue("sidebarVisible"),
     sidebarEnabled: restoreValue("sidebarEnabled"),
   })
   .volatile(() => ({
-    defaultHidden: types.optional(ViewHiddenColumns, {}),
+    defaultHidden: types.optional(TabHiddenColumns, {}),
   }))
   .views((self) => ({
     get all() {
@@ -144,7 +144,7 @@ export const ViewsStore = types
     },
 
     createView(viewSnapshot) {
-      return View.create(viewSnapshot ?? {});
+      return Tab.create(viewSnapshot ?? {});
     },
 
     expandFilters() {
@@ -205,7 +205,7 @@ export const ViewsStore = types
           ? c.children.map((ch) => `${target}:${columnPath}.${ch}`)
           : undefined;
 
-        const column = ViewColumn.create({
+        const column = TabColumn.create({
           ...c,
           id: columnID,
           alias: c.id,
@@ -232,13 +232,13 @@ export const ViewsStore = types
         });
       });
 
-      self.defaultHidden = ViewHiddenColumns.create(hiddenColumns);
+      self.defaultHidden = TabHiddenColumns.create(hiddenColumns);
     },
 
     fetchViews: flow(function* (tabID, taskID, labeling) {
       const { tabs } = yield getRoot(self).apiCall("tabs");
 
-      const snapshots = tabs.map((t) => View.create({ ...t, saved: true }));
+      const snapshots = tabs.map((t) => Tab.create({ ...t, saved: true }));
 
       self.views.push(...snapshots);
 

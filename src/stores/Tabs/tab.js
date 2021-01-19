@@ -9,11 +9,11 @@ import {
   types,
 } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
-import { ViewFilter } from "./view_filter";
-import { ViewHiddenColumns } from "./view_hidden_columns";
-import { SelectedItems } from "./view_selected_items";
+import { TabFilter } from "./tab_filter";
+import { TabHiddenColumns } from "./tab_hidden_columns";
+import { TabSelectedItems } from "./tab_selected_items";
 
-export const View = types
+export const Tab = types
   .model("View", {
     id: types.identifierNumber,
 
@@ -29,12 +29,12 @@ export const View = types
       "tasks"
     ),
 
-    filters: types.array(types.late(() => ViewFilter)),
+    filters: types.array(types.late(() => TabFilter)),
     conjunction: types.optional(types.enumeration(["and", "or"]), "and"),
-    hiddenColumns: types.maybeNull(types.optional(ViewHiddenColumns, {})),
+    hiddenColumns: types.maybeNull(types.optional(TabHiddenColumns, {})),
     ordering: types.optional(types.array(types.string), []),
-    selected: types.optional(SelectedItems, {}),
-    opener: types.optional(types.maybeNull(types.late(() => View)), null),
+    selected: types.optional(TabSelectedItems, {}),
+    opener: types.optional(types.maybeNull(types.late(() => Tab)), null),
     columnsWidth: types.map(types.maybeNull(types.number)),
     columnsDisplayType: types.map(types.maybeNull(types.string)),
     gridWidth: 4,
@@ -281,7 +281,7 @@ export const View = types
 
     createFilter() {
       const filterType = self.availableFilters[0];
-      const filter = ViewFilter.create({
+      const filter = TabFilter.create({
         filter: filterType,
         view: self.id,
       });

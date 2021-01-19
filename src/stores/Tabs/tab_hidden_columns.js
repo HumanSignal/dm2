@@ -1,12 +1,12 @@
 import { getRoot, types } from "mobx-state-tree";
-import { ViewColumn } from "./view_column";
+import { TabColumn } from "./tab_column";
 
 const ColumnsList = types.maybeNull(
-  types.array(types.late(() => types.reference(ViewColumn)))
+  types.array(types.late(() => types.reference(TabColumn)))
 );
 
-export const ViewHiddenColumns = types
-  .model("HiddenColumns", {
+export const TabHiddenColumns = types
+  .model("TabHiddenColumns", {
     explore: types.optional(ColumnsList, []),
     labeling: types.optional(ColumnsList, []),
   })
