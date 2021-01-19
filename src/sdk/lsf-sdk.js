@@ -29,8 +29,6 @@ const resolveLabelStudio = async () => {
     return LabelStudioDM;
   } else if (window.LabelStudio) {
     return (LabelStudioDM = window.LabelStudio);
-  } else {
-    return (LabelStudioDM = (await import("label-studio")).LabelStudio);
   }
 };
 

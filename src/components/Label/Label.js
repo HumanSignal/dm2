@@ -2,7 +2,6 @@
 
 import { CaretDownOutlined, EyeOutlined } from "@ant-design/icons";
 import { Button, Space } from "antd";
-import "label-studio/build/static/css/main.css";
 import { inject } from "mobx-react";
 import React from "react";
 import { FaChevronLeft } from "react-icons/fa";
