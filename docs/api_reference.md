@@ -12,98 +12,7 @@ Responses are in JSON as well.
 
 Information about current project
 
-<details>
-<summary><b style="font-size: 16px">JSON response example</b></summary>
-<p>
-
-```json
-{
-  "available_storages": [
-    [
-      "s3",
-      "Amazon S3"
-    ],
-    [
-      "s3-completions",
-      "Amazon S3"
-    ],
-    [
-      "gcs",
-      "Google Cloud Storage"
-    ],
-    [
-      "gcs-completions",
-      "Google Cloud Storage"
-    ],
-    [
-      "completions-dir",
-      "Local [completions are in \"completions\" directory]"
-    ],
-    [
-      "tasks-json",
-      "Local [loading tasks from \"tasks.json\" file]"
-    ]
-  ],
-  "can_delete_tasks": true,
-  "can_manage_completions": true,
-  "can_manage_tasks": true,
-  "completion_count": 1,
-  "config": {
-    "allow_delete_completions": true,
-    "debug": false,
-    "description": "default",
-    "editor": {
-      "debug": false
-    },
-    "host": "0.0.0.0",
-    "input_path": "tasks.json",
-    "instruction": "<img src='static/images/ls_logo.png'><br> Type some <b>hypertext</b> for annotators here!<br> <a href='https://labelstud.io/guide/labeling.html'>Read more</a> about the labeling interface.",
-    "label_config": "config.xml",
-    "label_config_updated": true,
-    "ml_backends": [],
-    "output_dir": "completions",
-    "port": 8081,
-    "protocol": "http://",
-    "sampling": "sequential",
-    "show_project_links_in_multisession": true,
-    "source": {
-      "name": "Tasks",
-      "path": "tasks.json",
-      "type": "tasks-json"
-    },
-    "target": {
-      "name": "Completions",
-      "path": "completions",
-      "type": "completions-dir"
-    },
-    "task_page_auto_update_timer": 10000,
-    "templates_dir": "examples",
-    "title": "Label Studio"
-  },
-  "config_has_control_tags": true,
-  "data_types": {
-    "image": "Image"
-  },
-  "instruction": "<img src='static/images/ls_logo.png'><br> Type some <b>hypertext</b> for annotators here!<br> <a href='https://labelstud.io/guide/labeling.html'>Read more</a> about the labeling interface.",
-  "label_config_line": "<View>  <Image name=\"image\" value=\"$image\"/>  <BrushLabels name=\"tag\" toName=\"image\">    <Label value=\"Planet\" background=\"rgba(0, 0, 255, 0.7)\"/>    <Label value=\"Moonwalker\" background=\"rgba(255, 0, 0, 0.7)\"/>  </BrushLabels></View>",
-  "multi_session_mode": false,
-  "project_name": "./my_project",
-  "source_storage": {
-    "readable_path": "././my_project/tasks.json"
-  },
-  "source_syncing": false,
-  "target_storage": {
-    "readable_path": "././my_project/completions"
-  },
-  "target_syncing": false,
-  "task_count": 100
-}
-```
-
-</details>
 ---
-
-
 
 ### `/project/columns`
 
@@ -117,40 +26,6 @@ Information about columns of the dataset.
 | -----------                           | ----------- | ------------ |
 | columns                             | List<[Column](#Column)> | List of columns |
 
-<details>
-<summary><b style="font-size: 16px">JSON response example</b></summary>
-<p>
-
-```json
-{
-  "columns": [
-    {
-      "id": "image",
-      "parent": "data",
-      "target": "tasks",
-      "title": "image",
-      "type": "Image",
-      "visibility_defaults": {
-        "explore": true,
-        "labeling": true
-      }
-    },
-    {
-      "children": [
-        "image"
-      ],
-      "id": "data",
-      "target": "tasks",
-      "title": "data",
-      "type": "List"
-    }
-  ]
-}
-```
-
-</p>
-</details>
-
 ---
 
 #### `/project/tabs`
@@ -163,66 +38,17 @@ Information about tabs in current project
 | -------- | ----------------- | ------------ |
 | tabs     | List<[Tab](#Tab)> | List of tabs |
 
-<details>
-<summary><b style="font-size: 16px">JSON response example</b></summary>
-<p>
-
-```json
-{
-  "tabs": [
-    {
-      "columnsDisplayType": {
-        "tasks:data.image": "Image"
-      },
-      "columnsWidth": {
-        "tasks:total_predictions": 117
-      },
-      "filters": {
-        "conjunction": "and",
-        "items": []
-      },
-      "gridWidth": 4,
-      "hiddenColumns": {
-        "explore": [
-          "tasks:completions_results",
-          "tasks:predictions_score",
-          "tasks:predictions_results"
-        ],
-        "labeling": [
-          "tasks:total_completions",
-          "tasks:cancelled_completions",
-          "tasks:total_predictions",
-          "tasks:completions_results",
-          "tasks:predictions_score",
-          "tasks:predictions_results"
-        ]
-      },
-      "id": 1,
-      "ordering": [
-        "-tasks:id"
-      ],
-      "selectedItems": {
-        "all": false,
-        "included": []
-      },
-      "target": "tasks",
-      "title": "Tab 1",
-      "type": "list"
-    }
-  ]
-}
-```
-
-</p>
-</details>
-
 ---
 
 ### `/project/tabs/:tabID`
 
 ##### **POST**
 
-Create tab or update existing one
+Create tab or update existing one.
+
+| Property | Value                    | Description                      |
+| -------- | ------------------------ | -------------------------------- |
+| body     | JSON encoded [Tab](#Tab) | Data to create or update the tab |
 
 ##### **DELETE**
 
@@ -234,7 +60,26 @@ Delete specific tab
 
 ##### **GET**
 
-Pages set of samples in the dataset
+Pages set of samples from the dataset filtered by [Filter](#Filter).
+
+###### Request parameters (set automatically by DataManager):
+
+| Property    | Type                               | Description                                                  |
+| ----------- | ---------------------------------- | ------------------------------------------------------------ |
+| page        | Int                                | Page to load                                                 |
+| page_size   | Int                                | Amount of tasks per page                                     |
+| interaction | "scroll" \| "filter" \| "ordering" | This value is used by LS to optimize requests to the underlying storage |
+
+###### Response parameters:
+
+| Property          | Type                | Description                               |
+| ----------------- | ------------------- | ----------------------------------------- |
+| tasks             | List<[Task](#Task)> | Tasks are samples from your dataset       |
+| total             | Int                 | Total amount of tasks                     |
+| total_completions | Int                 | Total amount of completions for the tasks |
+| total_predictions | Int                 | Total amount of completions for the tasks |
+
+
 
 ---
 
@@ -244,6 +89,12 @@ Pages set of samples in the dataset
 
 Returns a specific task
 
+| Property | Type          | Description        |
+| -------- | ------------- | ------------------ |
+| task     | [Task](#Task) | Single task entity |
+
+
+
 ---
 
 ### `/project/next`
@@ -251,6 +102,12 @@ Returns a specific task
 ##### **GET**
 
 According to sampling settings returns next task in the dataset
+
+| Property | Type          | Description        |
+| -------- | ------------- | ------------------ |
+| task     | [Task](#Task) | Single task entity |
+
+
 
 ---
 
@@ -260,6 +117,12 @@ According to sampling settings returns next task in the dataset
 
 Annotations for the current dataset
 
+| Property    | Type             | Description                                               |
+| ----------- | ---------------- | --------------------------------------------------------- |
+| annotations | List<Annotation> | See Label Studio documentation to learn about annotations |
+
+
+
 ---
 
 ### `/tasks/:taskID/completions`
@@ -268,9 +131,18 @@ Annotations for the current dataset
 
 Completions for the current dataset
 
+| Property    | Type             | Description                                                  |
+| ----------- | ---------------- | ------------------------------------------------------------ |
+| completions | List<Completion> | See Label Studio documentation to learn more about completions |
+
 ##### **POST** `[was_skipped=true]`
 
 If `was_skipped` parameter is passed, creates a completion marked as rejected
+
+| Property    | Type                    | Description                                         |
+| ----------- | ----------------------- | --------------------------------------------------- |
+| body        | JSON encoded Completion |                                                     |
+| was_skipped | 1 \| null               | Creates new completion with `was_skipped=true` flag |
 
 ---
 
@@ -284,9 +156,22 @@ Get a completion for a specific task
 
 If `was_skipped` parameter is passed, marks an existing completion as rejected
 
+###### Request parameters
+
+| Property    | Type                    | Description                                               |
+| ----------- | ----------------------- | --------------------------------------------------------- |
+| body        | JSON encoded Completion |                                                           |
+| was_skipped | 1 \| null               | Tells the backend to mark the completion as `was_skipped` |
+
 ##### **DELETE**
 
 Delete completion
+
+| Property | Type | Description           |
+| -------- | ---- | --------------------- |
+| id       | Int  | Deleted completion id |
+
+
 
 ---
 
@@ -294,37 +179,67 @@ Delete completion
 
 This method manages selected items list – tasks, that you marked as selected. List of selected task is stored on a tab level.
 
-| Parameter | Type      | Default value                             |
-| --------- | --------- | ----------------------------------------- |
-| all       | Boolean   | Indicates if all tasks should be selected |
-| included  | List<Int> | List of included IDs when `all=false`     |
-| excluded  | List<Int> | List of excluded IDs when `all=true`      |
-
 ##### **POST**
 
-Override selected items list
+Override selected items list.
+
+###### Request parameters
+
+| Property | Type                                         | Desctiption             |
+| -------- | -------------------------------------------- | ----------------------- |
+| body     | JSON encoded [SelectedItems](#SelectedItems) | Selected items to write |
 
 ##### **PATCH**
 
-Add items to the list
+Add items to the list. This method does not override SelectedItems, instead it modifies the list.
+
+###### Request parameters
+
+| Property | Type                                         | Desctiption             |
+| -------- | -------------------------------------------- | ----------------------- |
+| body     | JSON encoded [SelectedItems](#SelectedItems) | Selected items to write |
 
 ##### **DELETE**
 
-Remove items from the list
+Remove items from the list.
 
+###### Request parameters
+
+| Property | Type                                         | Desctiption             |
+| -------- | -------------------------------------------- | ----------------------- |
+| body     | JSON encoded [SelectedItems](#SelectedItems) | Selected items to write |
 ---
 
 ### `/project/actions`
 
-* **GET**
+##### GET
+
+Returns a list of available actions. Actions can be applied to
+
+- single task
+- selected tasks
+- whole tab
+
+| Property    | Type                         | Description                                                  |
+| ----------- | ---------------------------- | ------------------------------------------------------------ |
+| id          | String                       | String-based code of the action                              |
+| title       | String                       | Human readable label of the action                           |
+| order       | Int                          | Acts as a weight for the task and affects the order of buttons in Data Manager |
+| dialog      | Dist<String, String> \| null | Confirmation dialog. It will be shown on button press before executing the action |
+| dialog.text | String                       | Dialog text                                                  |
+| dialog.type | String                       | Dialog type                                                  |
+
+
 
 ---
 
 ### `/project/tabs/:tabID/actions`
 
-* **POST**
+##### POST
 
+Invokes a given action.
 
+Doesn't require any parameters.
 
 ## Type Reference
 
@@ -494,3 +409,17 @@ Selected items is an object that stores samples checked in the UI. To operate ef
 }
 ```
 
+### Task
+
+Task is a single sample from the dataset.
+
+| Property              | Type              | Description                                             |
+| --------------------- | ----------------- | ------------------------------------------------------- |
+| id                    | Int               | Task identifier generated by LS                         |
+| cancelled_completions | Int               | Number of cancelled (rejected) completions for the task |
+| completed_at          | DateTime          | Creation date of the last completion                    |
+| predictions_result    | String            |                                                         |
+| total_completions     | Int               | Total completions for the task                          |
+| total_predictions     | Int               | Total predictions fo the task                           |
+| data                  | Dict<String, Any> | Data from the dataset                                   |
+| extra                 | Dict<String, Any> | Any extra data for the task                             |
