@@ -2,6 +2,10 @@
 
 DataManager uses LabelStudio API to operate.
 
+Request parameters shoud be JSON.
+
+Responses are in JSON as well.
+
 ### `/project`
 
 ##### **GET**
@@ -105,17 +109,13 @@ Information about current project
 
 ##### **GET**
 
-Information about columns of the dataset
+Information about columns of the dataset.
 
 #### Response
 
 | Parameter | Type | Description |
 | -----------                           | ----------- | ------------ |
-| `columns`                             | `Column[]` | List of columns |
-
-#### Referenced types
-
-* [Column](#Column)
+| columns                             | List<[Column](#Column)> | List of columns |
 
 <details>
 <summary><b style="font-size: 16px">JSON response example</b></summary>
@@ -159,15 +159,9 @@ Information about columns of the dataset
 
 Information about tabs in current project
 
-| Property | Type        | Description  |
-| -------- | ----------- | ------------ |
-| tabs     | `List<Tab>` | List of tabs |
-
-
-
-
-
-
+| Property | Type              | Description  |
+| -------- | ----------------- | ------------ |
+| tabs     | List<[Tab](#Tab)> | List of tabs |
 
 <details>
 <summary><b style="font-size: 16px">JSON response example</b></summary>
@@ -338,40 +332,51 @@ Remove items from the list
 
 Tab represents a materialized view that can slice and order the data
 
-| Property             | Type                                        | Description                                    |
-| -------------------- | ------------------------------------------- | ---------------------------------------------- |
-| `id`                 | `int`                                       | Tab identifier                                 |
-| `type`               | `"list"|"grid"`                             | Display type                                   |
-| `title`              | `string`                                    | Human readable title                           |
-| `target`             | `"tasks"|"annotations"`                     | Currently shown entity type                    |
-| `filters`            | `Filter`                                    | Filter applied to the tab                      |
-| `ordering`           | `List<ColumnAlias|-ColumnAlias>`            | Ordering applied to the tab                    |
-| `selectedItems`      | `SelectedItems`                             | List of checked samples                        |
-| `columnsDisplayType` | `Dict<ColumnAlias, ColumnType>`             | List of display types override for data values |
-| `columnsWidth`       | `Dict<ColumnAlias, int>`                    | Width of each individual column                |
-| `hiddenColumns`      | `Dict<"explore"|"labeling", ColumnAlias[]>` | List of hidden tabs per view                   |
-
-### Referenced types
-
-* [ColumnAlias](#ColumnAlias)
-* [SelectedItems](#SelectedItems)
-* [Filter](#Filter)
+| Property             | Type                                                         | Description                                    |
+| -------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
+| `id`                 | int                                                          | Tab identifier                                 |
+| `type`               | "list" \| "grid"                                             | Display type                                   |
+| `title`              | string                                                       | Human readable title                           |
+| `target`             | "tasks" \| "annotations"                                     | Currently shown entity type                    |
+| `filters`            | [Filter](#Filter)                                            | Filter applied to the tab                      |
+| `ordering`           | List<ColumnAlias\|-ColumnAlias>                              | Ordering applied to the tab                    |
+| `selectedItems`      | SelectedItems                                                | List of checked samples                        |
+| `columnsDisplayType` | Dict<[ColumnAlias](#ColumnALias), [ColumnType](#ColumnType)> | List of display types override for data values |
+| `columnsWidth`       | Dict<[ColumnAlias](#ColumnAlias), int>                       | Width of each individual column                |
+| `hiddenColumns`      | Dict<"explore" \| "labeling", List<[ColumnAlias](#ColumnAlias)>> | List of hidden tabs per view                   |
 
 ### Column
 
-`Column` represents a single column item:
+`Column` represents a single field of the dataset samle:
 
 | Property | Type | Description |
 | -------- | ---- | ----------- |
-| `column.id`                           | `string`    | Column identifier |
-| `column.parent`                       | `string`    | Parent identifier |
-| `column.target`                       | `"tasks"|"annotations"` | Entity the column is attached to |
-| `column.title`                        | `string`    | Human readable title |
-| `column.type`                         | `string`    | Column value type |
-| `column.children`                     | `string`    | Column identifier |
-| `column.visibility_defaults`          | `Dict<"explore"|"labeling", Boolean>` | Column identifier |
+| column.id                           | string    | Column identifier |
+| column.parent                       | string \| null | Parent identifier |
+| column.target                     | "tasks" \| "annotations" | Entity the column is attached to |
+| column.title                      | string    | Human readable title |
+| column.type                         | [ColumnType](#ColumnType) | Column value type |
+| column.children                     | List<String> \| null | Column identifier |
+| column.visibility_defaults          | Dict<"explore"\|"labeling", Boolean> | Column identifier |
 
+### ColumnType
 
+Represents a type of a column value. Column can have one of the tipes listed below.
+
+| Type          | Description |
+| ---           | - |
+| String      | Primitive string |
+| Boolean     | Primitive boolean |
+| Number      | `Int` or `Double` |
+| Datetime    | Date and time in ISO format |
+| List<T>     | List of items. T can be one of the types listed in this table |
+| Image       | Image url |
+| Audio       | Audio url |
+| AudioPlus   | Audio url |
+| Text        | Text string |
+| HyperText   | HTML or XML based markup |
+| TimeSeries  | TimeSeries data |
+| Unknown     | Type cannot be determined by the backend |
 
 ### ColumnAlias
 
@@ -411,11 +416,9 @@ In this case columns will look like this:
 }
 ```
 
-As the columns list is a flat list of columns, full path will reference all accending columns: `tasks:data.image`
+As the columns list is flat, full path will reference all ascending columns: `tasks:data.image`
 
 In some cases `ColumnAlias` might be negative. For example negative values are used for ordering: `-tasks:data.image`
-
-
 
 ### SelectedItems
 
@@ -446,8 +449,6 @@ Selected items is an object that stores samples checked in the UI. To operate ef
   }
 }
 ```
-
-
 
 ### Filter
 
