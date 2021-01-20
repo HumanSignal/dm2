@@ -294,11 +294,11 @@ Delete completion
 
 This method manages selected items list – tasks, that you marked as selected. List of selected task is stored on a tab level.
 
-| Parameter  | Type      | Default value                             |
-| ---------- | --------- | ----------------------------------------- |
-| `all`      | `boolean` | Indicates if all tasks should be selected |
-| `included` | `int[]`   | List of included IDs when `all=false`     |
-| `excluded` | `int[]`   | List of excluded IDs when `all=true`      |
+| Parameter | Type      | Default value                             |
+| --------- | --------- | ----------------------------------------- |
+| all       | Boolean   | Indicates if all tasks should be selected |
+| included  | List<Int> | List of included IDs when `all=false`     |
+| excluded  | List<Int> | List of excluded IDs when `all=true`      |
 
 ##### **POST**
 
@@ -332,18 +332,56 @@ Remove items from the list
 
 Tab represents a materialized view that can slice and order the data
 
-| Property             | Type                                                         | Description                                    |
-| -------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
-| `id`                 | int                                                          | Tab identifier                                 |
-| `type`               | "list" \| "grid"                                             | Display type                                   |
-| `title`              | string                                                       | Human readable title                           |
-| `target`             | "tasks" \| "annotations"                                     | Currently shown entity type                    |
-| `filters`            | [Filter](#Filter)                                            | Filter applied to the tab                      |
-| `ordering`           | List<ColumnAlias\|-ColumnAlias>                              | Ordering applied to the tab                    |
-| `selectedItems`      | SelectedItems                                                | List of checked samples                        |
-| `columnsDisplayType` | Dict<[ColumnAlias](#ColumnALias), [ColumnType](#ColumnType)> | List of display types override for data values |
-| `columnsWidth`       | Dict<[ColumnAlias](#ColumnAlias), int>                       | Width of each individual column                |
-| `hiddenColumns`      | Dict<"explore" \| "labeling", List<[ColumnAlias](#ColumnAlias)>> | List of hidden tabs per view                   |
+| Property           | Type                                                         | Description                                    |
+| ------------------ | ------------------------------------------------------------ | ---------------------------------------------- |
+| id                 | Int                                                          | Tab identifier                                 |
+| type               | "list" \| "grid"                                             | Display type                                   |
+| title              | String                                                       | Human readable title                           |
+| target             | "tasks" \| "annotations"                                     | Currently shown entity type                    |
+| filters            | [Filter](#Filter)                                            | Filter applied to the tab                      |
+| ordering           | List<[ColumnAlias](#ColumnAlias) \| -[ColumnAlias](#ColumnAlias)> | Ordering applied to the tab                    |
+| selectedItems      | [SelectedItems](#SelectedItems)                              | List of checked samples                        |
+| columnsDisplayType | Dict<[ColumnAlias](#ColumnALias), [ColumnType](#ColumnType)> | List of display types override for data values |
+| columnsWidth       | Dict<[ColumnAlias](#ColumnAlias), int>                       | Width of each individual column                |
+| hiddenColumns      | Dict<"explore" \| "labeling", List<[ColumnAlias](#ColumnAlias)>> | List of hidden tabs per view                   |
+
+### Filter
+
+Filter specifies what data will be shown in the tab
+
+| Property      | Type          | Description  |
+| ---           | ---           | ---          |
+| conjunction   | "and" \| "or" | How filter items are combined for the comparison |
+| items         | List<[FilterItem](#FilterItem)> | Single filter |
+
+### FilterItem
+
+| Property      | Type          | Description  |
+| ---           | ---           | ---          |
+| filter        | "filter:[ColumnAlias](#ColumnAlias)" | Path to the property |
+| type          | [ColumnType](#ColumnType) | Type of the column |
+| operator      | [FilterOperator](#FilterOperator) | Operator of the comparison |
+| value         | String | Value to compare |
+
+### FilterOperator
+
+| Operator         | Input                  | Description                                     |
+| ---------------- | ---------------------- | ----------------------------------------------- |
+| equal            | String \| Number       | Direct equality comparison                      |
+| not_equal        | String \| Number       | Direct inequality comparison                    |
+| contains         | String \| Number       | Check wther string contains a substring         |
+| not_contains     | String \| Number       | Check wther string does not contain a substring |
+| less             | Number                 | Value is less than an input                     |
+| greater          | Number                 | Value is greater than an input                  |
+| less_or_equal    | Number                 | Value is less or equal to input                 |
+| greater_or_equal | Number                 | Value is greater or equal to input              |
+| in               | List<String \| Number> | Value is in a list                              |
+| not_in           | List<String \| Number> | Value is not in a list                          |
+| empty            | Boolean                | Value is empty                                  |
+
+
+
+
 
 ### Column
 
@@ -351,10 +389,10 @@ Tab represents a materialized view that can slice and order the data
 
 | Property | Type | Description |
 | -------- | ---- | ----------- |
-| column.id                           | string    | Column identifier |
-| column.parent                       | string \| null | Parent identifier |
+| column.id                           | String | Column identifier |
+| column.parent                       | String \| null | Parent identifier |
 | column.target                     | "tasks" \| "annotations" | Entity the column is attached to |
-| column.title                      | string    | Human readable title |
+| column.title                      | String | Human readable title |
 | column.type                         | [ColumnType](#ColumnType) | Column value type |
 | column.children                     | List<String> \| null | Column identifier |
 | column.visibility_defaults          | Dict<"explore"\|"labeling", Boolean> | Column identifier |
@@ -422,6 +460,12 @@ In some cases `ColumnAlias` might be negative. For example negative values are u
 
 ### SelectedItems
 
+| Property | Type      | Default | Description                                                  |
+| -------- | --------- | ------- | ------------------------------------------------------------ |
+| all      | Boolean   | false   | When true, all items in the dataset implied as selected      |
+| included | List<Int> | []      | When `all=false` this list specifies selected items          |
+| excluded | List<Int> | []      | When `all=true` this list specifies the items to exclude from selection |
+
 Selected items is an object that stores samples checked in the UI. To operate effectively on large amounts of data it uses partial selection approach. The structure of this object is the following:
 
 ```json
@@ -450,6 +494,3 @@ Selected items is an object that stores samples checked in the UI. To operate ef
 }
 ```
 
-### Filter
-
-Filter brings granularity to the data
