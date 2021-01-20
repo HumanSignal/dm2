@@ -2,13 +2,11 @@
 
 DataManager uses LabelStudio API to operate.
 
-## `/project`
+### `/project`
 
-### **GET**
+##### **GET**
 
 Information about current project
-
-Response
 
 <details>
 <summary><b style="font-size: 16px">JSON response example</b></summary>
@@ -103,9 +101,9 @@ Response
 
 
 
-## `/project/columns`
+### `/project/columns`
 
-### **GET**
+##### **GET**
 
 Information about columns of the dataset
 
@@ -115,7 +113,7 @@ Information about columns of the dataset
 | -----------                           | ----------- | ------------ |
 | `columns`                             | `Column[]` | List of columns |
 
-### Referenced types
+#### Referenced types
 
 * [Column](#Column)
 
@@ -155,29 +153,21 @@ Information about columns of the dataset
 
 ---
 
-## `/project/tabs`
+#### `/project/tabs`
 
-### **GET**
+##### **GET**
 
 Information about tabs in current project
 
-| Property             | Type                                        | Description                                    |
-| -------------------- | ------------------------------------------- | ---------------------------------------------- |
-| `id`                 | `int`                                       | Tab identifier                                 |
-| `type`               | `"list"|"grid"`                             | Display type                                   |
-| `title`              | `string`                                    | Human readable title                           |
-| `target`             | `"tasks"|"annotations"`                     | Currently shown entity type                    |
-| `filters`            | `Filter`                                    | Filter applied to the tab                      |
-| `ordering`           | `List<ColumnAlias|-ColumnAlias>`            | Ordering applied to the tab                    |
-| `selectedItems`      | `SelectedItems`                             | List of checked samples                        |
-| `columnsDisplayType` | `Dict<ColumnAlias, ColumnType>`             | List of display types override for data values |
-| `columnsWidth`       | `Dict<ColumnAlias, int>`                    | Width of each individual column                |
-| `hiddenColumns`      | `Dict<"explore"|"labeling", ColumnAlias[]>` | List of hidden tabs per view                   |
+| Property | Type        | Description  |
+| -------- | ----------- | ------------ |
+| tabs     | `List<Tab>` | List of tabs |
 
-### Referenced types
 
-* [ColumnAlias](#ColumnAlias)
-* [SelectedItems](#SelectedItems)
+
+
+
+
 
 <details>
 <summary><b style="font-size: 16px">JSON response example</b></summary>
@@ -234,121 +224,140 @@ Information about tabs in current project
 
 ---
 
-## `/project/tabs/:tabID`
+### `/project/tabs/:tabID`
 
-### **POST**
+##### **POST**
 
 Create tab or update existing one
 
----
-
-### **DELETE**
+##### **DELETE**
 
 Delete specific tab
 
 ---
 
-## `/project/tabs/:tabID/tasks`
+### `/project/tabs/:tabID/tasks`
 
-### **GET**
+##### **GET**
 
 Pages set of samples in the dataset
 
 ---
 
-## `/tasks/:taskID`
+### `/tasks/:taskID`
 
-### **GET**
+##### **GET**
 
 Returns a specific task
 
 ---
 
-## `/project/next`
+### `/project/next`
 
-### **GET**
+##### **GET**
 
 According to sampling settings returns next task in the dataset
 
 ---
 
-## `/project/tabs/:tabID/annotations`
+### `/project/tabs/:tabID/annotations`
 
-### **GET**
+##### **GET**
 
 Annotations for the current dataset
 
 ---
 
-## `/tasks/:taskID/completions`
+### `/tasks/:taskID/completions`
 
-### **GET**
+##### **GET**
 
 Completions for the current dataset
 
-### **POST** `[was_skipped=true]`
+##### **POST** `[was_skipped=true]`
 
 If `was_skipped` parameter is passed, creates a completion marked as rejected
 
 ---
 
-## `/tasks/:taskID/completions/:id`
+### `/tasks/:taskID/completions/:id`
 
-### **GET**
+##### **GET**
 
 Get a completion for a specific task
 
-### **POST** `[was_skipped=true]`
+##### **POST** `[was_skipped=true]`
 
 If `was_skipped` parameter is passed, marks an existing completion as rejected
 
-### **DELETE**
+##### **DELETE**
 
 Delete completion
 
 ---
 
-## `/project/tabs/:tabID/selected-items`
+### `/project/tabs/:tabID/selected-items`
 
 This method manages selected items list – tasks, that you marked as selected. List of selected task is stored on a tab level.
 
-| Parameter  | Type       | Default value                             |
-| ---------- | ---------- | ----------------------------------------- |
-| `all`      | `boolean`  | Indicates if all tasks should be selected |
-| `included` | `number[]` | List of included IDs when `all=false`     |
-| `excluded` | `number[]` | List of excluded IDs when `all=true`      |
+| Parameter  | Type      | Default value                             |
+| ---------- | --------- | ----------------------------------------- |
+| `all`      | `boolean` | Indicates if all tasks should be selected |
+| `included` | `int[]`   | List of included IDs when `all=false`     |
+| `excluded` | `int[]`   | List of excluded IDs when `all=true`      |
 
-### **POST**
+##### **POST**
 
 Override selected items list
 
-### **PATCH**
+##### **PATCH**
 
 Add items to the list
 
-### **DELETE**
+##### **DELETE**
 
 Remove items from the list
 
 ---
 
-## `/project/actions`
+### `/project/actions`
 
 * **GET**
 
 ---
 
-## `/project/tabs/:tabID/actions`
+### `/project/tabs/:tabID/actions`
 
 * **POST**
 
 
 
-# Type Reference
+## Type Reference
 
+### Tab
 
+Tab represents a materialized view that can slice and order the data
 
-## Column
+| Property             | Type                                        | Description                                    |
+| -------------------- | ------------------------------------------- | ---------------------------------------------- |
+| `id`                 | `int`                                       | Tab identifier                                 |
+| `type`               | `"list"|"grid"`                             | Display type                                   |
+| `title`              | `string`                                    | Human readable title                           |
+| `target`             | `"tasks"|"annotations"`                     | Currently shown entity type                    |
+| `filters`            | `Filter`                                    | Filter applied to the tab                      |
+| `ordering`           | `List<ColumnAlias|-ColumnAlias>`            | Ordering applied to the tab                    |
+| `selectedItems`      | `SelectedItems`                             | List of checked samples                        |
+| `columnsDisplayType` | `Dict<ColumnAlias, ColumnType>`             | List of display types override for data values |
+| `columnsWidth`       | `Dict<ColumnAlias, int>`                    | Width of each individual column                |
+| `hiddenColumns`      | `Dict<"explore"|"labeling", ColumnAlias[]>` | List of hidden tabs per view                   |
+
+### Referenced types
+
+* [ColumnAlias](#ColumnAlias)
+* [SelectedItems](#SelectedItems)
+* [Filter](#Filter)
+
+### Column
 
 `Column` represents a single column item:
 
@@ -356,15 +365,15 @@ Remove items from the list
 | -------- | ---- | ----------- |
 | `column.id`                           | `string`    | Column identifier |
 | `column.parent`                       | `string`    | Parent identifier |
-| `column.target`                       | `tasks|annotations`    | Entity the column is attached to |
+| `column.target`                       | `"tasks"|"annotations"` | Entity the column is attached to |
 | `column.title`                        | `string`    | Human readable title |
 | `column.type`                         | `string`    | Column value type |
 | `column.children`                     | `string`    | Column identifier |
-| `column.visibility_defaults`          | `dict`      | Column identifier |
-| `column.visibility_defaults.explore`  | `boolean`      | Should the column be visible in the list view by default |
-| `column.visibility_defaults.labeling` | `boolean`      | Should the column be visible in the labeling view by default |
+| `column.visibility_defaults`          | `Dict<"explore"|"labeling", Boolean>` | Column identifier |
 
-## ColumnAlias
+
+
+### ColumnAlias
 
 `ColumnAlias` is an aggregated field that combines full path to the column. ColumnAlias is built using the following rules:
 
@@ -408,7 +417,7 @@ In some cases `ColumnAlias` might be negative. For example negative values are u
 
 
 
-## SelectedItems
+### SelectedItems
 
 Selected items is an object that stores samples checked in the UI. To operate effectively on large amounts of data it uses partial selection approach. The structure of this object is the following:
 
@@ -438,3 +447,8 @@ Selected items is an object that stores samples checked in the UI. To operate ef
 }
 ```
 
+
+
+### Filter
+
+Filter brings granularity to the data
