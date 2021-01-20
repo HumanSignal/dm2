@@ -10,6 +10,10 @@ Information about current project
 
 Response
 
+<details>
+<summary><b style="font-size: 16px">JSON response example</b></summary>
+<p>
+
 ```json
 {
   "available_storages": [
@@ -94,7 +98,10 @@ Response
 }
 ```
 
+</details>
 ---
+
+
 
 ## `/project/columns`
 
@@ -104,20 +111,17 @@ Information about columns of the dataset
 
 #### Response
 
-| Parameter                             | Type        | Description
-| -----------                           | ----------- | ------------
-| `columns`                             | column[]    | List of columns
-| `column.id`                           | `string`    | Column identifier
-| `column.parent`                       | `string`    | Parent identifier
-| `column.target`                       | `tasks|annotations`    | Entity the column is attached to
-| `column.title`                        | `string`    | Human readable title
-| `column.type`                         | `string`    | Column value type
-| `column.children`                     | `string`    | Column identifier
-| `column.visibility_defaults`          | `dict`      | Column identifier
-| `column.visibility_defaults.explore`  | `boolean`      | Should the column be visible in the list view by default
-| `column.visibility_defaults.labeling` | `boolean`      | Should the column be visible in the labeling view by default
+| Parameter | Type | Description |
+| -----------                           | ----------- | ------------ |
+| `columns`                             | `Column[]` | List of columns |
 
-#### Example
+### Referenced types
+
+* [Column](#Column)
+
+<details>
+<summary><b style="font-size: 16px">JSON response example</b></summary>
+<p>
 
 ```json
 {
@@ -146,6 +150,9 @@ Information about columns of the dataset
 }
 ```
 
+</p>
+</details>
+
 ---
 
 ## `/project/tabs`
@@ -153,6 +160,77 @@ Information about columns of the dataset
 ### **GET**
 
 Information about tabs in current project
+
+| Property             | Type                                        | Description                                    |
+| -------------------- | ------------------------------------------- | ---------------------------------------------- |
+| `id`                 | `int`                                       | Tab identifier                                 |
+| `type`               | `"list"|"grid"`                             | Display type                                   |
+| `title`              | `string`                                    | Human readable title                           |
+| `target`             | `"tasks"|"annotations"`                     | Currently shown entity type                    |
+| `filters`            | `Filter`                                    | Filter applied to the tab                      |
+| `ordering`           | `List<ColumnAlias|-ColumnAlias>`            | Ordering applied to the tab                    |
+| `selectedItems`      | `SelectedItems`                             | List of checked samples                        |
+| `columnsDisplayType` | `Dict<ColumnAlias, ColumnType>`             | List of display types override for data values |
+| `columnsWidth`       | `Dict<ColumnAlias, int>`                    | Width of each individual column                |
+| `hiddenColumns`      | `Dict<"explore"|"labeling", ColumnAlias[]>` | List of hidden tabs per view                   |
+
+### Referenced types
+
+* [ColumnAlias](#ColumnAlias)
+* [SelectedItems](#SelectedItems)
+
+<details>
+<summary><b style="font-size: 16px">JSON response example</b></summary>
+<p>
+
+```json
+{
+  "tabs": [
+    {
+      "columnsDisplayType": {
+        "tasks:data.image": "Image"
+      },
+      "columnsWidth": {
+        "tasks:total_predictions": 117
+      },
+      "filters": {
+        "conjunction": "and",
+        "items": []
+      },
+      "gridWidth": 4,
+      "hiddenColumns": {
+        "explore": [
+          "tasks:completions_results",
+          "tasks:predictions_score",
+          "tasks:predictions_results"
+        ],
+        "labeling": [
+          "tasks:total_completions",
+          "tasks:cancelled_completions",
+          "tasks:total_predictions",
+          "tasks:completions_results",
+          "tasks:predictions_score",
+          "tasks:predictions_results"
+        ]
+      },
+      "id": 1,
+      "ordering": [
+        "-tasks:id"
+      ],
+      "selectedItems": {
+        "all": false,
+        "included": []
+      },
+      "target": "tasks",
+      "title": "Tab 1",
+      "type": "list"
+    }
+  ]
+}
+```
+
+</p>
+</details>
 
 ---
 
@@ -234,11 +312,11 @@ Delete completion
 
 This method manages selected items list – tasks, that you marked as selected. List of selected task is stored on a tab level.
 
-| Parameter   | Type        | Default value | Description
-| ----------- | ----------- | ------------- | ------------
-| `all`       | `boolean`   | `false`       | Indicates if all tasks should be selected
-| `included`  | `number[]`  | `[]`          | List of included IDs when `all=false`
-| `excluded`  | `number[]`  | `[]`          | List of excluded IDs when `all=true`
+| Parameter  | Type       | Default value                             |
+| ---------- | ---------- | ----------------------------------------- |
+| `all`      | `boolean`  | Indicates if all tasks should be selected |
+| `included` | `number[]` | List of included IDs when `all=false`     |
+| `excluded` | `number[]` | List of excluded IDs when `all=true`      |
 
 ### **POST**
 
@@ -263,3 +341,100 @@ Remove items from the list
 ## `/project/tabs/:tabID/actions`
 
 * **POST**
+
+
+
+# Type Reference
+
+
+
+## Column
+
+`Column` represents a single column item:
+
+| Property | Type | Description |
+| -------- | ---- | ----------- |
+| `column.id`                           | `string`    | Column identifier |
+| `column.parent`                       | `string`    | Parent identifier |
+| `column.target`                       | `tasks|annotations`    | Entity the column is attached to |
+| `column.title`                        | `string`    | Human readable title |
+| `column.type`                         | `string`    | Column value type |
+| `column.children`                     | `string`    | Column identifier |
+| `column.visibility_defaults`          | `dict`      | Column identifier |
+| `column.visibility_defaults.explore`  | `boolean`      | Should the column be visible in the list view by default |
+| `column.visibility_defaults.labeling` | `boolean`      | Should the column be visible in the labeling view by default |
+
+## ColumnAlias
+
+`ColumnAlias` is an aggregated field that combines full path to the column. ColumnAlias is built using the following rules:
+
+- `[target]:[column_name]`
+- `[target]:[full_path].[column_name]`
+
+Full path is a path that combines all parent columns. E.g. you have a `data` column that contains several values:
+
+```json
+{
+  "data": {
+    "image": "https://example.com/image.jpg"
+  }
+}
+```
+
+In this case columns will look like this:
+
+```json
+{
+  "columns": [
+    {
+      "id": "data",
+      "title": "Data",
+      "children": ["image"],
+      "target": "tasks",
+    },
+    {
+      "id": "image",
+      "title": "image",
+      "parent": "data",
+      "target": "tasks",
+    }
+  ]
+}
+```
+
+As the columns list is a flat list of columns, full path will reference all accending columns: `tasks:data.image`
+
+In some cases `ColumnAlias` might be negative. For example negative values are used for ordering: `-tasks:data.image`
+
+
+
+## SelectedItems
+
+Selected items is an object that stores samples checked in the UI. To operate effectively on large amounts of data it uses partial selection approach. The structure of this object is the following:
+
+```json
+// In this case we select only items with IDs 1, 2 and 3
+{
+  "selectedItems": {
+    "all": false,
+    "included": [1, 2, 3]
+  }
+}
+
+// SelectedItems can select all the items in the dataset regardless of the size
+{
+  "selectedItems": {
+    "all": true,
+  }
+}
+
+// With `excluded` list you can select all but `excluded`
+// In this example we select all items except 1, 2 and 3
+{
+  "selectedItems": {
+    "all": true,
+    "excluded": [1, 2, 3]
+  }
+}
+```
+
