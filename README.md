@@ -102,7 +102,7 @@ If need more control over the changes or you're developing some sort of integrat
 
 ```diff
 <!-- Label Studio Frontend -->
--    <link href="https://unpkg.com/label-studio@0.8.2/build/static/css/main.css" rel="stylesheet">
+-    <link href="https://unpkg.com/label-studio@latest/build/static/css/main.css" rel="stylesheet">
 -    <script src="https://unpkg.com/label-studio@latest/build/static/js/main.js"></script>
 +    <link href="./static/css/main.css" rel="stylesheet">
 +    <script src="./static/js/main.js"></script>
