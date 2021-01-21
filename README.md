@@ -12,7 +12,8 @@ Data exploration tool for [Label Studio][ls].
 
 - [Quick Start](#quick-start)
 - [Features](#features-star2)
-- [Used APIs](#used-apis)
+- [Usage](#usage)
+- [Under the hood](#under-the-hood)
 - [Build and run](#build-and-run)
 - [Develoment](#development)
 - [License](#license)
@@ -30,9 +31,121 @@ npm install @heartex/datamanager
 - Easily slice your datasates with filters for more precise exploration
 - Deep integration with Label Studio Frontend
 
-### Used APIs
+### Usage
 
-Check available APIs [here](/src/sdk/api-config.js)
+You can use DataManager as a standalone module.
+
+**Keep in mind that DataManager requires [backend api](#under-the-hood) to operate. In case of standalone usage you need to implement backend yourself.**
+
+#### Installation
+
+```
+npm install @heartex/datamanager
+```
+
+#### Initialize
+
+```javascript
+import { DataManager } from '@heartex/datamanager';
+
+const dm = new DataManager({
+  // Where to render DataManager
+  root: document.querySelector('.app'),
+  // API gateway
+  apiGateway: 'https://example.com/api',
+  // API settings
+  apiEndpoints: {
+    // here you can override API endpoints
+  },
+  // Disable requests mocking
+  apiMockDisabled: process.env.NODE_ENV === 'production',
+  // Passing parameters to Label Studio Frontend
+  labelStudio: {
+    user: { pk: 1, firstName: "James" }
+  },
+  // Table view settings
+  table: {
+    hiddenColumns: {/*...*/},
+    visibleColumns: {/*...*/}
+  }
+})
+```
+
+#### Events
+
+DataManager forwards most of the events from Label Studio.
+
+```js
+dm.on('submitCompletion', () => /* handle the submit process */)
+```
+
+#### API endpoints
+
+To have access to the backend DataManager uses endpoints. Every endpoint is converted into a named method that DM will use under the hood. Full list of those method could be found [here](/src/sdk/api-config.js).
+
+Every endpoint could be either a string or an object.
+
+API endpoint paths also support `:[parameter-name]` notation, e.g. `/tabs/:tabID/tasks`. These parameteres are required if specified. This means DM will throw an exception if the parameter is not present in the API call.
+
+```js
+// In this case DM will assume that api.columns() is a get request
+apiEndpoints: {
+	columns: "/api/columns",
+}
+```
+
+
+
+For requests other than **GET** use object notation:
+
+```javascript
+// If you want to specify a method, use oject instead
+apiEndpoints: {
+  updateTab: {
+    path: "/api/tabs/:id",
+    method: "post"
+  }
+}
+```
+
+###### Response conversion
+
+```javascript
+// In case you already have the api but the response doesn't fit the format expected by DM
+// you can convert the response on the fly
+apiEndpoints: {
+  tabs: {
+    path: "/api/tabs",
+    convert: (response) => {
+			/* do whatever you need with the response */
+      /* then return the modified object */
+      return response
+    }
+  }
+}
+```
+
+###### Request mock
+
+DataManager supports requests mocking. This feature comes handy for the development purposes.
+
+```javascript
+apiEndpoints: {
+  columns: {
+    path: "/api/columns",
+    mock: (url, requestParams, request) => {
+      // here you can process the request and return the response
+      // execution of this method can be disabled by using `apiMockDisabled: true`
+    }
+  }
+}
+```
+
+
+### Under the hood
+
+- [Backend API](/docs/api_reference.md)
+- [Architecture](/docs/dm_architecture_diagram.pdf)
 
 ### Build and run
 
