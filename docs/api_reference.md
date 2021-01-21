@@ -6,6 +6,20 @@ Request parameters shoud be JSON.
 
 Responses are in JSON as well.
 
+- [/project](#/project)
+- [/project/columns](#/project/columns)
+- [/project/tabs](#/project/tabs)
+- [/project/tabs/:tabID](#/project/tabs/:tabID)
+- [/project/tabs/:tabID/tasks](#/project/tabs/:tabID/tasks)
+- [/tasks/:taskID](#/tasks/:taskID)
+- [/project/next](#/project/next)
+- [/project/tabs/:tabID/annotations](#/project/tabs/:tabID/annotations)
+- [/tasks/:taskID/completions](#/tasks/:taskID/completions)
+- [/tasks/:taskID/completions/:id](#/tasks/:taskID/completions/:id)
+- [/project/tabs/:tabID/selected-items](#/project/tabs/:tabID/selected-items)
+- [/project/actions](#/project/actions)
+- [/project/tabs/:tabID/actions](#/project/tabs/:tabID/actions)
+
 ### `/project`
 
 ##### **GET**

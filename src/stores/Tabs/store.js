@@ -26,8 +26,8 @@ const restoreValue = (name) => {
   return value ? (value === "true" ? true : false) : false;
 };
 
-export const ViewsStore = types
-  .model("ViewsStore", {
+export const TabStore = types
+  .model("TabStore", {
     selected: types.maybeNull(types.late(() => types.reference(Tab))),
     views: types.optional(types.array(Tab), []),
     availableFilters: types.optional(types.array(TabFilterType), []),

@@ -4,7 +4,7 @@ import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import * as DataStores from "./DataStores";
 import { DynamicModel, registerModel } from "./DynamicModel";
-import { ViewsStore } from "./Tabs";
+import { TabStore } from "./Tabs";
 import { CustomJSON } from "./types";
 
 export const AppStore = types
@@ -14,7 +14,7 @@ export const AppStore = types
       "explorer"
     ),
 
-    viewsStore: types.optional(ViewsStore, {
+    viewsStore: types.optional(TabStore, {
       views: [],
     }),
 
