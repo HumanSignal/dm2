@@ -13,7 +13,10 @@
     -->
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json">
     <link rel="stylesheet" href="%PUBLIC_URL%/styles/main.css">
-    <script src="https://unpkg.com/label-studio@0.7.3/build/static/js/main.e963e015.js"></script>
+
+    <!-- Label Studio Frontend -->
+    <link href="https://unpkg.com/label-studio@latest/build/static/css/main.css" rel="stylesheet">
+    <script src="https://unpkg.com/label-studio@latest/build/static/js/main.js"></script>
     <!--
       Notice the use of %PUBLIC_URL% in the tags above.
       It will be replaced with the URL of the `public` folder during the build.
@@ -23,13 +26,53 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
       -->
-    <title>Label Studio</title>
+    <title>Heartex DataManager 2.0</title>
+
+    <style>
+      body {
+        font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
+          Helvetica, Arial, "Lucida Grande", sans-serif;
+        font-weight: 300;
+        font-size: 14px;
+        margin: 0;
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      #app {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+      td, th {
+          padding: 0.4em 2em;
+          border: 1px solid #ccc;
+      }
+
+      ::-webkit-scrollbar-track {
+        box-shadow: inset 0 0 8px rgba(178, 178, 178, 0.3) !important;
+        background-color: #F5F5F5 !important;
+      }
+
+      ::-webkit-scrollbar {
+        width: 8px !important;
+        height: 8px !important;
+        background-color: #F5F5F5 !important;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background-color: #c3c3c3 !important;
+        border: 8px solid #b4b4b4 !important;
+      }
+    </style>
   </head>
   <body>
     <noscript>
       You need to enable JavaScript to run this app.
     </noscript>
 
-    <div id="app" style="margin: 2em;"></div>
+    <div id="app"></div>
   </body>
 </html>

@@ -1,214 +1,332 @@
+import { Modal, notification } from "antd";
+import { flow, types } from "mobx-state-tree";
+import { History } from "../utils/history";
+import { isDefined } from "../utils/utils";
+import * as DataStores from "./DataStores";
+import { DynamicModel, registerModel } from "./DynamicModel";
+import { TabStore } from "./Tabs";
+import { CustomJSON } from "./types";
 
-import { types, getEnv, getParent, clone, getSnapshot, destroy, getRoot } from "mobx-state-tree";
+export const AppStore = types
+  .model("AppStore", {
+    mode: types.optional(
+      types.enumeration(["explorer", "labelstream"]),
+      "explorer"
+    ),
 
-import TasksStore from "./TasksStore";
-import { guidGenerator } from "../utils/random";
-import fields, { labelingFields } from "../data/fields";
+    viewsStore: types.optional(TabStore, {
+      views: [],
+    }),
 
-import { StringFilter, NumberFilter, 
-    BetweenNumberFilter } from "./FiltersStore";
+    project: types.optional(CustomJSON, {}),
 
-const Field = types
-      .model("Fields", {
-          field: types.string,
-          
-          enabled: true,
-          canToggle: false,
-          
-          source: types.optional(types.enumeration(["tasks", "annotations", "inputs"]), "tasks"),
-          
-          filterState: types.maybeNull(types.union({ eager: false }, StringFilter, NumberFilter, BetweenNumberFilter))
-      }).views(self => ({
-          get key() { return self.source + "_" + self.field; },
-      }))
-      .actions(self => ({
-          toggle() {
-              self.enabled = !self.enabled;
-          },
-      }));
+    loading: types.optional(types.boolean, false),
 
-const View = types
-      .model("View", {
-          id: types.optional(types.identifier, () => { return guidGenerator(5) }),
-          
-          title: "Tasks",
-          
-          type: types.optional(types.enumeration(["list", "grid"]), "list"),
-          target: types.optional(types.enumeration(["tasks", "annotations"]), "tasks"),
-          
-          fields: types.array(Field),
-          
-          enableFilters: false,
-          renameMode: false,
-      }).views(self => ({
-          get key() { return self.id },
+    taskStore: types.optional(
+      types.late(() => {
+        return DynamicModel.get("tasksStore");
+      }),
+      {}
+    ),
 
-          get root() { return getRoot(self) },
-          
-          get parent() { return getParent(getParent(self)) },
+    annotationStore: types.optional(
+      types.late(() => {
+        return DynamicModel.get("annotationsStore");
+      }),
+      {}
+    ),
 
-          get dataFields() {
-            return self.fields.filter(f => f.source === "inputs").map(f => f.field);
-          },
+    availableActions: types.optional(types.array(CustomJSON), []),
 
-          get hasDataFields() {
-              return self.dataFields.length > 0;
-          },
-          
-          fieldsSource(source) {
-              return self.fields.filter(f => f.source === source);
-          },
+    serverError: types.map(CustomJSON),
+  })
+  .views((self) => ({
+    get SDK() {
+      return self._sdk;
+    },
 
-          // get fields formatted as columns structure for react-table
-          get fieldsAsColumns() {
-              let lst
-              // if (self.root.mode === "label") lst = self.fields.filter(f => f.source === 'label');
-              // else
-              if (self.target === "tasks") lst = self.fields.filter(f => f.source !== "annotations");
-              else lst = self.fields.filter(f => f.source !== "tasks");
+    get LSF() {
+      return self.SDK.lsf;
+    },
 
-              return lst
-                .filter(f => f.enabled && (self.root.mode !== "label" || labelingFields.includes(f.field) || f.source === "inputs"))
-                .map(f => {
-                  const field = fields(f.field);
-                  const { id, accessor, Cell, filterClass, filterType } = field;
-                  
-                  const cols = {
-                      Header: field.title,
-                      accessor,
-                      disableFilters: true,
-                      _filterState: f.filterState
-                  };
+    get API() {
+      return self.SDK.api;
+    },
 
-                  if (Cell) cols.Cell = Cell;
-                  if (id) cols.id = id;
+    get isLabeling() {
+      return !!self.dataStore?.selected || self.isLabelStreamMode;
+    },
 
-                  if (self.enableFilters === true) {
-                      if (filterClass !== undefined)
-                          cols["Filter"] = filterClass;
-                      
-                      if (filterType !== undefined) 
-                          cols["filter"] = filterType
+    get isLabelStreamMode() {
+      return self.mode === "labelstream";
+    },
 
-                      if (filterType || filterClass)
-                          cols["disableFilters"] = false;                      
-                  }
+    get isExplorerMode() {
+      return self.mode === "explorer";
+    },
 
-                  return cols;
-              })
+    get currentView() {
+      return self.viewsStore.selected;
+    },
+
+    get dataStore() {
+      switch (self.target) {
+        case "tasks":
+          return self.taskStore;
+        case "annotations":
+          return self.annotationStore;
+        default:
+          return null;
+      }
+    },
+
+    get target() {
+      return self.viewsStore.selected?.target ?? "tasks";
+    },
+
+    get labelingIsConfigured() {
+      return self.project?.config_has_control_tags === true;
+    },
+  }))
+  .actions((self) => ({
+    startPolling() {
+      if (self._poll) return;
+
+      const poll = async (self) => {
+        await self.fetchProject();
+        self._poll = setTimeout(() => poll(self), 10000);
+      };
+
+      poll(self);
+    },
+
+    beforeDestroy() {
+      clearTimeout(self._poll);
+    },
+
+    setMode(mode) {
+      self.mode = mode;
+    },
+
+    setTask: flow(function* ({ taskID, completionID, pushState }) {
+      if (pushState !== false) {
+        History.navigate({ task: taskID, annotation: completionID ?? null });
+      }
+
+      yield self.taskStore.loadTask(taskID, {
+        select: !!taskID && !!completionID,
+      });
+
+      if (completionID !== undefined) {
+        self.annotationStore.setSelected(completionID);
+      } else {
+        self.taskStore.setSelected(taskID);
+      }
+    }),
+
+    unsetTask(options) {
+      self.annotationStore.unset();
+      self.taskStore.unset();
+
+      if (options?.pushState !== false) {
+        History.navigate({ task: null, annotation: null });
+      }
+    },
+
+    unsetSelection() {
+      self.annotationStore.unset({ withHightlight: true });
+      self.taskStore.unset({ withHightlight: true });
+    },
+
+    createDataStores() {
+      const grouppedColumns = self.viewsStore.columns.reduce((res, column) => {
+        res.set(column.target, res.get(column.target) ?? []);
+        res.get(column.target).push(column);
+        return res;
+      }, new Map());
+
+      grouppedColumns.forEach((columns, target) => {
+        const dataStore = DataStores[target].create?.(columns);
+        if (dataStore) registerModel(`${target}Store`, dataStore);
+      });
+    },
+
+    startLabeling(item, options = {}) {
+      const processLabeling = () => {
+        if (!item && !self.dataStore.selected) {
+          self.SDK.setMode("labelstream");
+
+          if (options?.pushState !== false) {
+            History.navigate({ labeling: 1 });
           }
-      })).actions(self => ({
-          setType(type) {
-              self.type = type;
-          },
-
-          setTarget(target) {
-              self.target = target;
-          },
-          
-          setTitle(title) {
-              self.title = title;
-          },
-
-          setRenameMode(mode) {
-              self.renameMode = mode;
-          },
-          
-          toggleFilters() {
-              self.enableFilters = ! self.enableFilters;
-          },
-
-          afterAttach() {
-              if (! self.hasDataFields) {
-                  // create data fields if they were not initialized
-                  const fields = self.root.tasksStore.getDataFields();
-                  
-                  self.fields = [
-                      ...self.fields,
-                      ...fields.map(f => {
-                          return Field.create({
-                              field: f,
-                              canToggle: true,
-                              enabled: false,
-                              source: 'inputs',
-                              filterState: { stringValue: "" }
-                          });
-                      })
-                  ];
-              }
-          }
-      }))
-
-const ViewsStore = types
-      .model("ViewsStore", {
-          selected: types.safeReference(View),
-          views: types.array(View),
-      }).views(self => ({
-          get all() {
-              return self.views;
-          },
-
-          get canClose() {
-              return self.all.length > 1;
-          }
-      })).actions(self => ({
-          setSelected(view) {
-              self.selected = view;
-          },
-
-          deleteView(view) {
-              let needsNewSelected = false;
-              if (self.selected === view)
-                  needsNewSelected = true;
-              
-              destroy(view);
-              
-              if (needsNewSelected)
-                  self.setSelected(self.views[0]);              
-          },
-
-          addView() {
-              const dupView = getSnapshot(self.views[0]);
-              const newView = View.create({
-                  fields: dupView.fields
-              });
-
-              self.views.push(newView);
-              self.setSelected(newView);
-              
-              return newView;
-          },
-          
-          duplicateView(view) {
-              const dupView = getSnapshot(view);
-              const newView = View.create({
-                  ...dupView,
-                  id: guidGenerator(5),
-                  title: dupView.title + " copy"
-              });
-              
-              self.views.push(newView);
-              self.setSelected(self.views[self.views.length - 1]);
-          },
-
-          afterCreate() {
-              if (! self.selected) {
-                  self.setSelected(self.views[0]);
-              }
-          }
-    }));
-
-export default types
-    .model("dmAppStore", {
-        mode: types.optional(types.enumeration(["dm", "label"]), "dm"),
-
-        tasksStore: types.optional(TasksStore, {}),
-        
-        viewsStore: types.optional(ViewsStore, {
-            views: []            
-        }),        
-    }).actions(self => ({
-        setMode(mode) {
-            self.mode = mode;
+          return;
         }
-    }));
+
+        if (self.dataStore.loadingItem) return;
+
+        if (item && !item.isSelected) {
+          const labelingParams = {
+            pushState: options?.pushState,
+          };
+
+          if (isDefined(item.task_id)) {
+            Object.assign(labelingParams, {
+              completionID: item.id,
+              taskID: item.task_id,
+            });
+          } else {
+            Object.assign(labelingParams, {
+              taskID: item.id,
+            });
+          }
+
+          self.setTask(labelingParams);
+        } else {
+          self.closeLabeling();
+        }
+      };
+
+      if (!self.labelingIsConfigured) {
+        Modal.confirm({
+          title: "Labeling is not yet fully configured",
+          content:
+            "Before you can annotate the data, set up labels configuration",
+          onOk() {
+            window.location.href = "./settings";
+          },
+          okText: "Go to setup",
+        });
+      } else {
+        processLabeling.call(self);
+      }
+    },
+
+    closeLabeling(options) {
+      const { SDK } = self;
+
+      self.unsetTask(options);
+      SDK.setMode("explorer");
+      SDK.destroyLSF();
+    },
+
+    resolveURLParams() {
+      window.addEventListener("popstate", ({ state }) => {
+        const { tab, task, annotation, labeling } = state ?? {};
+
+        if (tab) {
+          self.viewsStore.setSelected(parseInt(tab), {
+            pushState: false,
+          });
+        }
+
+        if (task) {
+          const params = {};
+          if (annotation) {
+            params.task_id = parseInt(task);
+            params.id = parseInt(annotation);
+          } else {
+            params.id = parseInt(task);
+          }
+
+          self.startLabeling(params, { pushState: false });
+        } else if (labeling) {
+          self.startLabeling(null, { pushState: false });
+        } else {
+          self.closeLabeling({ pushState: false });
+        }
+      });
+    },
+
+    fetchProject: flow(function* () {
+      const oldProject = JSON.stringify(self.project ?? {});
+      const newProject = yield self.apiCall("project");
+
+      if (JSON.stringify(newProject ?? {}) !== oldProject) {
+        self.project = newProject;
+      }
+    }),
+
+    fetchActions: flow(function* () {
+      self.availableActions = yield self.apiCall("actions");
+    }),
+
+    fetchData: flow(function* () {
+      self.loading = true;
+
+      const { tab, task, labeling } = History.getParams();
+
+      yield self.fetchProject();
+      yield self.fetchActions();
+      self.viewsStore.fetchColumns();
+      yield self.viewsStore.fetchViews(tab, task, labeling);
+
+      self.resolveURLParams();
+
+      self.loading = false;
+
+      self.startPolling();
+    }),
+
+    apiCall: flow(function* (methodName, params, body) {
+      let result = yield self.API[methodName](params, body);
+
+      if (result.error && result.status !== 404) {
+        if (result.response) {
+          self.serverError.set(methodName, {
+            error: "Something went wrong",
+            response: result.response,
+          });
+        }
+
+        notification.error({
+          message: "Error occurred when loading data",
+          description: result?.response?.detail ?? result.error,
+        });
+      } else {
+        self.serverError.delete(methodName);
+      }
+
+      return result;
+    }),
+
+    invokeAction: flow(function* (actionId, options = {}) {
+      const view = self.currentView;
+      const needsLock =
+        self.availableActions.findIndex((a) => a.id === actionId) >= 0;
+      const { selected } = view;
+
+      if (needsLock) view.lock();
+
+      const actionParams = {
+        ordering: view.ordering,
+        selectedItems: selected.hasSelected
+          ? selected.snapshot
+          : { all: true, excluded: [] },
+        filters: {
+          conjunction: view.conjunction,
+          items: view.serializedFilters,
+        },
+      };
+
+      const result = yield self.apiCall(
+        "invokeAction",
+        {
+          id: actionId,
+          tabID: view.id,
+        },
+        {
+          body: actionParams,
+        }
+      );
+
+      if (options.reload !== false) {
+        yield view.reload();
+        self.fetchProject();
+        view.clearSelection();
+      }
+
+      view.unlock();
+
+      return result;
+    }),
+  }));

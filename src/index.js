@@ -1,24 +1,13 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import moment from "moment";
+import momentDurationFormat from "moment-duration-format";
+import { DataManager } from "./sdk";
 
-import AppStore from "./stores/AppStore";
-import App from "./components/App";
+global.SC_DISABLE_SPEEDY = true;
 
-import views from "./data/views";
-import data from './data/tasks.json';
-import config from './data/config';
+momentDurationFormat(moment);
 
-import "./index.scss";
+if (process.env.NODE_ENV === "development" && !process.env.BUILD_MODULE) {
+  import("./dev").then(({ initDevApp }) => initDevApp(DataManager));
+}
 
-const app = AppStore.create({
-    viewsStore: {  views: window.LS_VIEWS || views }
-});
-
-app.tasksStore.setData(window.LS_DATA || data)
-
-app._config = window.LS_CONFIG || config;
-app._mode = window.LS_MODE || 'dev';
-
-window.DM = app;
-
-ReactDOM.render(<App app={app} />, document.getElementById("app"));
+export default DataManager;
