@@ -177,7 +177,7 @@ node scripts/get-build.js dm [branch-name]
 
 ## Development
 
-### Prerequesties
+### Prerequisites
 
 For the development it is required to have Label Studio install and running as the DataManager uses LabelStudio API to operate.
 
