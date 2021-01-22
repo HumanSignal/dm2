@@ -9,7 +9,7 @@ fi
 
 VERSION=$1
 COMPANY="heartexlabs"
-REPO="dm2"
+REPO="datamanager"
 
 # Colors for colored output
 GREEN='\033[0;32m'
