@@ -52,3 +52,4 @@ yarn.lock
 .cache
 dist
 build
+.npmrc

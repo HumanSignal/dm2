@@ -9,7 +9,7 @@ fi
 
 VERSION=$1
 COMPANY="heartexlabs"
-REPO="label-studio"
+REPO="dm2"
 
 # Colors for colored output
 GREEN='\033[0;32m'
