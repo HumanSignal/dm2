@@ -1,5 +1,6 @@
 import { Modal, notification } from "antd";
 import { flow, types } from "mobx-state-tree";
+import React from "react";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import * as DataStores from "./DataStores";
@@ -188,9 +189,10 @@ export const AppStore = types
 
       if (!self.labelingIsConfigured) {
         Modal.confirm({
-          title: "Labeling is not yet fully configured",
+          icon: <span></span>,
+          title: "You're almost there!",
           content:
-            "Before you can annotate the data, set up labels configuration",
+            "Before you can annotate the data, set up labeling configuration",
           onOk() {
             window.location.href = "./settings";
           },
