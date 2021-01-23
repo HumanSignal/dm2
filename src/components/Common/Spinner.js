@@ -8,7 +8,7 @@ export const Spinner = ({ ...props }) => {
   const size = React.useMemo(() => {
     switch (props.size) {
       case "large":
-        return 64;
+        return 128;
       case "middle":
         return 48;
       case "small":
