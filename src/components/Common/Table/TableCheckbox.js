@@ -8,9 +8,12 @@ const StyledCheckbox = styled(Checkbox)`
   position: absolute;
   top: 0;
   left: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+  &.ant-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 `;
 
 const IndeterminateCheckbox = ({ checked, indeterminate, ...props }) => {
