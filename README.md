@@ -1,10 +1,10 @@
-## Data Manager 2.0 &middot; ![Build and Test](https://github.com/heartexlabs/dm2/workflows/Build%20and%20Test/badge.svg)
+## Data Manager 2.0 &middot; ![Build and Test](https://github.com/heartexlabs/dm2/workflows/Build%20and%20Test/badge.svg) &middot; [![npm version](https://badge.fury.io/js/%40heartexlabs%2Fdatamanager.svg)](https://badge.fury.io/js/%40heartexlabs%2Fdatamanager)
 
 [Website](https://labelstud.io/) • [Docs](https://labelstud.io/guide) • [Twitter](https://twitter.com/heartexlabs) • [Join Slack Community](https://docs.google.com/forms/d/e/1FAIpQLSdLHZx5EeT1J350JPwnY2xLanfmvplJi6VZk65C2R4XSsRBHg/viewform?usp=sf_link)
 
 Data exploration tool for [Label Studio][ls].
 
-<img src="/docs/image.png" height="500" align="center"/>
+<img src="https://raw.githubusercontent.com/heartexlabs/dm2/master/docs/image.png" height="500" align="center"/>
 
 ## Summary
 
@@ -81,7 +81,7 @@ dm.on('submitCompletion', () => /* handle the submit process */)
 
 #### API endpoints
 
-To have access to the backend DataManager uses endpoints. Every endpoint is converted into a named method that DM will use under the hood. Full list of those method could be found [here](/src/sdk/api-config.js).
+To have access to the backend DataManager uses endpoints. Every endpoint is converted into a named method that DM will use under the hood. Full list of those method could be found [here](#under-the-hood).
 
 Every endpoint could be either a string or an object.
 
@@ -144,8 +144,8 @@ apiEndpoints: {
 
 ### Under the hood
 
-- [Backend API](/docs/api_reference.md)
-- [Architecture](/docs/dm_architecture_diagram.pdf)
+- [Backend API][api_docs]
+- [Architecture][dm_architecture]
 
 ### Build and run
 
@@ -259,3 +259,7 @@ This software is licensed under the [Apache 2.0 LICENSE](/LICENSE) © [Heartex](
 [lsf]: https://github.com/heartexlabs/label-studio-frontend
 [lsc]: https://github.com/heartexlabs/label-studio-converter
 [lst]: https://github.com/heartexlabs/label-studio-transformers
+
+[api_docs]: https://github.com/heartexlabs/dm2/blob/master/docs/api_reference.md
+[lsf_dev]: https://github.com/heartexlabs/label-studio-frontend#development
+[dm_architecture]: https://github.com/heartexlabs/dm2/blob/master/docs/dm_architecture_diagram.pdf
