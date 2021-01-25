@@ -221,6 +221,24 @@ If need more control over the changes or you're developing some sort of integrat
 +    <script src="./static/js/main.js"></script>
 ```
 
+#### Using custom DM build in Label Studio
+
+You can install DataManager into Label Studio by replacing bundle files.
+
+First, build the DataManager itself:
+
+```
+npm ci && npm run build:module
+```
+
+Next replace the bundle in Label Studio with a new one:
+
+```
+cp -r ./build/**/* [your-label-studio-path]/label-studio/static/dm/
+```
+
+Now you can start Label Studio if it's not running, or refresh the page in the browser.
+
 ## Ecosystem
 
 | Project | Description |
