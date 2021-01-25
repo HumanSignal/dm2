@@ -6,6 +6,9 @@
     "access": "public"
   },
   "main": "./build/static/js/main.js",
+  "repository": {
+    "url": "https://github.com/heartexlabs/dm2"
+  },
   "scripts": {
     "build:bundle": "npm run build:final",
     "build:notsourcemap": "GENERATE_SOURCEMAP=false npm run build",
