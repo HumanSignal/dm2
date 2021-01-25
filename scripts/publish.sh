@@ -50,12 +50,14 @@ echo && echo -e "${GREEN}### Release commit and tag pushed to github${NC}" && ec
 
 # Remove prepublish step because we are using custom script
 sed -E -e "s/^ *\"prepublishOnly\".*$//" -i '' package.json
+echo "//registry.npmjs.org/:_authToken=${NPMJS_TOKEN}" > ".npmrc"
 npm publish
 
 echo && echo -e "${GREEN}### NPM package published${NC}" && echo
 
 # GitHub Packages requires scoped @company/repo name
 sed -E -e "s/^  \"name\".*$/  \"name\": \"@$COMPANY\/$REPO\",/" -i '' package.json
+echo "//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_TOKEN}" > ".npmrc"
 npm publish --registry=https://npm.pkg.github.com/
 
 echo && echo -e "${GREEN}### GitHub package published${NC}" && echo

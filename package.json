@@ -1,5 +1,5 @@
 {
-  "name": "@heartex/datamanager",
+  "name": "@heartexlabs/datamanager",
   "version": "2.0.2",
   "description": "",
   "main": "./build/static/js/main.js",
