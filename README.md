@@ -21,7 +21,7 @@ Data exploration tool for [Label Studio][ls].
 ### Quickstart
 
 ```
-npm install @heartex/datamanager
+npm install @heartexlabs/datamanager
 ```
 
 ### Features
@@ -40,13 +40,13 @@ You can use DataManager as a standalone module.
 #### Installation
 
 ```
-npm install @heartex/datamanager
+npm install @heartexlabs/datamanager
 ```
 
 #### Initialize
 
 ```javascript
-import { DataManager } from '@heartex/datamanager';
+import { DataManager } from '@heartexlabs/datamanager';
 
 const dm = new DataManager({
   // Where to render DataManager

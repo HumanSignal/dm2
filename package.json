@@ -2,6 +2,9 @@
   "name": "@heartexlabs/datamanager",
   "version": "2.0.2",
   "description": "",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./build/static/js/main.js",
   "scripts": {
     "build:bundle": "npm run build:final",
