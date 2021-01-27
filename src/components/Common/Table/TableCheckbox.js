@@ -26,13 +26,7 @@ const IndeterminateCheckbox = ({ checked, indeterminate, ...props }) => {
   );
 };
 
-export const TableCheckboxCell = ({
-  hidden,
-  checked,
-  indeterminate,
-  onChange,
-  className,
-}) => {
+export const TableCheckboxCell = ({ checked, indeterminate, onChange }) => {
   return (
     <IndeterminateCheckbox
       type="checkbox"

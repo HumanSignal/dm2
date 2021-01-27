@@ -54,6 +54,10 @@ export const AppStore = types
       return self.SDK.api;
     },
 
+    get apiVersion() {
+      return self.SDK.apiVersion;
+    },
+
     get isLabeling() {
       return !!self.dataStore?.selected || self.isLabelStreamMode;
     },
@@ -260,7 +264,7 @@ export const AppStore = types
       yield self.fetchProject();
       yield self.fetchActions();
       self.viewsStore.fetchColumns();
-      yield self.viewsStore.fetchViews(tab, task, labeling);
+      yield self.viewsStore.fetchTabs(tab, task, labeling);
 
       self.resolveURLParams();
 

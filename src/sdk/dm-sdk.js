@@ -66,6 +66,9 @@ export class DataManager {
    */
   callbacks = new Map();
 
+  /** @type {Number} */
+  apiVersion = 1;
+
   /**
    * Constructor
    * @param {DMConfig} config
@@ -84,6 +87,7 @@ export class DataManager {
     this.env = config.env ?? process.env.NODE_ENV ?? this.env;
     this.mode = config.mode ?? this.mode;
     this.tableConfig = config.table ?? {};
+    this.apiVersion = config?.apiVersion ?? 1;
 
     this.initApp();
   }

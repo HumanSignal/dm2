@@ -235,10 +235,19 @@ export const TabStore = types
       self.defaultHidden = TabHiddenColumns.create(hiddenColumns);
     },
 
-    fetchViews: flow(function* (tabID, taskID, labeling) {
+    fetchTabs: flow(function* (tabID, taskID, labeling) {
       const { tabs } = yield getRoot(self).apiCall("tabs");
 
-      const snapshots = tabs.map((t) => Tab.create({ ...t, saved: true }));
+      const snapshots = tabs.map((t) => {
+        const { data, ...tab } = t;
+
+        return Tab.create({
+          ...tab,
+          ...(data ?? {}),
+          saved: true,
+          hasData: !!data,
+        });
+      });
 
       self.views.push(...snapshots);
 

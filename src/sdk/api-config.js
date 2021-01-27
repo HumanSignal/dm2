@@ -13,6 +13,12 @@ export const APIConfig = {
     /** Tabs (materialized views) */
     tabs: "/project/tabs",
 
+    /** Creates a new tab */
+    createTab: {
+      path: "/project/tabs",
+      method: "post",
+    },
+
     /** Update particular tab (POST) */
     updateTab: {
       path: "/project/tabs/:tabID",

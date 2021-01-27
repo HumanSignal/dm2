@@ -55,6 +55,7 @@ export const Tab = types
     };
   })
   .views((self) => ({
+    /** @returns {import("../../components/App/App").AppStore} */
     get root() {
       return getRoot(self);
     },
@@ -64,7 +65,7 @@ export const Tab = types
     },
 
     get columns() {
-      return getRoot(self).viewsStore.columns;
+      return self.root.viewsStore.columns;
     },
 
     get targetColumns() {
@@ -90,15 +91,15 @@ export const Tab = types
     },
 
     get dataStore() {
-      return getRoot(self).dataStore;
+      return self.root.dataStore;
     },
 
     get taskStore() {
-      return getRoot(self).taskStore;
+      return self.root.taskStore;
     },
 
     get annotationStore() {
-      return getRoot(self).annotationStore;
+      return self.root.annotationStore;
     },
 
     get currentFilters() {
@@ -145,8 +146,10 @@ export const Tab = types
     },
 
     serialize() {
-      return {
-        id: self.id,
+      const tab = {};
+      const { apiVersion } = self.root;
+
+      const data = {
         title: self.title,
         ordering: self.ordering,
         type: self.type,
@@ -161,6 +164,18 @@ export const Tab = types
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
         gridWidth: self.gridWidth,
       };
+
+      if (self.saved || apiVersion === 1) {
+        tab.id = self.id;
+      }
+
+      if (apiVersion === 2) {
+        tab.data = data;
+      } else {
+        Object.assign(tab, data);
+      }
+
+      return tab;
     },
   }))
   .actions((self) => ({
@@ -270,7 +285,7 @@ export const Tab = types
     },
 
     updateSelectedList: flow(function* (action, extraData) {
-      const { selectedItems } = yield getRoot(self).apiCall(
+      const { selectedItems } = yield self.root.apiCall(
         action,
         { tabID: self.id },
         { body: { ...self.selected.snapshot, ...(extraData ?? {}) } }
@@ -329,7 +344,10 @@ export const Tab = types
 
       if (interaction !== undefined) Object.assign(params, { interaction });
 
-      const result = yield getRoot(self).apiCall("updateTab", params, body);
+      const apiMethod =
+        !self.saved && self.root.apiVersion === 2 ? "createTab" : "updateTab";
+
+      const result = yield self.root.apiCall(apiMethod, params, body);
       const viewSnapshot = getSnapshot(self);
 
       applySnapshot(self, {
@@ -346,7 +364,7 @@ export const Tab = types
     }),
 
     delete: flow(function* () {
-      yield getRoot(self).apiCall("deleteTab", { tabID: self.id });
+      yield self.root.apiCall("deleteTab", { tabID: self.id });
     }),
   }))
   .preProcessSnapshot((snapshot) => {

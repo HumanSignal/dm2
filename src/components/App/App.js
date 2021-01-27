@@ -5,8 +5,6 @@ import { Labeling } from "../Label/Label";
 import { DMTabs } from "../Tabs/tabs";
 import { Styles } from "./App.styles";
 
-/** @typedef {import("../../stores/AppStore").AppStore} AppStore */
-
 class ErrorBoundary extends React.Component {
   state = {
     error: null,
@@ -27,7 +25,7 @@ class ErrorBoundary extends React.Component {
 
 /**
  * Main Component
- * @param {{app: AppStore} param0
+ * @param {{app: import("../../stores/AppStore").AppStore} param0
  */
 const AppComponent = ({ app }) => {
   // make full screen for label stream
