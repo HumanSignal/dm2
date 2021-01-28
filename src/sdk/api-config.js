@@ -2,46 +2,46 @@ import { isDefined } from "../utils/utils";
 
 /** @type {import("../utils/api-proxy").APIProxyOptions} */
 export const APIConfig = {
-  gateway: "/api",
+  gateway: "/api/dm",
   endpoints: {
     /** Project base info */
     project: "/project",
 
     /** Available columns/fields of the dataset */
-    columns: "/project/columns",
+    columns: "/columns",
 
     /** Tabs (materialized views) */
-    tabs: "/project/tabs",
+    tabs: "/views",
 
     /** Creates a new tab */
     createTab: {
-      path: "/project/tabs",
+      path: "/views",
       method: "post",
     },
 
     /** Update particular tab (POST) */
     updateTab: {
-      path: "/project/tabs/:tabID",
+      path: "/views/:tabID",
       method: "post",
     },
 
     /** Delete particular tab (DELETE) */
     deleteTab: {
-      path: "/project/tabs/:tabID",
+      path: "/views/:tabID",
       method: "delete",
     },
 
     /** List of tasks (samples) in the dataset */
-    tasks: "/project/tabs/:tabID/tasks",
+    tasks: "/views/:tabID/tasks",
 
     /** Per-task annotations (completions, predictions) */
-    annotations: "/project/tabs/:tabID/annotations",
+    annotations: "/views/:tabID/annotations",
 
     /** Single task (sample) */
     task: "/tasks/:taskID",
 
     /** Next task (labelstream, default sequential) */
-    nextTask: "/project/next",
+    nextTask: "/tasks/next",
 
     /** Sinfle annotation */
     completion: "/tasks/:taskID/completions/:id",
@@ -76,28 +76,28 @@ export const APIConfig = {
 
     /** Override selected items list (checkboxes) */
     setSelectedItems: {
-      path: "/project/tabs/:tabID/selected-items",
+      path: "/views/:tabID/selected-items",
       method: "post",
     },
 
     /** Add item to the current selection */
     addSelectedItem: {
-      path: "/project/tabs/:tabID/selected-items",
+      path: "/views/:tabID/selected-items",
       method: "patch",
     },
 
+    /** List of available actions */
+    actions: "/actions",
+
     /** Subtract item from the current selection */
     deleteSelectedItem: {
-      path: "/project/tabs/:tabID/selected-items",
+      path: "/views/:tabID/selected-items",
       method: "delete",
     },
 
-    /** List of available actions */
-    actions: "/project/actions",
-
     /** Invoke a particular action */
     invokeAction: {
-      path: "/project/tabs/:tabID/actions",
+      path: "/views/:tabID/actions",
       method: "post",
     },
   },

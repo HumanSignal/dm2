@@ -10,10 +10,6 @@
  */
 
 /**
- * @typedef {import("./types").Dict} Dict
- */
-
-/**
  * @typedef {Dict<string, EndpointConfig>} Endpoints
  */
 
@@ -24,6 +20,7 @@
  * commonHeaders: Dict<string>,
  * mockDelay: number,
  * mockDisabled: boolean,
+ * sharedParams: Dict<any>,
  * }} APIProxyOptions
  */
 
@@ -46,6 +43,9 @@ export class APIProxy {
   /** @type {"same-origin"|"cors"} */
   requestMode = "same-origin";
 
+  /** @type {Dict} */
+  sharedParams = {};
+
   /**
    * Constructor
    * @param {APIProxyOptions} options
@@ -56,6 +56,7 @@ export class APIProxy {
     this.requestMode = this.detectMode();
     this.mockDelay = options.mockDelay ?? 0;
     this.mockDisabled = options.mockDisabled ?? false;
+    this.sharedParams = options.sharedParams ?? {};
 
     this.resolveMethods(options.endpoints);
   }
@@ -129,9 +130,13 @@ export class APIProxy {
     return async (urlParams, { headers, body } = {}) => {
       try {
         const requestMethod = (methodSettings.method ?? "get").toUpperCase();
+        const finalParams = {
+          ...(urlParams ?? {}),
+          ...(this.sharedParams ?? {}),
+        };
         const apiCallURL = this.createUrl(
           methodSettings.path,
-          urlParams ?? {},
+          finalParams,
           parentPath
         );
 

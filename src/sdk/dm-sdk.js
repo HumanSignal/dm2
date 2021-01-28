@@ -75,19 +75,20 @@ export class DataManager {
    */
   constructor(config) {
     this.root = config.root;
-    this.api = new APIProxy(
-      this.apiConfig({
-        apiGateway: config.apiGateway,
-        apiEndpoints: config.apiEndpoints,
-        apiMockDisabled: config.apiMockDisabled,
-      })
-    );
     this.settings = config.settings;
     this.labelStudioOptions = config.labelStudio;
     this.env = config.env ?? process.env.NODE_ENV ?? this.env;
     this.mode = config.mode ?? this.mode;
     this.tableConfig = config.table ?? {};
     this.apiVersion = config?.apiVersion ?? 1;
+    this.api = new APIProxy(
+      this.apiConfig({
+        apiGateway: config.apiGateway,
+        apiEndpoints: config.apiEndpoints,
+        apiMockDisabled: config.apiMockDisabled,
+        apiSharedParams: config.apiSharedParams,
+      })
+    );
 
     this.initApp();
   }
@@ -100,13 +101,22 @@ export class DataManager {
     return this.mode === "labelstream";
   }
 
-  apiConfig({ apiGateway, apiEndpoints, apiMockDisabled }) {
+  apiConfig({ apiGateway, apiEndpoints, apiMockDisabled, apiSharedParams }) {
     const config = APIConfig;
 
     APIConfig.gateway = apiGateway ?? APIConfig.gateway;
     APIConfig.mockDisabled = apiMockDisabled;
 
-    Object.assign(APIConfig.endpoints, apiEndpoints ?? {});
+    const { projectId } = this.root?.dataset ?? {};
+
+    Object.assign(APIConfig.endpoints, apiEndpoints ?? {}, {
+      sharedParams: projectId
+        ? {
+            project: projectId,
+            ...(apiSharedParams ?? {}),
+          }
+        : apiSharedParams,
+    });
 
     return config;
   }
