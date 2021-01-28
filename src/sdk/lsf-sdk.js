@@ -143,22 +143,20 @@ export class LSFWrapper {
     let { completionStore: cs } = this.lsf;
     let completion;
 
-    if (this.predictions.length > 0) {
+    if (this.completions.length > 0 && id === "auto") {
+      completion = { id: this.completions[0].id };
+    } else if (this.completions.length > 0 && id) {
+      completion = this.completions.find((c) => c.pk === id || c.id === id);
+    } else if (this.predictions.length > 0) {
       completion = cs.addCompletionFromPrediction(this.predictions[0]);
-    } else if (this.completions.length) {
-      completion =
-        id !== null
-          ? this.completions.find((c) => c.pk === id || c.id === id)
-          : this.completions[0];
     } else {
       completion = cs.addCompletion({ userGenerate: true });
     }
 
     if (completion) {
       cs.selectCompletion(completion.id);
+      this.datamanager.invoke("completionSet", [completion]);
     }
-
-    this.datamanager.invoke("completionSet", [completion]);
   }
 
   onLabelStudioLoad = async (ls) => {
@@ -170,7 +168,7 @@ export class LSFWrapper {
       await this.loadTask();
     } else if (this.task) {
       const completionID =
-        this.initialCompletion?.pk ?? this.task.lastCompletion?.pk;
+        this.initialCompletion?.pk ?? this.task.lastCompletion?.pk ?? "auto";
 
       await this.loadTask(this.task.id, completionID);
     }
