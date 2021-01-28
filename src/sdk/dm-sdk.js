@@ -102,14 +102,15 @@ export class DataManager {
   }
 
   apiConfig({ apiGateway, apiEndpoints, apiMockDisabled, apiSharedParams }) {
-    const config = APIConfig;
+    const config = Object.assign({}, APIConfig);
 
-    APIConfig.gateway = apiGateway ?? APIConfig.gateway;
-    APIConfig.mockDisabled = apiMockDisabled;
+    config.gateway = apiGateway ?? config.gateway;
+    config.mockDisabled = apiMockDisabled;
 
     const { projectId } = this.root?.dataset ?? {};
 
-    Object.assign(APIConfig.endpoints, apiEndpoints ?? {}, {
+    Object.assign(config.endpoints, apiEndpoints ?? {});
+    Object.assign(config, {
       sharedParams: projectId
         ? {
             project: projectId,
@@ -117,6 +118,8 @@ export class DataManager {
           }
         : apiSharedParams,
     });
+
+    console.log(config, this.root.dataset, projectId, apiSharedParams);
 
     return config;
   }
