@@ -238,7 +238,8 @@ export const TabStore = types
     },
 
     fetchTabs: flow(function* (tabID, taskID, labeling) {
-      const { tabs } = yield getRoot(self).apiCall("tabs");
+      const response = yield getRoot(self).apiCall("tabs");
+      const tabs = response.tabs ?? response ?? [];
 
       const snapshots = tabs.map((t) => {
         const { data, ...tab } = t;
