@@ -111,7 +111,9 @@ export const TabStore = types
       destroy(view);
     }),
 
-    addView: flow(function* (viewSnapshot = {}) {
+    addView: flow(function* (viewSnapshot = {}, options) {
+      const { autoselect = true, reload = true } = options ?? {};
+
       const snapshot = viewSnapshot ?? {};
       const lastView = self.views[self.views.length - 1];
       const newTitle = `New Tab ${self.views.length + 1}`;
@@ -127,9 +129,9 @@ export const TabStore = types
       const newView = self.createView(newSnapshot);
 
       self.views.push(newView);
-      self.setSelected(newView);
+      if (autoselect) self.setSelected(newView);
 
-      yield newView.save();
+      yield newView.save({ reload });
 
       return newView;
     }),
@@ -251,7 +253,17 @@ export const TabStore = types
 
       self.views.push(...snapshots);
 
-      const defaultView = self.views[0];
+      let defaultView = self.views[0];
+
+      if (self.views.length === 0) {
+        tabID = null;
+
+        defaultView = yield self.addView({
+          autoselect: false,
+          reload: false,
+        });
+      }
+
       const selected = tabID
         ? self.views.find((view) => {
             return view.id === parseInt(tabID);

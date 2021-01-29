@@ -171,6 +171,7 @@ export const Tab = types
 
       if (apiVersion === 2) {
         tab.data = data;
+        tab.project = self.root.SDK.projectId;
       } else {
         Object.assign(tab, data);
       }
@@ -358,6 +359,7 @@ export const Tab = types
       });
 
       self.saved = true;
+
       if (reload !== false) self.reload({ interaction });
 
       self.unlock();

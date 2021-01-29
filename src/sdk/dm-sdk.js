@@ -27,6 +27,7 @@
  * }} DMConfig
  */
 
+import { options } from "less";
 import { APIProxy } from "../utils/api-proxy";
 import { APIConfig } from "./api-config";
 import { createApp } from "./app-create";
@@ -101,25 +102,26 @@ export class DataManager {
     return this.mode === "labelstream";
   }
 
+  get projectId() {
+    return (this._projectId =
+      this._projectId ??
+      this.root.dataset?.projectId ??
+      options.apiSharedParams?.project);
+  }
+
   apiConfig({ apiGateway, apiEndpoints, apiMockDisabled, apiSharedParams }) {
     const config = Object.assign({}, APIConfig);
 
     config.gateway = apiGateway ?? config.gateway;
     config.mockDisabled = apiMockDisabled;
 
-    const { projectId } = this.root?.dataset ?? {};
-
     Object.assign(config.endpoints, apiEndpoints ?? {});
     Object.assign(config, {
-      sharedParams: projectId
-        ? {
-            project: projectId,
-            ...(apiSharedParams ?? {}),
-          }
-        : apiSharedParams,
+      sharedParams: {
+        project: this.projectId,
+        ...(apiSharedParams ?? {}),
+      },
     });
-
-    console.log(config, this.root.dataset, projectId, apiSharedParams);
 
     return config;
   }

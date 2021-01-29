@@ -11,7 +11,6 @@ export const initDevApp = async (DataManager) => {
     root: document.getElementById("app"),
     apiGateway: gatewayAPI,
     apiVersion: 2,
-    // apiGateway: "api/",
     apiMockDisabled: useExternalSource,
     labelStudio: {
       user: {
