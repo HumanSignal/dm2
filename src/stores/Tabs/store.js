@@ -1,4 +1,5 @@
 import {
+  applySnapshot,
   clone,
   destroy,
   flow,
@@ -94,8 +95,8 @@ export const TabStore = types
       }
     }),
 
-    deleteView: flow(function* (view) {
-      if (self.selected === view) {
+    deleteView: flow(function* (view, { autoselect = true } = {}) {
+      if (autoselect && self.selected === view) {
         let newView;
 
         if (self.selected.opener) {
@@ -104,15 +105,20 @@ export const TabStore = types
           const index = self.views.indexOf(view);
           newView = index === 0 ? self.views[index + 1] : self.views[index - 1];
         }
+
         self.setSelected(newView.key);
       }
 
-      yield view.delete();
+      if (view.saved) {
+        yield self.root.apiCall("deleteTab", { tabID: view.id });
+      }
+
       destroy(view);
     }),
 
     addView: flow(function* (viewSnapshot = {}, options) {
-      const { autoselect = true, reload = true } = options ?? {};
+      const { autoselect = true, autosave = true, reload = true } =
+        options ?? {};
 
       const snapshot = viewSnapshot ?? {};
       const lastView = self.views[self.views.length - 1];
@@ -129,11 +135,52 @@ export const TabStore = types
       const newView = self.createView(newSnapshot);
 
       self.views.push(newView);
+
       if (autoselect) self.setSelected(newView);
 
-      yield newView.save({ reload });
+      if (autosave) yield newView.save({ reload });
 
       return newView;
+    }),
+
+    saveView: flow(function* (view, { reload, interaction } = {}) {
+      const needsLock = ["ordering", "filter"].includes(interaction);
+
+      if (needsLock) view.lock();
+      const { id: tabID } = view;
+      const body = { body: view.serialize() };
+      const params = { tabID };
+
+      if (interaction !== undefined) Object.assign(params, { interaction });
+
+      const root = getRoot(self);
+      const apiMethod =
+        !view.saved && root.apiVersion === 2 ? "createTab" : "updateTab";
+
+      const result = yield root.apiCall(apiMethod, params, body);
+      const viewSnapshot = getSnapshot(view);
+      const newViewSnapshot = {
+        ...viewSnapshot,
+        ...result,
+        saved: true,
+        filters: viewSnapshot.filters,
+        conjunction: viewSnapshot.conjunction,
+      };
+
+      if (result.id !== view.id) {
+        const newView = self.addView(newViewSnapshot);
+
+        newView.markSaved();
+        self.setSelected(newView);
+
+        self.deleteView(view, { autoselect: false });
+      } else {
+        applySnapshot(view, newViewSnapshot);
+
+        if (reload !== false) view.reload({ interaction });
+
+        view.unlock();
+      }
     }),
 
     duplicateView(view) {

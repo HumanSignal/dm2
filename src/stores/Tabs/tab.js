@@ -1,5 +1,4 @@
 import {
-  applySnapshot,
   clone,
   destroy,
   flow,
@@ -335,39 +334,16 @@ export const Tab = types
     },
 
     save: flow(function* ({ reload, interaction } = {}) {
-      if (self.virtual) return;
-      const needsLock = ["ordering", "filter"].includes(interaction);
-
-      if (needsLock) self.lock();
-      const { id: tabID } = self;
-      const body = { body: self.serialize() };
-      const params = { tabID };
-
-      if (interaction !== undefined) Object.assign(params, { interaction });
-
-      const apiMethod =
-        !self.saved && self.root.apiVersion === 2 ? "createTab" : "updateTab";
-
-      const result = yield self.root.apiCall(apiMethod, params, body);
-      const viewSnapshot = getSnapshot(self);
-
-      applySnapshot(self, {
-        ...viewSnapshot,
-        ...result,
-        filters: viewSnapshot.filters,
-        conjunction: viewSnapshot.conjunction,
-      });
-
-      self.saved = true;
-
-      if (reload !== false) self.reload({ interaction });
-
-      self.unlock();
+      yield self.parent.saveView(self, { reload, interaction });
     }),
 
     delete: flow(function* () {
       yield self.root.apiCall("deleteTab", { tabID: self.id });
     }),
+
+    markSaved() {
+      self.saved = true;
+    },
   }))
   .preProcessSnapshot((snapshot) => {
     if (snapshot === null) return snapshot;
