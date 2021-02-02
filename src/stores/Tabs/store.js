@@ -168,7 +168,7 @@ export const TabStore = types
       };
 
       if (result.id !== view.id) {
-        const newView = self.addView(newViewSnapshot);
+        const newView = yield self.addView(newViewSnapshot);
 
         newView.markSaved();
         self.setSelected(newView);
