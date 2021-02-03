@@ -142,6 +142,7 @@ export class APIProxy {
 
         const initialheaders = Object.assign(
           this.getDefaultHeaders(requestMethod),
+          this.commonHeaders ?? {},
           methodSettings.headers ?? {},
           headers ?? {}
         );

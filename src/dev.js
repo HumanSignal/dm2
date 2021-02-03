@@ -5,13 +5,17 @@ const { REACT_APP_USE_LSB, REACT_APP_GATEWAY_API } = process.env;
  */
 export const initDevApp = async (DataManager) => {
   const useExternalSource = !!REACT_APP_USE_LSB || !!REACT_APP_GATEWAY_API;
-  const gatewayAPI = REACT_APP_GATEWAY_API ?? "http://localhost:8000/api/dm";
+  const gatewayAPI = REACT_APP_GATEWAY_API ?? "http://localhost:8081/api/dm";
+  const token = process.env.REACT_APP_HTX_ACCESS_TOKEN;
 
   new DataManager({
     root: document.getElementById("app"),
     apiGateway: gatewayAPI,
     apiVersion: 2,
     apiMockDisabled: useExternalSource,
+    apiHeaders: {
+      Authorization: `Token ${token}`,
+    },
     labelStudio: {
       user: {
         pk: 1,

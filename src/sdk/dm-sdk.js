@@ -19,6 +19,7 @@
  * apiGateway: string | URL,
  * apiEndpoints: import("../utils/api-proxy").Endpoints,
  * apiMockDisabled: boolean,
+ * apiHeaders?: Dict<string>,
  * settings: Dict<any>,
  * labelStudio: Dict<any>,
  * env: "development" | "production",
@@ -88,6 +89,7 @@ export class DataManager {
         apiEndpoints: config.apiEndpoints,
         apiMockDisabled: config.apiMockDisabled,
         apiSharedParams: config.apiSharedParams,
+        apiHeaders: config.apiHeaders,
       })
     );
 
@@ -109,11 +111,18 @@ export class DataManager {
       options.apiSharedParams?.project);
   }
 
-  apiConfig({ apiGateway, apiEndpoints, apiMockDisabled, apiSharedParams }) {
+  apiConfig({
+    apiGateway,
+    apiEndpoints,
+    apiMockDisabled,
+    apiSharedParams,
+    apiHeaders,
+  }) {
     const config = Object.assign({}, APIConfig);
 
     config.gateway = apiGateway ?? config.gateway;
     config.mockDisabled = apiMockDisabled;
+    config.commonHeaders = apiHeaders;
 
     Object.assign(config.endpoints, apiEndpoints ?? {});
     Object.assign(config, {
@@ -122,6 +131,8 @@ export class DataManager {
         ...(apiSharedParams ?? {}),
       },
     });
+
+    console.log(config);
 
     return config;
   }

@@ -1,3 +1,4 @@
+import "antd/dist/antd.css";
 import { observer, Provider } from "mobx-react";
 import React from "react";
 import { Spinner } from "../Common/Spinner";
