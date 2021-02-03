@@ -110,7 +110,7 @@ export const TabStore = types
       }
 
       if (view.saved) {
-        yield self.root.apiCall("deleteTab", { tabID: view.id });
+        yield getRoot(self).apiCall("deleteTab", { tabID: view.id });
       }
 
       destroy(view);
