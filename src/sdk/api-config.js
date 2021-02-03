@@ -19,10 +19,10 @@ export const APIConfig = {
       method: "post",
     },
 
-    /** Update particular tab (POST) */
+    /** Update particular tab (PATCH) */
     updateTab: {
       path: "/views/:tabID",
-      method: "post",
+      method: "patch",
     },
 
     /** Delete particular tab (DELETE) */
