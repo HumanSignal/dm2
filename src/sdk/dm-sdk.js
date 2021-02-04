@@ -178,11 +178,16 @@ export class DataManager {
       this.store.annotationStore.selected,
     ];
 
+    // do nothing if the task is already selected
     if (this.lsf?.task && task && this.lsf.task.id === task.id) {
       return;
     }
 
+    let labelStream = false;
+
+    // Load task if there's no selected one
     if (!task) {
+      labelStream = true;
       task = await this.store.taskStore.loadTask();
     }
 
@@ -191,6 +196,7 @@ export class DataManager {
         ...this.labelStudioOptions,
         task,
         completion,
+        labelStream,
       });
 
       return;
