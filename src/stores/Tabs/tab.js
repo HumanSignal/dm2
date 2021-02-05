@@ -270,12 +270,13 @@ export const Tab = types
     },
 
     updateSelectedList: flow(function* (action, extraData) {
-      const { selectedItems } = yield getRoot(self).apiCall(
+      const response = yield getRoot(self).apiCall(
         action,
         { tabID: self.id },
         { body: { ...self.selected.snapshot, ...(extraData ?? {}) } }
       );
 
+      const selectedItems = response.selectedItems ?? response;
       self.selected.update(selectedItems);
     }),
 
