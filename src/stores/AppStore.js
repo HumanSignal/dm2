@@ -94,7 +94,7 @@ export const AppStore = types
       if (self._poll) return;
 
       const poll = async (self) => {
-        await self.fetchProject();
+        await self.fetchProject({ interaction: "timer" });
         self._poll = setTimeout(() => poll(self), 10000);
       };
 
@@ -239,9 +239,16 @@ export const AppStore = types
       });
     },
 
-    fetchProject: flow(function* () {
+    fetchProject: flow(function* (options = {}) {
       const oldProject = JSON.stringify(self.project ?? {});
-      const newProject = yield self.apiCall("project");
+      const params =
+        options && options.interaction
+          ? {
+              interaction: options.interaction,
+            }
+          : null;
+
+      const newProject = yield self.apiCall("project", params);
 
       if (JSON.stringify(newProject ?? {}) !== oldProject) {
         self.project = newProject;
