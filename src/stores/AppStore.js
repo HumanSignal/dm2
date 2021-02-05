@@ -198,7 +198,7 @@ export const AppStore = types
           content:
             "Before you can annotate the data, set up labeling configuration",
           onOk() {
-            window.location.href = "./settings";
+            window.location.href = self.SDK.links.settings;
           },
           okText: "Go to setup",
         });

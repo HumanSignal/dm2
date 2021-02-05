@@ -67,6 +67,7 @@ export class DataManager {
   links = {
     import: "/import",
     export: "/export",
+    settings: "./settings",
   };
 
   /**
