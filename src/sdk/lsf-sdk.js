@@ -84,6 +84,9 @@ export class LSFWrapper {
       onDeleteCompletion: this.onDeleteCompletion,
       onSkipTask: this.onSkipTask,
       onGroundTruth: this.onGroundTruth,
+      onEntityCreate: this.onEntityCreate,
+      onEntityDelete: this.onEntityDelete,
+      onSelectCompletion: this.onSelectCompletion,
     };
 
     this.initLabelStudio(lsfProperties);
@@ -253,6 +256,12 @@ export class LSFWrapper {
       true
     );
   };
+
+  // Proxy events that are unused by DM integration
+  onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", args);
+  onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", args);
+  onSelectCompletion = (...args) =>
+    this.datamanager.invoke("onSelectCompletion", args);
 
   async submitCurrentCompletion(eventName, submit, includeID = false) {
     const { taskID, currentCompletion } = this;

@@ -17,7 +17,6 @@ import {
   FaSortAmountUp,
   FaUpload,
 } from "react-icons/fa";
-import styled from "styled-components";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
@@ -40,19 +39,6 @@ const injector = inject(({ store }) => {
     view: currentView,
   };
 });
-
-const StyledButton = styled(Button)`
-  --icon-color: #595959;
-
-  &:hover {
-    --icon-color: currentColor;
-  }
-
-  svg {
-    transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-    transition-delay: 0ms;
-  }
-`;
 
 const OrderButton = observer(({ ordering, size, view }) => {
   return (
@@ -141,6 +127,7 @@ const GridWidthButton = observer(({ view, gridWidth }) => {
 export const TablePanel = injector(
   ({ store, view, labelingDisabled, loading, target, ordering }) => {
     const toolbarSize = "middle";
+    const { links } = store.SDK;
 
     return (
       <div className="tab-panel">
@@ -173,21 +160,25 @@ export const TablePanel = injector(
         <Space>
           {<SelectedItems />}
 
-          <Button
-            className="flex-button"
-            icon={<FaUpload style={{ marginRight: 10 }} />}
-            onClick={() => (window.location.href = "/import")}
-          >
-            Import
-          </Button>
+          {links.import && (
+            <Button
+              className="flex-button"
+              icon={<FaUpload style={{ marginRight: 10 }} />}
+              onClick={() => (window.location.href = links.import)}
+            >
+              Import
+            </Button>
+          )}
 
-          <Button
-            className="flex-button"
-            icon={<FaDownload style={{ marginRight: 10 }} />}
-            onClick={() => (window.location.href = "/export")}
-          >
-            Export
-          </Button>
+          {links.export && (
+            <Button
+              className="flex-button"
+              icon={<FaDownload style={{ marginRight: 10 }} />}
+              onClick={() => (window.location.href = links.export)}
+            >
+              Export
+            </Button>
+          )}
 
           {!labelingDisabled && (
             <Button

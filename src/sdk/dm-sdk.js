@@ -24,6 +24,7 @@
  * env: "development" | "production",
  * mode: "labelstream" | "explorer",
  * table: TableConfig,
+ * links: Dict<string|null>,
  * }} DMConfig
  */
 
@@ -60,6 +61,12 @@ export class DataManager {
   /** @type {TableConfig} */
   tableConfig = {};
 
+  /** @type {Dict<string|null>} */
+  links = {
+    import: "/import",
+    export: "/export",
+  };
+
   /**
    * @private
    * @type {Map<String, Set<Function>>}
@@ -84,6 +91,7 @@ export class DataManager {
     this.env = config.env ?? process.env.NODE_ENV ?? this.env;
     this.mode = config.mode ?? this.mode;
     this.tableConfig = config.table ?? {};
+    this.links = Object.assign(this.links, config.links ?? {});
 
     this.initApp();
   }
