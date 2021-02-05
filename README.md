@@ -56,6 +56,7 @@ const dm = new DataManager({
   // API settings
   apiEndpoints: {
     // here you can override API endpoints
+    // default config could be found in api-config.js
   },
   // Disable requests mocking
   apiMockDisabled: process.env.NODE_ENV === 'production',
@@ -67,6 +68,11 @@ const dm = new DataManager({
   table: {
     hiddenColumns: {/*...*/},
     visibleColumns: {/*...*/}
+  },
+  // Setup links. Null value will hide the button
+  links: {
+    import: '/import',
+    export: '/export',
   }
 })
 ```

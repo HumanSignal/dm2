@@ -1,11 +1,13 @@
 /** @typedef {import("../stores/Tasks").TaskModel} Task */
 /** @typedef {import("label-studio").LabelStudio} LabelStudio */
 /** @typedef {import("./dm-sdk").DataManager} DataManager */
+
 /** @typedef {{
  * user: Dict
  * config: string,
  * interfaces: string[],
  * task: Task
+ * labelStream: boolean,
  * }} LSFOptions */
 
 import { LSFHistory } from "./lsf-history";
@@ -51,6 +53,9 @@ export class LSFWrapper {
   /** @type {LSFHistory} */
   history = null;
 
+  /** @type {boolean} */
+  labelStream = false;
+
   /**
    *
    * @param {DataManager} dm
@@ -61,6 +66,7 @@ export class LSFWrapper {
     this.datamanager = dm;
     this.root = element;
     this.task = options.task;
+    this.labelStream = options.labelStream ?? false;
     this.initialCompletion = options.completion;
     this.history = this.datamanager.isLabelStream ? new LSFHistory(this) : null;
 
@@ -78,6 +84,9 @@ export class LSFWrapper {
       onDeleteCompletion: this.onDeleteCompletion,
       onSkipTask: this.onSkipTask,
       onGroundTruth: this.onGroundTruth,
+      onEntityCreate: this.onEntityCreate,
+      onEntityDelete: this.onEntityDelete,
+      onSelectCompletion: this.onSelectCompletion,
     };
 
     this.initLabelStudio(lsfProperties);
@@ -143,12 +152,12 @@ export class LSFWrapper {
     let { completionStore: cs } = this.lsf;
     let completion;
 
-    if (this.completions.length > 0 && id === "auto") {
+    if (this.predictions.length > 0 && this.labelStream) {
+      completion = cs.addCompletionFromPrediction(this.predictions[0]);
+    } else if (this.completions.length > 0 && id === "auto") {
       completion = { id: this.completions[0].id };
     } else if (this.completions.length > 0 && id) {
       completion = this.completions.find((c) => c.pk === id || c.id === id);
-    } else if (this.predictions.length > 0) {
-      completion = cs.addCompletionFromPrediction(this.predictions[0]);
     } else {
       completion = cs.addCompletion({ userGenerate: true });
     }
@@ -247,6 +256,12 @@ export class LSFWrapper {
       true
     );
   };
+
+  // Proxy events that are unused by DM integration
+  onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", args);
+  onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", args);
+  onSelectCompletion = (...args) =>
+    this.datamanager.invoke("onSelectCompletion", args);
 
   async submitCurrentCompletion(eventName, submit, includeID = false) {
     const { taskID, currentCompletion } = this;

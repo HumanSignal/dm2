@@ -92,6 +92,13 @@ export const create = (columns) => {
 
       updateTaskByID: flow(function* (taskID) {
         const taskData = yield self.root.apiCall("task", { taskID });
+
+        if (taskData.predictions) {
+          taskData.predictions.forEach((p) => {
+            p.created_by = (p.model_version?.trim() ?? "") || p.created_by;
+          });
+        }
+
         return self.applyTaskSnapshot(taskData, taskID);
       }),
 

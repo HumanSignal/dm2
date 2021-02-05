@@ -25,6 +25,7 @@
  * env: "development" | "production",
  * mode: "labelstream" | "explorer",
  * table: TableConfig,
+ * links: Dict<string|null>,
  * }} DMConfig
  */
 
@@ -62,6 +63,12 @@ export class DataManager {
   /** @type {TableConfig} */
   tableConfig = {};
 
+  /** @type {Dict<string|null>} */
+  links = {
+    import: "/import",
+    export: "/export",
+  };
+
   /**
    * @private
    * @type {Map<String, Set<Function>>}
@@ -83,6 +90,7 @@ export class DataManager {
     this.mode = config.mode ?? this.mode;
     this.tableConfig = config.table ?? {};
     this.apiVersion = config?.apiVersion ?? 1;
+    this.links = Object.assign(this.links, config.links ?? {});
     this.api = new APIProxy(
       this.apiConfig({
         apiGateway: config.apiGateway,
@@ -208,11 +216,16 @@ export class DataManager {
       this.store.annotationStore.selected,
     ];
 
+    // do nothing if the task is already selected
     if (this.lsf?.task && task && this.lsf.task.id === task.id) {
       return;
     }
 
+    let labelStream = false;
+
+    // Load task if there's no selected one
     if (!task) {
+      labelStream = true;
       task = await this.store.taskStore.loadTask();
     }
 
@@ -221,6 +234,7 @@ export class DataManager {
         ...this.labelStudioOptions,
         task,
         completion,
+        labelStream,
       });
 
       return;
