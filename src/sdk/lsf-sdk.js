@@ -346,7 +346,7 @@ export class LSFWrapper {
 
   /** @returns {string|null} */
   get lsfConfig() {
-    return this.project.label_config_line;
+    return this.project.label_config_line ?? this.project.label_config;
   }
 
   /** @returns {Dict} */
