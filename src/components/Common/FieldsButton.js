@@ -91,6 +91,7 @@ export const FieldsButton = injector(
     wrapper,
     title,
     icon,
+    className,
     trailingIcon,
     onClick,
     onReset,
@@ -112,9 +113,9 @@ export const FieldsButton = injector(
           />
         )}
       >
-        <Button size={size} icon={icon} style={style}>
-          <span>{title}</span>
-          {trailingIcon}
+        <Button size={size} icon={icon} style={style} className={className}>
+          {title && <span>{title}</span>}
+          {trailingIcon ?? null}
         </Button>
       </TableDropdown>
     );

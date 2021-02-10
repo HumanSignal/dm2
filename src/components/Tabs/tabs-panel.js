@@ -1,21 +1,13 @@
-import {
-  AppstoreOutlined,
-  BarsOutlined,
-  CaretDownOutlined,
-  EyeOutlined,
-  PlayCircleOutlined,
-} from "@ant-design/icons";
-import { Button, Divider, Radio, Space } from "antd";
+import { AppstoreOutlined, BarsOutlined } from "@ant-design/icons";
+import { Button, Radio, Space } from "antd";
 import ButtonGroup from "antd/lib/button/button-group";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import {
-  FaDownload,
   FaMinus,
   FaPlus,
   FaSortAmountDown,
   FaSortAmountUp,
-  FaUpload,
 } from "react-icons/fa";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
@@ -42,20 +34,13 @@ const injector = inject(({ store }) => {
 
 const OrderButton = observer(({ ordering, size, view }) => {
   return (
-    <Space>
+    <Space style={{ fontSize: 12 }}>
+      Order
       <ButtonGroup>
         <FieldsButton
           size={size}
-          style={{ minWidth: 105, textAlign: "left" }}
-          title={
-            ordering ? (
-              <>
-                Order by <b>{ordering.column?.title}</b>
-              </>
-            ) : (
-              "Sort order"
-            )
-          }
+          style={{ minWidth: 85, textAlign: "left" }}
+          title={ordering ? ordering.column?.title : "not set"}
           onClick={(col) => view.setOrdering(col.id)}
           onReset={() => view.setOrdering(null)}
           resetTitle="Default"
@@ -80,6 +65,7 @@ const OrderButton = observer(({ ordering, size, view }) => {
         />
 
         <Button
+          size={size}
           className="flex-button"
           style={{ color: "#595959" }}
           disabled={!!ordering === false}
@@ -91,7 +77,7 @@ const OrderButton = observer(({ ordering, size, view }) => {
   );
 });
 
-const GridWidthButton = observer(({ view, gridWidth }) => {
+const GridWidthButton = observer(({ view, gridWidth, size }) => {
   const [width, setWidth] = React.useState(gridWidth);
 
   const setGridWidth = React.useCallback(
@@ -104,18 +90,20 @@ const GridWidthButton = observer(({ view, gridWidth }) => {
   );
 
   return (
-    <Space>
+    <Space style={{ fontSize: 12 }}>
       Columns: {width}
       <ButtonGroup>
         <Button
+          size={size}
           className="flex-button"
-          icon={<FaMinus />}
+          icon={<FaMinus size="12" color="#595959" />}
           onClick={() => setGridWidth(width - 1)}
           disabled={width === 3}
         />
         <Button
+          size={size}
           className="flex-button"
-          icon={<FaPlus />}
+          icon={<FaPlus size="12" color="#595959" />}
           onClick={() => setGridWidth(width + 1)}
           disabled={width === 10}
         />
@@ -126,30 +114,26 @@ const GridWidthButton = observer(({ view, gridWidth }) => {
 
 export const TablePanel = injector(
   ({ store, view, labelingDisabled, loading, target, ordering }) => {
-    const toolbarSize = "middle";
+    const toolbarSize = "small";
     const { links } = store.SDK;
 
     return (
       <div className="tab-panel">
-        <Space>
-          <ViewToggle />
+        <Space size="large">
+          <DataStoreToggle size={toolbarSize} view={view} />
 
-          {/* {false && (<DataStoreToggle view={view}/>)} */}
-
-          <FieldsButton
-            size={toolbarSize}
-            wrapper={FieldsButton.Checkbox}
-            icon={<EyeOutlined />}
-            trailingIcon={<CaretDownOutlined />}
-            title={"Fields"}
-          />
+          <ViewToggle size={toolbarSize} />
 
           <FiltersPane size={toolbarSize} />
 
           <OrderButton view={view} ordering={ordering} size={toolbarSize} />
 
           {view.type === "grid" && (
-            <GridWidthButton view={view} gridWidth={view.gridWidth} />
+            <GridWidthButton
+              view={view}
+              gridWidth={view.gridWidth}
+              size={toolbarSize}
+            />
           )}
 
           {loading && <Spinner size="small" />}
@@ -162,8 +146,8 @@ export const TablePanel = injector(
 
           {links.import && (
             <Button
+              size={toolbarSize}
               className="flex-button"
-              icon={<FaUpload style={{ marginRight: 10 }} />}
               onClick={() => (window.location.href = links.import)}
             >
               Import
@@ -172,8 +156,8 @@ export const TablePanel = injector(
 
           {links.export && (
             <Button
+              size={toolbarSize}
               className="flex-button"
-              icon={<FaDownload style={{ marginRight: 10 }} />}
               onClick={() => (window.location.href = links.export)}
             >
               Export
@@ -187,7 +171,6 @@ export const TablePanel = injector(
               disabled={target === "annotations"}
               onClick={() => store.startLabeling()}
             >
-              <PlayCircleOutlined />
               Label
             </Button>
           )}
@@ -201,18 +184,19 @@ const viewInjector = inject(({ store }) => ({
   view: store.currentView,
 }));
 
-const ViewToggle = viewInjector(({ view }) => {
+const ViewToggle = viewInjector(({ view, size }) => {
   return (
     <Radio.Group
+      size={size}
       value={view.type}
       onChange={(e) => view.setType(e.target.value)}
       style={{ whiteSpace: "nowrap" }}
     >
       <Radio.Button value="list">
-        <BarsOutlined /> List
+        <BarsOutlined />
       </Radio.Button>
       <Radio.Button value="grid">
-        <AppstoreOutlined /> Grid
+        <AppstoreOutlined />
       </Radio.Button>
     </Radio.Group>
   );
@@ -220,24 +204,19 @@ const ViewToggle = viewInjector(({ view }) => {
 
 const SelectedItems = inject(({ store }) => ({
   hasSelected: store.currentView?.selected?.hasSelected ?? false,
-}))(
-  ({ hasSelected }) =>
-    hasSelected && (
-      <>
-        <TabsActions size="small" />
-        <Divider type="vertical" />
-      </>
-    )
-);
+}))(({ hasSelected }) => hasSelected && <TabsActions size="small" />);
 
-const DataStoreToggle = viewInjector(({ view }) => {
+const DataStoreToggle = viewInjector(({ view, size }) => {
   return (
     <Radio.Group
       value={view.target}
+      size={size}
       onChange={(e) => view.setTarget(e.target.value)}
     >
       <Radio.Button value="tasks">Tasks</Radio.Button>
-      <Radio.Button value="annotations">Annotations</Radio.Button>
+      <Radio.Button value="annotations" disabled>
+        Annotations
+      </Radio.Button>
     </Radio.Group>
   );
 });

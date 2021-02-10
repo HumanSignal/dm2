@@ -6,7 +6,12 @@ import { Filters } from "../Filters/Filters";
 
 export const FiltersButton = observer(({ onClick, active, size }) => {
   return (
-    <Button onClick={onClick} type={active ? "primary" : "default"} size={size}>
+    <Button
+      className="ant-dropdown-trigger"
+      onClick={onClick}
+      type={active ? "primary" : "default"}
+      size={size}
+    >
       <VscListFilter style={{ marginBottom: -2, marginRight: 7 }} />
       Filters
     </Button>

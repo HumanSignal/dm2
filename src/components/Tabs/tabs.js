@@ -1,6 +1,7 @@
 import { Button, PageHeader, Space, Tabs } from "antd";
 import { inject } from "mobx-react";
 import React from "react";
+import { FaPlus } from "react-icons/fa";
 import { RiCloseLine } from "react-icons/ri";
 import { Spinner } from "../Common/Spinner";
 import { Filters } from "../Filters/Filters";
@@ -82,9 +83,7 @@ const ProjectSummary = summaryInjector((props) => {
           <Spinner size="small" />
         </Space>
       )}
-      <span
-        style={{ display: "inline-flex", alignItems: "center", fontSize: 12 }}
-      >
+      <span style={{ display: "flex", alignItems: "center", fontSize: 12 }}>
         <Space size="large">
           <span>
             Tasks: {props.totalFoundTasks} / {props.totalTasks}
@@ -105,8 +104,7 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
       onEdit={() => views.addView()}
       onChange={(key) => views.setSelected(key)}
       tabBarExtraContent={<ProjectSummary />}
-      tabBarStyle={{ paddingLeft: "1em" }}
-      style={{ width: "100%", maxHeight: 42 }}
+      addIcon={<FaPlus color="#595959" />}
     >
       {tabs.map((tab) => (
         <Tabs.TabPane

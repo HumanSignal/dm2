@@ -1,7 +1,8 @@
-import { Button, Modal, Space } from "antd";
+import { Button, Dropdown, Menu, Modal, Space } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { BsTrash } from "react-icons/bs";
+import { FaAngleDown } from "react-icons/fa";
 
 export const TabsActions = inject("store")(
   observer(({ store, size }) => {
@@ -26,36 +27,35 @@ export const TabsActions = inject("store")(
       }
     };
 
+    const actionButtons = actions.map((action) => {
+      const isDeleteAction = action.id.includes("delete");
+      return (
+        <Menu.Item
+          size={size}
+          key={action.id}
+          className="flex-button"
+          danger={isDeleteAction}
+          onClick={() => invokeAction(action)}
+          icon={
+            isDeleteAction && (
+              <BsTrash style={{ fontSize: 14, marginRight: 5 }} />
+            )
+          }
+        >
+          {action.title}
+        </Menu.Item>
+      );
+    });
+
     return (
       <Space style={{ flexWrap: "wrap" }}>
-        Selected: {selectedLength}
-        <Space size="small" style={{ flexWrap: "wrap" }}>
-          {/* <Button size={size} onClick={() => store.currentView.selectAll()}>
-            {selected.all && !selected.isIndeterminate
-              ? "Unselect all"
-              : "Select all"}
+        Selected
+        <Dropdown trigger="click" overlay={<Menu>{actionButtons}</Menu>}>
+          <Button className="flex-button" size={size}>
+            {selectedLength} tasks
+            <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
           </Button>
-
-          <Divider type="vertical" /> */}
-
-          {actions.map((action) => {
-            const isDeleteAction = action.id.includes("delete");
-            return (
-              <Button
-                className="flex-button"
-                danger={isDeleteAction}
-                size={size}
-                key={action.id}
-                onClick={() => invokeAction(action)}
-              >
-                {isDeleteAction && (
-                  <BsTrash style={{ fontSize: 14, marginRight: 5 }} />
-                )}
-                {action.title}
-              </Button>
-            );
-          })}
-        </Space>
+        </Dropdown>
       </Space>
     );
   })

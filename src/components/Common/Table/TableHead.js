@@ -10,6 +10,7 @@ import { Resizer } from "../Resizer";
 import {
   TableCellContent,
   TableCellWrapper,
+  TableHeaderExtra,
   TableHeadExtra,
   TableHeadWrapper,
 } from "./Table.styled";
@@ -167,6 +168,7 @@ export const TableHead = observer(
         onTypeChange,
         onResize,
         onReset,
+        extra,
       },
       ref
     ) => {
@@ -191,6 +193,7 @@ export const TableHead = observer(
                   />
                 );
               })}
+              <TableHeaderExtra>{extra}</TableHeaderExtra>
             </TableHeadWrapper>
           )}
         </TableContext.Consumer>

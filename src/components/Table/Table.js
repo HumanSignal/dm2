@@ -4,8 +4,10 @@ import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import { FaCog } from "react-icons/fa";
 import { VscQuestion } from "react-icons/vsc";
 import { FillContainer } from "../App/App.styles";
+import { FieldsButton } from "../Common/FieldsButton";
 import { Spinner } from "../Common/Spinner";
 import { Table } from "../Common/Table/Table";
 import * as CellViews from "./CellViews";
@@ -240,6 +242,14 @@ export const DataView = injector(
           onColumnReset={(col) => {
             col.original.resetWidth();
           }}
+          headerExtra={
+            <FieldsButton
+              className="flex-button"
+              wrapper={FieldsButton.Checkbox}
+              icon={<FaCog size="14" color="#8C8C8C" />}
+              style={{ padding: 0, width: 24, height: 24 }}
+            />
+          }
         />
       ) : (
         <GridView

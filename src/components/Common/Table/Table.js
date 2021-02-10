@@ -41,6 +41,7 @@ export const Table = observer(
     stopInteractions,
     onColumnResize,
     onColumnReset,
+    headerExtra,
     ...props
   }) => {
     const tableHead = React.useRef();
@@ -146,6 +147,7 @@ export const Table = observer(
           decoration={Decoration}
           onResize={onColumnResize}
           onReset={onColumnReset}
+          extra={headerExtra}
         />
       ),
       // eslint-disable-next-line react-hooks/exhaustive-deps

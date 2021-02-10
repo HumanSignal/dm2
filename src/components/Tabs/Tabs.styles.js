@@ -5,18 +5,6 @@ export const TabsStyles = styled.div`
   width: 100%;
   display: flex;
 
-  .ant-tabs-content-holder {
-    display: flex;
-  }
-
-  .ant-tabs {
-    flex: 1;
-
-    &-tabpane {
-      display: none;
-    }
-  }
-
   .sidebar {
     width: 350px;
     background: #fff;
@@ -36,16 +24,12 @@ export const TabsStyles = styled.div`
     z-index: 100;
   }
 
-  .ant-tabs-nav {
-    margin-bottom: 0;
-  }
-
   .ant-page-header-heading {
     align-items: center;
   }
 
   .tab-panel {
-    padding: 1em;
+    padding: 11px 1em;
     z-index: 100;
     position: relative;
     background-color: #fff;

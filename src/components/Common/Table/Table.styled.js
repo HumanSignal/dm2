@@ -40,6 +40,14 @@ export const TableHeadWrapper = styled.div`
   ${HorizontalShadow}
 `;
 
+export const TableHeaderExtra = styled.div`
+  flex: 1;
+  display: flex;
+  padding-right: 14px;
+  align-items: center;
+  justify-content: flex-end;
+`;
+
 export const TableBody = styled.div`
   flex: 1;
   overflow: auto;
