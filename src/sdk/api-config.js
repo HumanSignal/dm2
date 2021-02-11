@@ -43,8 +43,11 @@ export const APIConfig = {
     /** Next task (labelstream, default sequential) */
     nextTask: "/tasks/next",
 
-    /** Sinfle annotation */
+    /** Single annotation */
     completion: "/tasks/:taskID/completions/:id",
+
+    /** Single annotation */
+    completions: "/../tasks/:taskID/completions",
 
     /** Mark sample as skipped */
     skipTask: {
@@ -58,19 +61,19 @@ export const APIConfig = {
 
     /** Submit annotation */
     submitCompletion: {
-      path: "/tasks/:taskID/completions",
+      path: "/../tasks/:taskID/completions",
       method: "post",
     },
 
     /** Update annotation */
     updateCompletion: {
-      path: "/tasks/:taskID/completions/:completionID",
-      method: "post",
+      path: "/../completions/:completionID",
+      method: "patch",
     },
 
     /** Delete annotation */
     deleteCompletion: {
-      path: "/tasks/:taskID/completions/:completionID",
+      path: "/../completions/:completionID",
       method: "delete",
     },
 

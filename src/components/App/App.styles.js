@@ -9,11 +9,12 @@ const TabsRestyle = css`
     &-tabpane {
       display: none;
     }
+  }
 
-    &-nav {
-      padding-left: 0;
-      margin-bottom: 0;
-    }
+  .ant-tabs > .ant-tabs-nav,
+  .ant-tabs-top > .ant-tabs-nav {
+    padding-left: 0;
+    margin-bottom: 0;
   }
 
   .ant-tabs-content-holder {
