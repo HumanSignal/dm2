@@ -231,7 +231,7 @@ const Toolbar = styled.div`
   padding: ${({ isLabelStream }) =>
     isLabelStream ? "0 0 0 1em" : "0 1em 13px"};
   justify-content: space-between;
-  background-color: #fafafa;
+  background-color: #f0f0f0;
 `;
 
 const CurrentTaskWrapper = styled.div``;

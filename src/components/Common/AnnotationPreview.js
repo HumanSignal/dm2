@@ -146,7 +146,7 @@ export const AnnotationPreview = injector(
       >
         <Spin
           indicator={<LoadingOutlined />}
-          size="default"
+          size={props.size ?? "default"}
           style={{
             position: "absolute",
             left: "50%",
@@ -159,6 +159,8 @@ export const AnnotationPreview = injector(
           src={props.fallbackImage}
           style={{ ...(style ?? {}), opacity: 0.5 }}
           alt=""
+          width={props.width}
+          height={props.height}
         />
       </PreviewPlaceholder>
     );

@@ -27,6 +27,7 @@ export const ImageDataGroup = (column) => {
       config={getRoot(original).SDK}
       name={alias}
       width="100%"
+      size="large"
       fallbackImage={value}
       height={ImageDataGroup.height}
       style={{ objectFit: "cover" }}
