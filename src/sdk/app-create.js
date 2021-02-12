@@ -43,6 +43,7 @@ export const createApp = async (rootNode, datamanager) => {
       columnsRaw: columns,
     },
     mode: datamanager.mode,
+    showPreviews: datamanager.showPreviews,
   });
 
   appStore._sdk = datamanager;

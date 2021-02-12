@@ -26,6 +26,7 @@
  * mode: "labelstream" | "explorer",
  * table: TableConfig,
  * links: Dict<string|null>,
+ * showPreviews: boolean,
  * }} DMConfig
  */
 
@@ -79,6 +80,9 @@ export class DataManager {
   /** @type {Number} */
   apiVersion = 1;
 
+  /** @type {boolean} */
+  showPreviews = false;
+
   /**
    * Constructor
    * @param {DMConfig} config
@@ -92,6 +96,7 @@ export class DataManager {
     this.tableConfig = config.table ?? {};
     this.apiVersion = config?.apiVersion ?? 1;
     this.links = Object.assign(this.links, config.links ?? {});
+    this.showPreviews = config.showPreviews ?? false;
     this.api = new APIProxy(
       this.apiConfig({
         apiGateway: config.apiGateway,

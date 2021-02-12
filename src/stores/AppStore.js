@@ -96,9 +96,10 @@ export const AppStore = types
     get labelingConfig() {
       return self.project.label_config_line ?? self.project.label_config;
     },
-  }))
-  .volatile((self) => ({
-    showPreviews: true,
+
+    get showPreviews() {
+      return this.SDK.showPreviews;
+    },
   }))
   .actions((self) => ({
     startPolling() {
