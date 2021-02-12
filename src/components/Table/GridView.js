@@ -30,17 +30,19 @@ const GridBody = observer(({ row, fields }) => {
         key={`${row.id}-${index}`}
         type={field.currentType}
         value={value}
+        field={field}
+        row={row}
       />
     );
   });
 });
 
-const GridDataGroup = observer(({ type, value }) => {
+const GridDataGroup = observer(({ type, value, field, row }) => {
   const DataTypeComponent = DataGroups[type];
   return DataTypeComponent ? (
-    <DataTypeComponent value={value} />
+    <DataTypeComponent value={value} field={field} original={row} />
   ) : (
-    <DataGroups.TextDataGroup value={value} />
+    <DataGroups.TextDataGroup value={value} field={field} original={row} />
   );
 });
 

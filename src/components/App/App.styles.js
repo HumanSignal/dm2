@@ -195,6 +195,25 @@ export const Styles = styled.div`
     padding: 3px 0 !important;
     border: none !important;
   }
+
+  .offscreen-lsf {
+    bottom: 100%;
+    right: 100%;
+    opacity: 0;
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff;
+    z-index: 100000;
+  }
+
+  .offscreen-lsf.visible {
+    bottom: auto;
+    right: auto;
+    top: 0;
+    left: 0;
+    opacity: 1;
+  }
 `;
 
 export const HorizontalShadow = css`

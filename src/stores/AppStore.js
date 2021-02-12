@@ -92,6 +92,13 @@ export const AppStore = types
     get labelingIsConfigured() {
       return self.project?.config_has_control_tags === true;
     },
+
+    get labelingConfig() {
+      return self.project.label_config_line ?? self.project.label_config;
+    },
+  }))
+  .volatile((self) => ({
+    showPreviews: true,
   }))
   .actions((self) => ({
     startPolling() {

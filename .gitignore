@@ -37,6 +37,7 @@ Desktop.ini
 
 # Testing
 coverage/
+public/static/
 
 # Examples of local env
 src/examples

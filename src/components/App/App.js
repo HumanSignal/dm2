@@ -53,6 +53,7 @@ const AppComponent = ({ app }) => {
           ) : (
             <DMTabs />
           )}
+          <div className="offscreen-lsf">Hello world</div>
         </Styles>
       </Provider>
     </ErrorBoundary>
