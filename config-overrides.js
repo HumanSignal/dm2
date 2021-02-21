@@ -1,3 +1,5 @@
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
 module.exports = function override(config, env) {
   if (process.env.BUILD_NO_MINIMIZATION) {
     config.optimization.minimizer = undefined;
@@ -51,6 +53,28 @@ module.exports = function override(config, env) {
         options: {
           limit: 200000,
           encoding: "base64",
+        },
+      },
+    ],
+  });
+
+  config.module.rules.push({
+    test: /\.styl$/i,
+    use: [
+      MiniCssExtractPlugin.loader,
+      {
+        loader: "css-loader",
+        options: {
+          sourceMap: true,
+          modules: {
+            localIdentName: "dm-[local]",
+          },
+        },
+      },
+      {
+        loader: "stylus-loader",
+        options: {
+          sourceMap: true,
         },
       },
     ],
