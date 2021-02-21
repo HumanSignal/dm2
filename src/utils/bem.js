@@ -1,3 +1,5 @@
+const NAMESPACE = "dm-";
+
 const assembleClass = (block, elem, mix, state) => {
   const rootName = block;
   const elemName = elem ? `${rootName}__${elem}` : null;
@@ -34,8 +36,8 @@ const assembleClass = (block, elem, mix, state) => {
   }
 
   const attachNamespace = (cls) => {
-    if (/^ls-/.test(cls)) return cls;
-    else return `ls-${cls}`;
+    if (new RegExp(`/^${NAMESPACE}/`).test(cls)) return cls;
+    else return `${NAMESPACE}${cls}`;
   };
 
   return finalClass.map(attachNamespace).join(" ");

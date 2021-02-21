@@ -20,13 +20,7 @@ export const TabTitle = observer(({ item, active }) => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-      }}
-    >
+    <>
       {item.renameMode ? (
         <Input
           size="small"
@@ -56,6 +50,6 @@ export const TabTitle = observer(({ item, active }) => {
           </Button>
         </Dropdown>
       )}
-    </div>
+    </>
   );
 });

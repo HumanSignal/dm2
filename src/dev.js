@@ -1,12 +1,12 @@
-const { REACT_APP_USE_LSB, REACT_APP_GATEWAY_API } = process.env;
+const { USE_LSB, GATEWAY_API } = process.env;
 
 /**
  * @param {import("../src/sdk/dm-sdk").DataManager} DataManager
  */
 export const initDevApp = async (DataManager) => {
-  const useExternalSource = !!REACT_APP_USE_LSB || !!REACT_APP_GATEWAY_API;
-  const gatewayAPI = REACT_APP_GATEWAY_API ?? "http://localhost:8081/api/dm";
-  const token = process.env.REACT_APP_HTX_ACCESS_TOKEN;
+  const useExternalSource = !!USE_LSB || !!GATEWAY_API;
+  const gatewayAPI = GATEWAY_API ?? "http://localhost:8081/api/dm";
+  const token = process.env.HTX_ACCESS_TOKEN;
 
   new DataManager({
     root: document.getElementById("app"),

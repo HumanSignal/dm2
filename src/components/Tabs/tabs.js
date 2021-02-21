@@ -1,9 +1,10 @@
-import { Button, PageHeader, Space, Tabs } from "antd";
+import { Button, PageHeader, Space } from "antd";
 import { inject } from "mobx-react";
 import React from "react";
 import { FaPlus } from "react-icons/fa";
 import { RiCloseLine } from "react-icons/ri";
 import { Spinner } from "../Common/Spinner";
+import { Tabs } from "../Common/Tabs/Tabs";
 import { Filters } from "../Filters/Filters";
 import { DataView } from "../Table/Table";
 import { TablePanel } from "./tabs-panel";
@@ -100,23 +101,18 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
   return (
     <Tabs
       type="editable-card"
-      activeKey={selectedKey}
+      activeTab={selectedKey}
       onEdit={() => views.addView()}
       onChange={(key) => views.setSelected(key)}
       tabBarExtraContent={<ProjectSummary />}
       addIcon={<FaPlus color="#595959" />}
     >
       {tabs.map((tab) => (
-        <Tabs.TabPane
+        <TabTitle
           key={tab.key}
-          closable={false}
-          tab={
-            <TabTitle
-              key={`title-${tab.key}`}
-              item={tab}
-              active={tab.key === selectedKey}
-            />
-          }
+          tab={tab.key}
+          item={tab}
+          active={tab.key === selectedKey}
         />
       ))}
     </Tabs>

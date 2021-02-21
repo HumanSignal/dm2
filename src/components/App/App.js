@@ -1,10 +1,11 @@
 import "antd/dist/antd.css";
 import { observer, Provider } from "mobx-react";
 import React from "react";
+import { cn } from "../../utils/bem";
 import { Spinner } from "../Common/Spinner";
 import { Labeling } from "../Label/Label";
 import { DMTabs } from "../Tabs/tabs";
-import { Styles } from "./App.styles";
+import "./App.styl";
 
 class ErrorBoundary extends React.Component {
   state = {
@@ -29,23 +30,12 @@ class ErrorBoundary extends React.Component {
  * @param {{app: import("../../stores/AppStore").AppStore} param0
  */
 const AppComponent = ({ app }) => {
-  // make full screen for label stream
-  const rootStyle =
-    app.SDK.mode === "labelstream"
-      ? {
-          position: "absolute",
-          width: "100%",
-          top: 0,
-          zIndex: 1000,
-        }
-      : null;
-
   return (
     <ErrorBoundary>
       <Provider store={app}>
-        <Styles fullScreen={app.isLabeling} style={rootStyle}>
+        <div className={cn("root").mod({ mode: app.SDK.mode })}>
           {app.loading ? (
-            <div className="app-loader">
+            <div className={cn("app-loader")}>
               <Spinner size="large" />
             </div>
           ) : app.isLabeling ? (
@@ -53,8 +43,8 @@ const AppComponent = ({ app }) => {
           ) : (
             <DMTabs />
           )}
-          <div className="offscreen-lsf">Hello world</div>
-        </Styles>
+          <div className={cn("offscreen-lsf")}></div>
+        </div>
       </Provider>
     </ErrorBoundary>
   );
