@@ -20,6 +20,7 @@
     "prettier": "prettier --write src/**/*.js",
     "build": "react-app-rewired build",
     "start": "react-app-rewired start",
+    "eject": "react-scripts eject",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
   "author": "",
