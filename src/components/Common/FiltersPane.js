@@ -1,8 +1,9 @@
-import { Button, Dropdown } from "antd";
+import { Dropdown } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { VscListFilter } from "react-icons/vsc";
 import { Filters } from "../Filters/Filters";
+import { Button } from "./Button/Button";
 
 export const FiltersButton = observer(({ onClick, active, size }) => {
   return (

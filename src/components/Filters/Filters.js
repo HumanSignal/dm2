@@ -1,8 +1,9 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { Button, Tooltip } from "antd";
+import { Tooltip } from "antd";
 import { inject } from "mobx-react";
 import React from "react";
 import { BsLayoutSidebarInsetReverse } from "react-icons/bs";
+import { Button } from "../Common/Button/Button";
 import { FilterLine } from "./FilterLine";
 import { FiltersStyles } from "./Filters.styles";
 

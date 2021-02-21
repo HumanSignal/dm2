@@ -1,7 +1,8 @@
-import { Button, Dropdown, Menu } from "antd";
+import { Dropdown, Menu } from "antd";
 import { inject } from "mobx-react";
 import React from "react";
 import { RiErrorWarningFill } from "react-icons/ri";
+import { Button } from "./Button/Button";
 
 const ErrorRenderer = (error, i) => {
   return (

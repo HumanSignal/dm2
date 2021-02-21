@@ -1,4 +1,4 @@
-import { Button, Empty, Tag, Tooltip } from "antd";
+import { Empty, Tag, Tooltip } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
@@ -7,6 +7,7 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { FaCog } from "react-icons/fa";
 import { VscQuestion } from "react-icons/vsc";
 import { FillContainer } from "../App/App.styles";
+import { Button } from "../Common/Button/Button";
 import { FieldsButton } from "../Common/FieldsButton";
 import { Spinner } from "../Common/Spinner";
 import { Table } from "../Common/Table/Table";

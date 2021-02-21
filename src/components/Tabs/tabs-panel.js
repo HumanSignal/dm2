@@ -1,6 +1,5 @@
 import { AppstoreOutlined, BarsOutlined } from "@ant-design/icons";
-import { Button, Radio, Space } from "antd";
-import ButtonGroup from "antd/lib/button/button-group";
+import { Radio, Space } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import {
@@ -9,6 +8,7 @@ import {
   FaSortAmountDown,
   FaSortAmountUp,
 } from "react-icons/fa";
+import { Button } from "../Common/Button/Button";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
@@ -36,7 +36,7 @@ const OrderButton = observer(({ ordering, size, view }) => {
   return (
     <Space style={{ fontSize: 12 }}>
       Order
-      <ButtonGroup>
+      <Button.Group>
         <FieldsButton
           size={size}
           style={{ minWidth: 85, textAlign: "left" }}
@@ -72,7 +72,7 @@ const OrderButton = observer(({ ordering, size, view }) => {
           icon={ordering?.desc ? <FaSortAmountUp /> : <FaSortAmountDown />}
           onClick={() => view.setOrdering(ordering?.field)}
         />
-      </ButtonGroup>
+      </Button.Group>
     </Space>
   );
 });
@@ -92,7 +92,7 @@ const GridWidthButton = observer(({ view, gridWidth, size }) => {
   return (
     <Space style={{ fontSize: 12 }}>
       Columns: {width}
-      <ButtonGroup>
+      <Button.Group>
         <Button
           size={size}
           className="flex-button"
@@ -107,7 +107,7 @@ const GridWidthButton = observer(({ view, gridWidth, size }) => {
           onClick={() => setGridWidth(width + 1)}
           disabled={width === 10}
         />
-      </ButtonGroup>
+      </Button.Group>
     </Space>
   );
 });
@@ -166,7 +166,7 @@ export const TablePanel = injector(
 
           {!labelingDisabled && (
             <Button
-              type="primary"
+              primary
               size={toolbarSize}
               disabled={target === "annotations"}
               onClick={() => store.startLabeling()}

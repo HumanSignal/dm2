@@ -1,7 +1,8 @@
-import { Button, Checkbox, Menu } from "antd";
+import { Checkbox, Menu } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
+import { Button } from "./Button/Button";
 import { TableDropdown } from "./TableDropdown";
 
 const injector = inject(({ store }) => {
@@ -114,7 +115,7 @@ export const FieldsButton = injector(
         )}
       >
         <Button size={size} icon={icon} style={style} className={className}>
-          {title && <span>{title}</span>}
+          {title ? <span>{title}</span> : null}
           {trailingIcon ?? null}
         </Button>
       </TableDropdown>

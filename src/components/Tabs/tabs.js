@@ -1,8 +1,9 @@
-import { Button, PageHeader, Space } from "antd";
+import { PageHeader, Space } from "antd";
 import { inject } from "mobx-react";
 import React from "react";
 import { FaPlus } from "react-icons/fa";
 import { RiCloseLine } from "react-icons/ri";
+import { Button } from "../Common/Button/Button";
 import { Spinner } from "../Common/Spinner";
 import { Tabs } from "../Common/Tabs/Tabs";
 import { Filters } from "../Filters/Filters";

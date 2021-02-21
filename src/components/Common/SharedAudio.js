@@ -1,7 +1,8 @@
-import { Button, Slider } from "antd";
+import { Slider } from "antd";
 import moment from "moment";
 import React, { Component } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
+import { Button } from "./Button/Button";
 
 const Duration = ({ value, units, format }) =>
   moment.duration(value, units).format(format, {

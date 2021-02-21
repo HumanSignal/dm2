@@ -1,8 +1,9 @@
-import { Button, Dropdown, Menu, Modal, Space } from "antd";
+import { Dropdown, Menu, Modal, Space } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { BsTrash } from "react-icons/bs";
 import { FaAngleDown } from "react-icons/fa";
+import { Button } from "../Common/Button/Button";
 
 export const TabsActions = inject("store")(
   observer(({ store, size }) => {

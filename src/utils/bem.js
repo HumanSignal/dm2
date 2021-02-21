@@ -36,7 +36,7 @@ const assembleClass = (block, elem, mix, state) => {
   }
 
   const attachNamespace = (cls) => {
-    if (new RegExp(`/^${NAMESPACE}/`).test(cls)) return cls;
+    if (new RegExp(`^${NAMESPACE}`).test(cls)) return cls;
     else return `${NAMESPACE}${cls}`;
   };
 

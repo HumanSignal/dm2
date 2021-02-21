@@ -1,0 +1,150 @@
+$primary-color = #0099FF
+
+.button
+  height 40px
+  border none
+  cursor pointer
+  padding 0 16px
+  outline none
+  display inline-flex
+  background-color #fff
+  align-items center
+  border-radius 5px
+  text-align center
+  text-decoration none
+  transition all 100ms ease
+  justify-content space-between
+  box-shadow inset 0px -1px 0px rgba(#000, 0.1), inset 0px 0px 0px 1px rgba(#000, 0.15)
+
+  font-weight 500
+  font-size 16px
+  line-height 19px
+
+  &_waiting,
+  &:disabled
+    color rgba(#000, 0.5)
+    background-color #efefef
+
+  &:hover
+    box-shadow 0px 2px 4px rgba(#000, 0.05), inset 0px -1px 0px rgba(#000, 0.1), inset 0px 0px 0px 1px rgba(#000, 0.2)
+
+  &:active
+    background linear-gradient(0deg, rgba(#000, 0.02), rgba(#000, 0.02)), #FFFFFF
+    box-shadow inset 0px 1px 0px rgba(#000, 0.1), inset 0px 0px 0px 1px rgba(#000, 0.2)
+
+  &:focus
+    outline none
+    box-shadow 0px 0px 0px 6px rgba($primary-color, 0.2), inset 0px -1px 0px rgba(#000, 0.1), inset 0px 0px 0px 1px rgba(#000, 0.15), inset 0px 0px 0px 1px rgba($primary-color, 0.2)
+
+  &_type
+    &_text
+      padding 0
+
+    &_text, &_link, ^[0][href]
+      min-width 0
+      box-shadow none
+      background none
+
+      &:hover
+        box-shadow none
+
+    &_link, ^[0][href]
+      text-decoration underline
+
+  &_primary
+    color #fff
+    background-color $primary-color
+    box-shadow none
+    box-shadow inset 0px -1px 0px rgba(#000, 0.1)
+
+    &:disabled
+      color rgba(#fff, 0.8)
+      background-color #BBBBBB
+
+    &:hover
+      background linear-gradient(0deg, rgba(#fff, 0.1), rgba(#fff, 0.1)), $primary-color
+      box-shadow 0px 2px 4px rgba($primary-color, 0.3), inset 0px -1px 0px rgba(#000, 0.1)
+
+    &:active
+      background linear-gradient(0deg, rgba(#000, 0.04), rgba(#000, 0.04)), $primary-color
+      box-shadow inset 0px 1px 0px rgba(#000, 0.1)
+
+    &:focus
+      box-shadow 0px 0px 0px 6px rgba($primary-color, 0.2), inset 0px -1px 0px rgba(#000, 0.1)
+
+  &_size
+    &_compact
+      height 36px
+      font-size 16px
+      line-height 20px
+
+    &_small
+      height 24px
+      font-size 14px
+      line-height 14px
+
+  &_danger
+    color #DD0000
+
+  &__extra
+    font-size 14px
+    line-height 16px
+    color rgba(#000, 0.4)
+
+  &_withIcon
+    padding 0 14px
+
+  &_waiting
+    pointer-events none
+    background-repeat repeat
+    background-position 40px
+    background-size 37px 100%
+    animation button-waiting 1s linear infinite
+    background-image repeating-linear-gradient(
+      -63.43deg,
+      rgba(#fff, 0.2) 1px,
+      #efefef 2px,
+      #efefef 6px,
+      rgba(#fff, 0.2) 7px,
+      rgba(#fff, 0.2) 12px
+    )
+    background-color #fff
+
+  &_waiting&_primary
+    background-image repeating-linear-gradient(
+      -63.43deg,
+      rgba(#fff, 0.2) 1px,
+      transparent 2px,
+      transparent 6px,
+      rgba(#fff, 0.2) 7px,
+      rgba(#fff, 0.2) 12px
+    )
+    background-color $primary-color
+
+  &__icon
+    display flex
+    width 16px
+    height 100%
+
+    &:not(:only-child)
+      margin-right 12px
+
+    &:only-child
+      align-items center
+      justify-content center
+
+  &:not(&_withExtra) > span
+    flex 1
+
+.button-group
+  display flex
+
+  .button + .button
+    margin-left 16px
+
+@keyframes button-waiting
+  0%
+    background-position 0 0
+
+  100%
+    background-position 37px 0

@@ -4,8 +4,7 @@ import {
   InfoCircleOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { Button, Space, Tooltip } from "antd";
-import ButtonGroup from "antd/lib/button/button-group";
+import { Space, Tooltip } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -13,6 +12,7 @@ import { BiRedo, BiReset, BiUndo } from "react-icons/bi";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import { FaBan } from "react-icons/fa";
 import styled from "styled-components";
+import { Button } from "../Common/Button/Button";
 
 const TOOLTIP_DELAY = 0.8;
 
@@ -89,7 +89,7 @@ const LSFOperations = observer(({ history }) => {
   );
 
   return history ? (
-    <ButtonGroup>
+    <Button.Group>
       <Button
         className="flex-button"
         disabled={!history.canUndo}
@@ -111,7 +111,7 @@ const LSFOperations = observer(({ history }) => {
       >
         <BiReset size={16} />
       </Button>
-    </ButtonGroup>
+    </Button.Group>
   ) : null;
 });
 

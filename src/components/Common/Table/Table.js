@@ -1,4 +1,4 @@
-import { Button, Modal, Tooltip } from "antd";
+import { Modal, Tooltip } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { BsCode } from "react-icons/bs";
@@ -6,6 +6,7 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import { isDefined } from "../../../utils/utils";
+import { Button } from "../Button/Button";
 import { TableWrapper } from "./Table.styled";
 import { TableCheckboxCell } from "./TableCheckbox";
 import { TableContext } from "./TableContext";

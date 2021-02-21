@@ -1,9 +1,8 @@
-import { LoadingOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import styled from "styled-components";
 import { taskToLSFormat } from "../../sdk/lsf-utils";
+import { Spinner } from "./Spinner";
 
 const wait = (timeout) =>
   new Promise((resolve) => setTimeout(resolve, timeout));
@@ -144,8 +143,7 @@ export const AnnotationPreview = injector(
         width={props.width}
         height={props.height}
       >
-        <Spin
-          indicator={<LoadingOutlined />}
+        <Spinner
           size={props.size ?? "default"}
           style={{
             position: "absolute",

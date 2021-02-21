@@ -1,4 +1,4 @@
-import { Button, Dropdown, Menu, Space, Tag } from "antd";
+import { Dropdown, Menu, Space, Tag } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import {
@@ -6,6 +6,7 @@ import {
   ViewColumnTypeName,
   ViewColumnTypeShort,
 } from "../../../stores/Tabs/tab_column";
+import { Button } from "../Button/Button";
 import { Resizer } from "../Resizer";
 import {
   TableCellContent,

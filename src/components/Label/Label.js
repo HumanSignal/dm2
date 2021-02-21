@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import { CaretDownOutlined, EyeOutlined } from "@ant-design/icons";
-import { Button, Space } from "antd";
+import { Space } from "antd";
 import { inject } from "mobx-react";
 import React from "react";
 import { FaChevronLeft } from "react-icons/fa";
 import { History } from "../../utils/history";
+import { Button } from "../Common/Button/Button";
 import { FieldsButton } from "../Common/FieldsButton";
 import { DataView } from "../Table/Table";
 import {

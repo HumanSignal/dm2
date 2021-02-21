@@ -1,5 +1,6 @@
 import React from "react";
 import { cn } from "../../../utils/bem";
+import { Button } from "../Button/Button";
 import "./Tabs.styl";
 
 export const Tabs = ({
@@ -35,9 +36,12 @@ export const Tabs = ({
           />
         ))}
 
-        <button className={rootClass.elem("add")} onClick={onEdit}>
-          {addIcon}
-        </button>
+        <Button
+          type="text"
+          className={rootClass.elem("add")}
+          onClick={onEdit}
+          icon={addIcon}
+        />
       </div>
       <div className={rootClass.elem("extra")}>{tabBarExtraContent}</div>
     </div>
