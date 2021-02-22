@@ -1,4 +1,4 @@
-import { Dropdown, Menu, Space, Tag } from "antd";
+import { Space, Tag } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import {
@@ -7,6 +7,8 @@ import {
   ViewColumnTypeShort,
 } from "../../../stores/Tabs/tab_column";
 import { Button } from "../Button/Button";
+import { Dropdown } from "../Dropdown/Dropdown";
+import { Menu } from "../Menu/Menu";
 import { Resizer } from "../Resizer";
 import {
   TableCellContent,
@@ -24,8 +26,24 @@ const DropdownWrapper = observer(
       .map((t) => t.value)
       .filter((t) => t in cellViews && cellViews[t].userSelectable !== false);
     return (
-      <Dropdown
-        overlay={
+      <Dropdown.Trigger
+        style={{ display: "flex", justifyContent: "space-between", flex: 1 }}
+      >
+        <Button
+          type="text"
+          size="small"
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "none",
+          }}
+        >
+          {children}
+        </Button>
+
+        <Dropdown>
           <Menu title="Display as" selectedKeys={[column.currentType]}>
             {types.map((type) => {
               return (
@@ -47,23 +65,8 @@ const DropdownWrapper = observer(
               );
             })}
           </Menu>
-        }
-        trigger="click"
-      >
-        <Button
-          type="text"
-          size="small"
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            background: "none",
-          }}
-        >
-          {children}
-        </Button>
-      </Dropdown>
+        </Dropdown>
+      </Dropdown.Trigger>
     );
   }
 );

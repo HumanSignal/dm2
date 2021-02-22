@@ -1,5 +1,5 @@
 import { AppstoreOutlined, BarsOutlined } from "@ant-design/icons";
-import { Radio, Space } from "antd";
+import { Space } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import {
@@ -8,12 +8,14 @@ import {
   FaSortAmountDown,
   FaSortAmountUp,
 } from "react-icons/fa";
+import { cn } from "../../utils/bem";
 import { Button } from "../Common/Button/Button";
 import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
+import { RadioGroup } from "../Common/RadioGroup/RadioGroup";
 import { Spinner } from "../Common/Spinner";
-import { TabsActions } from "./tabs-actions";
+import { TabsActions } from "./TabsActions";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
@@ -36,7 +38,7 @@ const OrderButton = observer(({ ordering, size, view }) => {
   return (
     <Space style={{ fontSize: 12 }}>
       Order
-      <Button.Group>
+      <Button.Group collapsed>
         <FieldsButton
           size={size}
           style={{ minWidth: 85, textAlign: "left" }}
@@ -66,7 +68,6 @@ const OrderButton = observer(({ ordering, size, view }) => {
 
         <Button
           size={size}
-          className="flex-button"
           style={{ color: "#595959" }}
           disabled={!!ordering === false}
           icon={ordering?.desc ? <FaSortAmountUp /> : <FaSortAmountDown />}
@@ -95,14 +96,12 @@ const GridWidthButton = observer(({ view, gridWidth, size }) => {
       <Button.Group>
         <Button
           size={size}
-          className="flex-button"
           icon={<FaMinus size="12" color="#595959" />}
           onClick={() => setGridWidth(width - 1)}
           disabled={width === 3}
         />
         <Button
           size={size}
-          className="flex-button"
           icon={<FaPlus size="12" color="#595959" />}
           onClick={() => setGridWidth(width + 1)}
           disabled={width === 10}
@@ -118,7 +117,7 @@ export const TablePanel = injector(
     const { links } = store.SDK;
 
     return (
-      <div className="tab-panel">
+      <div className={cn("tab-panel")}>
         <Space size="large">
           <DataStoreToggle size={toolbarSize} view={view} />
 
@@ -147,7 +146,6 @@ export const TablePanel = injector(
           {links.import && (
             <Button
               size={toolbarSize}
-              className="flex-button"
               onClick={() => (window.location.href = links.import)}
             >
               Import
@@ -157,7 +155,6 @@ export const TablePanel = injector(
           {links.export && (
             <Button
               size={toolbarSize}
-              className="flex-button"
               onClick={() => (window.location.href = links.export)}
             >
               Export
@@ -186,19 +183,20 @@ const viewInjector = inject(({ store }) => ({
 
 const ViewToggle = viewInjector(({ view, size }) => {
   return (
-    <Radio.Group
-      size={size}
-      value={view.type}
-      onChange={(e) => view.setType(e.target.value)}
-      style={{ whiteSpace: "nowrap" }}
-    >
-      <Radio.Button value="list">
-        <BarsOutlined />
-      </Radio.Button>
-      <Radio.Button value="grid">
-        <AppstoreOutlined />
-      </Radio.Button>
-    </Radio.Group>
+    <>
+      <RadioGroup
+        size={size}
+        value={view.type}
+        onChange={(e) => view.setType(e.target.value)}
+      >
+        <RadioGroup.Button value="list">
+          <BarsOutlined />
+        </RadioGroup.Button>
+        <RadioGroup.Button value="grid">
+          <AppstoreOutlined />
+        </RadioGroup.Button>
+      </RadioGroup>
+    </>
   );
 });
 
@@ -208,15 +206,13 @@ const SelectedItems = inject(({ store }) => ({
 
 const DataStoreToggle = viewInjector(({ view, size }) => {
   return (
-    <Radio.Group
+    <RadioGroup
       value={view.target}
       size={size}
       onChange={(e) => view.setTarget(e.target.value)}
     >
-      <Radio.Button value="tasks">Tasks</Radio.Button>
-      <Radio.Button value="annotations" disabled>
-        Annotations
-      </Radio.Button>
-    </Radio.Group>
+      <RadioGroup.Button value="tasks">Tasks</RadioGroup.Button>
+      <RadioGroup.Button value="annotations">Annotations</RadioGroup.Button>
+    </RadioGroup>
   );
 });

@@ -245,7 +245,7 @@ export const DataView = injector(
           }}
           headerExtra={
             <FieldsButton
-              className="flex-button"
+              align="right"
               wrapper={FieldsButton.Checkbox}
               icon={<FaCog size="14" color="#8C8C8C" />}
               style={{ padding: 0, width: 24, height: 24 }}

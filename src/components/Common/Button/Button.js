@@ -34,16 +34,32 @@ export const Button = ({
   classList.push(rootClass.mod(mods));
   classList.push(className);
 
+  const iconElem = React.useMemo(() => {
+    if (!icon) return null;
+
+    switch (size) {
+      case "small":
+        return React.cloneElement(icon, { ...icon.props, size: 12 });
+      case "compact":
+        return React.cloneElement(icon, { ...icon.props, size: 14 });
+      default:
+        return icon;
+    }
+  }, [icon, size]);
+
+  const onClick = rest.onClick || null;
+
   return React.createElement(
     tagName,
     {
       className: rootClass.mod(mods).mix(className),
       type: type,
       ...rest,
+      onClick,
     },
     <>
-      {icon && <span className={rootClass.elem("icon")}>{icon}</span>}
-      {children && <span className={rootClass.elem("body")}>{children}</span>}
+      {iconElem && <span className={rootClass.elem("icon")}>{iconElem}</span>}
+      {iconElem && children ? <span>{children}</span> : children}
       {extra !== undefined ? (
         <span className={rootClass.elem("extra")}>{extra}</span>
       ) : null}
@@ -51,8 +67,12 @@ export const Button = ({
   );
 };
 
-Button.Group = ({ className, children }) => {
+Button.Group = ({ className, children, collapsed }) => {
   return (
-    <div className={[cn("button-group"), className].join(" ")}>{children}</div>
+    <div
+      className={[cn("button-group").mod({ collapsed }), className].join(" ")}
+    >
+      {children}
+    </div>
   );
 };

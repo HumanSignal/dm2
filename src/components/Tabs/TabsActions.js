@@ -1,9 +1,11 @@
-import { Dropdown, Menu, Modal, Space } from "antd";
+import { Modal, Space } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { BsTrash } from "react-icons/bs";
 import { FaAngleDown } from "react-icons/fa";
 import { Button } from "../Common/Button/Button";
+import { Dropdown } from "../Common/Dropdown/Dropdown";
+import { Menu } from "../Common/Menu/Menu";
 
 export const TabsActions = inject("store")(
   observer(({ store, size }) => {
@@ -34,14 +36,9 @@ export const TabsActions = inject("store")(
         <Menu.Item
           size={size}
           key={action.id}
-          className="flex-button"
           danger={isDeleteAction}
           onClick={() => invokeAction(action)}
-          icon={
-            isDeleteAction && (
-              <BsTrash style={{ fontSize: 14, marginRight: 5 }} />
-            )
-          }
+          icon={isDeleteAction && <BsTrash />}
         >
           {action.title}
         </Menu.Item>
@@ -51,12 +48,16 @@ export const TabsActions = inject("store")(
     return (
       <Space style={{ flexWrap: "wrap" }}>
         Selected
-        <Dropdown trigger="click" overlay={<Menu>{actionButtons}</Menu>}>
-          <Button className="flex-button" size={size}>
+        <Dropdown.Trigger>
+          <Button size={size}>
             {selectedLength} tasks
             <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
           </Button>
-        </Dropdown>
+
+          <Dropdown>
+            <Menu size="compact">{actionButtons}</Menu>
+          </Dropdown>
+        </Dropdown.Trigger>
       </Space>
     );
   })

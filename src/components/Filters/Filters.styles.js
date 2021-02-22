@@ -18,7 +18,6 @@ export const FiltersStyles = styled(Wrapper)`
   }
 
   &:not(.filters__sidebar) {
-    margin-top: 10px;
     min-width: 400px;
     border-radius: 2px;
     box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),

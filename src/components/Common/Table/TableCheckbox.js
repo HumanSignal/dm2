@@ -1,6 +1,6 @@
-import { Checkbox } from "antd";
 import React from "react";
 import styled from "styled-components";
+import { Checkbox } from "../Checkbox/Checkbox";
 
 const StyledCheckbox = styled(Checkbox)`
   width: 100%;

@@ -1,9 +1,10 @@
-import { Dropdown, Input } from "antd";
+import { Input } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Button } from "../Common/Button/Button";
-import { TabsMenu } from "./tabs-menu";
+import { Dropdown } from "../Common/Dropdown/Dropdown";
+import { TabsMenu } from "./TabsMenu";
 
 export const TabTitle = observer(({ item, active }) => {
   const saveTabTitle = (ev) => {
@@ -39,17 +40,17 @@ export const TabTitle = observer(({ item, active }) => {
       )}
 
       {active && (
-        <Dropdown overlay={TabsMenu(item)} trigger={["click"]}>
+        <Dropdown.Trigger trigger={["click"]}>
           <Button
             type="link"
             size="small"
-            className="flex-button"
             onClick={(e) => e.stopPropagation()}
             style={{ padding: 5, marginLeft: 10 }}
-          >
-            <BsThreeDotsVertical />
-          </Button>
-        </Dropdown>
+            icon={<BsThreeDotsVertical />}
+          />
+
+          <Dropdown>{TabsMenu(item)}</Dropdown>
+        </Dropdown.Trigger>
       )}
     </>
   );

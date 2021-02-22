@@ -71,14 +71,17 @@ export const cn = (block, options) => {
       return cn(block, { elem, mix, state });
     },
 
+    /**@return {Node} */
     select(root = document) {
       return root.querySelector(this.toCSSSelector());
     },
 
+    /**@return {NodeList} */
     selectAll(root = document) {
       return root.querySelectorAll(this.toCSSSelector());
     },
 
+    /**@return {HTMLElement|null} */
     closest(root) {
       return root.closest(this.toCSSSelector());
     },

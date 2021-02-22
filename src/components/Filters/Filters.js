@@ -1,8 +1,8 @@
-import { PlusOutlined } from "@ant-design/icons";
 import { Tooltip } from "antd";
 import { inject } from "mobx-react";
 import React from "react";
 import { BsLayoutSidebarInsetReverse } from "react-icons/bs";
+import { FaPlus } from "react-icons/fa";
 import { Button } from "../Common/Button/Button";
 import { FilterLine } from "./FilterLine";
 import { FiltersStyles } from "./Filters.styles";
@@ -74,13 +74,12 @@ export const Filters = injector(({ views, currentView, filters }) => {
           </div>
           <div className="filters__actions">
             <Button
-              ghost
               type="primary"
               size="small"
               onClick={() => currentView.createFilter()}
+              icon={<FaPlus />}
             >
-              <PlusOutlined />
-              Add {filters.length ? "another filter" : "filter"}
+              Add {filters.length ? "Another Filter" : "Filter"}
             </Button>
 
             {!sidebarEnabled ? (

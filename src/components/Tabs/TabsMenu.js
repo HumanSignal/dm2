@@ -1,9 +1,9 @@
-import { Menu } from "antd";
 import React from "react";
+import { Menu } from "../Common/Menu/Menu";
 
 export const TabsMenu = (item) => {
   return (
-    <Menu onClick={(e) => e.domEvent.stopPropagation()}>
+    <Menu size="small" onClick={(e) => e.domEvent.stopPropagation()}>
       <Menu.Item key="0">
         <a
           href="#rename"

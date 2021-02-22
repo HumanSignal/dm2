@@ -90,25 +90,13 @@ const LSFOperations = observer(({ history }) => {
 
   return history ? (
     <Button.Group>
-      <Button
-        className="flex-button"
-        disabled={!history.canUndo}
-        onClick={() => history.undo()}
-      >
+      <Button disabled={!history.canUndo} onClick={() => history.undo()}>
         <BiUndo size={18} />
       </Button>
-      <Button
-        className="flex-button"
-        disabled={!history.canRedo}
-        onClick={() => history.redo()}
-      >
+      <Button disabled={!history.canRedo} onClick={() => history.redo()}>
         <BiRedo size={18} />
       </Button>
-      <Button
-        className="flex-button"
-        disabled={!history.canUndo}
-        onClick={() => history.reset()}
-      >
+      <Button disabled={!history.canUndo} onClick={() => history.reset()}>
         <BiReset size={16} />
       </Button>
     </Button.Group>
@@ -178,7 +166,7 @@ const SubmissionButtons = observer(
 );
 
 const HistoryButton = ({ children, ...rest }) => (
-  <Button {...rest} className="flex-button" shape="circle">
+  <Button {...rest} shape="circle">
     {children}
   </Button>
 );

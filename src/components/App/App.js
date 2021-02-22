@@ -4,7 +4,7 @@ import React from "react";
 import { cn } from "../../utils/bem";
 import { Spinner } from "../Common/Spinner";
 import { Labeling } from "../Label/Label";
-import { DMTabs } from "../Tabs/tabs";
+import { DMTabs } from "../Tabs/Tabs";
 import "./App.styl";
 
 class ErrorBoundary extends React.Component {

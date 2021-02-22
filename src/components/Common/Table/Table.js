@@ -109,7 +109,6 @@ export const Table = observer(
             <Tooltip title="Show task source">
               <Button
                 type="link"
-                className="flex-button"
                 onClick={() => {
                   Modal.info({
                     title: "Source for task " + out?.id,

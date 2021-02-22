@@ -1,19 +1,13 @@
-import { Dropdown } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
-import { VscListFilter } from "react-icons/vsc";
+import { FaFilter } from "react-icons/fa";
 import { Filters } from "../Filters/Filters";
 import { Button } from "./Button/Button";
+import { Dropdown } from "./Dropdown/Dropdown";
 
 export const FiltersButton = observer(({ onClick, active, size }) => {
   return (
-    <Button
-      className="ant-dropdown-trigger"
-      onClick={onClick}
-      type={active ? "primary" : "default"}
-      size={size}
-    >
-      <VscListFilter style={{ marginBottom: -2, marginRight: 7 }} />
+    <Button onClick={onClick} primary={active} size={size} icon={<FaFilter />}>
       Filters
     </Button>
   );
@@ -42,13 +36,17 @@ export const FiltersPane = injector(
     }
 
     return (
-      <Dropdown trigger="click" overlay={() => <Filters />} {...dropdownProps}>
+      <Dropdown.Trigger>
         <FiltersButton
           size={size}
           active={filtersApplied}
           onClick={sidebarEnabled && (() => viewsStore.toggleSidebar())}
         />
-      </Dropdown>
+
+        <Dropdown style={{ marginTop: 5 }}>
+          <Filters />
+        </Dropdown>
+      </Dropdown.Trigger>
     );
   }
 );

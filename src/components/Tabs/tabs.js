@@ -8,9 +8,10 @@ import { Spinner } from "../Common/Spinner";
 import { Tabs } from "../Common/Tabs/Tabs";
 import { Filters } from "../Filters/Filters";
 import { DataView } from "../Table/Table";
-import { TablePanel } from "./tabs-panel";
-import { TabTitle } from "./tabs-title";
+import { TablePanel } from "./TabPanel";
+import "./Tabs.styl";
 import { TabsStyles, TabsWrapper } from "./Tabs.styles";
+import { TabTitle } from "./TabTitle";
 
 const injector = inject(({ store }) => {
   const { sidebarEnabled, sidebarVisible } = store.viewsStore ?? {};

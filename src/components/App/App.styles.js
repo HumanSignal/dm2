@@ -185,12 +185,6 @@ export const Styles = styled.div`
     align-items: center;
   }
 
-  .flex-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   .ant-picker-cell {
     padding: 3px 0 !important;
     border: none !important;

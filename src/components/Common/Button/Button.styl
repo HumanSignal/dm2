@@ -36,11 +36,31 @@ $primary-color = #0099FF
     outline none
     box-shadow 0px 0px 0px 6px rgba($primary-color, 0.2), inset 0px -1px 0px rgba(#000, 0.1), inset 0px 0px 0px 1px rgba(#000, 0.15), inset 0px 0px 0px 1px rgba($primary-color, 0.2)
 
+  &__extra
+    font-size 14px
+    line-height 16px
+    color rgba(#000, 0.4)
+
+  &__icon
+    display flex
+    width 16px
+    height 100%
+    align-items center
+
+    &:not(:only-child)
+      margin-right 12px
+
+    &:only-child
+      flex 1
+      align-items center
+      justify-content center
+
   &_type
     &_text
       padding 0
 
     &_text, &_link, ^[0][href]
+      padding 0
       min-width 0
       box-shadow none
       background none
@@ -82,17 +102,16 @@ $primary-color = #0099FF
       height 24px
       font-size 14px
       line-height 14px
+      padding 0 10px
 
   &_danger
     color #DD0000
 
-  &__extra
-    font-size 14px
-    line-height 16px
-    color rgba(#000, 0.4)
-
   &_withIcon
     padding 0 14px
+
+  &_withIcon&_size_small
+    padding 0 10px
 
   &_waiting
     pointer-events none
@@ -121,26 +140,28 @@ $primary-color = #0099FF
     )
     background-color $primary-color
 
-  &__icon
-    display flex
-    width 16px
-    height 100%
+  &_size_small &__icon
+    width 12px
 
     &:not(:only-child)
-      margin-right 12px
-
-    &:only-child
-      align-items center
-      justify-content center
-
-  &:not(&_withExtra) > span
-    flex 1
+      margin-right 8px
 
 .button-group
   display flex
 
-  .button + .button
-    margin-left 16px
+  &:not(&_collapsed)
+    .button + .button
+      margin-left 16px
+
+  &_collapsed
+    .button:first-child
+      border-radius 5px 0 0 5px
+
+    .button:last-child
+      border-radius 0 5px 5px 0
+
+    .button:not(:first-child):not(:last-child)
+      border-radius 0
 
 @keyframes button-waiting
   0%

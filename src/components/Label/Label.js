@@ -27,7 +27,6 @@ const LabelingHeader = ({ onClick, isExplorerMode, children }) => {
           icon={<FaChevronLeft style={{ marginRight: 4, fontSize: 16 }} />}
           type="link"
           onClick={onClick}
-          className="flex-button"
           style={{ fontSize: 18, padding: 0, color: "black" }}
         >
           Back

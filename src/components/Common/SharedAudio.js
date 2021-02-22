@@ -67,10 +67,7 @@ export class SharedAudio extends Component {
         style={{ display: "flex", width: "100%" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <Button
-          onClick={paused ? this.play : this.pause}
-          className="flex-button"
-        >
+        <Button onClick={paused ? this.play : this.pause}>
           {paused ? <FaPlay /> : <FaPause />}
         </Button>
         {this.audio && (
