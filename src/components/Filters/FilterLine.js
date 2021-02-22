@@ -1,8 +1,8 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Tag } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { Button } from "../Common/Button/Button";
+import { Tag } from "../Common/Tag/Tag";
 import { FilterDropdown } from "./FilterDropdown";
 import { FilterOperation } from "./FilterOperation";
 

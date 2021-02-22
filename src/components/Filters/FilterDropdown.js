@@ -1,6 +1,7 @@
 import { CaretDownOutlined } from "@ant-design/icons";
-import { Select, Tag } from "antd";
+import { Select } from "antd";
 import React from "react";
+import { Tag } from "../Common/Tag/Tag";
 
 const TagRender = (items) => ({ label, ...rest }) => {
   const color = items.find((el) => el.value === rest.value)?.color;

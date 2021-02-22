@@ -37,13 +37,6 @@ export const Dropdown = React.forwardRef(
       const position = parent.getBoundingClientRect();
       const { width } = dropdownEl.getBoundingClientRect();
 
-      console.log({
-        position,
-        width,
-        init: position.left + width,
-        window: window.innerWidth,
-      });
-
       let offsetLeft = 0;
       let offsetTop = position.top + position.height;
 
@@ -124,7 +117,6 @@ export const Dropdown = React.forwardRef(
     }, [visible]);
 
     React.useEffect(() => {
-      console.log("visibility changed");
       if (!isInline && visibility === "before-appear") {
         calculatePosition();
       }

@@ -1,5 +1,4 @@
 import { AppstoreOutlined, BarsOutlined } from "@ant-design/icons";
-import { Space } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import {
@@ -14,6 +13,7 @@ import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
 import { RadioGroup } from "../Common/RadioGroup/RadioGroup";
+import { Space } from "../Common/Space/Space";
 import { Spinner } from "../Common/Spinner";
 import { TabsActions } from "./TabsActions";
 

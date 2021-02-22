@@ -1,4 +1,3 @@
-import { Space, Tag } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import {
@@ -10,6 +9,8 @@ import { Button } from "../Button/Button";
 import { Dropdown } from "../Dropdown/Dropdown";
 import { Menu } from "../Menu/Menu";
 import { Resizer } from "../Resizer";
+import { Space } from "../Space/Space";
+import { Tag } from "../Tag/Tag";
 import {
   TableCellContent,
   TableCellWrapper,
@@ -44,13 +45,17 @@ const DropdownWrapper = observer(
         </Button>
 
         <Dropdown>
-          <Menu title="Display as" selectedKeys={[column.currentType]}>
+          <Menu
+            title="Display as"
+            size="compact"
+            selectedKeys={[column.currentType]}
+          >
             {types.map((type) => {
               return (
                 <Menu.Item key={type} onClick={(e) => onChange?.(column, type)}>
                   <Space>
                     <Tag
-                      color="blue"
+                      size="small"
                       style={{
                         width: 45,
                         textAlign: "center",

@@ -1,4 +1,3 @@
-import { Space } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -6,6 +5,7 @@ import { FixedSizeGrid } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import styled from "styled-components";
 import { Checkbox } from "../Common/Checkbox/Checkbox";
+import { Space } from "../Common/Space/Space";
 import { getProperty, prepareColumns } from "../Common/Table/utils";
 import * as DataGroups from "./DataGroups";
 

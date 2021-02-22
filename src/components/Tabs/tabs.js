@@ -1,9 +1,10 @@
-import { PageHeader, Space } from "antd";
+import { PageHeader } from "antd";
 import { inject } from "mobx-react";
 import React from "react";
 import { FaPlus } from "react-icons/fa";
 import { RiCloseLine } from "react-icons/ri";
 import { Button } from "../Common/Button/Button";
+import { Space } from "../Common/Space/Space";
 import { Spinner } from "../Common/Spinner";
 import { Tabs } from "../Common/Tabs/Tabs";
 import { Filters } from "../Filters/Filters";
@@ -79,15 +80,18 @@ const FiltersSidebar = sidebarInjector(
 
 const ProjectSummary = summaryInjector((props) => {
   return (
-    <Space size="small" style={{ paddingRight: "1em" }}>
+    <Space size="large" style={{ paddingRight: "1em" }}>
       {props.cloudSync && (
-        <Space style={{ fontSize: 12, fontWeight: 400, opacity: 0.8 }}>
+        <Space
+          size="small"
+          style={{ fontSize: 12, fontWeight: 400, opacity: 0.8 }}
+        >
           Storage sync
           <Spinner size="small" />
         </Space>
       )}
       <span style={{ display: "flex", alignItems: "center", fontSize: 12 }}>
-        <Space size="large">
+        <Space size="compact">
           <span>
             Tasks: {props.totalFoundTasks} / {props.totalTasks}
           </span>

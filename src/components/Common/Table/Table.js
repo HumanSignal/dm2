@@ -61,14 +61,12 @@ export const Table = observer(
         onClick: (e) => e.stopPropagation(),
         Header: () => {
           return (
-            <div style={{ width: 30 }}>
-              <TableCheckboxCell
-                checked={selectedItems.isAllSelected}
-                indeterminate={selectedItems.isIndeterminate}
-                onChange={() => props.onSelectAll()}
-                className="th select-all"
-              />
-            </div>
+            <TableCheckboxCell
+              checked={selectedItems.isAllSelected}
+              indeterminate={selectedItems.isIndeterminate}
+              onChange={() => props.onSelectAll()}
+              className="th select-all"
+            />
           );
         },
         Cell: ({ data }) => {
