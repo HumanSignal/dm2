@@ -49,15 +49,11 @@ export const TabsActions = inject("store")(
     return (
       <Space style={{ flexWrap: "wrap" }}>
         Selected
-        <Dropdown.Trigger>
+        <Dropdown.Trigger content={<Menu size="compact">{actionButtons}</Menu>}>
           <Button size={size}>
             {selectedLength} tasks
             <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
           </Button>
-
-          <Dropdown>
-            <Menu size="compact">{actionButtons}</Menu>
-          </Dropdown>
         </Dropdown.Trigger>
       </Space>
     );

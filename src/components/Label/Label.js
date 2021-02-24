@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-
 import { CaretDownOutlined, EyeOutlined } from "@ant-design/icons";
 import { inject } from "mobx-react";
 import React from "react";

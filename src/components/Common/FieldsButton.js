@@ -84,12 +84,8 @@ export const FieldsButton = injector(
       );
 
     return (
-      <Dropdown.Trigger>
-        <Button size={size} icon={icon} style={style} className={className}>
-          {content.length ? content : null}
-        </Button>
-
-        <Dropdown style={{ marginTop: 5 }} align={align}>
+      <Dropdown.Trigger
+        content={
           <FieldsMenu
             columns={filter ? columns.filter(filter) : columns}
             WrapperComponent={wrapper}
@@ -98,7 +94,11 @@ export const FieldsButton = injector(
             selected={selected}
             resetTitle={resetTitle}
           />
-        </Dropdown>
+        }
+      >
+        <Button size={size} icon={icon} style={style} className={className}>
+          {content.length ? content : null}
+        </Button>
       </Dropdown.Trigger>
     );
   }

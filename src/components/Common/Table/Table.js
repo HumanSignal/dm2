@@ -147,7 +147,6 @@ export const Table = observer(
           extra={headerExtra}
         />
       ),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         props.order,
         props.columnHeaderExtra,
@@ -185,7 +184,6 @@ export const Table = observer(
           </div>
         );
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         data,
         props.fitContent,

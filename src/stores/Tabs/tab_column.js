@@ -1,6 +1,6 @@
 import { getRoot, getSnapshot, types } from "mobx-state-tree";
 import React from "react";
-import { FaBan, FaBrain, FaCheckCircle } from "react-icons/fa";
+import { Icon } from "../../components/Common/Icon/Icon";
 import { all } from "../../utils/utils";
 
 export const ViewColumnType = types.enumeration([
@@ -175,11 +175,11 @@ export const TabColumn = types
         default:
           return null;
         case "total_completions":
-          return <FaCheckCircle color="green" opacity="0.7" />;
+          return <Icon name="FaCheckCircle" color="green" opacity="0.7" />;
         case "cancelled_completions":
-          return <FaBan color="red" opacity="0.7" />;
+          return <Icon name="FaBan" color="red" opacity="0.7" />;
         case "total_predictions":
-          return <FaBrain color="#1890ff" opacity="0.7" />;
+          return <Icon name="FaBrain" color="#1890ff" opacity="0.7" />;
       }
     },
 

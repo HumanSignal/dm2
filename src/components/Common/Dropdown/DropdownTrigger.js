@@ -1,38 +1,24 @@
 import React from "react";
 import { cn } from "../../../utils/bem";
+import { Dropdown } from "./DropdownComponent";
 import { DropdownContext } from "./DropdownContext";
 
 export const DropdownTrigger = ({
   tagName,
   children,
   dropdown,
+  content,
   closeOnClickOutside = true,
   ...props
 }) => {
+  if (children.length > 2)
+    throw new Error("Trigger can't contain more that one child and a dropdown");
   /** @type {import('react').RefObject<HTMLElement>} */
-  const externalRef = dropdown;
-  const dropdownRef = React.useRef();
-
-  const finalRef = React.useMemo(() => {
-    return externalRef ?? dropdownRef;
-  }, [externalRef, dropdownRef]);
+  const dropdownRef = dropdown ?? React.useRef();
+  const triggerEL = React.Children.only(children);
 
   /** @type {import('react').RefObject<HTMLElement>} */
-  const triggerRef = React.useRef();
-
-  const preparedChildren = dropdown
-    ? children
-    : children.map((ch) => {
-        if (ch?.type?.displayName === "Dropdown") {
-          return React.cloneElement(ch, {
-            ...ch.props,
-            ref: finalRef,
-            key: "dropdown",
-          });
-        }
-
-        return ch;
-      });
+  const triggerRef = triggerEL.props.ref ?? React.useRef();
 
   const handleClick = React.useCallback(
     (e) => {
@@ -43,20 +29,38 @@ export const DropdownTrigger = ({
       const dropdownClicked = cn("dropdown").closest(target);
 
       if (!triggerClicked && !dropdownClicked) {
-        finalRef.current?.close?.();
+        dropdownRef.current?.close?.();
       }
     },
-    [closeOnClickOutside, finalRef]
+    [closeOnClickOutside, dropdownRef]
   );
 
   const handleToggle = React.useCallback(
     (e) => {
+      console.log(e.target, dropdownRef.current);
       if (!cn("dropdown").closest(e.target)) {
-        finalRef?.current?.toggle();
+        dropdownRef?.current?.toggle();
       }
     },
-    [finalRef]
+    [dropdownRef]
   );
+
+  const triggerClone = React.cloneElement(triggerEL, {
+    ...triggerEL.props,
+    key: "dd-trigger",
+    tagName,
+    ref: triggerRef,
+    className: cn("dropdown").elem("trigger").mix(props.className),
+    onClick: triggerEL.props?.onClick || handleToggle,
+  });
+
+  console.log({ triggerClone });
+
+  const dropdownClone = content ? (
+    <Dropdown {...props} ref={dropdownRef}>
+      {content}
+    </Dropdown>
+  ) : null;
 
   React.useEffect(() => {
     document.addEventListener("click", handleClick);
@@ -65,16 +69,8 @@ export const DropdownTrigger = ({
 
   return (
     <DropdownContext.Provider value={{ triggerRef }}>
-      {React.createElement(
-        tagName ?? "div",
-        {
-          ...props,
-          ref: triggerRef,
-          className: cn("dropdown").elem("trigger").mix(props.className),
-          onClickCapture: handleToggle,
-        },
-        ...preparedChildren
-      )}
+      {triggerClone}
+      {dropdownClone}
     </DropdownContext.Provider>
   );
 };

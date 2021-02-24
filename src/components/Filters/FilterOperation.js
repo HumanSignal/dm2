@@ -18,7 +18,6 @@ export const FilterOperation = observer(
     const types = React.useMemo(() => {
       const filterTypes = FilterInputs[field.type] ?? FilterInputs.String;
       return [...filterTypes, ...Common];
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [field, operator]);
 
     const selected = React.useMemo(() => {

@@ -5,10 +5,10 @@ import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { FaCog } from "react-icons/fa";
-import { VscQuestion } from "react-icons/vsc";
 import { FillContainer } from "../App/App.styles";
 import { Button } from "../Common/Button/Button";
 import { FieldsButton } from "../Common/FieldsButton";
+import { Icon } from "../Common/Icon/Icon";
 import { Spinner } from "../Common/Spinner";
 import { Table } from "../Common/Table/Table";
 import { Tag } from "../Common/Tag/Tag";
@@ -99,7 +99,7 @@ export const DataView = injector(
         if (help && decoration?.help !== false) {
           children.push(
             <Tooltip key="help-tooltip" title={help}>
-              <VscQuestion size={16} style={{ opacity: 0.5 }} />
+              <Icon name="FaQuestionCircle" style={{ opacity: 0.5 }} />
             </Tooltip>
           );
         }

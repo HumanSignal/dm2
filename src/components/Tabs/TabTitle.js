@@ -40,7 +40,7 @@ export const TabTitle = observer(({ item, active }) => {
       )}
 
       {active && (
-        <Dropdown.Trigger trigger={["click"]}>
+        <Dropdown.Trigger trigger={["click"]} content={TabsMenu(item)}>
           <Button
             type="link"
             size="small"
@@ -48,8 +48,6 @@ export const TabTitle = observer(({ item, active }) => {
             style={{ padding: 5, marginLeft: 10 }}
             icon={<BsThreeDotsVertical />}
           />
-
-          <Dropdown>{TabsMenu(item)}</Dropdown>
         </Dropdown.Trigger>
       )}
     </>

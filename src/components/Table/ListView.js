@@ -154,13 +154,14 @@ export const ListView = observer(
 
     const tableHeadContent = ({ style }) => (
       <div className="dm-content__table-header" style={style}>
-        {headerGroups.map((headerGroup) => (
+        {headerGroups.map((headerGroup, i) => (
           <div
+            key={i}
             className="dm-content__table-heading-group"
             {...headerGroup.getHeaderGroupProps()}
           >
-            {headerGroup.headers.map((column) => (
-              <div {...compileHeaderProps(column)}>
+            {headerGroup.headers.map((column, j) => (
+              <div key={`${i}-${j}`} {...compileHeaderProps(column)}>
                 {column.render("Header")}
               </div>
             ))}
@@ -178,8 +179,8 @@ export const ListView = observer(
             {...compileRowProps(row, view, "dm-content__table-row")}
             style={{ ...style, height: lineHeight }}
           >
-            {row.cells.map((cell) => (
-              <div {...compileCellProps(cell)}>
+            {row.cells.map((cell, i) => (
+              <div key={i} {...compileCellProps(cell)}>
                 {cell.render("Cell") ?? null}
               </div>
             ))}

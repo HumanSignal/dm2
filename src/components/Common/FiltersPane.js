@@ -5,13 +5,21 @@ import { Filters } from "../Filters/Filters";
 import { Button } from "./Button/Button";
 import { Dropdown } from "./Dropdown/Dropdown";
 
-export const FiltersButton = observer(({ onClick, active, size }) => {
-  return (
-    <Button onClick={onClick} primary={active} size={size} icon={<FaFilter />}>
-      Filters
-    </Button>
-  );
-});
+export const FiltersButton = observer(
+  React.forwardRef(({ onClick, active, size }, ref) => {
+    return (
+      <Button
+        ref={ref}
+        onClick={onClick}
+        primary={active}
+        size={size}
+        icon={<FaFilter />}
+      >
+        Filters
+      </Button>
+    );
+  })
+);
 
 const injector = inject(({ store }) => {
   const { viewsStore, currentView } = store;
@@ -36,16 +44,12 @@ export const FiltersPane = injector(
     }
 
     return (
-      <Dropdown.Trigger>
+      <Dropdown.Trigger content={<Filters />}>
         <FiltersButton
           size={size}
           active={filtersApplied}
-          onClick={sidebarEnabled && (() => viewsStore.toggleSidebar())}
+          onClick={sidebarEnabled ? () => viewsStore.toggleSidebar() : null}
         />
-
-        <Dropdown style={{ marginTop: 5 }}>
-          <Filters />
-        </Dropdown>
       </Dropdown.Trigger>
     );
   }

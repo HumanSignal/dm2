@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "../../../utils/bem";
+import { Block, Elem } from "../../../utils/bem";
 import "./Button.styl";
 
 export const Button = React.forwardRef(
@@ -16,15 +16,14 @@ export const Button = React.forwardRef(
       waiting,
       danger,
       icon,
+      tagName,
       ...rest
     },
     ref
   ) => {
-    const rootClass = cn("button");
-    const tagName = href ? "a" : "button";
+    const tag = tagName ?? href ? "a" : "button";
 
     const mods = {};
-    const classList = [rootClass, rootClass.mod({ type })];
 
     if (primary) mods.primary = primary;
     if (compact) mods.compact = compact;
@@ -34,9 +33,6 @@ export const Button = React.forwardRef(
     if (extra) mods.withExtra = true;
     if (waiting) mods.waiting = true;
     if (type) mods.type = type;
-
-    classList.push(rootClass.mod(mods));
-    classList.push(className);
 
     const iconElem = React.useMemo(() => {
       if (!icon) return null;
@@ -51,34 +47,35 @@ export const Button = React.forwardRef(
       }
     }, [icon, size]);
 
-    const onClick = rest.onClick || null;
-
-    return React.createElement(
-      tagName,
-      {
-        ref,
-        className: rootClass.mod(mods).mix(className),
-        type: type,
-        ...rest,
-        onClick,
-      },
-      <>
-        {iconElem && <span className={rootClass.elem("icon")}>{iconElem}</span>}
-        {iconElem && children ? <span>{children}</span> : children}
-        {extra !== undefined ? (
-          <span className={rootClass.elem("extra")}>{extra}</span>
-        ) : null}
-      </>
+    return (
+      <Block
+        ref={ref}
+        name="button"
+        tag={tag}
+        mod={mods}
+        mix={className}
+        type={type}
+        {...rest}
+      >
+        <>
+          {iconElem && (
+            <Elem tag="span" name="icon">
+              {iconElem}
+            </Elem>
+          )}
+          {iconElem && children ? <span>{children}</span> : children}
+          {extra !== undefined ? <Elem name="extra">{extra}</Elem> : null}
+        </>
+      </Block>
     );
   }
 );
+Button.displayName = "Button";
 
 Button.Group = ({ className, children, collapsed }) => {
   return (
-    <div
-      className={[cn("button-group").mod({ collapsed }), className].join(" ")}
-    >
+    <Block name="button-group" mod={{ collapsed }} mix={className}>
       {children}
-    </div>
+    </Block>
   );
 };

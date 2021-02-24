@@ -26,25 +26,10 @@ const DropdownWrapper = observer(
     const types = ViewColumnType._types
       .map((t) => t.value)
       .filter((t) => t in cellViews && cellViews[t].userSelectable !== false);
+
     return (
       <Dropdown.Trigger
-        style={{ display: "flex", justifyContent: "space-between", flex: 1 }}
-      >
-        <Button
-          type="text"
-          size="small"
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            background: "none",
-          }}
-        >
-          {children}
-        </Button>
-
-        <Dropdown>
+        content={
           <Menu
             title="Display as"
             size="compact"
@@ -52,7 +37,7 @@ const DropdownWrapper = observer(
           >
             {types.map((type) => {
               return (
-                <Menu.Item key={type} onClick={(e) => onChange?.(column, type)}>
+                <Menu.Item key={type} onClick={() => onChange?.(column, type)}>
                   <Space>
                     <Tag
                       size="small"
@@ -70,7 +55,21 @@ const DropdownWrapper = observer(
               );
             })}
           </Menu>
-        </Dropdown>
+        }
+      >
+        <Button
+          type="text"
+          size="small"
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            background: "none",
+          }}
+        >
+          {children}
+        </Button>
       </Dropdown.Trigger>
     );
   }
