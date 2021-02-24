@@ -4,6 +4,29 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 const Dotenv = require("dotenv-webpack");
 
+const babelLoader = {
+  loader: "babel-loader",
+  options: {
+    presets: [
+      "@babel/preset-react",
+      "@babel/preset-typescript",
+      [
+        "@babel/preset-env",
+        {
+          targets: {
+            browsers: ["last 2 Chrome versions"],
+          },
+        },
+      ],
+    ],
+    plugins: [
+      "@babel/plugin-proposal-class-properties",
+      "@babel/plugin-proposal-optional-chaining",
+      "@babel/plugin-proposal-nullish-coalescing-operator",
+    ],
+  },
+};
+
 module.exports = {
   mode: process.env.NODE_ENV || "development",
   devtool: "cheap-module-source-map",
@@ -21,6 +44,9 @@ module.exports = {
     path: path.resolve(__dirname, "build"),
     filename: "main.js",
   },
+  resolve: {
+    extensions: [".tsx", ".ts", ".js"],
+  },
   plugins: [
     new Dotenv(),
     new MiniCssExtractPlugin(),
@@ -36,32 +62,16 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/i,
+        test: /\.jsx?$/i,
         enforce: "pre",
-        use: [
-          {
-            loader: "babel-loader",
-            options: {
-              presets: [
-                [
-                  "@babel/preset-env",
-                  {
-                    targets: {
-                      browsers: ["last 2 Chrome versions"],
-                    },
-                  },
-                ],
-                "@babel/preset-react",
-              ],
-              plugins: [
-                "@babel/plugin-proposal-class-properties",
-                "@babel/plugin-proposal-optional-chaining",
-                "@babel/plugin-proposal-nullish-coalescing-operator",
-              ],
-            },
-          },
-          "source-map-loader",
-        ],
+        exclude: /node_modules/,
+        use: [babelLoader, "source-map-loader"],
+      },
+      {
+        test: /\.tsx?$/i,
+        enforce: "pre",
+        exclude: /node_modules/,
+        use: [babelLoader, "source-map-loader"],
       },
       {
         test: /\.css$/i,

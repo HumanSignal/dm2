@@ -4,7 +4,6 @@ import {
   InfoCircleOutlined,
   SettingOutlined,
 } from "@ant-design/icons";
-import { Tooltip } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
@@ -14,6 +13,7 @@ import { FaBan } from "react-icons/fa";
 import styled from "styled-components";
 import { Button } from "../Common/Button/Button";
 import { Space } from "../Common/Space/Space";
+import { Tooltip } from "../Common/Tooltip/Tooltip";
 
 const TOOLTIP_DELAY = 0.8;
 

@@ -1,4 +1,4 @@
-import { Empty, Tooltip } from "antd";
+import { Empty } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
@@ -12,6 +12,7 @@ import { FieldsButton } from "../Common/FieldsButton";
 import { Spinner } from "../Common/Spinner";
 import { Table } from "../Common/Table/Table";
 import { Tag } from "../Common/Tag/Tag";
+import { Tooltip } from "../Common/Tooltip/Tooltip";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
 import { TableStyles } from "./Table.styles";

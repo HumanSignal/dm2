@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { cn } from "../../../utils/bem";
+import { alignElements } from "../../../utils/dom";
 import { aroundTransition } from "../../../utils/transition";
 import "./Dropdown.styl";
 import { DropdownContext } from "./DropdownContext";
@@ -34,19 +35,14 @@ export const Dropdown = React.forwardRef(
     const calculatePosition = React.useCallback(() => {
       const dropdownEl = dropdown.current;
       const parent = triggerRef?.current ?? dropdownEl.parentNode;
-      const position = parent.getBoundingClientRect();
-      const { width } = dropdownEl.getBoundingClientRect();
+      const { pos, left, top } = alignElements(
+        parent,
+        dropdownEl,
+        "bottom-left"
+      );
 
-      let offsetLeft = 0;
-      let offsetTop = position.top + position.height;
-
-      if (position.left + width < window.innerWidth) {
-        offsetLeft = position.left;
-      } else {
-        offsetLeft = position.left + position.width - width;
-      }
-
-      setOffset({ top: offsetTop, left: offsetLeft });
+      console.log(pos, left, top);
+      setOffset({ left, top });
     }, [triggerRef]);
 
     const performAnimation = React.useCallback(

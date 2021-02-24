@@ -100,7 +100,7 @@ export const APIConfig = {
 
     /** Invoke a particular action */
     invokeAction: {
-      path: "/views/:tabID/actions",
+      path: "/actions",
       method: "post",
     },
   },
