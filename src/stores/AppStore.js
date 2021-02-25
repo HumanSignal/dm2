@@ -1,6 +1,6 @@
-import { Modal, notification } from "antd";
+import { notification } from "antd";
 import { flow, types } from "mobx-state-tree";
-import React from "react";
+import { Modal } from "../components/Common/Modal/Modal";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import * as DataStores from "./DataStores";
@@ -201,9 +201,8 @@ export const AppStore = types
 
       if (!self.labelingIsConfigured) {
         Modal.confirm({
-          icon: <span></span>,
           title: "You're almost there!",
-          content:
+          body:
             "Before you can annotate the data, set up labeling configuration",
           onOk() {
             window.location.href = self.SDK.links.settings;

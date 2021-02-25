@@ -93,11 +93,12 @@ export const Dropdown = React.forwardRef(
       if (!ref) return;
 
       ref.current = {
+        dropdown: dropdown.current,
         toggle,
         open,
         close,
       };
-    }, [close, open, ref, toggle]);
+    }, [close, open, ref, toggle, dropdown]);
 
     React.useEffect(() => {
       setVisible(visible);

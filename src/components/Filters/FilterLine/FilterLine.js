@@ -1,5 +1,6 @@
 import { observer } from "mobx-react";
 import React from "react";
+import { FaTrash } from "react-icons/fa";
 import { Block, Elem } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
 import { Icon } from "../../Common/Icon/Icon";
@@ -54,14 +55,14 @@ export const FilterLine = observer(
                 dropdownClassName={dropdownClassName}
                 onChange={(value) => filter.setFilter(value)}
                 optionRender={({ original: filter }) => (
-                  <div className="filters__selector">
+                  <Elem name="selector">
                     {filter.field.title}
                     {filter.field.parent && (
                       <Tag className="filters-data-tag" color="#1d91e4">
                         {filter.field.parent.title}
                       </Tag>
                     )}
-                  </div>
+                  </Elem>
                 )}
               />
             </Elem>
@@ -82,9 +83,8 @@ export const FilterLine = observer(
               e.stopPropagation();
               filter.delete();
             }}
-          >
-            <Icon name="FaTrash" size={14} />
-          </Button>
+            icon={<Icon name={FaTrash} size={12} />}
+          />
         </Elem>
       </Block>
     );

@@ -1,10 +1,10 @@
-import { Empty } from "antd";
 import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { FaCog } from "react-icons/fa";
+import { Block, Elem } from "../../utils/bem";
 import { FillContainer } from "../App/App.styles";
 import { Button } from "../Common/Button/Button";
 import { FieldsButton } from "../Common/FieldsButton";
@@ -15,6 +15,7 @@ import { Tag } from "../Common/Tag/Tag";
 import { Tooltip } from "../Common/Tooltip/Tooltip";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView";
+import "./Table.styl";
 import { TableStyles } from "./Table.styles";
 
 const injector = inject(({ store }) => {
@@ -136,27 +137,25 @@ export const DataView = injector(
           );
         } else if (total === 0 || !hasData) {
           return (
-            <Empty
-              description={
-                hasData ? (
-                  <span>Nothing found</span>
+            <Block name="no-results">
+              <Elem name="description">
+                {hasData ? (
+                  <>
+                    <h3>Nothing found</h3>
+                    Try adjusting the filter
+                  </>
                 ) : (
                   "Looks like you have not imported any data yet"
-                )
-              }
-              style={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
+                )}
+              </Elem>
               {!hasData && (
-                <Button type="primary" href="./import">
-                  Go to import
-                </Button>
+                <Elem name="navigation">
+                  <Button type="primary" href="./import">
+                    Go to import
+                  </Button>
+                </Elem>
               )}
-            </Empty>
+            </Block>
           );
         }
 

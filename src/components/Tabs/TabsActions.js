@@ -1,4 +1,3 @@
-import { Modal } from "antd";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { BsTrash } from "react-icons/bs";
@@ -6,6 +5,7 @@ import { FaAngleDown } from "react-icons/fa";
 import { Button } from "../Common/Button/Button";
 import { Dropdown } from "../Common/Dropdown/Dropdown";
 import { Menu } from "../Common/Menu/Menu";
+import { Modal } from "../Common/Modal/Modal";
 import { Space } from "../Common/Space/Space";
 
 export const TabsActions = inject("store")(
@@ -23,7 +23,7 @@ export const TabsActions = inject("store")(
 
         dialog({
           title: "Destructive action.",
-          content: text,
+          body: text,
           onOk() {
             store.invokeAction(action.id);
           },

@@ -14,23 +14,26 @@ export const aroundTransition = (
   element,
   { init, transition, onStart, beforeTransition, afterTransition } = {}
 ) => {
-  init?.(element);
+  return new Promise((resolve) => {
+    init?.(element);
 
-  const onTransitionStarted = () => {
-    onStart?.(element);
-  };
+    const onTransitionStarted = () => {
+      onStart?.(element);
+    };
 
-  const onTransitionEnded = () => {
-    afterTransition?.(element);
+    const onTransitionEnded = () => {
+      afterTransition?.(element);
 
-    element.removeEventListener("transitionstart", onTransitionStarted);
-    element.removeEventListener("transitionend", onTransitionEnded);
-  };
+      element.removeEventListener("transitionstart", onTransitionStarted);
+      element.removeEventListener("transitionend", onTransitionEnded);
+      resolve();
+    };
 
-  element.addEventListener("transitionstart", onTransitionStarted);
-  element.addEventListener("transitionend", onTransitionEnded);
+    element.addEventListener("transitionstart", onTransitionStarted);
+    element.addEventListener("transitionend", onTransitionEnded);
 
-  beforeTransition?.();
+    beforeTransition?.();
 
-  setTimeout(() => transition(element), 50);
+    setTimeout(() => transition(element), 50);
+  });
 };

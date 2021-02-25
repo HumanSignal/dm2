@@ -1,9 +1,9 @@
-import { Input } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { Button } from "../Common/Button/Button";
 import { Dropdown } from "../Common/Dropdown/Dropdown";
+import Input from "../Common/Input/Input";
 import { TabsMenu } from "./TabsMenu";
 
 export const TabTitle = observer(({ item, active }) => {

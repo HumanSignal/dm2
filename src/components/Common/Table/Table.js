@@ -1,4 +1,3 @@
-import { Modal } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { BsCode } from "react-icons/bs";
@@ -7,6 +6,7 @@ import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import { isDefined } from "../../../utils/utils";
 import { Button } from "../Button/Button";
+import { Modal } from "../Modal/Modal";
 import { Tooltip } from "../Tooltip/Tooltip";
 import { TableWrapper } from "./Table.styled";
 import { TableCheckboxCell } from "./TableCheckbox";
@@ -109,10 +109,10 @@ export const Table = observer(
               type="link"
               style={{ width: 32, height: 32, padding: 0 }}
               onClick={() => {
-                Modal.info({
+                Modal.modal({
                   title: "Source for task " + out?.id,
                   width: 800,
-                  content: <pre>{JSON.stringify(out, null, "  ")}</pre>,
+                  body: <pre>{JSON.stringify(out, null, "  ")}</pre>,
                 });
               }}
               icon={<BsCode />}

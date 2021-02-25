@@ -57,28 +57,6 @@ export const FiltersStyles = styled(Wrapper)`
     }
   }
 
-  .filters {
-    &__actions {
-      display: flex;
-      margin-top: 10px;
-      padding: 0 10px 10px;
-      justify-content: space-between;
-    }
-
-    &__empty {
-      padding: 0 10px;
-      font-size: 14px;
-      color: #585858;
-    }
-
-    &__selector {
-      flex: 1;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-  }
-
   .filters__selector__tag.ant-tag,
   .ant-select-selector .filters__selector__tag.ant-tag {
     font-size: 11px;

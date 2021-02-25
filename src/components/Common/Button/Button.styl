@@ -67,6 +67,7 @@
         box-shadow none
 
     &_link, ^[0][href]
+      color $accent_color
       text-decoration underline
 
   &_primary
@@ -103,9 +104,9 @@
       padding 0 10px
 
   &_danger
-    color #DD0000
+    color $danger_color
 
-  &_withIcon
+  &_withIcon:not(&_type_link):not(&[href])
     padding 0 14px
 
   &_withIcon&_size_small
