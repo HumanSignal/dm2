@@ -1,8 +1,9 @@
 import { observer } from "mobx-react";
 import React from "react";
-import { FilterDropdown } from "./FilterDropdown";
-import * as FilterInputs from "./types";
-import { Common } from "./types/Common";
+import { Elem } from "../../../utils/bem";
+import { FilterDropdown } from "../FilterDropdown";
+import * as FilterInputs from "../types";
+import { Common } from "../types/Common";
 
 /** @typedef {{
  * type: keyof typeof FilterInputs,
@@ -41,7 +42,7 @@ export const FilterOperation = observer(
 
     return (
       <>
-        <div className="filter-line__column filter-line__operation">
+        <Elem name="column" mix="operation">
           <FilterDropdown
             placeholder="Condition"
             value={filter.operator}
@@ -49,8 +50,8 @@ export const FilterOperation = observer(
             items={types.map(({ key, label }) => ({ value: key, label }))}
             onChange={(selectedKey) => filter.setOperator(selectedKey)}
           />
-        </div>
-        <div className="filter-line__column filter-line__value">
+        </Elem>
+        <Elem name="column" mix="value">
           <Input
             {...field}
             key={filter.filter.id}
@@ -58,7 +59,7 @@ export const FilterOperation = observer(
             value={value}
             onChange={onChange}
           />
-        </div>
+        </Elem>
       </>
     );
   }

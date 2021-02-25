@@ -1,6 +1,6 @@
 import color from "chroma-js";
 import React from "react";
-import { cn } from "../../../utils/bem";
+import { Block } from "../../../utils/bem";
 import { colors } from "../../../utils/colors";
 import "./Tag.styl";
 
@@ -27,12 +27,11 @@ export const Tag = ({ className, style, size, color, children }) => {
     {}
   );
 
+  const styles = { ...(style ?? {}), ...finalColor };
+
   return (
-    <span
-      className={cn("tag").mod({ size }).mix(className)}
-      style={{ ...(style ?? {}), ...finalColor }}
-    >
+    <Block tag="span" name="tag" mod={{ size }} mix={className} style={styles}>
       {children}
-    </span>
+    </Block>
   );
 };

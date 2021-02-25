@@ -4,7 +4,8 @@ import { BsLayoutSidebarInsetReverse } from "react-icons/bs";
 import { FaPlus } from "react-icons/fa";
 import { Button } from "../Common/Button/Button";
 import { Tooltip } from "../Common/Tooltip/Tooltip";
-import { FilterLine } from "./FilterLine";
+import { FilterLine } from "./FilterLine/FilterLine";
+import "./Filters.styl";
 import { FiltersStyles } from "./Filters.styles";
 
 const injector = inject(({ store }) => ({

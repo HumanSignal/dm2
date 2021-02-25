@@ -26,7 +26,7 @@ export const DropdownTrigger = ({
 
       const target = e.target;
       const triggerClicked = cn("dropdown").elem("trigger").closest(target);
-      const dropdownClicked = cn("dropdown").closest(target);
+      const dropdownClicked = dropdownRef.current.containt(target);
 
       if (!triggerClicked && !dropdownClicked) {
         dropdownRef.current?.close?.();

@@ -1,9 +1,11 @@
-import { DeleteOutlined } from "@ant-design/icons";
 import { observer } from "mobx-react";
 import React from "react";
-import { Button } from "../Common/Button/Button";
-import { Tag } from "../Common/Tag/Tag";
-import { FilterDropdown } from "./FilterDropdown";
+import { Block, Elem } from "../../../utils/bem";
+import { Button } from "../../Common/Button/Button";
+import { Icon } from "../../Common/Icon/Icon";
+import { Tag } from "../../Common/Tag/Tag";
+import { FilterDropdown } from "../FilterDropdown";
+import "./FilterLine.styl";
 import { FilterOperation } from "./FilterOperation";
 
 const Conjunction = observer(({ index, view }) => {
@@ -32,17 +34,17 @@ export const FilterLine = observer(
     }, [filter.currentValue]);
 
     return (
-      <div className="filter-line">
-        <div className="filter-line__settings">
+      <Block name="filter-line">
+        <Elem name="settings">
           <GroupWrapper wrap={sidebar}>
-            <div className="filter-line__column filter-line__conjunction">
+            <Elem name="column" mix="conjunction">
               {index === 0 ? (
                 <span style={{ fontSize: 12, paddingRight: 5 }}>Where</span>
               ) : (
                 <Conjunction index={index} view={view} />
               )}
-            </div>
-            <div className="filter-line__column filter-line__field">
+            </Elem>
+            <Elem name="column" mix="field">
               <FilterDropdown
                 placeholder="Column"
                 defaultValue={filter.filter.id}
@@ -55,14 +57,14 @@ export const FilterLine = observer(
                   <div className="filters__selector">
                     {filter.field.title}
                     {filter.field.parent && (
-                      <Tag className="filters__selector__tag" color="#1d91e4">
+                      <Tag className="filters-data-tag" color="#1d91e4">
                         {filter.field.parent.title}
                       </Tag>
                     )}
                   </div>
                 )}
               />
-            </div>
+            </Elem>
           </GroupWrapper>
           <GroupWrapper wrap={sidebar}>
             <FilterOperation
@@ -72,13 +74,19 @@ export const FilterLine = observer(
               field={filter.field}
             />
           </GroupWrapper>
-        </div>
-        <div className="filter-line__remove">
-          <Button type="link" onClick={(e) => filter.delete()}>
-            <DeleteOutlined />
+        </Elem>
+        <Elem name="remove">
+          <Button
+            type="link"
+            onClick={(e) => {
+              e.stopPropagation();
+              filter.delete();
+            }}
+          >
+            <Icon name="FaTrash" size={14} />
           </Button>
-        </div>
-      </div>
+        </Elem>
+      </Block>
     );
   }
 );

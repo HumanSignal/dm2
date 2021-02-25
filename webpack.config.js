@@ -94,6 +94,11 @@ module.exports = {
             loader: "stylus-loader",
             options: {
               sourceMap: true,
+              stylusOptions: {
+                import: [
+                  path.resolve(__dirname, "./src/themes/default/colors.styl"),
+                ],
+              },
             },
           },
         ],

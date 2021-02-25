@@ -1,0 +1,68 @@
+.filter-line
+  display flex
+  min-height 24px
+  max-width 550px
+  padding 5px 0 5px 0
+  box-sizing content-box
+  align-items flex-start
+
+  &__remove
+    width 24px
+    height 24px
+    display flex
+    margin 0 5px
+    align-items center
+    justify-content center
+
+  &__settings
+    flex 1
+    display flex
+    align-items flex-start
+
+  &__column
+    min-height 24px
+    padding 0 2px
+
+    &.conjunction
+      display flex
+      align-items center
+      justify-content flex-end
+      width 65px
+
+    &.operation
+      flex 0
+
+    &.value
+      flex 1
+      display flex
+
+  &__group
+    flex 0
+    display flex
+    align-items flex-start
+
+  /* opened dropdown item */
+  .ant-select-single
+    border-radius 3px
+
+    &.ant-select-open
+      box-shadow 0 0 0 1px $accent_color
+
+      .ant-select-selection-item
+        color rgba(0, 0, 0, 0.85)
+
+  .ant-select-selector
+    padding 0
+
+    .ant-tag
+      margin 1px
+      font-size 12px
+      padding 3px 5px
+      display inline-flex
+      align-items center
+
+    .ant-tag-text
+      line-height 12px
+
+
+

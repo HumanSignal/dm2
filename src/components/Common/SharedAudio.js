@@ -1,4 +1,3 @@
-import { Slider } from "antd";
 import moment from "moment";
 import React, { Component } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
@@ -25,16 +24,14 @@ const PlaybackControl = ({ current, max, onChange, separator = " / " }) => {
         {separator}
         <Duration value={max} units="seconds" format={format} />
       </div>
-      <Slider
+      <input
+        type="range"
         min={0}
         max={max}
         step={0.01}
         value={current}
         style={{ flex: 1 }}
         onChange={onChange}
-        tipFormatter={(value) => (
-          <Duration value={value} units="seconds" format={format} />
-        )}
       />
     </>
   );
@@ -150,6 +147,5 @@ export class SharedAudio extends Component {
    */
   set audio(value) {
     this.setState({ ...this.state, audio: value });
-    return value;
   }
 }

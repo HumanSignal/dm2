@@ -6,7 +6,7 @@ import { Tag } from "../Common/Tag/Tag";
 const TagRender = (items) => ({ label, ...rest }) => {
   const color = items.find((el) => el.value === rest.value)?.color;
   return (
-    <Tag color={color ?? "#000"} {...rest}>
+    <Tag color={color ?? "#000"} {...rest} className="filter-data-tag">
       <div className="ant-tag-text">{label}</div>
     </Tag>
   );

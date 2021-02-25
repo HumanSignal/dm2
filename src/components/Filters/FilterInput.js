@@ -1,5 +1,5 @@
-import { Input } from "antd";
 import React from "react";
+import Input from "../Common/Input/Input";
 
 export const FilterInput = ({
   value,
@@ -10,15 +10,16 @@ export const FilterInput = ({
   style,
 }) => {
   const inputRef = React.useRef();
-  const onChangeHandler = (e) => {
-    onChange(inputRef.current.input.value);
+  const onChangeHandler = () => {
+    const value = inputRef.current?.value ?? inputRef.current?.input?.value;
+    onChange(value);
   };
 
   return (
     <Input
       size="small"
       type={type}
-      value={value}
+      value={value ?? ""}
       ref={inputRef}
       placeholder={placeholder}
       onChange={onChangeHandler}
