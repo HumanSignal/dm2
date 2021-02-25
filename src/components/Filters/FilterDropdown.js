@@ -1,6 +1,6 @@
 import { CaretDownOutlined } from "@ant-design/icons";
-import { Select } from "antd";
 import React from "react";
+import { Select } from "../Common/Select/Select";
 import { Tag } from "../Common/Tag/Tag";
 
 const TagRender = (items) => ({ label, ...rest }) => {

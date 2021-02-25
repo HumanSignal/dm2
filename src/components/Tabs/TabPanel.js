@@ -13,6 +13,7 @@ import { ErrorBox } from "../Common/ErrorBox";
 import { FieldsButton } from "../Common/FieldsButton";
 import { FiltersPane } from "../Common/FiltersPane";
 import { RadioGroup } from "../Common/RadioGroup/RadioGroup";
+import { Select } from "../Common/Select/Select";
 import { Space } from "../Common/Space/Space";
 import { Spinner } from "../Common/Spinner";
 import { TabsActions } from "./TabsActions";
@@ -136,6 +137,19 @@ export const TablePanel = injector(
           )}
 
           {loading && <Spinner size="small" />}
+
+          <Select
+            size="small"
+            value="world"
+            onChange={(value) => console.log({ value })}
+          >
+            <Select.Option value="hello">My option 1</Select.Option>
+            <Select.Option value="world">My option 2</Select.Option>
+            <Select.OptGroup label="Subgroup">
+              <Select.Option value="hello1">My option 1</Select.Option>
+              <Select.Option value="world2">My option 2</Select.Option>
+            </Select.OptGroup>
+          </Select>
 
           <ErrorBox />
         </Space>

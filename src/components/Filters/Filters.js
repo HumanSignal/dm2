@@ -4,6 +4,7 @@ import { BsLayoutSidebarInsetReverse } from "react-icons/bs";
 import { FaPlus } from "react-icons/fa";
 import { Block, cn, Elem } from "../../utils/bem";
 import { Button } from "../Common/Button/Button";
+import { Dropdown } from "../Common/Dropdown/Dropdown";
 import { Tooltip } from "../Common/Tooltip/Tooltip";
 import { FilterLine } from "./FilterLine/FilterLine";
 import "./Filters.styl";
@@ -78,6 +79,9 @@ export const Filters = injector(({ views, currentView, filters }) => {
         >
           Add {filters.length ? "Another Filter" : "Filter"}
         </Button>
+        <Dropdown.Trigger content={<div>Hello world</div>}>
+          <Button size="small">Hello world</Button>
+        </Dropdown.Trigger>
 
         {!sidebarEnabled ? (
           <Tooltip title="Pin to sidebar">

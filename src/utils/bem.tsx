@@ -152,30 +152,38 @@ export const cn = (block: string, options: CNOptions = {}): CN => {
   return classNameBuilder
 }
 
+export const BemWithSpecifiContext = (context: React.Context<CN | null>) => {
+  const Context = context ?? React.createContext<CN|null>(null);
 
-export const Block: BemComponent = React.forwardRef(({tag = 'div', name, mod, mix, ...rest}, ref) => {
-  const rootClass = cn(name)
-  const finalMix = ([] as [ CNMix? ]).concat(mix).filter(cn => !!cn)
-  const className = rootClass.mod(mod).mix(...(finalMix as CNMix[])).toClassName()
-  const finalProps = {...rest, ref, className} as any
+  const Block: BemComponent = React.forwardRef(({tag = 'div', name, mod, mix, ...rest}, ref) => {
+    const rootClass = cn(name)
+    const finalMix = ([] as [ CNMix? ]).concat(mix).filter(cn => !!cn)
+    const className = rootClass.mod(mod).mix(...(finalMix as CNMix[])).toClassName()
+    const finalProps = {...rest, ref, className} as any
 
-  return (
-    <BlockContext.Provider value={rootClass}>
-      {React.createElement(tag, finalProps)}
-    </BlockContext.Provider>
-  )
-})
-Block.displayName = 'Block'
+    return (
+      <Context.Provider value={rootClass}>
+        {React.createElement(tag, finalProps)}
+      </Context.Provider>
+    )
+  })
+  Block.displayName = 'Block'
 
-export const Elem: BemComponent = React.forwardRef(({tag = 'div', name, mod, mix, ...rest}, ref) => {
-  const block = React.useContext(BlockContext);
+  const Elem: BemComponent = React.forwardRef(({tag = 'div', name, mod, mix, ...rest}, ref) => {
+    const block = React.useContext(Context);
 
-  const finalMix = ([] as [ CNMix? ]).concat(mix).filter(cn => !!cn)
-  const className = block!.elem(name).mod(mod).mix(...(finalMix as CNMix[])).toClassName()
-  const finalProps: any = {...rest, ref, className}
+    const finalMix = ([] as [ CNMix? ]).concat(mix).filter(cn => !!cn)
+    const className = block!.elem(name).mod(mod).mix(...(finalMix as CNMix[])).toClassName()
+    const finalProps: any = {...rest, ref, className}
 
-  if (typeof tag !== 'string') finalProps.block = block
+    if (typeof tag !== 'string') finalProps.block = block
 
-  return React.createElement(tag, finalProps)
-})
-Elem.displayName = 'Elem'
+    return React.createElement(tag, finalProps)
+  })
+  Elem.displayName = 'Elem'
+
+  return { Block, Elem }
+}
+
+export const { Block, Elem } = BemWithSpecifiContext(BlockContext);
+

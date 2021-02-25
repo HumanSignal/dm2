@@ -16,12 +16,12 @@ export const Button = React.forwardRef(
       waiting,
       danger,
       icon,
-      tagName,
+      tag,
       ...rest
     },
     ref
   ) => {
-    const tag = tagName ?? href ? "a" : "button";
+    const finalTag = tag ?? href ? "a" : "button";
 
     const mods = {};
 
@@ -51,7 +51,7 @@ export const Button = React.forwardRef(
       <Block
         ref={ref}
         name="button"
-        tag={tag}
+        tag={finalTag}
         mod={mods}
         mix={className}
         type={type}

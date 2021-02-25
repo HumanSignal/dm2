@@ -6,14 +6,14 @@ import { Button } from "./Button/Button";
 import { Dropdown } from "./Dropdown/Dropdown";
 
 export const FiltersButton = observer(
-  React.forwardRef(({ onClick, active, size }, ref) => {
+  React.forwardRef(({ active, size, ...rest }, ref) => {
     return (
       <Button
         ref={ref}
-        onClick={onClick}
         primary={active}
         size={size}
         icon={<FaFilter />}
+        {...rest}
       >
         Filters
       </Button>
@@ -33,7 +33,7 @@ const injector = inject(({ store }) => {
 });
 
 export const FiltersPane = injector(
-  ({ viewsStore, sidebarEnabled, size, filtersApplied }) => {
+  ({ viewsStore, sidebarEnabled, size, filtersApplied, ...rest }) => {
     const dropdownProps = {};
 
     if (sidebarEnabled) {
@@ -49,6 +49,7 @@ export const FiltersPane = injector(
           size={size}
           active={filtersApplied}
           onClick={sidebarEnabled ? () => viewsStore.toggleSidebar() : null}
+          {...rest}
         />
       </Dropdown.Trigger>
     );

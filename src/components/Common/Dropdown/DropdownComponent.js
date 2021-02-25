@@ -1,11 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { cn } from "../../../utils/bem";
+import { Block, cn } from "../../../utils/bem";
 import { alignElements } from "../../../utils/dom";
 import { aroundTransition } from "../../../utils/transition";
 import "./Dropdown.styl";
 import { DropdownContext } from "./DropdownContext";
 import { DropdownTrigger } from "./DropdownTrigger";
+
+let lastIndex = 1;
 
 export const Dropdown = React.forwardRef(
   ({ animated = true, visible = false, ...props }, ref) => {
@@ -26,15 +28,14 @@ export const Dropdown = React.forwardRef(
     const calculatePosition = React.useCallback(() => {
       const dropdownEl = dropdown.current;
       const parent = triggerRef?.current ?? dropdownEl.parentNode;
-      const { pos, left, top } = alignElements(
-        parent,
-        dropdownEl,
-        "bottom-left"
-      );
+      const { left, top } = alignElements(parent, dropdownEl, "bottom-left");
 
-      console.log(pos, left, top);
       setOffset({ left, top });
     }, [triggerRef]);
+
+    const dropdownIndex = React.useMemo(() => {
+      return lastIndex++;
+    }, []);
 
     const performAnimation = React.useCallback(
       (visible = false) => {
@@ -94,11 +95,12 @@ export const Dropdown = React.forwardRef(
 
       ref.current = {
         dropdown: dropdown.current,
+        visible: visibility !== null,
         toggle,
         open,
         close,
       };
-    }, [close, open, ref, toggle, dropdown]);
+    }, [close, open, ref, toggle, dropdown, visibility]);
 
     React.useEffect(() => {
       setVisible(visible);
@@ -135,14 +137,22 @@ export const Dropdown = React.forwardRef(
       }
     }, [visibility, visible]);
 
+    const compositeStyles = {
+      ...(props.style ?? {}),
+      ...(offset ?? {}),
+      zIndex: 1000 + dropdownIndex,
+    };
+
     const result = (
-      <div
+      <Block
         ref={dropdown}
-        className={rootName.mix(props.className, visibilityClasses)}
-        style={{ ...(props.style ?? {}), ...(offset ?? {}) }}
+        name="dropdown"
+        mix={[props.className, visibilityClasses]}
+        style={compositeStyles}
+        onClick={(e) => e.stopPropagation()}
       >
         {content}
-      </div>
+      </Block>
     );
 
     return props.inline === true

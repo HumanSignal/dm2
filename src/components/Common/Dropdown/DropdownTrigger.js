@@ -4,7 +4,7 @@ import { Dropdown } from "./DropdownComponent";
 import { DropdownContext } from "./DropdownContext";
 
 export const DropdownTrigger = ({
-  tagName,
+  tag,
   children,
   dropdown,
   content,
@@ -13,50 +13,55 @@ export const DropdownTrigger = ({
 }) => {
   if (children.length > 2)
     throw new Error("Trigger can't contain more that one child and a dropdown");
-  /** @type {import('react').RefObject<HTMLElement>} */
   const dropdownRef = dropdown ?? React.useRef();
   const triggerEL = React.Children.only(children);
+  const [childset] = React.useState(new Set());
 
   /** @type {import('react').RefObject<HTMLElement>} */
   const triggerRef = triggerEL.props.ref ?? React.useRef();
+  const parentDropdown = React.useContext(DropdownContext);
+
+  const targetIsInsideDropdown = React.useCallback(
+    (target) => {
+      const triggerClicked = triggerRef.current?.contains?.(target);
+      const dropdownClicked = dropdownRef.current?.dropdown?.contains?.(target);
+      const childDropdownClicked = Array.from(childset).reduce((res, child) => {
+        return res || child.hasTarget(target);
+      }, false);
+
+      return triggerClicked || dropdownClicked || childDropdownClicked;
+    },
+    [triggerRef, dropdownRef]
+  );
 
   const handleClick = React.useCallback(
     (e) => {
       if (!closeOnClickOutside) return;
+      if (targetIsInsideDropdown(e.target)) return;
 
-      const target = e.target;
-      const triggerClicked = triggerRef.current?.contains?.(target);
-      const dropdownClicked = dropdownRef.current?.dropdown?.contains?.(target);
-
-      console.log({ triggerClicked, dropdownClicked, dd: dropdownRef.current });
-
-      if (!triggerClicked && !dropdownClicked) {
-        dropdownRef.current?.close?.();
-      }
+      dropdownRef.current?.close?.();
     },
-    [closeOnClickOutside, dropdownRef]
+    [closeOnClickOutside, targetIsInsideDropdown]
   );
 
   const handleToggle = React.useCallback(
     (e) => {
-      console.log(e.target, dropdownRef.current);
-      if (!cn("dropdown").closest(e.target)) {
-        dropdownRef?.current?.toggle();
-      }
+      const inDropdown = dropdownRef.current?.dropdown?.contains?.(e.target);
+
+      if (inDropdown) e.stopPropagation();
+      else dropdownRef?.current?.toggle();
     },
     [dropdownRef]
   );
 
   const triggerClone = React.cloneElement(triggerEL, {
     ...triggerEL.props,
+    tag,
     key: "dd-trigger",
-    tagName,
     ref: triggerRef,
     className: cn("dropdown").elem("trigger").mix(props.className),
-    onClick: triggerEL.props?.onClick || handleToggle,
+    onClickCapture: triggerEL.props?.onClickCapture ?? handleToggle,
   });
-
-  console.log({ triggerClone });
 
   const dropdownClone = content ? (
     <Dropdown {...props} ref={dropdownRef}>
@@ -65,12 +70,31 @@ export const DropdownTrigger = ({
   ) : null;
 
   React.useEffect(() => {
-    document.addEventListener("click", handleClick);
-    return () => document.removeEventListener("click", handleClick);
-  }, [closeOnClickOutside, handleClick]);
+    document.addEventListener("click", handleClick, { capture: true });
+    return () =>
+      document.removeEventListener("click", handleClick, { capture: true });
+  }, [handleClick]);
+
+  const contextValue = React.useMemo(
+    () => ({
+      triggerRef,
+      dropdown: dropdownRef,
+      hasTarget: targetIsInsideDropdown,
+      addChild: (child) => childset.add(child),
+      removeChild: (child) => childset.delete(child),
+    }),
+    [triggerRef, dropdownRef]
+  );
+
+  React.useEffect(() => {
+    if (!parentDropdown) return;
+
+    parentDropdown.addChild(contextValue);
+    return () => parentDropdown.removeChild(contextValue);
+  }, []);
 
   return (
-    <DropdownContext.Provider value={{ triggerRef }}>
+    <DropdownContext.Provider value={contextValue}>
       {triggerClone}
       {dropdownClone}
     </DropdownContext.Provider>
