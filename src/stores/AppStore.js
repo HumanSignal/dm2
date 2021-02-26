@@ -1,4 +1,3 @@
-import { notification } from "antd";
 import { flow, types } from "mobx-state-tree";
 import { Modal } from "../components/Common/Modal/Modal";
 import { History } from "../utils/history";
@@ -298,10 +297,15 @@ export const AppStore = types
           });
         }
 
-        notification.error({
+        console.warn({
           message: "Error occurred when loading data",
           description: result?.response?.detail ?? result.error,
         });
+
+        // notification.error({
+        //   message: "Error occurred when loading data",
+        //   description: result?.response?.detail ?? result.error,
+        // });
       } else {
         self.serverError.delete(methodName);
       }

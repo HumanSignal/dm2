@@ -1,4 +1,3 @@
-import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
@@ -56,8 +55,6 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
-    const [showSource, setShowSource] = React.useState();
-
     const focusedItem = React.useMemo(() => {
       return props.focusedItem;
     }, [props.focusedItem]);
@@ -286,18 +283,6 @@ export const DataView = injector(
         style={{ pointerEvents: isLocked ? "none" : "auto" }}
       >
         {renderContent(content)}
-
-        <Modal
-          visible={!!showSource}
-          onOk={() => setShowSource("")}
-          onCancel={() => setShowSource("")}
-        >
-          <pre>
-            {showSource
-              ? JSON.stringify(JSON.parse(showSource), null, "  ")
-              : ""}
-          </pre>
-        </Modal>
       </Block>
     );
   }

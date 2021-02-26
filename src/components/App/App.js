@@ -1,4 +1,3 @@
-import "antd/dist/antd.css";
 import { observer, Provider } from "mobx-react";
 import React from "react";
 import { cn } from "../../utils/bem";
