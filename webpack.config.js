@@ -24,7 +24,6 @@ const LOCAL_ENV = {
   NODE_ENV: process.env.NODE_ENV,
   CSS_PREFIX: "dm-",
   USE_LSB: true,
-  SC_DISABLE_SPEEDY: false,
   GATEWAY_API: false,
   HTX_ACCESS_TOKEN: "---",
 };

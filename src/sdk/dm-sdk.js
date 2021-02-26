@@ -16,6 +16,7 @@
 /**
  * @typedef {{
  * root: HTMLElement,
+ * polling: boolean,
  * apiGateway: string | URL,
  * apiEndpoints: import("../utils/api-proxy").Endpoints,
  * apiMockDisabled: boolean,
@@ -83,6 +84,9 @@ export class DataManager {
   /** @type {boolean} */
   showPreviews = false;
 
+  /** @type {boolean} */
+  polling = true;
+
   /**
    * Constructor
    * @param {DMConfig} config
@@ -97,6 +101,7 @@ export class DataManager {
     this.apiVersion = config?.apiVersion ?? 1;
     this.links = Object.assign(this.links, config.links ?? {});
     this.showPreviews = config.showPreviews ?? false;
+    this.polling = config.polling;
     this.api = new APIProxy(
       this.apiConfig({
         apiGateway: config.apiGateway,

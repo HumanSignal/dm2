@@ -103,6 +103,7 @@ export const AppStore = types
   .actions((self) => ({
     startPolling() {
       if (self._poll) return;
+      if (self.SDK.polling === false) return;
 
       const poll = async (self) => {
         await self.fetchProject({ interaction: "timer" });
