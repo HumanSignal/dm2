@@ -38,7 +38,9 @@ export const Dropdown = React.forwardRef(
     }, []);
 
     const performAnimation = React.useCallback(
-      (visible = false) => {
+      async (visible = false) => {
+        if (props.enabled === false && visible === true) return;
+
         return new Promise((resolve) => {
           const menu = dropdown.current;
 
@@ -111,6 +113,10 @@ export const Dropdown = React.forwardRef(
         calculatePosition();
       }
     }, [visibility, calculatePosition, isInline]);
+
+    React.useEffect(() => {
+      if (props.enabled === false) performAnimation(false);
+    }, [props.enabled]);
 
     const content =
       children.props && children.props.type === "Menu"

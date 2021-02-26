@@ -44,7 +44,7 @@ export const FiltersPane = injector(
     }
 
     return (
-      <Dropdown.Trigger content={<Filters />}>
+      <Dropdown.Trigger enabled={!sidebarEnabled} content={<Filters />}>
         <FiltersButton
           size={size}
           active={filtersApplied}

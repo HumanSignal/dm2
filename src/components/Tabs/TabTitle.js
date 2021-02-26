@@ -1,8 +1,9 @@
 import { observer } from "mobx-react";
 import React from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaEllipsisV } from "react-icons/fa";
 import { Button } from "../Common/Button/Button";
 import { Dropdown } from "../Common/Dropdown/Dropdown";
+import { Icon } from "../Common/Icon/Icon";
 import Input from "../Common/Input/Input";
 import { TabsMenu } from "./TabsMenu";
 
@@ -40,13 +41,12 @@ export const TabTitle = observer(({ item, active }) => {
       )}
 
       {active && (
-        <Dropdown.Trigger trigger={["click"]} content={TabsMenu(item)}>
+        <Dropdown.Trigger content={TabsMenu(item)}>
           <Button
             type="link"
             size="small"
-            onClick={(e) => e.stopPropagation()}
             style={{ padding: 5, marginLeft: 10 }}
-            icon={<BsThreeDotsVertical />}
+            icon={<Icon icon={FaEllipsisV} />}
           />
         </Dropdown.Trigger>
       )}

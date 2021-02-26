@@ -1,25 +1,20 @@
-import { CaretDownOutlined, EyeOutlined } from "@ant-design/icons";
 import { inject } from "mobx-react";
 import React from "react";
-import { FaChevronLeft } from "react-icons/fa";
+import { FaCaretDown, FaChevronLeft, FaColumns } from "react-icons/fa";
+import { Block, Elem } from "../../utils/bem";
 import { History } from "../../utils/history";
 import { Button } from "../Common/Button/Button";
 import { FieldsButton } from "../Common/FieldsButton";
+import { Icon } from "../Common/Icon/Icon";
+import { Resizer } from "../Common/Resizer/Resizer";
 import { Space } from "../Common/Space/Space";
 import { DataView } from "../Table/Table";
-import {
-  DataViewWrapper,
-  LabelContent,
-  LabelHeader,
-  LabelStudioContent,
-  LabelStudioWrapper,
-  Styles,
-} from "./Label.styles";
-import { LabelToolbar } from "./LabelToolbar";
+import "./Label.styl";
+import { Toolbar } from "./Toolbar/Toolbar";
 
 const LabelingHeader = ({ onClick, isExplorerMode, children }) => {
   return (
-    <LabelHeader className="label-header">
+    <Elem name="header">
       <Space>
         <Button
           icon={<FaChevronLeft style={{ marginRight: 4, fontSize: 16 }} />}
@@ -34,8 +29,8 @@ const LabelingHeader = ({ onClick, isExplorerMode, children }) => {
           <div style={{ paddingLeft: 20 }}>
             <FieldsButton
               wrapper={FieldsButton.Checkbox}
-              icon={<EyeOutlined />}
-              trailingIcon={<CaretDownOutlined />}
+              icon={<Icon icon={FaColumns} />}
+              trailingIcon={<Icon icon={FaCaretDown} />}
               title={"Fields"}
             />
           </div>
@@ -43,7 +38,7 @@ const LabelingHeader = ({ onClick, isExplorerMode, children }) => {
       </Space>
 
       {children}
-    </LabelHeader>
+    </Elem>
   );
 };
 
@@ -97,7 +92,7 @@ export const Labeling = injector(
     };
 
     const toolbar = (
-      <LabelToolbar
+      <Toolbar
         view={view}
         history={history}
         lsf={SDK.lsf?.lsf}
@@ -113,46 +108,40 @@ export const Labeling = injector(
     );
 
     return (
-      <Styles>
+      <Block name="label-view">
         {!isExplorerMode && header}
 
-        <LabelContent className="label-content">
+        <Elem name="content">
           {isExplorerMode && (
-            <div
-              className="table label-table"
-              style={{ marginTop: "-1em", paddingTop: "1em" }}
-            >
+            <Elem name="table">
               {isExplorerMode && header}
-              <DataViewWrapper
-                className="label-dataview-wrapper"
-                style={{
-                  flex: 1,
-                  display: "flex",
-                  width: "100%",
-                }}
+              <Elem
+                tag={Resizer}
+                name="dataview"
                 minWidth={200}
                 showResizerLine={false}
                 maxWidth={window.innerWidth * 0.35}
                 initialWidth={view.labelingTableWidth}
                 onResizeFinished={onResize}
+                style={{ display: "flex", flex: 1 }}
               >
                 <DataView />
-              </DataViewWrapper>
-            </div>
+              </Elem>
+            </Elem>
           )}
 
-          <LabelStudioWrapper className="label-wrapper">
+          <Elem name="lsf-wrapper">
             {isExplorerMode && toolbar}
 
-            <LabelStudioContent
+            <Elem
               ref={lsfRef}
-              key="label-studio"
               id="label-studio-dm"
-              className="label-studio"
+              name="lsf-container"
+              key="label-studio"
             />
-          </LabelStudioWrapper>
-        </LabelContent>
-      </Styles>
+          </Elem>
+        </Elem>
+      </Block>
     );
   }
 );

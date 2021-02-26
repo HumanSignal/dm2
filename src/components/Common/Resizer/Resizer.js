@@ -1,5 +1,6 @@
 import React from "react";
-import styled, { css } from "styled-components";
+import { Block, Elem } from "../../../utils/bem";
+import "./Resizer.styl";
 
 const calculateWidth = (width, minWidth, maxWidth, initialX, currentX) => {
   const offset = currentX - initialX;
@@ -74,72 +75,20 @@ export const Resizer = ({
     [maxWidth, minWidth, onResizeCallback, onResizeFinished, width]
   );
 
-  const finalClassName = ["resizer", className].filter((c) => !!c).join(" ");
-
   return (
-    <ResizerWrapper className={finalClassName} style={{ width }}>
-      <div className="resizer__content" style={style ?? {}}>
+    <Block name="resizer" mix={className} style={{ width }}>
+      <Elem name="content" style={style ?? {}}>
         {children}
-      </div>
+      </Elem>
 
-      <ResizerHandle
+      <Elem
+        name="handle"
         ref={resizeHandler}
-        className="resizer__handle"
         style={handleStyle}
-        isResizing={showResizerLine !== false && isResizing}
+        mod={{ resizing: showResizerLine !== false && isResizing }}
         onMouseDown={handleResize}
         onDoubleClick={() => onReset?.()}
       />
-    </ResizerWrapper>
+    </Block>
   );
 };
-
-const ResizerWrapper = styled.div`
-  position: relative;
-`;
-
-const ResizerHandle = styled.div`
-  top: 0;
-  left: 100%;
-  height: 100%;
-  padding: 0 6px;
-  position: absolute;
-  cursor: col-resize;
-  z-index: 100;
-
-  &::before {
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 1px;
-    content: "";
-    z-index: 5;
-    display: block;
-    background: #bdbdbd;
-    position: absolute;
-  }
-
-  &:hover::before {
-    top: -5px;
-    bottom: -5px;
-    background-color: #1890ff;
-    box-shadow: -2px 0 0 0 rgba(24, 144, 255, 0.3),
-      2px 0 0 0 rgba(24, 144, 255, 0.3);
-  }
-
-  ${({ isResizing }) =>
-    isResizing
-      ? css`
-          &::after {
-            top: 0;
-            left: 0;
-            width: 1px;
-            content: "";
-            z-index: 1;
-            height: 9999px;
-            position: absolute;
-            background-color: #ccc;
-          }
-        `
-      : ""}
-`;

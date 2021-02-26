@@ -1,14 +1,14 @@
 import { inject } from "mobx-react";
 import React from "react";
 import { FaPlus } from "react-icons/fa";
+import { Block, Elem } from "../../utils/bem";
 import { Space } from "../Common/Space/Space";
 import { Spinner } from "../Common/Spinner";
 import { Tabs } from "../Common/Tabs/Tabs";
 import { DataView } from "../Table/Table";
 import { FiltersSidebar } from "./FIltersSidebar/FilterSidebar";
-import { TablePanel } from "./TabPanel";
+import { TablePanel } from "./TabPanel/TabPanel";
 import "./Tabs.styl";
-import { TabsStyles, TabsWrapper } from "./Tabs.styles";
 import { TabTitle } from "./TabTitle";
 
 const injector = inject(({ store }) => {
@@ -66,7 +66,6 @@ const ProjectSummary = summaryInjector((props) => {
 const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
   return (
     <Tabs
-      type="editable-card"
       activeTab={selectedKey}
       onEdit={() => views.addView()}
       onChange={(key) => views.setSelected(key)}
@@ -87,13 +86,13 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
 
 export const DMTabs = injector(({ shrinkWidth }) => {
   return (
-    <TabsStyles>
-      <TabsWrapper className="tabs-wrapper" shrinkWidth={shrinkWidth}>
+    <Block name="tabs-content">
+      <Elem name="tab" mod={{ shrink: shrinkWidth }}>
         <TabsSwitch />
         <TablePanel />
         <DataView />
-      </TabsWrapper>
+      </Elem>
       <FiltersSidebar />
-    </TabsStyles>
+    </Block>
   );
 });

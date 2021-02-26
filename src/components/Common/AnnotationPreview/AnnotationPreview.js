@@ -1,8 +1,9 @@
 import { inject, observer } from "mobx-react";
 import React from "react";
-import styled from "styled-components";
-import { taskToLSFormat } from "../../sdk/lsf-utils";
-import { Spinner } from "./Spinner";
+import { taskToLSFormat } from "../../../sdk/lsf-utils";
+import { Block } from "../../../utils/bem";
+import { Spinner } from "../Spinner";
+import "./AnnotationPreview.styl";
 
 const wait = (timeout) =>
   new Promise((resolve) => setTimeout(resolve, timeout));
@@ -97,16 +98,6 @@ const injector = inject(({ store }) => {
   };
 });
 
-const PreviewPlaceholder = styled.div`
-  width: ${({ width }) => width ?? "100%"};
-  height: ${({ height }) => height ?? "100%"};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-`;
-
 export const AnnotationPreview = injector(
   observer(({ labelingConfig, name, task, completion, style, ...props }) => {
     const generator = React.useMemo(() => {
@@ -138,8 +129,8 @@ export const AnnotationPreview = injector(
         height={props.height}
       />
     ) : (
-      <PreviewPlaceholder
-        fallback={props.fallbackImage}
+      <Block
+        name="annotation-preview"
         width={props.width}
         height={props.height}
       >
@@ -160,7 +151,7 @@ export const AnnotationPreview = injector(
           width={props.width}
           height={props.height}
         />
-      </PreviewPlaceholder>
+      </Block>
     );
   })
 );

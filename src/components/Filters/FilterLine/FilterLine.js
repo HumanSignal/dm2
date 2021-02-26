@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import React from "react";
 import { FaTrash } from "react-icons/fa";
-import { Block, Elem } from "../../../utils/bem";
+import { BemWithSpecifiContext } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
 import { Icon } from "../../Common/Icon/Icon";
 import { Tag } from "../../Common/Tag/Tag";
@@ -28,6 +28,8 @@ const GroupWrapper = ({ children, wrap = false }) => {
   return wrap ? <div className="filter-line__group">{children}</div> : children;
 };
 
+const { Block, Elem } = BemWithSpecifiContext();
+
 export const FilterLine = observer(
   ({ filter, availableFilters, index, view, sidebar, dropdownClassName }) => {
     const value = React.useMemo(() => {
@@ -38,14 +40,14 @@ export const FilterLine = observer(
       <Block name="filter-line">
         <Elem name="settings">
           <GroupWrapper wrap={sidebar}>
-            <Elem name="column" mix="conjunction">
+            <Elem block="filters" name="column" mix="conjunction">
               {index === 0 ? (
                 <span style={{ fontSize: 12, paddingRight: 5 }}>Where</span>
               ) : (
                 <Conjunction index={index} view={view} />
               )}
             </Elem>
-            <Elem name="column" mix="field">
+            <Elem block="filters" name="column" mix="field">
               <FilterDropdown
                 placeholder="Column"
                 defaultValue={filter.filter.id}
@@ -58,7 +60,11 @@ export const FilterLine = observer(
                   <Elem name="selector">
                     {filter.field.title}
                     {filter.field.parent && (
-                      <Tag className="filters-data-tag" color="#1d91e4">
+                      <Tag
+                        size="small"
+                        className="filters-data-tag"
+                        color="#1d91e4"
+                      >
                         {filter.field.parent.title}
                       </Tag>
                     )}
@@ -83,7 +89,7 @@ export const FilterLine = observer(
               e.stopPropagation();
               filter.delete();
             }}
-            icon={<Icon name={FaTrash} size={12} />}
+            icon={<Icon icon={FaTrash} size={12} />}
           />
         </Elem>
       </Block>

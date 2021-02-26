@@ -1,22 +1,27 @@
-import { AppstoreOutlined, BarsOutlined } from "@ant-design/icons";
 import { inject, observer } from "mobx-react";
 import React from "react";
 import {
+  FaCaretDown,
+  FaColumns,
   FaMinus,
   FaPlus,
   FaSortAmountDown,
   FaSortAmountUp,
+  FaThLarge,
+  FaThList,
 } from "react-icons/fa";
-import { cn } from "../../utils/bem";
-import { Button } from "../Common/Button/Button";
-import { ErrorBox } from "../Common/ErrorBox";
-import { FieldsButton } from "../Common/FieldsButton";
-import { FiltersPane } from "../Common/FiltersPane";
-import { RadioGroup } from "../Common/RadioGroup/RadioGroup";
-import { Select } from "../Common/Select/Select";
-import { Space } from "../Common/Space/Space";
-import { Spinner } from "../Common/Spinner";
-import { TabsActions } from "./TabsActions";
+import { cn } from "../../../utils/bem";
+import { Button } from "../../Common/Button/Button";
+import { ErrorBox } from "../../Common/ErrorBox";
+import { FieldsButton } from "../../Common/FieldsButton";
+import { FiltersPane } from "../../Common/FiltersPane";
+import { Icon } from "../../Common/Icon/Icon";
+import { RadioGroup } from "../../Common/RadioGroup/RadioGroup";
+import { Space } from "../../Common/Space/Space";
+import { Spinner } from "../../Common/Spinner";
+import { Tooltip } from "../../Common/Tooltip/Tooltip";
+import { TabsActions } from "../TabsActions";
+import "./TabPanel.styl";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
@@ -97,13 +102,13 @@ const GridWidthButton = observer(({ view, gridWidth, size }) => {
       <Button.Group>
         <Button
           size={size}
-          icon={<FaMinus size="12" color="#595959" />}
+          icon={<Icon icon={FaMinus} size="12" color="#595959" />}
           onClick={() => setGridWidth(width - 1)}
           disabled={width === 3}
         />
         <Button
           size={size}
-          icon={<FaPlus size="12" color="#595959" />}
+          icon={<Icon icon={FaPlus} size="12" color="#595959" />}
           onClick={() => setGridWidth(width + 1)}
           disabled={width === 10}
         />
@@ -124,6 +129,14 @@ export const TablePanel = injector(
 
           <ViewToggle size={toolbarSize} />
 
+          <FieldsButton
+            wrapper={FieldsButton.Checkbox}
+            icon={<Icon icon={FaColumns} />}
+            trailingIcon={<Icon icon={FaCaretDown} />}
+            title={"Fields"}
+            size={toolbarSize}
+          />
+
           <FiltersPane size={toolbarSize} />
 
           <OrderButton view={view} ordering={ordering} size={toolbarSize} />
@@ -137,19 +150,6 @@ export const TablePanel = injector(
           )}
 
           {loading && <Spinner size="small" />}
-
-          <Select
-            size="small"
-            value="world"
-            onChange={(value) => console.log({ value })}
-          >
-            <Select.Option value="hello">My option 1</Select.Option>
-            <Select.Option value="world">My option 2</Select.Option>
-            <Select.OptGroup label="Subgroup">
-              <Select.Option value="hello1">My option 1</Select.Option>
-              <Select.Option value="world2">My option 2</Select.Option>
-            </Select.OptGroup>
-          </Select>
 
           <ErrorBox />
         </Space>
@@ -177,7 +177,7 @@ export const TablePanel = injector(
 
           {!labelingDisabled && (
             <Button
-              primary
+              look="primary"
               size={toolbarSize}
               disabled={target === "annotations"}
               onClick={() => store.startLabeling()}
@@ -204,10 +204,14 @@ const ViewToggle = viewInjector(({ view, size }) => {
         onChange={(e) => view.setType(e.target.value)}
       >
         <RadioGroup.Button value="list">
-          <BarsOutlined />
+          <Tooltip title="List view">
+            <Icon icon={FaThList} />
+          </Tooltip>
         </RadioGroup.Button>
         <RadioGroup.Button value="grid">
-          <AppstoreOutlined />
+          <Tooltip title="Grid view">
+            <Icon icon={FaThLarge} />
+          </Tooltip>
         </RadioGroup.Button>
       </RadioGroup>
     </>
@@ -226,7 +230,9 @@ const DataStoreToggle = viewInjector(({ view, size }) => {
       onChange={(e) => view.setTarget(e.target.value)}
     >
       <RadioGroup.Button value="tasks">Tasks</RadioGroup.Button>
-      <RadioGroup.Button value="annotations">Annotations</RadioGroup.Button>
+      <RadioGroup.Button value="annotations" disabled>
+        Annotations
+      </RadioGroup.Button>
     </RadioGroup>
   );
 });

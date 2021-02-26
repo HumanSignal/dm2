@@ -10,29 +10,25 @@ export const Button = React.forwardRef(
       extra,
       className,
       href,
-      primary,
       size,
-      compact,
       waiting,
-      danger,
       icon,
       tag,
+      look,
       ...rest
     },
     ref
   ) => {
     const finalTag = tag ?? href ? "a" : "button";
 
-    const mods = {};
-
-    if (primary) mods.primary = primary;
-    if (compact) mods.compact = compact;
-    if (size) mods.size = size;
-    if (danger) mods.danger = danger;
-    if (icon) mods.withIcon = true;
-    if (extra) mods.withExtra = true;
-    if (waiting) mods.waiting = true;
-    if (type) mods.type = type;
+    const mods = {
+      size,
+      waiting,
+      type,
+      look,
+      withIcon: !!icon,
+      withExtra: !!extra,
+    };
 
     const iconElem = React.useMemo(() => {
       if (!icon) return null;

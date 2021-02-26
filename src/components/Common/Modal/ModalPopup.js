@@ -1,5 +1,6 @@
 import React from "react";
 import { createPortal } from "react-dom";
+import { FaTimes } from "react-icons/fa";
 import { cn } from "../../../utils/bem";
 import { aroundTransition } from "../../../utils/transition";
 import { Button } from "../Button/Button";
@@ -102,7 +103,7 @@ export class Modal extends React.Component {
                   <Button
                     type="text"
                     className={baseClass.elem("close")}
-                    icon={<Icon name="FaTimes" size={18} />}
+                    icon={<Icon icon={FaTimes} size={18} />}
                   />
                 )}
               </div>

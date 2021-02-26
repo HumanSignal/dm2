@@ -1,18 +1,19 @@
 import { observer } from "mobx-react";
 import React from "react";
-import { TableCellWrapper, TableRowWrapper } from "./Table.styled";
-import { TableContext } from "./TableContext";
-import { getProperty, getStyle } from "./utils";
+import { Block } from "../../../../utils/bem";
+import { TableContext, TableElem } from "../TableContext";
+import { getProperty, getStyle } from "../utils";
+import "./TableRow.styl";
 
 const CellRenderer = observer(({ col, data, decoration, cellViews }) => {
   const { Cell, id } = col;
 
   if (Cell instanceof Function) {
-    const { cellClassName, ...rest } = col;
+    const { headerClassName: _, cellClassName, ...rest } = col;
     return (
-      <TableCellWrapper {...rest} key={id} className={cellClassName}>
+      <TableElem {...rest} name="cell" key={id} mix={cellClassName}>
         <Cell data={data} />
-      </TableCellWrapper>
+      </TableElem>
     );
   }
 
@@ -24,7 +25,7 @@ const CellRenderer = observer(({ col, data, decoration, cellViews }) => {
   const style = getStyle(cellViews, col, Decoration);
 
   return (
-    <TableCellWrapper className="td">
+    <TableElem name="cell" mix="td">
       <div
         style={{
           ...(style ?? {}),
@@ -35,7 +36,7 @@ const CellRenderer = observer(({ col, data, decoration, cellViews }) => {
       >
         {Renderer ? <Renderer {...renderProps} /> : value}
       </div>
-    </TableCellWrapper>
+    </TableElem>
   );
 });
 
@@ -51,34 +52,42 @@ export const TableRow = observer(
     even,
   }) => {
     const classNames = ["table-row"];
+
     if (isSelected) classNames.push("selected");
     if (isHighlighted) classNames.push("highlighted");
     if (data.isLoading) classNames.push("loading");
     if (even === true) classNames.push("even");
 
+    const mods = {
+      even,
+      selected: isSelected,
+      highlighted: isHighlighted,
+      loading: data.isLoading,
+      disabled: stopInteractions,
+    };
+
+    const { columns, cellViews } = React.useContext(TableContext);
+
     return (
-      <TableContext.Consumer>
-        {({ columns, cellViews }) => (
-          <TableRowWrapper
-            style={style}
-            disabled={stopInteractions}
-            className={classNames.join(" ")}
-            onClick={(e) => onClick?.(data, e)}
-          >
-            {columns.map((col) => {
-              return (
-                <CellRenderer
-                  key={col.id}
-                  col={col}
-                  data={data}
-                  cellViews={cellViews}
-                  decoration={decoration}
-                />
-              );
-            })}
-          </TableRowWrapper>
-        )}
-      </TableContext.Consumer>
+      <Block
+        name="table-row"
+        style={style}
+        mod={mods}
+        className={classNames.join(" ")}
+        onClick={(e) => onClick?.(data, e)}
+      >
+        {columns.map((col) => {
+          return (
+            <CellRenderer
+              key={col.id}
+              col={col}
+              data={data}
+              cellViews={cellViews}
+              decoration={decoration}
+            />
+          );
+        })}
+      </Block>
     );
   }
 );

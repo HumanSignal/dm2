@@ -4,22 +4,18 @@ import {
   ViewColumnType,
   ViewColumnTypeName,
   ViewColumnTypeShort,
-} from "../../../stores/Tabs/tab_column";
-import { Button } from "../Button/Button";
-import { Dropdown } from "../Dropdown/Dropdown";
-import { Menu } from "../Menu/Menu";
-import { Resizer } from "../Resizer";
-import { Space } from "../Space/Space";
-import { Tag } from "../Tag/Tag";
-import {
-  TableCellContent,
-  TableCellWrapper,
-  TableHeaderExtra,
-  TableHeadExtra,
-  TableHeadWrapper,
-} from "./Table.styled";
-import { TableContext } from "./TableContext";
-import { getStyle } from "./utils";
+} from "../../../../stores/Tabs/tab_column";
+import { Block, Elem } from "../../../../utils/bem";
+import { Button } from "../../Button/Button";
+import { Dropdown } from "../../Dropdown/Dropdown";
+import { Menu } from "../../Menu/Menu";
+import { Resizer } from "../../Resizer/Resizer";
+import { Space } from "../../Space/Space";
+import { Tag } from "../../Tag/Tag";
+import { TableCell, TableCellContent } from "../TableCell/TableCell";
+import { TableContext, TableElem } from "../TableContext";
+import { getStyle } from "../utils";
+import "./TableHead.styl";
 
 const DropdownWrapper = observer(
   ({ column, cellViews, children, onChange }) => {
@@ -90,16 +86,12 @@ const ColumnRenderer = observer(
     const { Header, id } = column;
 
     if (Header instanceof Function) {
-      const { headerClassName, ...rest } = column;
+      const { cellClassName: _, headerClassName, ...rest } = column;
 
       return (
-        <TableCellWrapper
-          {...rest}
-          key={id}
-          className={`th ${headerClassName}`}
-        >
+        <TableElem {...rest} name="cell" key={id} mix={["th", headerClassName]}>
           <Header />
-        </TableCellWrapper>
+        </TableElem>
       );
     }
 
@@ -116,22 +108,18 @@ const ColumnRenderer = observer(
     const headContent = (
       <>
         <TableCellContent
-          canOrder={canOrder}
-          className="th-content"
-          disabled={stopInteractions}
+          mod={{ canOrder, disabled: stopInteractions }}
+          mix="th-content"
         >
           {content}
         </TableCellContent>
 
-        {extra && <TableHeadExtra className="th-extra">{extra}</TableHeadExtra>}
+        {extra && <Elem name="column-extra">{extra}</Elem>}
       </>
     );
 
     return (
-      <TableCellWrapper
-        data-id={id}
-        className={`th ${id.replace(/[:.]/g, "-")}`}
-      >
+      <TableCell data-id={id} mix="th">
         <Resizer
           style={{
             height: 22,
@@ -159,7 +147,7 @@ const ColumnRenderer = observer(
             headContent
           )}
         </Resizer>
-      </TableCellWrapper>
+      </TableCell>
     );
   }
 );
@@ -180,31 +168,36 @@ export const TableHead = observer(
       },
       ref
     ) => {
+      const { columns, headerRenderers, cellViews } = React.useContext(
+        TableContext
+      );
+
       return (
-        <TableContext.Consumer>
-          {({ columns, headerRenderers, cellViews }) => (
-            <TableHeadWrapper ref={ref} style={style}>
-              {columns.map((col) => {
-                return (
-                  <ColumnRenderer
-                    key={col.id}
-                    column={col}
-                    headerRenderers={headerRenderers}
-                    cellViews={cellViews}
-                    columnHeaderExtra={columnHeaderExtra}
-                    sortingEnabled={sortingEnabled}
-                    stopInteractions={stopInteractions}
-                    decoration={decoration}
-                    onTypeChange={onTypeChange}
-                    onResize={onResize}
-                    onReset={onReset}
-                  />
-                );
-              })}
-              <TableHeaderExtra>{extra}</TableHeaderExtra>
-            </TableHeadWrapper>
-          )}
-        </TableContext.Consumer>
+        <Block
+          name="table-head"
+          ref={ref}
+          style={style}
+          mix="horizontal-shadow"
+        >
+          {columns.map((col) => {
+            return (
+              <ColumnRenderer
+                key={col.id}
+                column={col}
+                headerRenderers={headerRenderers}
+                cellViews={cellViews}
+                columnHeaderExtra={columnHeaderExtra}
+                sortingEnabled={sortingEnabled}
+                stopInteractions={stopInteractions}
+                decoration={decoration}
+                onTypeChange={onTypeChange}
+                onResize={onResize}
+                onReset={onReset}
+              />
+            );
+          })}
+          <Elem name="extra">{extra}</Elem>
+        </Block>
       );
     }
   )

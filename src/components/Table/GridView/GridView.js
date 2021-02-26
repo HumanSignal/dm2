@@ -3,20 +3,21 @@ import React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeGrid } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
-import styled from "styled-components";
-import { Checkbox } from "../Common/Checkbox/Checkbox";
-import { Space } from "../Common/Space/Space";
-import { getProperty, prepareColumns } from "../Common/Table/utils";
-import * as DataGroups from "./DataGroups";
+import { Block, Elem } from "../../../utils/bem";
+import { Checkbox } from "../../Common/Checkbox/Checkbox";
+import { Space } from "../../Common/Space/Space";
+import { getProperty, prepareColumns } from "../../Common/Table/utils";
+import * as DataGroups from "../DataGroups";
+import "./GridView.styl";
 
 const GridHeader = observer(({ row, selected }) => {
   return (
-    <GridCellHeader>
+    <Elem name="cell-header">
       <Space>
         <Checkbox checked={selected.isSelected(row.id)} />
         <span>{row.id}</span>
       </Space>
-    </GridCellHeader>
+    </Elem>
   );
 });
 
@@ -48,44 +49,30 @@ const GridDataGroup = observer(({ type, value, field, row }) => {
 });
 
 const GridCell = observer(
-  ({ view, selected, row, fields, columnCount, onClick, ...props }) => {
+  ({ view, selected, row, fields, onClick, ...props }) => {
     return (
-      <GridCellWrapper
+      <Elem
         {...props}
-        selected={selected.isSelected(row.id)}
+        name="cell"
         onClick={onClick}
-        columnCount={columnCount}
+        mod={{ selected: selected.isSelected(row.id) }}
       >
-        <div>
+        <Elem name="cell-content">
           <GridHeader
             view={view}
             row={row}
             fields={fields}
             selected={view.selected}
           />
-          <GridBody
-            view={view}
-            row={row}
-            fields={fields}
-            selected={view.selected}
-          />
-        </div>
-      </GridCellWrapper>
+          <GridBody view={view} row={row} fields={fields} />
+        </Elem>
+      </Elem>
     );
   }
 );
 
 export const GridView = observer(
-  ({
-    data,
-    view,
-    loadMore,
-    fields,
-    onChange,
-    hiddenFields,
-    width,
-    // isItemLoaded,
-  }) => {
+  ({ data, view, loadMore, fields, onChange, hiddenFields }) => {
     const columnCount = view.gridWidth ?? 4;
 
     const getCellIndex = (row, column) => columnCount * row + column;
@@ -121,7 +108,6 @@ export const GridView = observer(
             {...props}
             view={view}
             row={row}
-            columnCount={columnCount}
             fields={fieldsData}
             selected={view.selected}
             onClick={() => onChange?.(row.id)}
@@ -166,8 +152,11 @@ export const GridView = observer(
     );
 
     return (
-      <div className="grid" style={{ flex: 1 }}>
-        <AutoSizer className="grid-view-resize">
+      <Block
+        name="grid-view"
+        style={{ flex: 1, "--column-count": `${columnCount}n` }}
+      >
+        <Elem tag={AutoSizer} name="resize">
           {({ width, height }) => (
             <InfiniteLoader
               itemCount={itemCount}
@@ -175,11 +164,12 @@ export const GridView = observer(
               loadMoreItems={loadMore}
             >
               {({ onItemsRendered, ref }) => (
-                <FixedSizeGrid
+                <Elem
+                  tag={FixedSizeGrid}
                   ref={ref}
                   width={width}
                   height={height}
-                  className="grid-view-list"
+                  name="list"
                   rowHeight={rowHeight + 42}
                   overscanRowCount={30}
                   columnCount={columnCount}
@@ -189,59 +179,12 @@ export const GridView = observer(
                   style={{ overflowX: "hidden", padding: "0 1em" }}
                 >
                   {renderItem}
-                </FixedSizeGrid>
+                </Elem>
               )}
             </InfiniteLoader>
           )}
-        </AutoSizer>
-      </div>
+        </Elem>
+      </Block>
     );
   }
 );
-
-const GridCellWrapper = styled.div`
-  padding: 0 10px 10px 0;
-  box-sizing: border-box;
-
-  &:nth-child(${({ columnCount }) => `${columnCount}n`}) {
-    padding-right: 0;
-  }
-
-  & > div {
-    width: 100%;
-    height: 100%;
-    cursor: pointer;
-    overflow: hidden;
-    position: relative;
-    border-radius: 2px;
-    background: ${({ selected }) => (selected ? "#eff7ff" : "none")};
-    box-shadow: ${({ selected }) =>
-      (selected ? ["0 0 2px 2px rgba(26, 144, 255, 0.44)"] : ["none"]).join(
-        ", "
-      )};
-  }
-
-  & > div::after {
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    content: "";
-    border-radius: 2px;
-    position: absolute;
-    pointer-events: none;
-    box-shadow: ${({ selected }) =>
-      (selected
-        ? ["0 0 0 1px rgba(26, 144, 255, 0.6) inset"]
-        : ["0 0 0 1px rgba(0,0,0,0.2) inset"]
-      ).join(", ")};
-  }
-`;
-
-const GridCellHeader = styled.div`
-  padding: 5px;
-  width: 100%;
-  display: flex;
-  background: #f9f9f9;
-  justify-content: space-between;
-`;

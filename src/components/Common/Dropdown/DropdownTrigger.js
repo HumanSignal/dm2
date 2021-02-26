@@ -60,7 +60,7 @@ export const DropdownTrigger = ({
     key: "dd-trigger",
     ref: triggerRef,
     className: cn("dropdown").elem("trigger").mix(props.className),
-    onClickCapture: triggerEL.props?.onClickCapture ?? handleToggle,
+    onClickCapture: triggerEL.props?.onClick ? null : handleToggle,
   });
 
   const dropdownClone = content ? (

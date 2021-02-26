@@ -1,10 +1,9 @@
 import { inject } from "mobx-react";
 import React from "react";
-import { BsLayoutSidebarInsetReverse } from "react-icons/bs";
-import { FaPlus } from "react-icons/fa";
+import { FaCaretSquareRight, FaPlus } from "react-icons/fa";
 import { Block, cn, Elem } from "../../utils/bem";
 import { Button } from "../Common/Button/Button";
-import { Dropdown } from "../Common/Dropdown/Dropdown";
+import { Icon } from "../Common/Icon/Icon";
 import { Tooltip } from "../Common/Tooltip/Tooltip";
 import { FilterLine } from "./FilterLine/FilterLine";
 import "./Filters.styl";
@@ -79,9 +78,6 @@ export const Filters = injector(({ views, currentView, filters }) => {
         >
           Add {filters.length ? "Another Filter" : "Filter"}
         </Button>
-        <Dropdown.Trigger content={<div>Hello world</div>}>
-          <Button size="small">Hello world</Button>
-        </Dropdown.Trigger>
 
         {!sidebarEnabled ? (
           <Tooltip title="Pin to sidebar">
@@ -91,9 +87,8 @@ export const Filters = injector(({ views, currentView, filters }) => {
               about="Pin to sidebar"
               onClick={() => views.expandFilters()}
               style={{ display: "inline-flex", alignItems: "center" }}
-            >
-              <BsLayoutSidebarInsetReverse />
-            </Button>
+              icon={<Icon icon={FaCaretSquareRight} size={18} />}
+            />
           </Tooltip>
         ) : null}
       </Elem>

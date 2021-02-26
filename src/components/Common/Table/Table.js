@@ -8,11 +8,11 @@ import { isDefined } from "../../../utils/utils";
 import { Button } from "../Button/Button";
 import { Modal } from "../Modal/Modal";
 import { Tooltip } from "../Tooltip/Tooltip";
-import { TableWrapper } from "./Table.styled";
+import "./Table.styl";
 import { TableCheckboxCell } from "./TableCheckbox";
-import { TableContext } from "./TableContext";
-import { TableHead } from "./TableHead";
-import { TableRow } from "./TableRow";
+import { TableBlock, TableContext, TableElem } from "./TableContext";
+import { TableHead } from "./TableHead/TableHead";
+import { TableRow } from "./TableRow/TableRow";
 import { prepareColumns } from "./utils";
 
 const Decorator = (decoration) => {
@@ -166,7 +166,7 @@ export const Table = observer(
         const row = data[index - 1];
 
         return (
-          <div className="row-wrapper" style={style}>
+          <TableElem name="row-wrapper" style={style}>
             <TableRow
               key={row.id}
               data={row}
@@ -181,7 +181,7 @@ export const Table = observer(
               }}
               decoration={Decoration}
             />
-          </div>
+          </TableElem>
         );
       },
       [
@@ -235,12 +235,11 @@ export const Table = observer(
     // }, [tableHead.current]);
 
     return (
-      <TableWrapper fitToContent={props.fitToContent}>
+      <TableBlock name="table" mod={{ fit: props.fitToContent }}>
         <TableContext.Provider value={contextValue}>
           <StickyList
             ref={listRef}
             overscanCount={10}
-            className="virtual-table"
             itemHeight={props.rowHeight}
             totalCount={props.total}
             itemCount={data.length + 1}
@@ -257,7 +256,7 @@ export const Table = observer(
             {renderRow}
           </StickyList>
         </TableContext.Provider>
-      </TableWrapper>
+      </TableBlock>
     );
   }
 );
@@ -306,7 +305,7 @@ const StickyList = observer(
 
     return (
       <StickyListContext.Provider value={itemData}>
-        <AutoSizer className="table-auto-size">
+        <TableElem tag={AutoSizer} name="auto-size">
           {({ width, height }) => (
             <InfiniteLoader
               ref={listRef}
@@ -315,7 +314,9 @@ const StickyList = observer(
               isItemLoaded={isItemLoaded}
             >
               {({ onItemsRendered, ref }) => (
-                <VariableSizeList
+                <TableElem
+                  name="virual"
+                  tag={VariableSizeList}
                   {...rest}
                   ref={ref}
                   width={width}
@@ -326,11 +327,11 @@ const StickyList = observer(
                   initialScrollOffset={initialScrollOffset?.(height) ?? 0}
                 >
                   {ItemWrapper}
-                </VariableSizeList>
+                </TableElem>
               )}
             </InfiniteLoader>
           )}
-        </AutoSizer>
+        </TableElem>
       </StickyListContext.Provider>
     );
   })
@@ -344,11 +345,12 @@ const innerElementType = React.forwardRef(({ children, ...rest }, ref) => {
       {({ stickyItems, stickyItemsHeight, StickyComponent }) => (
         <div ref={ref} {...rest}>
           {stickyItems.map((index) => (
-            <StickyComponent
+            <TableElem
+              name="sticky-header"
+              tag={StickyComponent}
               key={index}
               index={index}
               style={{
-                width: "100%",
                 height: stickyItemsHeight[index],
                 top: index * stickyItemsHeight[index],
               }}

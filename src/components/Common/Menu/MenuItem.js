@@ -40,7 +40,12 @@ export const MenuItem = ({
   );
 
   const linkAttributes = {
-    className: rootClass.mod({ active: isActive, danger }).mix(className),
+    className: rootClass
+      .mod({
+        active: isActive || active,
+        look: danger && "danger",
+      })
+      .mix(className),
     onClick,
     ...rest,
   };

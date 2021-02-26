@@ -14,16 +14,15 @@
     "build:notsourcemap": "GENERATE_SOURCEMAP=false npm run build",
     "build:final": "BUILD_NO_CHUNKS=true npm run build",
     "build:no-hash": "BUILD_NO_HASH=true BUILD_NO_CHUNKS=true npm run build",
-    "build:module": "REACT_APP_SC_DISABLE_SPEEDY=true BUILD_NO_HASH=true BUILD_NO_CHUNKS=true BUILD_MODULE=true npm run build",
+    "build:module": "BUILD_NO_HASH=true BUILD_NO_CHUNKS=true BUILD_MODULE=true npm run build",
     "build:module-dev": "BUILD_NO_MINIMIZATION=true BUILD_NO_HASH=true BUILD_NO_CHUNKS=true BUILD_MODULE=true npm run build",
     "prettier-styles": "prettier --write src/**/*.scss",
     "prettier": "prettier --write src/**/*.js",
     "build": "react-app-rewired build",
     "start": "webpack serve",
-    "eject": "react-scripts eject",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
-  "author": "",
+  "author": "Heartex, Inc.",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.12.17",
@@ -69,6 +68,7 @@
     "node-fetch": "^2.6.1",
     "prettier": "^2.0.5",
     "react": "^16.8.0",
+    "react-datepicker": "^3.6.0",
     "react-dom": "^16.8.0",
     "react-hot-loader": "^4.12.20",
     "react-hotkeys-hook": "^2.4.0",
@@ -92,9 +92,6 @@
   "nohoist": [
     "**/babel-preset-react-app/@babel/runtime"
   ],
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged && npm run test"

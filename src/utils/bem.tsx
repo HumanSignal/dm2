@@ -8,7 +8,7 @@ interface CN {
   block: (name: string) => CN
   elem: (name: string) => CN
   mod: (mods?: CNMod) => CN
-  mix: (...mix: CNMix[]) => CN
+  mix: (...mix: CNMix[] | undefined[]) => CN
   select: (root: Document | Element) => Element | null
   selectAll: (root: Document | Element) => NodeList | null
   closest: (target: Element) => Element | null
@@ -17,12 +17,12 @@ interface CN {
   toCSSSelector: () => string
 }
 
-type CNMix = string | CN
+type CNMix = string | CN | undefined
 
 interface CNOptions {
   elem?: string,
   mod?: Record<string, unknown>,
-  mix?: CNMix | CNMix[]
+  mix?: CNMix | CNMix[] | undefined | undefined
 }
 
 type CNTagName = keyof ReactHTML | keyof ReactSVG | ComponentClass<unknown, unknown> | FunctionComponent<unknown> | string
@@ -30,8 +30,10 @@ type CNTagName = keyof ReactHTML | keyof ReactSVG | ComponentClass<unknown, unkn
 type CNComponentProps = {
   name: string
   tag?: CNTagName
+  block?: string
   mod?: CNMod
   mix?: CNMix | CNMix[]
+  className?: string
 }
 
 type BemComponent = FunctionComponent<CNComponentProps>
@@ -65,15 +67,15 @@ const assembleClass = (block: string, elem?: string, mix?: CNMix | CNMix[], mod?
     const mixes = Array.isArray(mix) ? mix : [mix];
     const mixMap = ([] as CNMix[])
       .concat(...mixes)
-      .filter(m => !!m)
+      .filter(m => m !== undefined && m !== null && m !== "")
       .map(m => {
         if (typeof m === 'string') {
           return m
         } else {
-          return m?.toClassName?.() ?? m
+          return m?.toClassName?.()
         }
       })
-      .reduce<string[]>((res, cls) => [...res, ...cls.split(/\s+/)], [])
+      .reduce((res, cls) => [...res, ...cls!.split(/\s+/)], [] as string[])
 
     finalClass.push(...mixMap);
   }
@@ -158,7 +160,7 @@ export const BemWithSpecifiContext = (context: React.Context<CN | null>) => {
   const Block: BemComponent = React.forwardRef(({tag = 'div', name, mod, mix, ...rest}, ref) => {
     const rootClass = cn(name)
     const finalMix = ([] as [ CNMix? ]).concat(mix).filter(cn => !!cn)
-    const className = rootClass.mod(mod).mix(...(finalMix as CNMix[])).toClassName()
+    const className = rootClass.mod(mod).mix(...(finalMix as CNMix[]), rest.className).toClassName()
     const finalProps = {...rest, ref, className} as any
 
     return (
@@ -169,20 +171,26 @@ export const BemWithSpecifiContext = (context: React.Context<CN | null>) => {
   })
   Block.displayName = 'Block'
 
-  const Elem: BemComponent = React.forwardRef(({tag = 'div', name, mod, mix, ...rest}, ref) => {
-    const block = React.useContext(Context);
+  const Elem: BemComponent = React.forwardRef(({tag = 'div', block, name, mod, mix, ...rest}, ref) => {
+    const blockCtx = React.useContext(Context);
 
     const finalMix = ([] as [ CNMix? ]).concat(mix).filter(cn => !!cn)
-    const className = block!.elem(name).mod(mod).mix(...(finalMix as CNMix[])).toClassName()
+
+    const className = (block ? cn(block) : blockCtx)!
+      .elem(name)
+      .mod(mod)
+      .mix(...(finalMix as CNMix[]), rest.className)
+      .toClassName()
+
     const finalProps: any = {...rest, ref, className}
 
-    if (typeof tag !== 'string') finalProps.block = block
+    if (typeof tag !== 'string') finalProps.block = blockCtx
 
     return React.createElement(tag, finalProps)
   })
   Elem.displayName = 'Elem'
 
-  return { Block, Elem }
+  return { Block, Elem, Context }
 }
 
 export const { Block, Elem } = BemWithSpecifiContext(BlockContext);

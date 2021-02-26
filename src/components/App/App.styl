@@ -62,3 +62,19 @@
   top 0
   left 0
   opacity 1
+
+.fill-container
+  flex 1
+  display flex
+  align-items center
+  justify-content center
+
+.horizontal-shadow
+  &::after
+    top 100%
+    width 100%
+    left 0
+    content ""
+    position absolute
+    height 2px
+    background linear-gradient(to bottom, rgba(0, 0, 0, 0.15), transparent)

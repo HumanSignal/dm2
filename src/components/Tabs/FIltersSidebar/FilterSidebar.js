@@ -1,6 +1,6 @@
 import { inject } from "mobx-react";
 import React from "react";
-import { FaTimes } from "react-icons/fa";
+import { FaCaretSquareLeft } from "react-icons/fa";
 import { Block, Elem } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
 import { Icon } from "../../Common/Icon/Icon";
@@ -21,14 +21,14 @@ export const FiltersSidebar = sidebarInjector(
     return sidebarEnabled && sidebarVisible ? (
       <Block name="sidebar">
         <Elem name="header">
-          <Elem name="title">Filters</Elem>
           <Elem name="extra">
             <Button
               type="link"
-              icon={<Icon name={FaTimes} size="24" />}
+              icon={<Icon icon={FaCaretSquareLeft} size="24" />}
               onClick={() => viewsStore.collapseFilters()}
             />
           </Elem>
+          <Elem name="title">Filters</Elem>
         </Elem>
         <Filters sidebar={true} />
       </Block>

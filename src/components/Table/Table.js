@@ -3,20 +3,17 @@ import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { FaCog } from "react-icons/fa";
+import { FaQuestionCircle } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
-import { FillContainer } from "../App/App.styles";
 import { Button } from "../Common/Button/Button";
-import { FieldsButton } from "../Common/FieldsButton";
 import { Icon } from "../Common/Icon/Icon";
 import { Spinner } from "../Common/Spinner";
 import { Table } from "../Common/Table/Table";
 import { Tag } from "../Common/Tag/Tag";
 import { Tooltip } from "../Common/Tooltip/Tooltip";
 import * as CellViews from "./CellViews";
-import { GridView } from "./GridView";
+import { GridView } from "./GridView/GridView";
 import "./Table.styl";
-import { TableStyles } from "./Table.styles";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
@@ -100,7 +97,7 @@ export const DataView = injector(
         if (help && decoration?.help !== false) {
           children.push(
             <Tooltip key="help-tooltip" title={help}>
-              <Icon name="FaQuestionCircle" style={{ opacity: 0.5 }} />
+              <Icon icon={FaQuestionCircle} style={{ opacity: 0.5 }} />
             </Tooltip>
           );
         }
@@ -131,9 +128,9 @@ export const DataView = injector(
       (content) => {
         if (isLoading && total === 0 && !isLabeling) {
           return (
-            <FillContainer>
+            <Block name="fill-container">
               <Spinner size="large" />
-            </FillContainer>
+            </Block>
           );
         } else if (total === 0 || !hasData) {
           return (
@@ -150,7 +147,7 @@ export const DataView = injector(
               </Elem>
               {!hasData && (
                 <Elem name="navigation">
-                  <Button type="primary" href="./import">
+                  <Button look="primary" href="./import">
                     Go to import
                   </Button>
                 </Elem>
@@ -244,14 +241,6 @@ export const DataView = injector(
           onColumnReset={(col) => {
             col.original.resetWidth();
           }}
-          headerExtra={
-            <FieldsButton
-              align="right"
-              wrapper={FieldsButton.Checkbox}
-              icon={<FaCog size="14" color="#8C8C8C" />}
-              style={{ padding: 0, width: 24, height: 24 }}
-            />
-          }
         />
       ) : (
         <GridView
@@ -291,7 +280,8 @@ export const DataView = injector(
 
     // Render the UI for your table
     return (
-      <TableStyles
+      <Block
+        name="data-view"
         className="dm-content"
         style={{ pointerEvents: isLocked ? "none" : "auto" }}
       >
@@ -308,7 +298,7 @@ export const DataView = injector(
               : ""}
           </pre>
         </Modal>
-      </TableStyles>
+      </Block>
     );
   }
 );

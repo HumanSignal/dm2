@@ -50,7 +50,7 @@ export const confirm = ({ okText, onOk, cancelText, onCancel, ...props }) => {
             onOk?.();
             modal.close();
           }}
-          compact
+          size="compact"
         >
           {okText ?? "OK"}
         </Button>
@@ -60,8 +60,8 @@ export const confirm = ({ okText, onOk, cancelText, onCancel, ...props }) => {
             onCancel?.();
             modal.close();
           }}
-          primary
-          compact
+          look="primary"
+          size="compact"
           autofocus
         >
           {cancelText ?? "Cancel"}
@@ -82,8 +82,8 @@ export const info = ({ okText, onOkPress, ...props }) => {
           onOkPress?.();
           modal.close();
         }}
-        primary
-        compact
+        look="primary"
+        size="compact"
       >
         {okText ?? "OK"}
       </Button>

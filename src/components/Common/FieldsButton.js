@@ -70,17 +70,12 @@ export const FieldsButton = injector(
     resetTitle,
     filter,
     selected,
-    align,
   }) => {
     const content = [];
 
     if (title)
       content.push(
         <React.Fragment key="f-button-title">{title}</React.Fragment>
-      );
-    if (trailingIcon)
-      content.push(
-        <React.Fragment key="f-button-icon">{trailingIcon}</React.Fragment>
       );
 
     return (
@@ -96,7 +91,13 @@ export const FieldsButton = injector(
           />
         }
       >
-        <Button size={size} icon={icon} style={style} className={className}>
+        <Button
+          size={size}
+          icon={icon}
+          extra={trailingIcon}
+          style={style}
+          className={className}
+        >
           {content.length ? content : null}
         </Button>
       </Dropdown.Trigger>
