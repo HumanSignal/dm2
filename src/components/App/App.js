@@ -2,8 +2,8 @@ import { observer, Provider } from "mobx-react";
 import React from "react";
 import { cn } from "../../utils/bem";
 import { Spinner } from "../Common/Spinner";
+import { DataManager } from "../DataManager/DataManager";
 import { Labeling } from "../Label/Label";
-import { DMTabs } from "../Tabs/Tabs";
 import "./App.styl";
 
 class ErrorBoundary extends React.Component {
@@ -40,7 +40,7 @@ const AppComponent = ({ app }) => {
           ) : app.isLabeling ? (
             <Labeling />
           ) : (
-            <DMTabs />
+            <DataManager />
           )}
           <div className={cn("offscreen-lsf")}></div>
         </div>

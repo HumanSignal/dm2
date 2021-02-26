@@ -5,10 +5,10 @@ import { Block, Elem } from "../../utils/bem";
 import { Space } from "../Common/Space/Space";
 import { Spinner } from "../Common/Spinner";
 import { Tabs } from "../Common/Tabs/Tabs";
+import { FiltersSidebar } from "../Filters/FiltersSidebar/FilterSidebar";
 import { DataView } from "../Table/Table";
-import { FiltersSidebar } from "./FIltersSidebar/FilterSidebar";
+import "./DataManager.styl";
 import { TablePanel } from "./TabPanel/TabPanel";
-import "./Tabs.styl";
 import { TabTitle } from "./TabTitle";
 
 const injector = inject(({ store }) => {
@@ -84,7 +84,7 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
   );
 });
 
-export const DMTabs = injector(({ shrinkWidth }) => {
+export const DataManager = injector(({ shrinkWidth }) => {
   return (
     <Block name="tabs-content">
       <Elem name="tab" mod={{ shrink: shrinkWidth }}>

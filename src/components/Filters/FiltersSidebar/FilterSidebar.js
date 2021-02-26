@@ -4,7 +4,7 @@ import { FaCaretSquareLeft } from "react-icons/fa";
 import { Block, Elem } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
 import { Icon } from "../../Common/Icon/Icon";
-import { Filters } from "../../Filters/Filters";
+import { Filters } from "../Filters";
 import "./FilterSidebar.styl";
 
 const sidebarInjector = inject(({ store }) => {
