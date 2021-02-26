@@ -9,6 +9,9 @@
   "repository": {
     "url": "https://github.com/heartexlabs/dm2"
   },
+  "browser": {
+    "[module-name]": false
+  },
   "scripts": {
     "build:bundle": "npm run build:final",
     "build:notsourcemap": "GENERATE_SOURCEMAP=false npm run build",

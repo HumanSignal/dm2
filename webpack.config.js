@@ -168,7 +168,7 @@ module.exports = {
       index: "./public/index.html",
     },
   },
-  entry: "./src/index.js",
+  entry: path.resolve(__dirname, "src/index.js"),
   output: {
     path: path.resolve(__dirname, "build"),
     filename: "main.js",
@@ -188,6 +188,10 @@ module.exports = {
     new webpack.EnvironmentPlugin(LOCAL_ENV),
   ],
   optimization: optimizer(),
+  performance: {
+    maxEntrypointSize: Infinity,
+    maxAssetSize: 1000000,
+  },
   module: {
     rules: [
       {
