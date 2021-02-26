@@ -1,6 +1,6 @@
-import { DatePicker } from "antd";
 import { isValid } from "date-fns";
 import React from "react";
+import { DatePicker } from "../../Common/DatePicker/DatePicker";
 
 export const DateTimeInput = ({ value, range, time, onChange }) => {
   const onValueChange = React.useCallback(
@@ -38,6 +38,7 @@ export const DateTimeInput = ({ value, range, time, onChange }) => {
     <DatePicker
       size="small"
       value={dateValue}
+      selectRange={range}
       showTime={time === true}
       onChange={onValueChange}
     />

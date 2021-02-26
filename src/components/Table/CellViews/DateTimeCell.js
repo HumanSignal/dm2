@@ -2,11 +2,13 @@ import { format, isValid } from "date-fns";
 import React from "react";
 
 export const DateTimeCell = (column) => {
-  const date = new Date();
-  const dateFormat = "MMM DD yyyy, HH:mm:ss";
-  return (
+  const date = new Date(column.value);
+  const dateFormat = "MMM dd yyyy, HH:mm:ss";
+  return column.value ? (
     <div style={{ whiteSpace: "nowrap" }}>
-      {isValid(date) ? format(column.value, dateFormat) : ""}
+      {isValid(date) ? format(date, dateFormat) : ""}
     </div>
+  ) : (
+    ""
   );
 };

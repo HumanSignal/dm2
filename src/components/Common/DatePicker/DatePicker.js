@@ -35,15 +35,17 @@ export const DatePicker = ({
       return format(parsedDate, finalFormat);
     }
 
-    return formatDate(new Date());
+    return "";
   };
 
   const [initialStartDate, initialEndDate] = selectRange
     ? value
     : [].concat(value);
 
-  const [realStartDate, setRealStartDate] = React.useState(initialStartDate);
-  const [realEndDate, setRealEndDate] = React.useState(initialEndDate);
+  const [realStartDate, setRealStartDate] = React.useState(
+    initialStartDate ?? null
+  );
+  const [realEndDate, setRealEndDate] = React.useState(initialEndDate ?? null);
 
   const [startDate, setStartDate] = useState(formatDate(realStartDate));
   const [endDate, setEndDate] = useState(formatDate(realEndDate));
