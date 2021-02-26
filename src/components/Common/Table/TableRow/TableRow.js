@@ -5,40 +5,42 @@ import { TableContext, TableElem } from "../TableContext";
 import { getProperty, getStyle } from "../utils";
 import "./TableRow.styl";
 
-const CellRenderer = observer(({ col, data, decoration, cellViews }) => {
-  const { Cell, id } = col;
+const CellRenderer = observer(
+  ({ col: colInput, data, decoration, cellViews }) => {
+    const { Cell, id, ...col } = colInput;
 
-  if (Cell instanceof Function) {
-    const { headerClassName: _, cellClassName, ...rest } = col;
+    if (Cell instanceof Function) {
+      const { headerClassName: _, cellClassName, ...rest } = col;
+      return (
+        <TableElem {...rest} name="cell" key={id} mix={cellClassName}>
+          <Cell data={data} />
+        </TableElem>
+      );
+    }
+
+    const valuePath = id.split(":")[1] ?? id;
+    const Renderer = cellViews?.[col.original.currentType] ?? cellViews.String;
+    const value = getProperty(data, valuePath);
+    const renderProps = { column: col, original: data, value: value };
+    const Decoration = decoration?.get?.(col);
+    const style = getStyle(cellViews, col, Decoration);
+
     return (
-      <TableElem {...rest} name="cell" key={id} mix={cellClassName}>
-        <Cell data={data} />
+      <TableElem name="cell" mix="td">
+        <div
+          style={{
+            ...(style ?? {}),
+            display: "flex",
+            height: "100%",
+            alignItems: "center",
+          }}
+        >
+          {Renderer ? <Renderer {...renderProps} /> : value}
+        </div>
       </TableElem>
     );
   }
-
-  const valuePath = col.id.split(":")[1] ?? col.id;
-  const Renderer = cellViews?.[col.original.currentType] ?? cellViews.String;
-  const value = getProperty(data, valuePath);
-  const renderProps = { column: col, original: data, value: value };
-  const Decoration = decoration?.get?.(col);
-  const style = getStyle(cellViews, col, Decoration);
-
-  return (
-    <TableElem name="cell" mix="td">
-      <div
-        style={{
-          ...(style ?? {}),
-          display: "flex",
-          height: "100%",
-          alignItems: "center",
-        }}
-      >
-        {Renderer ? <Renderer {...renderProps} /> : value}
-      </div>
-    </TableElem>
-  );
-});
+);
 
 export const TableRow = observer(
   ({

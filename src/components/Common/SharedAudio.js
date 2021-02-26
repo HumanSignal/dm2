@@ -1,17 +1,15 @@
-import moment from "moment";
+import { formatDuration } from "date-fns";
 import React, { Component } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { Button } from "./Button/Button";
 
 const Duration = ({ value, units, format }) =>
-  moment.duration(value, units).format(format, {
-    trim: false,
-  });
+  formatDuration({ [units]: value }, { format });
 
 const PlaybackControl = ({ current, max, onChange, separator = " / " }) => {
   const format = React.useMemo(() => {
     if (max >= 3600) {
-      return "hh:mm:ss";
+      return "HH:mm:ss";
     } else {
       return "mm:ss";
     }

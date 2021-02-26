@@ -56,9 +56,11 @@ export const Table = observer(
         id: "select",
         headerClassName: "th select-all",
         cellClassName: "td select-row",
-        width: 40,
-        maxWidth: 40,
-        justifyContent: "center",
+        style: {
+          width: 40,
+          maxWidth: 40,
+          justifyContent: "center",
+        },
         onClick: (e) => e.stopPropagation(),
         Header: () => {
           return (
@@ -87,9 +89,11 @@ export const Table = observer(
     columns.push({
       id: "show-source",
       cellClassName: "td show-source",
-      width: 40,
-      maxWidth: 40,
-      justifyContent: "center",
+      style: {
+        width: 40,
+        maxWidth: 40,
+        justifyContent: "center",
+      },
       onClick: (e) => e.stopPropagation(),
       Header() {
         return <div style={{ width: 40 }} />;

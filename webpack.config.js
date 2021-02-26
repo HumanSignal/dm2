@@ -4,6 +4,15 @@ const HtmlWebPackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 const Dotenv = require("dotenv-webpack");
 
+const LOCAL_ENV = {
+  NODE_ENV: process.env.NODE_ENV,
+  CSS_PREFIX: "dm-",
+  USE_LSB: true,
+  SC_DISABLE_SPEEDY: false,
+  GATEWAY_API: false,
+  HTX_ACCESS_TOKEN: "---",
+};
+
 const babelLoader = {
   loader: "babel-loader",
   options: {
@@ -25,6 +34,38 @@ const babelLoader = {
       "@babel/plugin-proposal-nullish-coalescing-operator",
     ],
   },
+};
+
+const cssLoader = (withLocalIdent = true) => {
+  const rules = [MiniCssExtractPlugin.loader];
+
+  const localIdent = withLocalIdent
+    ? LOCAL_ENV.CSS_PREFIX + "[local]"
+    : "[local]";
+
+  const cssLoader = {
+    loader: "css-loader",
+    options: {
+      sourceMap: true,
+      modules: {
+        localIdentName: localIdent,
+      },
+    },
+  };
+
+  const stylusLoader = {
+    loader: "stylus-loader",
+    options: {
+      sourceMap: true,
+      stylusOptions: {
+        import: [path.resolve(__dirname, "./src/themes/default/colors.styl")],
+      },
+    },
+  };
+
+  rules.push(cssLoader, stylusLoader);
+
+  return rules;
 };
 
 module.exports = {
@@ -51,13 +92,7 @@ module.exports = {
     new Dotenv(),
     new MiniCssExtractPlugin(),
     new HtmlWebPackPlugin({ filename: "public/index.html" }),
-    new webpack.EnvironmentPlugin({
-      NODE_ENV: process.env.NODE_ENV,
-      USE_LSB: true,
-      SC_DISABLE_SPEEDY: false,
-      GATEWAY_API: false,
-      HTX_ACCESS_TOKEN: "---",
-    }),
+    new webpack.EnvironmentPlugin(LOCAL_ENV),
   ],
   module: {
     rules: [
@@ -79,27 +114,13 @@ module.exports = {
       },
       {
         test: /\.styl$/i,
-        use: [
-          MiniCssExtractPlugin.loader,
+        oneOf: [
           {
-            loader: "css-loader",
-            options: {
-              sourceMap: true,
-              modules: {
-                localIdentName: "dm-[local]",
-              },
-            },
+            test: /global\.styl$/,
+            use: cssLoader(false),
           },
           {
-            loader: "stylus-loader",
-            options: {
-              sourceMap: true,
-              stylusOptions: {
-                import: [
-                  path.resolve(__dirname, "./src/themes/default/colors.styl"),
-                ],
-              },
-            },
+            use: cssLoader(),
           },
         ],
       },

@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { cn } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
+import { DatePicker } from "../../Common/DatePicker/DatePicker";
 import { ErrorBox } from "../../Common/ErrorBox";
 import { FieldsButton } from "../../Common/FieldsButton";
 import { FiltersPane } from "../../Common/FiltersPane";
@@ -140,6 +141,8 @@ export const TablePanel = injector(
           <FiltersPane size={toolbarSize} />
 
           <OrderButton view={view} ordering={ordering} size={toolbarSize} />
+
+          <DatePicker size="small" value={[new Date()]} selectRange />
 
           {view.type === "grid" && (
             <GridWidthButton

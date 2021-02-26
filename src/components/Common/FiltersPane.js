@@ -10,7 +10,7 @@ export const FiltersButton = observer(
     return (
       <Button
         ref={ref}
-        primary={active}
+        look={active && "primary"}
         size={size}
         icon={<FaFilter />}
         {...rest}

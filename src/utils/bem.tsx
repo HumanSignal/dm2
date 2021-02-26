@@ -38,6 +38,8 @@ type CNComponentProps = {
 
 type BemComponent = FunctionComponent<CNComponentProps>
 
+const CSS_PREFIX = process.env.CSS_PREFIX ?? 'dm-';
+
 const assembleClass = (block: string, elem?: string, mix?: CNMix | CNMix[], mod?: CNMod) => {
   const rootName = block;
   const elemName = elem ? `${rootName}__${elem}` : null
@@ -81,8 +83,8 @@ const assembleClass = (block: string, elem?: string, mix?: CNMix | CNMix[], mod?
   }
 
   const attachNamespace = (cls: string) => {
-    if (/dm-/.test(cls)) return cls
-    else return `dm-${cls}`
+    if (new RegExp(CSS_PREFIX).test(cls)) return cls
+    else return `${CSS_PREFIX}${cls}`
   }
 
   return finalClass.map(attachNamespace).join(" ");

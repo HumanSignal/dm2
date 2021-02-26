@@ -73,7 +73,7 @@ const DropdownWrapper = observer(
 
 const ColumnRenderer = observer(
   ({
-    column,
+    column: columnInput,
     cellViews,
     columnHeaderExtra,
     sortingEnabled,
@@ -83,7 +83,7 @@ const ColumnRenderer = observer(
     onResize,
     onReset,
   }) => {
-    const { Header, id } = column;
+    const { Header, id, ...column } = columnInput;
 
     if (Header instanceof Function) {
       const { cellClassName: _, headerClassName, ...rest } = column;
