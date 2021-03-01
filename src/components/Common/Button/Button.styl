@@ -11,7 +11,7 @@
   text-align center
   text-decoration none
   transition all 100ms ease
-  justify-content space-between
+  justify-content center
   box-shadow inset 0px -1px 0px rgba(#000, 0.1), inset 0px 0px 0px 1px rgba(#000, 0.15)
 
   font-weight 500
@@ -135,6 +135,9 @@
   &_size_large &__extra
     margin-left 10px
     margin-right -10px
+
+  &_withIcon
+    justify-content space-between
 
   &_withIcon:not(&_type_link):not(&[href])
     padding 0 14px

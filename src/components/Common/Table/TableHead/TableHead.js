@@ -83,7 +83,7 @@ const ColumnRenderer = observer(
     onResize,
     onReset,
   }) => {
-    const { Header, id, ...column } = columnInput;
+    const { Header, Cell, id, ...column } = columnInput;
 
     if (Header instanceof Function) {
       const { cellClassName: _, headerClassName, ...rest } = column;
