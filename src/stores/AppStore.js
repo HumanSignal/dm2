@@ -356,10 +356,16 @@ export const AppStore = types
     }),
 
     destroy() {
-      self.taskStore?.clear();
-      self.annotationStore?.clear();
-      self.taskStore = undefined;
-      self.annotationStore = undefined;
+      if (self.taskStore) {
+        self.taskStore?.clear();
+        self.taskStore = undefined;
+      }
+
+      if (self.annotationStore) {
+        self.annotationStore?.clear();
+        self.annotationStore = undefined;
+      }
+
       clearTimeout(self._poll);
     },
   }));

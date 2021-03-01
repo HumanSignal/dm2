@@ -262,7 +262,7 @@ export class DataManager {
   }
 
   destroy() {
-    this.store.destroy();
+    if (this.store) this.store.destroy?.();
   }
 
   async apiCall(...args) {
