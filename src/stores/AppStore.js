@@ -356,8 +356,8 @@ export const AppStore = types
     }),
 
     destroy() {
-      self.taskStore?.clean();
-      self.annotationStore?.clean();
+      self.taskStore?.clear();
+      self.annotationStore?.clear();
       self.taskStore = undefined;
       self.annotationStore = undefined;
       clearTimeout(self._poll);
