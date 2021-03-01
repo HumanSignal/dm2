@@ -261,6 +261,10 @@ export class DataManager {
     this.lsf = undefined;
   }
 
+  destroy() {
+    this.store.destroy();
+  }
+
   async apiCall(...args) {
     return this.store.apiCall(...args);
   }

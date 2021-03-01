@@ -354,4 +354,12 @@ export const AppStore = types
 
       return result;
     }),
+
+    destroy() {
+      self.taskStore?.clean();
+      self.annotationStore?.clean();
+      self.taskStore = undefined;
+      self.annotationStore = undefined;
+      clearTimeout(self._poll);
+    },
   }));
