@@ -39,6 +39,8 @@ export const AppStore = types
     availableActions: types.optional(types.array(CustomJSON), []),
 
     serverError: types.map(CustomJSON),
+
+    crashed: false,
   })
   .views((self) => ({
     get SDK() {
@@ -259,11 +261,17 @@ export const AppStore = types
             }
           : null;
 
-      const newProject = yield self.apiCall("project", params);
+      try {
+        const newProject = yield self.apiCall("project", params);
 
-      if (JSON.stringify(newProject ?? {}) !== oldProject) {
-        self.project = newProject;
+        if (JSON.stringify(newProject ?? {}) !== oldProject) {
+          self.project = newProject;
+        }
+      } catch {
+        self.crash();
+        return false;
       }
+      return true;
     }),
 
     fetchActions: flow(function* () {
@@ -275,16 +283,17 @@ export const AppStore = types
 
       const { tab, task, labeling } = History.getParams();
 
-      yield self.fetchProject();
-      yield self.fetchActions();
-      self.viewsStore.fetchColumns();
-      yield self.viewsStore.fetchTabs(tab, task, labeling);
+      if (yield self.fetchProject()) {
+        yield self.fetchActions();
+        self.viewsStore.fetchColumns();
+        yield self.viewsStore.fetchTabs(tab, task, labeling);
 
-      self.resolveURLParams();
+        self.resolveURLParams();
 
-      self.loading = false;
+        self.loading = false;
 
-      self.startPolling();
+        self.startPolling();
+      }
     }),
 
     apiCall: flow(function* (methodName, params, body) {
@@ -354,6 +363,12 @@ export const AppStore = types
 
       return result;
     }),
+
+    crash() {
+      self.destroy();
+      self.crashed = true;
+      self.SDK.invoke("crash");
+    },
 
     destroy() {
       if (self.taskStore) {

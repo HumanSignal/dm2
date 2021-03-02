@@ -1,6 +1,6 @@
 import { observer, Provider } from "mobx-react";
 import React from "react";
-import { cn } from "../../utils/bem";
+import { Block, Elem } from "../../utils/bem";
 import { Spinner } from "../Common/Spinner";
 import { DataManager } from "../DataManager/DataManager";
 import { Labeling } from "../Label/Label";
@@ -32,18 +32,25 @@ const AppComponent = ({ app }) => {
   return (
     <ErrorBoundary>
       <Provider store={app}>
-        <div className={cn("root").mod({ mode: app.SDK.mode })}>
-          {app.loading ? (
-            <div className={cn("app-loader")}>
+        <Block name="root" mod={{ mode: app.SDK.mode }}>
+          {app.crashed ? (
+            <Block name="crash">
+              <Elem name="header">Oops...</Elem>
+              <Elem name="description">
+                Project has been deleted or not yet created.
+              </Elem>
+            </Block>
+          ) : app.loading ? (
+            <Block name="app-loader">
               <Spinner size="large" />
-            </div>
+            </Block>
           ) : app.isLabeling ? (
             <Labeling />
           ) : (
             <DataManager />
           )}
-          <div className={cn("offscreen-lsf")}></div>
-        </div>
+          <Block name={"offscreen-lsf"} />
+        </Block>
       </Provider>
     </ErrorBoundary>
   );
