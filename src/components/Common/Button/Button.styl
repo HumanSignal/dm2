@@ -20,8 +20,11 @@
   font-size 14px
 
   &_waiting,
-  &:disabled
+  &_disabled,
+  &:disabled,
+  &[disabled]
     --button-color rgba(#000, 0.5)
+    pointer-events none
     background-color #efefef
 
   &:hover

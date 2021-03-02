@@ -94,17 +94,17 @@ const LSFOperations = observer(({ history }) => {
   return history ? (
     <Button.Group>
       <Button
-        icon={<Icon icon={FaUndo} size={18} />}
+        icon={<Icon icon={FaUndo} />}
         disabled={!history.canUndo}
         onClick={() => history.undo()}
       />
       <Button
-        icon={<Icon icon={FaRedo} size={18} />}
+        icon={<Icon icon={FaRedo} />}
         disabled={!history.canRedo}
         onClick={() => history.redo()}
       />
       <Button
-        icon={<Icon icon={FaTrashAlt} size={16} />}
+        icon={<Icon icon={FaTrashAlt} />}
         disabled={!history.canUndo}
         onClick={() => history.reset()}
       />

@@ -28,6 +28,7 @@ export const Button = React.forwardRef(
       look,
       withIcon: !!icon,
       withExtra: !!extra,
+      disabled: !!rest.disabled,
     };
 
     const iconElem = React.useMemo(() => {
