@@ -134,6 +134,7 @@ export class APIProxy {
           ...(urlParams ?? {}),
           ...(this.sharedParams ?? {}),
         };
+
         const apiCallURL = this.createUrl(
           methodSettings.path,
           finalParams,
@@ -158,11 +159,23 @@ export class APIProxy {
 
         if (requestMethod !== "GET") {
           const contentType = requestHeaders.get("Content-Type");
+          let extendedBody = body ?? {};
+
+          if (extendedBody instanceof FormData) {
+            Object.entries(this.sharedParams ?? {}).forEach(([key, value]) => {
+              extendedBody.append(key, value);
+            });
+          } else {
+            Object.assign(extendedBody, {
+              ...(this.sharedParams ?? {}),
+              ...(body ?? {}),
+            });
+          }
 
           if (contentType === "multipart/form-data") {
-            requestParams.body = this.createRequestBody(body);
+            requestParams.body = this.createRequestBody(extendedBody);
           } else if (contentType === "application/json") {
-            requestParams.body = JSON.stringify(body);
+            requestParams.body = JSON.stringify(extendedBody);
           } else {
             requestParams.body = body;
           }
@@ -316,14 +329,6 @@ export class APIProxy {
    * @private
    */
   async generateError(fetchResponse) {
-    const result = (async () => {
-      try {
-        return fetchResponse.json();
-      } catch {
-        return {};
-      }
-    })();
-
     return {
       status: fetchResponse.status,
       error: fetchResponse.statusText,
