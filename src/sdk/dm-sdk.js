@@ -93,7 +93,8 @@ export class DataManager {
    */
   constructor(config) {
     this.root = config.root;
-    (this.projectId = config.projectId), (this.settings = config.settings);
+    this.projectId = config.projectId;
+    this.settings = config.settings;
     this.labelStudioOptions = config.labelStudio;
     this.env = config.env ?? process.env.NODE_ENV ?? this.env;
     this.mode = config.mode ?? this.mode;
