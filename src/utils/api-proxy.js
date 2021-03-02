@@ -120,15 +120,13 @@ export class APIProxy {
       methods.forEach((settings, methodName) => {
         const { scope, ...restSettings } = this.getSettings(settings);
 
-        this[methodName] = this.createApiCallExecutor(restSettings, [
-          parentPath,
-        ]);
+        Object.defineProperty(this, methodName, {
+          value: this.createApiCallExecutor(restSettings, [parentPath]),
+        });
 
-        this[`${methodName}Raw`] = this.createApiCallExecutor(
-          restSettings,
-          [parentPath],
-          true
-        );
+        Object.defineProperty(this, `${methodName}Raw`, {
+          value: this.createApiCallExecutor(restSettings, [parentPath], true),
+        });
 
         if (scope)
           this.resolveMethods(scope, [

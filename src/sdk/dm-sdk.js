@@ -28,10 +28,10 @@
  * table: TableConfig,
  * links: Dict<string|null>,
  * showPreviews: boolean,
+ * projectId: number,
  * }} DMConfig
  */
 
-import { options } from "less";
 import { APIProxy } from "../utils/api-proxy";
 import { APIConfig } from "./api-config";
 import { createApp } from "./app-create";
@@ -93,7 +93,7 @@ export class DataManager {
    */
   constructor(config) {
     this.root = config.root;
-    this.settings = config.settings;
+    (this.projectId = config.projectId), (this.settings = config.settings);
     this.labelStudioOptions = config.labelStudio;
     this.env = config.env ?? process.env.NODE_ENV ?? this.env;
     this.mode = config.mode ?? this.mode;
@@ -124,10 +124,11 @@ export class DataManager {
   }
 
   get projectId() {
-    return (this._projectId =
-      this._projectId ??
-      this.root.dataset?.projectId ??
-      options.apiSharedParams?.project);
+    return (this._projectId = this._projectId ?? this.root.dataset?.projectId);
+  }
+
+  set projectId(value) {
+    this._projectId = value;
   }
 
   apiConfig({
