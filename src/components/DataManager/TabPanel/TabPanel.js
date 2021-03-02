@@ -125,7 +125,7 @@ export const TablePanel = injector(
     return (
       <div className={cn("tab-panel")}>
         <Space size="large">
-          <DataStoreToggle size={toolbarSize} view={view} />
+          {/* <DataStoreToggle size={toolbarSize} view={view} /> */}
 
           <ViewToggle size={toolbarSize} />
 
