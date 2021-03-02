@@ -15,7 +15,7 @@ export const TextDataGroup = ({ value }) => {
     <div
       style={{ padding: 5, height: TextDataGroup.height, overflow: "hidden" }}
     >
-      {valueToString(value)}
+      {value ? valueToString(value) : ""}
     </div>
   );
 };
