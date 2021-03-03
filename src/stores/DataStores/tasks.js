@@ -9,6 +9,7 @@ export const create = (columns) => {
     completions: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
     source: types.maybeNull(types.string),
+    was_cancelled: false,
   })
     .views((self) => ({
       get lastCompletion() {
@@ -92,7 +93,7 @@ export const create = (columns) => {
         }
 
         if (select !== false) self.setSelected(task);
-        yield task.loadAnnotations();
+        // yield task.loadAnnotations();
 
         self.finishLoading(taskID);
 

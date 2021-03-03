@@ -52,7 +52,7 @@ export const APIConfig = {
     /** Mark sample as skipped */
     skipTask: {
       path: (params) => {
-        const pathBase = "/tasks/:taskID/completions";
+        const pathBase = "/../tasks/:taskID/completions";
         const isNewCompletion = !isDefined(params.completionID);
         return isNewCompletion ? pathBase : `${pathBase}/:completionID`;
       },

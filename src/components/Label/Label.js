@@ -82,8 +82,9 @@ export const Labeling = injector(
     }, [SDK.lsf?.currentCompletion?.id]);
 
     React.useEffect(() => {
-      SDK.startLabeling(lsfRef.current, task);
-    }, [lsfRef, task]);
+      console.log("Starting labeling");
+      SDK.startLabeling(lsfRef.current);
+    }, [task]);
 
     const onResize = (width) => {
       view.setLabelingTableWidth(width);

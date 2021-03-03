@@ -87,6 +87,9 @@ export class DataManager {
   /** @type {boolean} */
   polling = true;
 
+  /** @type {boolean} */
+  started = false;
+
   /**
    * Constructor
    * @param {DMConfig} config
@@ -232,13 +235,14 @@ export class DataManager {
     // do nothing if the task is already selected
     if (this.lsf?.task && task && this.lsf.task.id === task.id) {
       return;
+    } else {
+      console.log([this.lsf?.task, task]);
     }
 
-    let labelStream = false;
+    let labelStream = this.mode === "labelstream";
 
     // Load task if there's no selected one
     if (!task) {
-      labelStream = true;
       task = await this.store.taskStore.loadTask();
     }
 
@@ -253,7 +257,11 @@ export class DataManager {
       return;
     }
 
-    if (this.lsf && (this.lsf.task !== task || completion !== undefined)) {
+    if (
+      !labelStream &&
+      this.lsf &&
+      (this.lsf.task?.id !== task?.id || completion !== undefined)
+    ) {
       const completionID = completion?.id ?? task.lastCompletion?.id;
       this.lsf.loadTask(task.id, completionID);
     }
