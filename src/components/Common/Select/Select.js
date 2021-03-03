@@ -18,7 +18,14 @@ const findSelectedChild = (children, value) => {
   }, null);
 };
 
-export const Select = ({ value, size, children, onChange, style }) => {
+export const Select = ({
+  value,
+  defaultValue,
+  size,
+  children,
+  onChange,
+  style,
+}) => {
   const [currentValue, setCurrentValue] = React.useState(value);
 
   const context = {
@@ -30,10 +37,13 @@ export const Select = ({ value, size, children, onChange, style }) => {
   };
 
   const selected = React.useMemo(() => {
-    const foundChild = findSelectedChild(children, currentValue);
+    const foundChild = findSelectedChild(
+      children,
+      defaultValue ?? currentValue
+    );
     const result = foundChild?.props?.children;
     return result ? React.cloneElement(<>{result}</>) : null;
-  }, [currentValue]);
+  }, [currentValue, defaultValue]);
 
   React.useEffect(() => {
     if (value !== currentValue) {
