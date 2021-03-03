@@ -5,7 +5,7 @@ import { Button } from "../Button/Button";
 import { Space } from "../Space/Space";
 import { Modal } from "./ModalPopup";
 
-export const standaloneModal = (props) => {
+const standaloneModal = (props) => {
   const modalRef = React.createRef();
   const rootDiv = document.createElement("div");
   rootDiv.className = cn("modal-holder").toClassName();

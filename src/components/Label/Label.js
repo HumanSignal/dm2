@@ -14,7 +14,7 @@ import { Toolbar } from "./Toolbar/Toolbar";
 
 const LabelingHeader = ({ onClick, isExplorerMode, children }) => {
   return (
-    <Elem name="header">
+    <Elem name="header" mod={{ labelStream: !isExplorerMode }}>
       <Space>
         <Button
           icon={<FaChevronLeft style={{ marginRight: 4, fontSize: 16 }} />}
