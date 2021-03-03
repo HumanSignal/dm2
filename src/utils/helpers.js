@@ -5,3 +5,11 @@ export const formDataToJPO = (formData) => {
     return { ...res, [key]: value };
   }, {});
 };
+
+export const objectToMap = (object) => {
+  return new Map(Object.entries(object ?? {}));
+};
+
+export const mapToObject = (map) => {
+  return Object.fromEntries(map);
+};

@@ -158,9 +158,13 @@ export const TablePanel = injector(
         <Space>
           {<SelectedItems />}
 
-          <ImportButton size={toolbarSize}>Import</ImportButton>
+          {store.SDK.interfaceEnabled("import") && (
+            <ImportButton size={toolbarSize}>Import</ImportButton>
+          )}
 
-          <ExportButton size={toolbarSize}>Export</ExportButton>
+          {store.SDK.interfaceEnabled("export") && (
+            <ExportButton size={toolbarSize}>Export</ExportButton>
+          )}
 
           {!labelingDisabled && (
             <Button

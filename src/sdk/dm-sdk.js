@@ -29,10 +29,12 @@
  * links: Dict<string|null>,
  * showPreviews: boolean,
  * projectId: number,
+ * interfaces: Dict<boolean>
  * }} DMConfig
  */
 
 import { APIProxy } from "../utils/api-proxy";
+import { objectToMap } from "../utils/helpers";
 import { APIConfig } from "./api-config";
 import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
@@ -90,6 +92,12 @@ export class DataManager {
   /** @type {boolean} */
   started = false;
 
+  /** @type {Map<string, boolean>} */
+  interfaces = objectToMap({
+    import: true,
+    export: true,
+  });
+
   /**
    * Constructor
    * @param {DMConfig} config
@@ -106,6 +114,11 @@ export class DataManager {
     this.links = Object.assign(this.links, config.links ?? {});
     this.showPreviews = config.showPreviews ?? false;
     this.polling = config.polling;
+    this.interfaces = objectToMap({
+      ...Object.fromEntries(this.interfaces),
+      ...config.interfaces,
+    });
+
     this.api = new APIProxy(
       this.apiConfig({
         apiGateway: config.apiGateway,
@@ -193,6 +206,14 @@ export class DataManager {
    */
   hasHandler(eventName) {
     return this.getEventCallbacks(eventName).size > 0;
+  }
+
+  /**
+   * Check if interface is enabled
+   * @param {string} name Name of the interface
+   */
+  interfaceEnabled(name) {
+    return this.interfaces.get(name) === true;
   }
 
   /**
