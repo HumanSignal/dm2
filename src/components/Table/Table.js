@@ -4,8 +4,8 @@ import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { FaQuestionCircle } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
-import { Button } from "../Common/Button/Button";
 import { Icon } from "../Common/Icon/Icon";
+import { ImportButton } from "../Common/SDKButtons";
 import { Spinner } from "../Common/Spinner";
 import { Table } from "../Common/Table/Table";
 import { Tag } from "../Common/Tag/Tag";
@@ -144,9 +144,9 @@ export const DataView = injector(
               </Elem>
               {!hasData && (
                 <Elem name="navigation">
-                  <Button look="primary" href="./import">
+                  <ImportButton look="primary" href="./import">
                     Go to import
-                  </Button>
+                  </ImportButton>
                 </Elem>
               )}
             </Block>

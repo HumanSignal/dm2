@@ -8,7 +8,7 @@ export const initDevApp = async (DataManager) => {
   const gatewayAPI = GATEWAY_API ?? "http://localhost:8081/api/dm";
   const token = process.env.HTX_ACCESS_TOKEN;
 
-  new DataManager({
+  const dm = new DataManager({
     root: document.getElementById("app"),
     polling: false,
     apiGateway: gatewayAPI,
@@ -39,5 +39,13 @@ export const initDevApp = async (DataManager) => {
         ],
       },
     },
+  });
+
+  dm.on("importClicked", () => {
+    console.log("click");
+  });
+
+  dm.on("exportClicked", () => {
+    console.log("click");
   });
 };

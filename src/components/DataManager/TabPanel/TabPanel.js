@@ -17,6 +17,7 @@ import { FieldsButton } from "../../Common/FieldsButton";
 import { FiltersPane } from "../../Common/FiltersPane";
 import { Icon } from "../../Common/Icon/Icon";
 import { RadioGroup } from "../../Common/RadioGroup/RadioGroup";
+import { ExportButton, ImportButton } from "../../Common/SDKButtons";
 import { Space } from "../../Common/Space/Space";
 import { Spinner } from "../../Common/Spinner";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
@@ -157,23 +158,9 @@ export const TablePanel = injector(
         <Space>
           {<SelectedItems />}
 
-          {links.import && (
-            <Button
-              size={toolbarSize}
-              onClick={() => (window.location.href = links.import)}
-            >
-              Import
-            </Button>
-          )}
+          <ImportButton size={toolbarSize}>Import</ImportButton>
 
-          {links.export && (
-            <Button
-              size={toolbarSize}
-              onClick={() => (window.location.href = links.export)}
-            >
-              Export
-            </Button>
-          )}
+          <ExportButton size={toolbarSize}>Export</ExportButton>
 
           {!labelingDisabled && (
             <Button

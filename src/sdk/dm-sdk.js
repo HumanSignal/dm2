@@ -188,6 +188,14 @@ export class DataManager {
   }
 
   /**
+   * Check if an event has at least one handler
+   * @param {string} eventName Name of the event to check
+   */
+  hasHandler(eventName) {
+    return this.getEventCallbacks(eventName).size > 0;
+  }
+
+  /**
    *
    * @param {"explorer" | "labelstream"} mode
    */
@@ -273,6 +281,8 @@ export class DataManager {
 
   destroy() {
     if (this.store) this.store.destroy?.();
+    this.callbacks.forEach((callbacks) => callbacks.clear());
+    this.callbacks.clear();
   }
 
   async apiCall(...args) {

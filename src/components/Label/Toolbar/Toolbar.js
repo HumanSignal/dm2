@@ -1,8 +1,9 @@
 import { observer } from "mobx-react";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import {
+  FaArrowLeft,
+  FaArrowRight,
   FaBan,
   FaCheck,
   FaCheckCircle,
@@ -201,16 +202,17 @@ const History = observer(({ history, children }) => {
 
   return renderable ? (
     <React.Fragment>
-      <HistoryButton disabled={!canGoBack} onClick={() => history.goBackward()}>
-        <BsArrowLeft />
-      </HistoryButton>
+      <HistoryButton
+        disabled={!canGoBack}
+        onClick={() => history.goBackward()}
+        icon={<Icon icon={FaArrowLeft} />}
+      />
       {children}
       <HistoryButton
         disabled={!canGoForward}
         onClick={() => history.goForward()}
-      >
-        <BsArrowRight />
-      </HistoryButton>
+        icon={<Icon icon={FaArrowRight} />}
+      />
     </React.Fragment>
   ) : (
     children

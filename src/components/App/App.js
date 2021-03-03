@@ -1,5 +1,6 @@
 import { observer, Provider } from "mobx-react";
 import React from "react";
+import { SDKProvider } from "../../providers/SDKProvider";
 import { Block, Elem } from "../../utils/bem";
 import { Spinner } from "../Common/Spinner";
 import { DataManager } from "../DataManager/DataManager";
@@ -32,25 +33,27 @@ const AppComponent = ({ app }) => {
   return (
     <ErrorBoundary>
       <Provider store={app}>
-        <Block name="root" mod={{ mode: app.SDK.mode }}>
-          {app.crashed ? (
-            <Block name="crash">
-              <Elem name="header">Oops...</Elem>
-              <Elem name="description">
-                Project has been deleted or not yet created.
-              </Elem>
-            </Block>
-          ) : app.loading ? (
-            <Block name="app-loader">
-              <Spinner size="large" />
-            </Block>
-          ) : app.isLabeling ? (
-            <Labeling />
-          ) : (
-            <DataManager />
-          )}
-          <Block name={"offscreen-lsf"} />
-        </Block>
+        <SDKProvider sdk={app.SDK}>
+          <Block name="root" mod={{ mode: app.SDK.mode }}>
+            {app.crashed ? (
+              <Block name="crash">
+                <Elem name="header">Oops...</Elem>
+                <Elem name="description">
+                  Project has been deleted or not yet created.
+                </Elem>
+              </Block>
+            ) : app.loading ? (
+              <Block name="app-loader">
+                <Spinner size="large" />
+              </Block>
+            ) : app.isLabeling ? (
+              <Labeling />
+            ) : (
+              <DataManager />
+            )}
+            <Block name={"offscreen-lsf"} />
+          </Block>
+        </SDKProvider>
       </Provider>
     </ErrorBoundary>
   );

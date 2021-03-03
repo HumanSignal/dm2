@@ -207,7 +207,7 @@ export const AppStore = types
           body:
             "Before you can annotate the data, set up labeling configuration",
           onOk() {
-            window.location.href = self.SDK.links.settings;
+            self.SDK.invoke("settingsClicked");
           },
           okText: "Go to setup",
         });
