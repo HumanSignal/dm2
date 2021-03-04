@@ -97,11 +97,7 @@
   },
   "lint-staged": {
     "*.(js|jsx)": [
-      "npm run prettier",
-      "git add"
-    ],
-    "*.(css|scss)": [
-      "npm run prettier-styles",
+      "eslint --fix",
       "git add"
     ]
   },

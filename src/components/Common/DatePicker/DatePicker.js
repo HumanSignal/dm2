@@ -60,9 +60,9 @@ export const DatePicker = ({
     () =>
       selectRange
         ? {
-            startDate: realStartDate,
-            endDate: realEndDate,
-          }
+          startDate: realStartDate,
+          endDate: realEndDate,
+        }
         : {},
     [selectRange, realStartDate, realEndDate]
   );

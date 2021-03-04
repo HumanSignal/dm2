@@ -5,7 +5,7 @@ import {
   flow,
   getRoot,
   getSnapshot,
-  types,
+  types
 } from "mobx-state-tree";
 import { History } from "../../utils/history";
 import { guidGenerator } from "../../utils/random";
@@ -319,8 +319,8 @@ export const TabStore = types
 
       const selected = tabID
         ? self.views.find((view) => {
-            return view.id === parseInt(tabID);
-          })
+          return view.id === parseInt(tabID);
+        })
         : null;
 
       yield self.setSelected(selected ?? defaultView, {
@@ -331,8 +331,8 @@ export const TabStore = types
         getRoot(self).startLabeling(
           taskID
             ? {
-                id: parseInt(taskID),
-              }
+              id: parseInt(taskID),
+            }
             : null,
           { pushState: false }
         );

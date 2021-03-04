@@ -229,8 +229,8 @@ export class APIProxy {
             const responseData =
               rawResponse.status !== 204
                 ? JSON.parse(
-                    this.alwaysExpectJSON ? responseText : responseText || "{}"
-                  )
+                  this.alwaysExpectJSON ? responseText : responseText || "{}"
+                )
                 : { ok: true };
 
             if (methodSettings.convert instanceof Function) {

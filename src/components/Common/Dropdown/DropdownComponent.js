@@ -121,9 +121,9 @@ export const Dropdown = React.forwardRef(
     const content =
       children.props && children.props.type === "Menu"
         ? React.cloneElement(children, {
-            ...children.props,
-            className: rootName.elem("menu").mix(children.props.className),
-          })
+          ...children.props,
+          className: rootName.elem("menu").mix(children.props.className),
+        })
         : children;
 
     const visibilityClasses = React.useMemo(() => {
