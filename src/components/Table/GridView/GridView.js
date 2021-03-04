@@ -176,7 +176,7 @@ export const GridView = observer(
                   columnWidth={width / columnCount - 9.5}
                   rowCount={itemCount}
                   onItemsRendered={onItemsRenderedWrap(onItemsRendered)}
-                  style={{ overflowX: "hidden", padding: "0 1em" }}
+                  style={{ overflowX: "hidden" }}
                 >
                   {renderItem}
                 </Elem>
