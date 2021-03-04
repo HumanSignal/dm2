@@ -121,7 +121,6 @@ const GridWidthButton = observer(({ view, gridWidth, size }) => {
 export const TablePanel = injector(
   ({ store, view, labelingDisabled, loading, target, ordering }) => {
     const toolbarSize = "small";
-    const { links } = store.SDK;
 
     return (
       <div className={cn("tab-panel")}>
@@ -213,17 +212,17 @@ const SelectedItems = inject(({ store }) => ({
   hasSelected: store.currentView?.selected?.hasSelected ?? false,
 }))(({ hasSelected }) => hasSelected && <TabsActions size="small" />);
 
-const DataStoreToggle = viewInjector(({ view, size }) => {
-  return (
-    <RadioGroup
-      value={view.target}
-      size={size}
-      onChange={(e) => view.setTarget(e.target.value)}
-    >
-      <RadioGroup.Button value="tasks">Tasks</RadioGroup.Button>
-      <RadioGroup.Button value="annotations" disabled>
-        Annotations
-      </RadioGroup.Button>
-    </RadioGroup>
-  );
-});
+// const DataStoreToggle = viewInjector(({ view, size }) => {
+//   return (
+//     <RadioGroup
+//       value={view.target}
+//       size={size}
+//       onChange={(e) => view.setTarget(e.target.value)}
+//     >
+//       <RadioGroup.Button value="tasks">Tasks</RadioGroup.Button>
+//       <RadioGroup.Button value="annotations" disabled>
+//         Annotations
+//       </RadioGroup.Button>
+//     </RadioGroup>
+//   );
+// });

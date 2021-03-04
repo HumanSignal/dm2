@@ -306,10 +306,11 @@ export const TabStore = types
       if (self.views.length === 0) {
         tabID = null;
 
-        defaultView = yield self.addView({
-          autoselect: false,
-          reload: false,
+        defaultView = Tab.create({
+          title: "Default",
         });
+
+        self.views.push(defaultView);
       }
 
       const selected = tabID

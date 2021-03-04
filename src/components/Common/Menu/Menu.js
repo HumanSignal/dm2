@@ -13,7 +13,7 @@ export const Menu = React.forwardRef(
 
     return (
       <MenuContext.Provider value={{ selected }}>
-        <ul className={rootClass} style={style}>
+        <ul ref={ref} className={rootClass} style={style}>
           {children}
         </ul>
       </MenuContext.Provider>

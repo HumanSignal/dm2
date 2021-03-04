@@ -25,7 +25,7 @@ export const TabHiddenColumns = types
       } else {
         self.explore = list;
       }
-      return self.activeList;
+      self.activeList;
     },
 
     hasColumn(column) {

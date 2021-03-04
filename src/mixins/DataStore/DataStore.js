@@ -53,7 +53,7 @@ const MixinBase = types
         selected = val;
       }
 
-      if (!!selected) {
+      if (selected) {
         self.selected = selected;
         self.highlighted = selected;
       }

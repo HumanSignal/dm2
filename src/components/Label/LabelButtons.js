@@ -20,7 +20,7 @@ export class LabelButtons extends Component {
     if (!this.observer && this.target) {
       const target = this.target;
 
-      this.observer = new MutationObserver((mutations) => {
+      this.observer = new MutationObserver(() => {
         this.updateElement(target);
       });
 

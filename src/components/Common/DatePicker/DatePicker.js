@@ -20,7 +20,6 @@ export const DatePicker = ({
   dateFormat = "MM.dd.yyyy",
   timeFormat = "HH:mm",
   onChange,
-  ...props
 }) => {
   const finalFormat = showTime ? `${dateFormat} ${timeFormat}` : dateFormat;
 

@@ -1,4 +1,4 @@
-const { types } = require("mobx-state-tree");
+import { types } from "mobx-state-tree";
 
 export const CustomJSON = types.custom({
   name: "JSON",

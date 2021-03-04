@@ -1,7 +1,7 @@
 import React from "react";
 import { FilterInput } from "../FilterInput";
 
-const BaseInput = ({ value, defaultValue, onChange, placeholder }) => {
+const BaseInput = ({ value, onChange, placeholder }) => {
   return (
     <FilterInput
       type="text"

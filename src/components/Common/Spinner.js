@@ -1,5 +1,3 @@
-/* eslint-disable import/no-webpack-loader-syntax */
-
 import React from "react";
 import Running from "../../assets/running";
 

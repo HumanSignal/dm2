@@ -24,9 +24,12 @@ module.exports = {
     "react/prop-types": "off",
     "react/display-name": "off",
     "react/no-children-prop": "off",
+    "react/react-in-jsx-scope": "off",
     "no-async-promise-executor": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
+    semi: [2, "always"],
+    "@typescript-eslint/indent": ["error", 2],
   },
 };

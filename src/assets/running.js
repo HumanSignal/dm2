@@ -1,5 +1,3 @@
-/* eslint-disable import/no-webpack-loader-syntax */
-
 import Running24 from "!!url-loader!./Running-24.gif";
 import Running24x2 from "!!url-loader!./Running-24@2x.gif";
 import Running48 from "!!url-loader!./Running-48.gif";
