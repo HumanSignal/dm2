@@ -307,6 +307,7 @@ export const TabStore = types
         tabID = null;
 
         defaultView = Tab.create({
+          id: 999,
           title: "Default",
         });
 
