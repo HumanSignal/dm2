@@ -30,7 +30,7 @@ export const DatePicker = ({
   const dropdownRef = React.useRef();
 
   const formatDate = (date) => {
-    const parsedDate = new Date(date);
+    const parsedDate = new Date(date === null ? undefined : date);
     if (isValid(parsedDate)) {
       return format(parsedDate, finalFormat);
     }
@@ -97,6 +97,7 @@ export const DatePicker = ({
             ref={datepickerRef}
             selected={realStartDate}
             onSelect={(date) => {
+              console.log(date);
               if (realEndDate === null && selectRange) {
                 setRealEndDate(date);
               } else {

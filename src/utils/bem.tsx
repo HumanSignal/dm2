@@ -1,4 +1,4 @@
-import React, { ComponentClass, FunctionComponent, ReactHTML, ReactSVG } from 'react';
+import React, { ComponentClass, ExoticComponent, Fragment, FunctionComponent, ReactHTML, ReactSVG } from 'react';
 
 interface CNMod {
   [key: string]: unknown
@@ -25,7 +25,7 @@ interface CNOptions {
   mix?: CNMix | CNMix[] | undefined | undefined
 }
 
-type CNTagName = keyof ReactHTML | keyof ReactSVG | ComponentClass<unknown, unknown> | FunctionComponent<unknown> | string
+type CNTagName = keyof ReactHTML | keyof ReactSVG | ExoticComponent<unknown> | ComponentClass<unknown, unknown> | FunctionComponent<unknown> | string
 
 type CNComponentProps = {
   name: string
@@ -163,7 +163,11 @@ export const BemWithSpecifiContext = (context: React.Context<CN | null>) => {
     const rootClass = cn(name)
     const finalMix = ([] as [ CNMix? ]).concat(mix).filter(cn => !!cn)
     const className = rootClass.mod(mod).mix(...(finalMix as CNMix[]), rest.className).toClassName()
-    const finalProps = {...rest, ref, className} as any
+    let finalProps = {...rest, ref, className} as any
+
+    if (tag === Fragment) {
+      finalProps = { key: finalProps.key, children: finalProps.children }
+    }
 
     return (
       <Context.Provider value={rootClass}>
@@ -184,9 +188,13 @@ export const BemWithSpecifiContext = (context: React.Context<CN | null>) => {
       .mix(...(finalMix as CNMix[]), rest.className)
       .toClassName()
 
-    const finalProps: any = {...rest, ref, className}
+    let finalProps: any = {...rest, ref, className}
 
-    if (typeof tag !== 'string') finalProps.block = blockCtx
+    if (tag === Fragment) {
+      finalProps = { key: finalProps.key, children: finalProps.children }
+    } else if (typeof tag !== 'string') {
+      finalProps.block = blockCtx
+    }
 
     return React.createElement(tag, finalProps)
   })

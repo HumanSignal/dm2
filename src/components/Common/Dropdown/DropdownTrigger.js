@@ -12,6 +12,7 @@ export const DropdownTrigger = React.forwardRef(
       content,
       toggle,
       closeOnClickOutside = true,
+      disabled = false,
       ...props
     },
     ref
@@ -58,6 +59,8 @@ export const DropdownTrigger = React.forwardRef(
 
     const handleToggle = React.useCallback(
       (e) => {
+        if (disabled) return;
+
         const inDropdown = dropdownRef.current?.dropdown?.contains?.(e.target);
 
         if (inDropdown) return e.stopPropagation();
@@ -66,17 +69,19 @@ export const DropdownTrigger = React.forwardRef(
 
         dropdownRef?.current?.toggle();
       },
-      [dropdownRef]
+      [dropdownRef, disabled]
     );
 
-    const triggerClone = React.cloneElement(triggerEL, {
+    const cloneProps = {
       ...triggerEL.props,
       tag,
       key: "dd-trigger",
       ref: triggerRef,
       className: cn("dropdown").elem("trigger").mix(props.className),
-      onClickCapture: triggerEL.props?.onClick ? null : handleToggle,
-    });
+      onClickCapture: handleToggle,
+    };
+
+    const triggerClone = React.cloneElement(triggerEL, cloneProps);
 
     const dropdownClone = content ? (
       <Dropdown {...props} ref={dropdownRef}>
@@ -97,6 +102,8 @@ export const DropdownTrigger = React.forwardRef(
         hasTarget: targetIsInsideDropdown,
         addChild: (child) => childset.add(child),
         removeChild: (child) => childset.delete(child),
+        open: () => dropdownRef?.current?.open?.(),
+        close: () => dropdownRef?.current?.close?.(),
       }),
       [triggerRef, dropdownRef]
     );

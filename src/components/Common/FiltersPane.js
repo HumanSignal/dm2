@@ -1,5 +1,5 @@
 import { inject, observer } from "mobx-react";
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { FaFilter } from "react-icons/fa";
 import { Filters } from "../Filters/Filters";
 import { Button } from "./Button/Button";
@@ -35,6 +35,7 @@ const injector = inject(({ store }) => {
 export const FiltersPane = injector(
   ({ viewsStore, sidebarEnabled, size, filtersApplied, ...rest }) => {
     const dropdownProps = {};
+    const dropdown = useRef();
 
     if (sidebarEnabled) {
       Object.assign(dropdownProps, {
@@ -43,12 +44,26 @@ export const FiltersPane = injector(
       });
     }
 
+    useEffect(() => {
+      if (sidebarEnabled) {
+        dropdown?.current?.close();
+      }
+    }, [sidebarEnabled]);
+
+    const toggleCallback = useCallback(() => {
+      if (sidebarEnabled) viewsStore.toggleSidebar();
+    }, [sidebarEnabled]);
+
     return (
-      <Dropdown.Trigger enabled={!sidebarEnabled} content={<Filters />}>
+      <Dropdown.Trigger
+        ref={dropdown}
+        disabled={sidebarEnabled}
+        content={<Filters />}
+      >
         <FiltersButton
           size={size}
           active={filtersApplied}
-          onClick={sidebarEnabled ? () => viewsStore.toggleSidebar() : null}
+          onClick={toggleCallback}
           {...rest}
         />
       </Dropdown.Trigger>

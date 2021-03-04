@@ -23,13 +23,7 @@ export const FilterInput = ({
       ref={inputRef}
       placeholder={placeholder}
       onChange={onChangeHandler}
-      style={{
-        fontSize: 12,
-        height: 24,
-        minWidth: 60,
-        flex: 1,
-        ...(style ?? {}),
-      }}
+      style={style}
       {...(schema ?? {})}
     />
   );

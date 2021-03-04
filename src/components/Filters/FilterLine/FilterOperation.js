@@ -42,7 +42,7 @@ export const FilterOperation = observer(
 
     return (
       <>
-        <Elem name="column" mix="operation">
+        <Elem block="filter-line" name="column" mix="operation">
           <FilterDropdown
             placeholder="Condition"
             value={filter.operator}
@@ -51,7 +51,7 @@ export const FilterOperation = observer(
             onChange={(selectedKey) => filter.setOperator(selectedKey)}
           />
         </Elem>
-        <Elem name="column" mix="value">
+        <Elem block="filter-line" name="column" mix="value">
           <Input
             {...field}
             key={filter.filter.id}
