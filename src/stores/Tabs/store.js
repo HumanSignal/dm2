@@ -168,12 +168,14 @@ export const TabStore = types
       };
 
       if (result.id !== view.id) {
-        const newView = yield self.addView(newViewSnapshot);
+        const newView = Tab.create({ ...newViewSnapshot, saved: true });
+        console.log(result.id, view.id);
+        console.log(newView);
 
-        newView.markSaved();
+        self.views.push(newView);
         self.setSelected(newView);
-
-        self.deleteView(view, { autoselect: false });
+        newView.reload();
+        destroy(view);
       } else {
         applySnapshot(view, newViewSnapshot);
 
@@ -307,11 +309,12 @@ export const TabStore = types
         tabID = null;
 
         defaultView = Tab.create({
-          id: 999,
+          id: 0,
           title: "Default",
         });
 
         self.views.push(defaultView);
+        yield self.saveView(defaultView);
       }
 
       const selected = tabID
