@@ -185,9 +185,11 @@ if (isDevelopment) {
   }));
 }
 
+const sourceMap = isDevelopment ? "cheap-module-source-map" : "source-map";
+
 module.exports = ({withDevServer = true} = {}) => ({
   mode: process.env.NODE_ENV || "development",
-  devtool: "cheap-module-source-map",
+  devtool: sourceMap,
   ...(withDevServer ? devServer() : {}),
   entry: path.resolve(__dirname, "src/index.js"),
   output: {
