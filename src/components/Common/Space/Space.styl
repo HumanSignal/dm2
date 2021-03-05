@@ -13,6 +13,23 @@
       justify-content center
       grid-auto-rows max-content
 
+  &_spread
+    justify-content space-between
+
+  &_align
+    &_start
+      justify-content flex-start
+
+    &_end
+      justify-content flex-end
+
+  &_stretch&_direction
+    &_horizontal
+      grid-auto-columns 1fr
+
+    &_horizontal
+      grid-auto-rows 1fr
+
   &_size
     &_large
       grid-gap 32px

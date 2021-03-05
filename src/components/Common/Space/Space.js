@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "../../../utils/bem";
+import { Block } from '../../../utils/bem';
 import "./Space.styl";
 
 export const Space = ({
@@ -8,13 +8,13 @@ export const Space = ({
   className,
   style,
   children,
+  spread,
+  stretch,
+  align,
 }) => {
   return (
-    <div
-      className={cn("space").mod({ direction, size }).mix(className)}
-      style={style}
-    >
+    <Block name="space" mod={{ direction, size, spread, stretch, align }} mix={className} style={style}>
       {children}
-    </div>
+    </Block>
   );
 };

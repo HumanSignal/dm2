@@ -3,9 +3,9 @@ import React from "react";
 import {
   ViewColumnType,
   ViewColumnTypeName,
-  ViewColumnTypeShort,
+  ViewColumnTypeShort
 } from "../../../../stores/Tabs/tab_column";
-import { Block, Elem } from "../../../../utils/bem";
+import { BemWithSpecifiContext } from "../../../../utils/bem";
 import { Button } from "../../Button/Button";
 import { Dropdown } from "../../Dropdown/Dropdown";
 import { Menu } from "../../Menu/Menu";
@@ -16,6 +16,8 @@ import { TableCell, TableCellContent } from "../TableCell/TableCell";
 import { TableContext, TableElem } from "../TableContext";
 import { getStyle } from "../utils";
 import "./TableHead.styl";
+
+const { Block, Elem } = BemWithSpecifiContext();
 
 const DropdownWrapper = observer(
   ({ column, cellViews, children, onChange }) => {

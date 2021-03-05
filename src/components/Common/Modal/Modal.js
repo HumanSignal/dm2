@@ -44,27 +44,25 @@ export const confirm = ({ okText, onOk, cancelText, onCancel, ...props }) => {
     ...props,
     allowClose: false,
     footer: (
-      <Space>
-        <Button
-          onClick={() => {
-            onOk?.();
-            modal.close();
-          }}
-          size="compact"
-        >
-          {okText ?? "OK"}
-        </Button>
-
+      <Space align="end">
         <Button
           onClick={() => {
             onCancel?.();
             modal.close();
           }}
-          look="primary"
-          size="compact"
-          autofocus
+          autoFocus
         >
           {cancelText ?? "Cancel"}
+        </Button>
+
+        <Button
+          onClick={() => {
+            onOk?.();
+            modal.close();
+          }}
+          look="primary"
+        >
+          {okText ?? "OK"}
         </Button>
       </Space>
     ),
