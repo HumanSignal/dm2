@@ -5,6 +5,7 @@ module.exports = {
   },
   globals: {
     process: true,
+    module: true,
   },
   extends: [
     "eslint:recommended",

@@ -4,6 +4,7 @@ const { USE_LSB, GATEWAY_API } = process.env;
  * @param {import("../src/sdk/dm-sdk").DataManager} DataManager
  */
 export const initDevApp = async (DataManager) => {
+  console.log(123);
   const useExternalSource = !!USE_LSB || !!GATEWAY_API;
   const gatewayAPI = GATEWAY_API ?? "http://localhost:8081/api/dm";
   const token = process.env.HTX_ACCESS_TOKEN;
