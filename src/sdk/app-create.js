@@ -33,7 +33,7 @@ const createDynamicModels = (columns) => {
  */
 export const createApp = async (rootNode, datamanager) => {
   const response = await datamanager.api.columns();
-  const columns = response.columns ?? response ?? [];
+  const columns = response.columns ?? (Array.isArray(response) ? response : []);
 
   createDynamicModels(columns);
 
