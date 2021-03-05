@@ -256,7 +256,7 @@ export class DataManager {
    * @param {import("../stores/Tasks").TaskModel} task
    */
   async startLabeling(element) {
-    let [task, completion] = [
+    let [task, annotation] = [
       this.store.taskStore.selected,
       this.store.annotationStore.selected,
     ];
@@ -279,7 +279,7 @@ export class DataManager {
       this.lsf = new LSFWrapper(this, element, {
         ...this.labelStudioOptions,
         task,
-        completion,
+        annotation,
         labelStream,
       });
 
@@ -289,10 +289,10 @@ export class DataManager {
     if (
       !labelStream &&
       this.lsf &&
-      (this.lsf.task?.id !== task?.id || completion !== undefined)
+      (this.lsf.task?.id !== task?.id || annotation !== undefined)
     ) {
-      const completionID = completion?.id ?? task.lastCompletion?.id;
-      this.lsf.loadTask(task.id, completionID);
+      const annotationID = annotation?.id ?? task.lastAnnotation?.id;
+      this.lsf.loadTask(task.id, annotationID);
     }
   }
 

@@ -8,15 +8,15 @@ export const taskToLSFormat = (task) => {
   if (!task) return;
 
   const result = {
-    completion: [],
+    annotation: [],
     predictions: [],
     ...task,
     createdAt: task.createdAt,
     isLabeled: task.is_labeled,
   };
 
-  if (task.completions) {
-    result.completions = task.completions.map(completionToLSF);
+  if (task.annotations) {
+    result.annotations = task.annotations.map(annotationToLSF);
   }
 
   if (task.predictions) {
@@ -26,13 +26,13 @@ export const taskToLSFormat = (task) => {
   return result;
 };
 
-export const completionToLSF = (completion) => {
+export const annotationToLSF = (annotation) => {
   return {
-    ...completion,
-    createdAgo: completion.created_ago,
-    createdBy: completion.created_username,
-    leadTime: completion.lead_time,
-    skipped: completion.was_cancelled,
+    ...annotation,
+    createdAgo: annotation.created_ago,
+    createdBy: annotation.created_username,
+    leadTime: annotation.lead_time,
+    skipped: annotation.was_cancelled,
   };
 };
 
@@ -44,21 +44,21 @@ export const predictionToLSF = (prediction) => {
   };
 };
 
-export const completionToServer = (completion) => {
+export const annotationToServer = (annotation) => {
   return {
-    ...completion,
-    id: completion.pk,
-    created_ago: completion.createdAgo,
-    created_username: completion.createdBy,
+    ...annotation,
+    id: annotation.pk,
+    created_ago: annotation.createdAgo,
+    created_username: annotation.createdBy,
     created_at: new Date().toISOString(),
-    lead_time: completion.leadTime,
+    lead_time: annotation.leadTime,
   };
 };
 
-export const getCompletionSnapshot = (c) => ({
+export const getAnnotationSnapshot = (c) => ({
   id: c.id,
   pk: c.pk,
-  result: c.serializeCompletion(),
+  result: c.serializeAnnotation(),
   leadTime: c.leadTime,
   userGenerate: !!c.userGenerate,
   sentUserGenerate: !!c.sentUserGenerate,

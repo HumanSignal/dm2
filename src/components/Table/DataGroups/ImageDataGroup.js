@@ -10,7 +10,7 @@ export const ImageDataGroup = (column) => {
   } = column;
   const root = getRoot(original);
 
-  return original.total_completions === 0 || !root.showPreviews ? (
+  return original.total_annotations === 0 || !root.showPreviews ? (
     <div>
       <img
         src={value}
@@ -23,7 +23,7 @@ export const ImageDataGroup = (column) => {
   ) : (
     <AnnotationPreview
       task={original}
-      completion={original.completions[0]}
+      annotation={original.annotations[0]}
       config={getRoot(original).SDK}
       name={alias}
       width="100%"

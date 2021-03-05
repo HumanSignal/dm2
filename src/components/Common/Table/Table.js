@@ -103,7 +103,7 @@ export const Table = observer(
         out = {
           id: out?.id,
           data: out?.data,
-          completions: out?.completions,
+          annotations: out?.annotations,
           predictions: out?.predictions,
         };
 

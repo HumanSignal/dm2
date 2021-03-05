@@ -1,35 +1,35 @@
 import { flow, getRoot, types } from "mobx-state-tree";
 import { DataStore, DataStoreItem } from "../../mixins/DataStore";
-import { getCompletionSnapshot } from "../../sdk/lsf-utils";
+import { getAnnotationSnapshot } from "../../sdk/lsf-utils";
 import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 
 export const create = (columns) => {
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
-    completions: types.optional(types.array(CustomJSON), []),
+    annotations: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
     source: types.maybeNull(types.string),
     was_cancelled: false,
   })
     .views((self) => ({
-      get lastCompletion() {
-        return self.completions[this.completions.length - 1];
+      get lastAnnotation() {
+        return self.annotations[this.annotations.length - 1];
       },
     }))
     .actions((self) => ({
-      mergeCompletions(completions) {
-        self.completions = completions.map((c) => {
-          const existingCompletion = self.completions.find(
+      mergeAnnotations(annotations) {
+        self.annotations = annotations.map((c) => {
+          const existingAnnotation = self.annotations.find(
             (ec) => ec.id === Number(c.pk)
           );
 
-          if (existingCompletion) {
-            return existingCompletion;
+          if (existingAnnotation) {
+            return existingAnnotation;
           } else {
             return {
               id: c.id,
               pk: c.pk,
-              result: c.serializeCompletion(),
+              result: c.serializeAnnotation(),
               leadTime: c.leadTime,
               userGenerate: !!c.userGenerate,
               sentUserGenerate: !!c.sentUserGenerate,
@@ -38,32 +38,32 @@ export const create = (columns) => {
         });
       },
 
-      updateCompletion(completion) {
-        const existingCompletion = self.completions.find((c) => {
-          return c.id === Number(completion.pk) || c.pk === completion.pk;
+      updateAnnotation(annotation) {
+        const existingAnnotation = self.annotations.find((c) => {
+          return c.id === Number(annotation.pk) || c.pk === annotation.pk;
         });
 
-        if (existingCompletion) {
-          Object.assign(existingCompletion, getCompletionSnapshot(completion));
+        if (existingAnnotation) {
+          Object.assign(existingAnnotation, getAnnotationSnapshot(annotation));
         } else {
-          self.completions.push(getCompletionSnapshot(completion));
+          self.annotations.push(getAnnotationSnapshot(annotation));
         }
       },
 
-      deleteCompletion(completion) {
-        const index = self.completions.findIndex((c) => {
-          return c.id === Number(completion.pk) || c.pk === completion.pk;
+      deleteAnnotation(annotation) {
+        const index = self.annotations.findIndex((c) => {
+          return c.id === Number(annotation.pk) || c.pk === annotation.pk;
         });
 
-        if (index >= 0) self.completions.splice(index, 1);
+        if (index >= 0) self.annotations.splice(index, 1);
       },
 
       loadAnnotations: flow(function* () {
         const annotations = yield Promise.all([
-          getRoot(self).apiCall("completions", { taskID: self.id }),
+          getRoot(self).apiCall("annotations", { taskID: self.id }),
         ]);
 
-        self.completions = annotations[0];
+        self.annotations = annotations[0];
       }),
     }));
 
@@ -73,7 +73,7 @@ export const create = (columns) => {
     apiMethod: "tasks",
     listItemType: TaskModel,
     properties: {
-      totalCompletions: 0,
+      totalAnnotations: 0,
       totalPredictions: 0,
     },
   })
@@ -137,20 +137,20 @@ export const create = (columns) => {
       },
 
       postProcessData(data) {
-        const { total_completions, total_predictions } = data;
+        const { total_annotations, total_predictions } = data;
 
-        if (total_completions !== null)
-          self.totalCompletions = total_completions;
+        if (total_annotations !== null)
+          self.totalAnnotations = total_annotations;
         if (total_predictions !== null)
           self.totalPredictions = total_predictions;
       },
     }))
     .preProcessSnapshot((snapshot) => {
-      const { total_completions, total_predictions, ...sn } = snapshot;
+      const { total_annotations, total_predictions, ...sn } = snapshot;
 
       return {
         ...sn,
-        totalCompletions: total_completions,
+        totalAnnotations: total_annotations,
         totalPredictions: total_predictions,
       };
     });

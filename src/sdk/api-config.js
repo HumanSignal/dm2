@@ -34,7 +34,7 @@ export const APIConfig = {
     /** List of tasks (samples) in the dataset */
     tasks: "/views/:tabID/tasks",
 
-    /** Per-task annotations (completions, predictions) */
+    /** Per-task annotations (annotations, predictions) */
     annotations: "/views/:tabID/annotations",
 
     /** Single task (sample) */
@@ -44,36 +44,33 @@ export const APIConfig = {
     nextTask: "/tasks/next",
 
     /** Single annotation */
-    completion: "/tasks/:taskID/completions/:id",
-
-    /** Single annotation */
-    completions: "/../tasks/:taskID/completions",
+    annotation: "/tasks/:taskID/annotations/:id",
 
     /** Mark sample as skipped */
     skipTask: {
       path: (params) => {
-        const pathBase = "/../tasks/:taskID/completions";
-        const isNewCompletion = !isDefined(params.completionID);
-        return isNewCompletion ? pathBase : `${pathBase}/:completionID`;
+        const pathBase = "/../tasks/:taskID/annotations";
+        const isNewAnnotation = !isDefined(params.annotationID);
+        return isNewAnnotation ? pathBase : `${pathBase}/:annotationID`;
       },
       method: "post",
     },
 
     /** Submit annotation */
-    submitCompletion: {
-      path: "/../tasks/:taskID/completions",
+    submitAnnotation: {
+      path: "/../tasks/:taskID/annotations",
       method: "post",
     },
 
     /** Update annotation */
-    updateCompletion: {
-      path: "/../completions/:completionID",
+    updateAnnotation: {
+      path: "/../annotations/:annotationID",
       method: "patch",
     },
 
     /** Delete annotation */
-    deleteCompletion: {
-      path: "/../completions/:completionID",
+    deleteAnnotation: {
+      path: "/../annotations/:annotationID",
       method: "delete",
     },
 

@@ -82,7 +82,7 @@ const dm = new DataManager({
 DataManager forwards most of the events from Label Studio.
 
 ```js
-dm.on('submitCompletion', () => /* handle the submit process */)
+dm.on('submitAnnotation', () => /* handle the submit process */)
 ```
 
 #### API endpoints

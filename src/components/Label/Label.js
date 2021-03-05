@@ -61,8 +61,8 @@ export const Labeling = injector(
     const lsfRef = React.createRef();
     const history = SDK.lsf?.history;
 
-    const [completion, setCompletion] = React.useState(
-      SDK.lsf?.currentCompletion
+    const [annotation, setAnnotation] = React.useState(
+      SDK.lsf?.currentAnnotation
     );
 
     const closeLabeling = () => {
@@ -71,15 +71,15 @@ export const Labeling = injector(
     };
 
     React.useEffect(() => {
-      const callback = (completion) => setCompletion(completion);
-      SDK.on("completionSet", callback);
+      const callback = (annotation) => setAnnotation(annotation);
+      SDK.on("annotationSet", callback);
 
-      return () => SDK.off("completionSet", callback);
+      return () => SDK.off("annotationSet", callback);
     }, []);
 
     React.useEffect(() => {
-      setCompletion(SDK.lsf?.currentCompletion);
-    }, [SDK.lsf?.currentCompletion?.id]);
+      setAnnotation(SDK.lsf?.currentAnnotation);
+    }, [SDK.lsf?.currentAnnotation?.id]);
 
     React.useEffect(() => {
       console.log("Starting labeling");
@@ -97,7 +97,7 @@ export const Labeling = injector(
         view={view}
         history={history}
         lsf={SDK.lsf?.lsf}
-        completion={completion}
+        annotation={annotation}
         isLabelStream={isLabelStreamMode}
       />
     );

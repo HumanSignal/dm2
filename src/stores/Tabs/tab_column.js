@@ -175,9 +175,9 @@ export const TabColumn = types
       switch (self.alias) {
         default:
           return null;
-        case "total_completions":
+        case "total_annotations":
           return <Icon icon={FaCheckCircle} color="green" opacity="0.7" />;
-        case "cancelled_completions":
+        case "cancelled_annotations":
           return <Icon icon={FaBan} color="red" opacity="0.7" />;
         case "total_predictions":
           return <Icon icon={FaBrain} color="#1890ff" opacity="0.7" />;
