@@ -185,7 +185,7 @@ if (isDevelopment) {
   }));
 }
 
-module.exports = ({withDevServer = true}) => ({
+module.exports = ({withDevServer = true} = {}) => ({
   mode: process.env.NODE_ENV || "development",
   devtool: "cheap-module-source-map",
   ...(withDevServer ? devServer() : {}),
