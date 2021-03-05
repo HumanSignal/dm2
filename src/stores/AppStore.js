@@ -1,6 +1,5 @@
-import { Modal, notification } from "antd";
 import { flow, types } from "mobx-state-tree";
-import React from "react";
+import { Modal } from "../components/Common/Modal/Modal";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import * as DataStores from "./DataStores";
@@ -40,6 +39,8 @@ export const AppStore = types
     availableActions: types.optional(types.array(CustomJSON), []),
 
     serverError: types.map(CustomJSON),
+
+    crashed: false,
   })
   .views((self) => ({
     get SDK() {
@@ -52,6 +53,10 @@ export const AppStore = types
 
     get API() {
       return self.SDK.api;
+    },
+
+    get apiVersion() {
+      return self.SDK.apiVersion;
     },
 
     get isLabeling() {
@@ -88,10 +93,19 @@ export const AppStore = types
     get labelingIsConfigured() {
       return self.project?.config_has_control_tags === true;
     },
+
+    get labelingConfig() {
+      return self.project.label_config_line ?? self.project.label_config;
+    },
+
+    get showPreviews() {
+      return this.SDK.showPreviews;
+    },
   }))
   .actions((self) => ({
     startPolling() {
       if (self._poll) return;
+      if (self.SDK.polling === false) return;
 
       const poll = async (self) => {
         await self.fetchProject({ interaction: "timer" });
@@ -189,12 +203,11 @@ export const AppStore = types
 
       if (!self.labelingIsConfigured) {
         Modal.confirm({
-          icon: <span></span>,
           title: "You're almost there!",
-          content:
+          body:
             "Before you can annotate the data, set up labeling configuration",
           onOk() {
-            window.location.href = "./settings";
+            self.SDK.invoke("settingsClicked");
           },
           okText: "Go to setup",
         });
@@ -248,11 +261,17 @@ export const AppStore = types
             }
           : null;
 
-      const newProject = yield self.apiCall("project", params);
+      try {
+        const newProject = yield self.apiCall("project", params);
 
-      if (JSON.stringify(newProject ?? {}) !== oldProject) {
-        self.project = newProject;
+        if (JSON.stringify(newProject ?? {}) !== oldProject) {
+          self.project = newProject;
+        }
+      } catch {
+        self.crash();
+        return false;
       }
+      return true;
     }),
 
     fetchActions: flow(function* () {
@@ -264,16 +283,17 @@ export const AppStore = types
 
       const { tab, task, labeling } = History.getParams();
 
-      yield self.fetchProject();
-      yield self.fetchActions();
-      self.viewsStore.fetchColumns();
-      yield self.viewsStore.fetchViews(tab, task, labeling);
+      if (yield self.fetchProject()) {
+        yield self.fetchActions();
+        self.viewsStore.fetchColumns();
+        yield self.viewsStore.fetchTabs(tab, task, labeling);
 
-      self.resolveURLParams();
+        self.resolveURLParams();
 
-      self.loading = false;
+        self.loading = false;
 
-      self.startPolling();
+        self.startPolling();
+      }
     }),
 
     apiCall: flow(function* (methodName, params, body) {
@@ -287,10 +307,15 @@ export const AppStore = types
           });
         }
 
-        notification.error({
+        console.warn({
           message: "Error occurred when loading data",
           description: result?.response?.detail ?? result.error,
         });
+
+        // notification.error({
+        //   message: "Error occurred when loading data",
+        //   description: result?.response?.detail ?? result.error,
+        // });
       } else {
         self.serverError.delete(methodName);
       }
@@ -338,4 +363,24 @@ export const AppStore = types
 
       return result;
     }),
+
+    crash() {
+      self.destroy();
+      self.crashed = true;
+      self.SDK.invoke("crash");
+    },
+
+    destroy() {
+      if (self.taskStore) {
+        self.taskStore?.clear();
+        self.taskStore = undefined;
+      }
+
+      if (self.annotationStore) {
+        self.annotationStore?.clear();
+        self.annotationStore = undefined;
+      }
+
+      clearTimeout(self._poll);
+    },
   }));

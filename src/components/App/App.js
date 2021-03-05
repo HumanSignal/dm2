@@ -1,11 +1,11 @@
 import { observer, Provider } from "mobx-react";
 import React from "react";
+import { SDKProvider } from "../../providers/SDKProvider";
+import { Block, Elem } from "../../utils/bem";
 import { Spinner } from "../Common/Spinner";
+import { DataManager } from "../DataManager/DataManager";
 import { Labeling } from "../Label/Label";
-import { DMTabs } from "../Tabs/tabs";
-import { Styles } from "./App.styles";
-
-/** @typedef {import("../../stores/AppStore").AppStore} AppStore */
+import "./App.styl";
 
 class ErrorBoundary extends React.Component {
   state = {
@@ -27,34 +27,33 @@ class ErrorBoundary extends React.Component {
 
 /**
  * Main Component
- * @param {{app: AppStore} param0
+ * @param {{app: import("../../stores/AppStore").AppStore} param0
  */
 const AppComponent = ({ app }) => {
-  // make full screen for label stream
-  const rootStyle =
-    app.SDK.mode === "labelstream"
-      ? {
-          position: "absolute",
-          width: "100%",
-          top: 0,
-          zIndex: 1000,
-        }
-      : null;
-
   return (
     <ErrorBoundary>
       <Provider store={app}>
-        <Styles fullScreen={app.isLabeling} style={rootStyle}>
-          {app.loading ? (
-            <div className="app-loader">
-              <Spinner size="large" />
-            </div>
-          ) : app.isLabeling ? (
-            <Labeling />
-          ) : (
-            <DMTabs />
-          )}
-        </Styles>
+        <SDKProvider sdk={app.SDK}>
+          <Block name="root" mod={{ mode: app.SDK.mode }}>
+            {app.crashed ? (
+              <Block name="crash">
+                <Elem name="header">Oops...</Elem>
+                <Elem name="description">
+                  Project has been deleted or not yet created.
+                </Elem>
+              </Block>
+            ) : app.loading ? (
+              <Block name="app-loader">
+                <Spinner size="large" />
+              </Block>
+            ) : app.isLabeling ? (
+              <Labeling />
+            ) : (
+              <DataManager />
+            )}
+            <Block name={"offscreen-lsf"} />
+          </Block>
+        </SDKProvider>
       </Provider>
     </ErrorBoundary>
   );

@@ -1,10 +1,14 @@
-import moment from "moment";
+import { format, isValid } from "date-fns";
 import React from "react";
 
 export const DateTimeCell = (column) => {
-  return (
+  const date = new Date(column.value);
+  const dateFormat = "MMM dd yyyy, HH:mm:ss";
+  return column.value ? (
     <div style={{ whiteSpace: "nowrap" }}>
-      {column.value ? moment(column.value).format("MMM DD yyyy, HH:mm:ss") : ""}
+      {isValid(date) ? format(date, dateFormat) : ""}
     </div>
+  ) : (
+    ""
   );
 };

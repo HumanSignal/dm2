@@ -1,10 +1,11 @@
 import {
+  applySnapshot,
   clone,
   destroy,
   flow,
   getRoot,
   getSnapshot,
-  types,
+  types
 } from "mobx-state-tree";
 import { History } from "../../utils/history";
 import { guidGenerator } from "../../utils/random";
@@ -94,8 +95,8 @@ export const TabStore = types
       }
     }),
 
-    deleteView: flow(function* (view) {
-      if (self.selected === view) {
+    deleteView: flow(function* (view, { autoselect = true } = {}) {
+      if (autoselect && self.selected === view) {
         let newView;
 
         if (self.selected.opener) {
@@ -104,14 +105,21 @@ export const TabStore = types
           const index = self.views.indexOf(view);
           newView = index === 0 ? self.views[index + 1] : self.views[index - 1];
         }
+
         self.setSelected(newView.key);
       }
 
-      yield view.delete();
+      if (view.saved) {
+        yield getRoot(self).apiCall("deleteTab", { tabID: view.id });
+      }
+
       destroy(view);
     }),
 
-    addView: flow(function* (viewSnapshot = {}) {
+    addView: flow(function* (viewSnapshot = {}, options) {
+      const { autoselect = true, autosave = true, reload = true } =
+        options ?? {};
+
       const snapshot = viewSnapshot ?? {};
       const lastView = self.views[self.views.length - 1];
       const newTitle = `New Tab ${self.views.length + 1}`;
@@ -127,11 +135,54 @@ export const TabStore = types
       const newView = self.createView(newSnapshot);
 
       self.views.push(newView);
-      self.setSelected(newView);
 
-      yield newView.save();
+      if (autoselect) self.setSelected(newView);
+
+      if (autosave) yield newView.save({ reload });
 
       return newView;
+    }),
+
+    saveView: flow(function* (view, { reload, interaction } = {}) {
+      const needsLock = ["ordering", "filter"].includes(interaction);
+
+      if (needsLock) view.lock();
+      const { id: tabID } = view;
+      const body = { body: view.serialize() };
+      const params = { tabID };
+
+      if (interaction !== undefined) Object.assign(params, { interaction });
+
+      const root = getRoot(self);
+      const apiMethod =
+        !view.saved && root.apiVersion === 2 ? "createTab" : "updateTab";
+
+      const result = yield root.apiCall(apiMethod, params, body);
+      const viewSnapshot = getSnapshot(view);
+      const newViewSnapshot = {
+        ...viewSnapshot,
+        ...result,
+        saved: true,
+        filters: viewSnapshot.filters,
+        conjunction: viewSnapshot.conjunction,
+      };
+
+      if (result.id !== view.id) {
+        const newView = Tab.create({ ...newViewSnapshot, saved: true });
+        console.log(result.id, view.id);
+        console.log(newView);
+
+        self.views.push(newView);
+        self.setSelected(newView);
+        newView.reload();
+        destroy(view);
+      } else {
+        applySnapshot(view, newViewSnapshot);
+
+        if (reload !== false) view.reload({ interaction });
+
+        view.unlock();
+      }
     }),
 
     duplicateView(view) {
@@ -235,18 +286,41 @@ export const TabStore = types
       self.defaultHidden = TabHiddenColumns.create(hiddenColumns);
     },
 
-    fetchViews: flow(function* (tabID, taskID, labeling) {
-      const { tabs } = yield getRoot(self).apiCall("tabs");
+    fetchTabs: flow(function* (tabID, taskID, labeling) {
+      const response = yield getRoot(self).apiCall("tabs");
+      const tabs = response.tabs ?? response ?? [];
 
-      const snapshots = tabs.map((t) => Tab.create({ ...t, saved: true }));
+      const snapshots = tabs.map((t) => {
+        const { data, ...tab } = t;
+
+        return Tab.create({
+          ...tab,
+          ...(data ?? {}),
+          saved: true,
+          hasData: !!data,
+        });
+      });
 
       self.views.push(...snapshots);
 
-      const defaultView = self.views[0];
+      let defaultView = self.views[0];
+
+      if (self.views.length === 0) {
+        tabID = null;
+
+        defaultView = Tab.create({
+          id: 0,
+          title: "Default",
+        });
+
+        self.views.push(defaultView);
+        yield self.saveView(defaultView);
+      }
+
       const selected = tabID
         ? self.views.find((view) => {
-            return view.id === parseInt(tabID);
-          })
+          return view.id === parseInt(tabID);
+        })
         : null;
 
       yield self.setSelected(selected ?? defaultView, {
@@ -257,8 +331,8 @@ export const TabStore = types
         getRoot(self).startLabeling(
           taskID
             ? {
-                id: parseInt(taskID),
-              }
+              id: parseInt(taskID),
+            }
             : null,
           { pushState: false }
         );

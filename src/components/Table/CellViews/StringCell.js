@@ -10,7 +10,7 @@ const valueToString = (value) => {
   }
 };
 
-export const StringCell = ({ column, value }) => {
+export const StringCell = ({ value }) => {
   return (
     <div
       style={{
@@ -20,7 +20,7 @@ export const StringCell = ({ column, value }) => {
         lineHeight: "16px",
       }}
     >
-      {valueToString(value)}
+      {value ? valueToString(value) : ""}
     </div>
   );
 };

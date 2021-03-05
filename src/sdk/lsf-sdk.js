@@ -184,6 +184,11 @@ export class LSFWrapper {
   };
 
   /** @private */
+  onTaskLoad = async (...args) => {
+    this.datamanager.invoke("onSelectCompletion", args);
+  };
+
+  /** @private */
   onSubmitCompletion = async (ls, completion) => {
     await this.submitCurrentCompletion("submitCompletion", (taskID, body) =>
       this.datamanager.apiCall("submitCompletion", { taskID }, { body })
@@ -346,7 +351,7 @@ export class LSFWrapper {
 
   /** @returns {string|null} */
   get lsfConfig() {
-    return this.project.label_config_line ?? this.project.label_config;
+    return this.datamanager.store.labelingConfig;
   }
 
   /** @returns {Dict} */

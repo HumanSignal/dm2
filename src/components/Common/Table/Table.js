@@ -1,4 +1,3 @@
-import { Button, Modal, Tooltip } from "antd";
 import { observer } from "mobx-react";
 import React from "react";
 import { BsCode } from "react-icons/bs";
@@ -6,11 +5,14 @@ import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import { isDefined } from "../../../utils/utils";
-import { TableWrapper } from "./Table.styled";
+import { Button } from "../Button/Button";
+import { Modal } from "../Modal/Modal";
+import { Tooltip } from "../Tooltip/Tooltip";
+import "./Table.styl";
 import { TableCheckboxCell } from "./TableCheckbox";
-import { TableContext } from "./TableContext";
-import { TableHead } from "./TableHead";
-import { TableRow } from "./TableRow";
+import { TableBlock, TableContext, TableElem } from "./TableContext";
+import { TableHead } from "./TableHead/TableHead";
+import { TableRow } from "./TableRow/TableRow";
 import { prepareColumns } from "./utils";
 
 const Decorator = (decoration) => {
@@ -41,6 +43,7 @@ export const Table = observer(
     stopInteractions,
     onColumnResize,
     onColumnReset,
+    headerExtra,
     ...props
   }) => {
     const tableHead = React.useRef();
@@ -53,20 +56,20 @@ export const Table = observer(
         id: "select",
         headerClassName: "th select-all",
         cellClassName: "td select-row",
-        width: 40,
-        maxWidth: 40,
-        justifyContent: "center",
+        style: {
+          width: 40,
+          maxWidth: 40,
+          justifyContent: "center",
+        },
         onClick: (e) => e.stopPropagation(),
         Header: () => {
           return (
-            <div style={{ width: 30 }}>
-              <TableCheckboxCell
-                checked={selectedItems.isAllSelected}
-                indeterminate={selectedItems.isIndeterminate}
-                onChange={() => props.onSelectAll()}
-                className="th select-all"
-              />
-            </div>
+            <TableCheckboxCell
+              checked={selectedItems.isAllSelected}
+              indeterminate={selectedItems.isIndeterminate}
+              onChange={() => props.onSelectAll()}
+              className="th select-all"
+            />
           );
         },
         Cell: ({ data }) => {
@@ -86,9 +89,11 @@ export const Table = observer(
     columns.push({
       id: "show-source",
       cellClassName: "td show-source",
-      width: 40,
-      maxWidth: 40,
-      justifyContent: "center",
+      style: {
+        width: 40,
+        maxWidth: 40,
+        justifyContent: "center",
+      },
       onClick: (e) => e.stopPropagation(),
       Header() {
         return <div style={{ width: 40 }} />;
@@ -103,23 +108,20 @@ export const Table = observer(
         };
 
         return (
-          <div style={{ width: 40 }}>
-            <Tooltip title="Show task source">
-              <Button
-                type="link"
-                className="flex-button"
-                onClick={() => {
-                  Modal.info({
-                    title: "Source for task " + out?.id,
-                    width: 800,
-                    content: <pre>{JSON.stringify(out, null, "  ")}</pre>,
-                  });
-                }}
-              >
-                <BsCode />
-              </Button>
-            </Tooltip>
-          </div>
+          <Tooltip title="Show task source">
+            <Button
+              type="link"
+              style={{ width: 32, height: 32, padding: 0 }}
+              onClick={() => {
+                Modal.modal({
+                  title: "Source for task " + out?.id,
+                  width: 800,
+                  body: <pre>{JSON.stringify(out, null, "  ")}</pre>,
+                });
+              }}
+              icon={<BsCode />}
+            />
+          </Tooltip>
         );
       },
     });
@@ -146,9 +148,9 @@ export const Table = observer(
           decoration={Decoration}
           onResize={onColumnResize}
           onReset={onColumnReset}
+          extra={headerExtra}
         />
       ),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         props.order,
         props.columnHeaderExtra,
@@ -168,7 +170,7 @@ export const Table = observer(
         const row = data[index - 1];
 
         return (
-          <div className="row-wrapper" style={style}>
+          <TableElem name="row-wrapper" style={style}>
             <TableRow
               key={row.id}
               data={row}
@@ -183,10 +185,9 @@ export const Table = observer(
               }}
               decoration={Decoration}
             />
-          </div>
+          </TableElem>
         );
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       [
         data,
         props.fitContent,
@@ -238,12 +239,11 @@ export const Table = observer(
     // }, [tableHead.current]);
 
     return (
-      <TableWrapper fitToContent={props.fitToContent}>
+      <TableBlock name="table" mod={{ fit: props.fitToContent }}>
         <TableContext.Provider value={contextValue}>
           <StickyList
             ref={listRef}
             overscanCount={10}
-            className="virtual-table"
             itemHeight={props.rowHeight}
             totalCount={props.total}
             itemCount={data.length + 1}
@@ -255,12 +255,11 @@ export const Table = observer(
             initialScrollOffset={initialScrollOffset}
             isItemLoaded={isItemLoaded}
             loadMore={props.loadMore}
-            style={{ minWidth: "fit-content" }}
           >
             {renderRow}
           </StickyList>
         </TableContext.Provider>
-      </TableWrapper>
+      </TableBlock>
     );
   }
 );
@@ -309,7 +308,7 @@ const StickyList = observer(
 
     return (
       <StickyListContext.Provider value={itemData}>
-        <AutoSizer className="table-auto-size">
+        <TableElem tag={AutoSizer} name="auto-size">
           {({ width, height }) => (
             <InfiniteLoader
               ref={listRef}
@@ -318,7 +317,9 @@ const StickyList = observer(
               isItemLoaded={isItemLoaded}
             >
               {({ onItemsRendered, ref }) => (
-                <VariableSizeList
+                <TableElem
+                  name="virual"
+                  tag={VariableSizeList}
                   {...rest}
                   ref={ref}
                   width={width}
@@ -329,11 +330,11 @@ const StickyList = observer(
                   initialScrollOffset={initialScrollOffset?.(height) ?? 0}
                 >
                   {ItemWrapper}
-                </VariableSizeList>
+                </TableElem>
               )}
             </InfiniteLoader>
           )}
-        </AutoSizer>
+        </TableElem>
       </StickyListContext.Provider>
     );
   })
@@ -347,11 +348,12 @@ const innerElementType = React.forwardRef(({ children, ...rest }, ref) => {
       {({ stickyItems, stickyItemsHeight, StickyComponent }) => (
         <div ref={ref} {...rest}>
           {stickyItems.map((index) => (
-            <StickyComponent
+            <TableElem
+              name="sticky-header"
+              tag={StickyComponent}
               key={index}
               index={index}
               style={{
-                width: "100%",
                 height: stickyItemsHeight[index],
                 top: index * stickyItemsHeight[index],
               }}

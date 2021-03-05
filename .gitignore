@@ -35,8 +35,11 @@ Desktop.ini
 .env.test.local
 .env.production.local
 
+report.*.json
+
 # Testing
 coverage/
+public/static/
 
 # Examples of local env
 src/examples

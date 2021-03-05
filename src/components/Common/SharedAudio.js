@@ -1,17 +1,15 @@
-import { Button, Slider } from "antd";
-import moment from "moment";
+import { formatDuration } from "date-fns";
 import React, { Component } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
+import { Button } from "./Button/Button";
 
 const Duration = ({ value, units, format }) =>
-  moment.duration(value, units).format(format, {
-    trim: false,
-  });
+  formatDuration({ [units]: value }, { format });
 
 const PlaybackControl = ({ current, max, onChange, separator = " / " }) => {
   const format = React.useMemo(() => {
     if (max >= 3600) {
-      return "hh:mm:ss";
+      return "HH:mm:ss";
     } else {
       return "mm:ss";
     }
@@ -24,16 +22,14 @@ const PlaybackControl = ({ current, max, onChange, separator = " / " }) => {
         {separator}
         <Duration value={max} units="seconds" format={format} />
       </div>
-      <Slider
+      <input
+        type="range"
         min={0}
         max={max}
         step={0.01}
         value={current}
         style={{ flex: 1 }}
         onChange={onChange}
-        tipFormatter={(value) => (
-          <Duration value={value} units="seconds" format={format} />
-        )}
       />
     </>
   );
@@ -66,10 +62,7 @@ export class SharedAudio extends Component {
         style={{ display: "flex", width: "100%" }}
         onClick={(e) => e.stopPropagation()}
       >
-        <Button
-          onClick={paused ? this.play : this.pause}
-          className="flex-button"
-        >
+        <Button onClick={paused ? this.play : this.pause}>
           {paused ? <FaPlay /> : <FaPause />}
         </Button>
         {this.audio && (
@@ -152,6 +145,5 @@ export class SharedAudio extends Component {
    */
   set audio(value) {
     this.setState({ ...this.state, audio: value });
-    return value;
   }
 }

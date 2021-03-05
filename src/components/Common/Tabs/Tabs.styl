@@ -1,0 +1,39 @@
+.tabs
+  height 32px
+  display flex
+  align-items stretch
+  justify-content space-between
+  box-shadow 0 -1px 0 #D9D9D9 inset
+
+  &__list
+    display flex
+
+  &__item
+    cursor pointer
+    padding 0 16px
+    display flex
+    align-items center
+    justify-content space-between
+    box-shadow -0.5px 0 0 #D9D9D9 inset, 0.5px 0 0 #D9D9D9 inset
+
+    &_active
+      cursor default
+      background-color #fff
+      box-shadow -0.5px 0 0 #D9D9D9 inset, 0.5px 0 0 #D9D9D9 inset, 0 1px 0 #69C0FF inset
+
+  &__add
+    padding 0
+    border none
+    outline none
+    width 32px
+    height 32px
+    display flex
+    align-items center
+    justify-content center
+    color #595959
+    background none
+
+  &__extra
+    display flex
+    align-items center
+    justify-content flex-end

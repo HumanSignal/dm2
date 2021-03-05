@@ -9,9 +9,7 @@
  * }} EndpointConfig
  */
 
-/**
- * @typedef {import("./types").Dict} Dict
- */
+import { formDataToJPO } from "./helpers";
 
 /**
  * @typedef {Dict<string, EndpointConfig>} Endpoints
@@ -24,6 +22,8 @@
  * commonHeaders: Dict<string>,
  * mockDelay: number,
  * mockDisabled: boolean,
+ * sharedParams: Dict<any>,
+ * alwaysExpectJSON: boolean,
  * }} APIProxyOptions
  */
 
@@ -46,6 +46,9 @@ export class APIProxy {
   /** @type {"same-origin"|"cors"} */
   requestMode = "same-origin";
 
+  /** @type {Dict} */
+  sharedParams = {};
+
   /**
    * Constructor
    * @param {APIProxyOptions} options
@@ -56,8 +59,18 @@ export class APIProxy {
     this.requestMode = this.detectMode();
     this.mockDelay = options.mockDelay ?? 0;
     this.mockDisabled = options.mockDisabled ?? false;
+    this.sharedParams = options.sharedParams ?? {};
+    this.alwaysExpectJSON = options.alwaysExpectJSON ?? true;
 
     this.resolveMethods(options.endpoints);
+  }
+
+  /**
+   * Check if method exists
+   * @param {String} method
+   */
+  isValidMethod(method) {
+    return this[method] instanceof Function;
   }
 
   /**
@@ -107,9 +120,13 @@ export class APIProxy {
       methods.forEach((settings, methodName) => {
         const { scope, ...restSettings } = this.getSettings(settings);
 
-        this[methodName] = this.createApiCallExecutor(restSettings, [
-          parentPath,
-        ]);
+        Object.defineProperty(this, methodName, {
+          value: this.createApiCallExecutor(restSettings, [parentPath]),
+        });
+
+        Object.defineProperty(this, `${methodName}Raw`, {
+          value: this.createApiCallExecutor(restSettings, [parentPath], true),
+        });
 
         if (scope)
           this.resolveMethods(scope, [
@@ -125,18 +142,26 @@ export class APIProxy {
    * @param {EndpointConfig} settings
    * @private
    */
-  createApiCallExecutor(methodSettings, parentPath) {
+  createApiCallExecutor(methodSettings, parentPath, raw = false) {
     return async (urlParams, { headers, body } = {}) => {
       try {
-        const requestMethod = (methodSettings.method ?? "get").toUpperCase();
-        const apiCallURL = this.createUrl(
+        const finalParams = {
+          ...(urlParams ?? {}),
+          ...(this.sharedParams ?? {}),
+        };
+
+        const { method, url: apiCallURL } = this.createUrl(
           methodSettings.path,
-          urlParams ?? {},
+          finalParams,
           parentPath
         );
 
+        const requestMethod =
+          method ?? (methodSettings.method ?? "get").toUpperCase();
+
         const initialheaders = Object.assign(
           this.getDefaultHeaders(requestMethod),
+          this.commonHeaders ?? {},
           methodSettings.headers ?? {},
           headers ?? {}
         );
@@ -152,13 +177,28 @@ export class APIProxy {
 
         if (requestMethod !== "GET") {
           const contentType = requestHeaders.get("Content-Type");
+          const { sharedParams } = this;
+          let extendedBody = body ?? {};
 
-          if (contentType === "multipart/form-data") {
-            requestParams.body = this.createRequestBody(body);
-          } else if (contentType === "application/json") {
-            requestParams.body = JSON.stringify(body);
+          if (extendedBody instanceof FormData) {
+            Object.entries(sharedParams ?? {}).forEach(([key, value]) => {
+              extendedBody.append(key, value);
+            });
           } else {
-            requestParams.body = body;
+            Object.assign(extendedBody, {
+              ...(sharedParams ?? {}),
+              ...(body ?? {}),
+            });
+          }
+
+          if (extendedBody instanceof FormData) {
+            requestParams.body = extendedBody;
+          } else if (contentType === "multipart/form-data") {
+            requestParams.body = this.createRequestBody(extendedBody);
+          } else if (contentType === "application/json") {
+            requestParams.body = this.bodyToJSON(extendedBody);
+          } else {
+            requestParams.body = extendedBody;
           }
         }
 
@@ -180,17 +220,27 @@ export class APIProxy {
           rawResponse = await fetch(apiCallURL, requestParams);
         }
 
+        if (raw) return rawResponse;
+
         if (rawResponse.ok) {
-          const responseData =
-            rawResponse.status !== 204
-              ? await rawResponse.json()
-              : { ok: true };
+          const responseText = await rawResponse.text();
 
-          if (methodSettings.convert instanceof Function) {
-            return await methodSettings.convert(responseData);
+          try {
+            const responseData =
+              rawResponse.status !== 204
+                ? JSON.parse(
+                  this.alwaysExpectJSON ? responseText : responseText || "{}"
+                )
+                : { ok: true };
+
+            if (methodSettings.convert instanceof Function) {
+              return await methodSettings.convert(responseData);
+            }
+
+            return responseData;
+          } catch (err) {
+            return this.generateException(err, responseText);
           }
-
-          return responseData;
         } else {
           return this.generateError(rawResponse);
         }
@@ -245,25 +295,34 @@ export class APIProxy {
   createUrl(endpoint, data = {}, parentPath) {
     const url = new URL(this.gateway);
     const usedKeys = [];
+    const { path: resolvedPath, method: resolvedMethod } = this.resolveEndpoint(
+      endpoint,
+      data
+    );
     const path = []
-      .concat(...(parentPath ?? []), this.resolveEndpoint(endpoint, data))
+      .concat(...(parentPath ?? []), resolvedPath)
       .filter((p) => p !== undefined)
       .join("/")
       .replace(/([/]+)/g, "/");
 
     const processedPath = path.replace(/:([^/]+)/g, (...res) => {
-      const key = res[1];
-      usedKeys.push(key);
+      const keyRaw = res[1];
+      const [key, optional] = keyRaw.match(/([^?]+)(\??)/).slice(1, 3);
       const result = data[key];
 
+      usedKeys.push(key);
+
       if (result === undefined) {
+        if (optional === "?") return "";
         throw new Error(`Can't find key \`${key}\` in data`);
       }
 
       return result;
     });
 
-    url.pathname += processedPath;
+    url.pathname += processedPath
+      .replace(/([/]+)/g, "/")
+      .replace(/([/]+)$/g, "");
 
     if (data && typeof data === "object") {
       Object.entries(data).forEach(([key, value]) => {
@@ -273,7 +332,10 @@ export class APIProxy {
       });
     }
 
-    return url.toString();
+    return {
+      url: url.toString(),
+      method: resolvedMethod,
+    };
   }
 
   /**
@@ -282,11 +344,18 @@ export class APIProxy {
    * @param {Dict} data
    */
   resolveEndpoint(endpoint, data) {
+    let finalEndpoint;
     if (endpoint instanceof Function) {
-      return endpoint(data);
+      finalEndpoint = endpoint(data);
     } else {
-      return endpoint;
+      finalEndpoint = endpoint;
     }
+
+    const methodRegexp = /^(GET|POST|PATCH|DELETE|PUT|HEAD|OPTIONS):/;
+    const method = finalEndpoint.match(methodRegexp)?.[1];
+    const path = finalEndpoint.replace(methodRegexp, "");
+
+    return { method, path };
   }
 
   /**
@@ -295,6 +364,8 @@ export class APIProxy {
    * @param {Dict} body
    */
   createRequestBody(body) {
+    if (body instanceof FormData) return body;
+
     const formData = new FormData();
 
     Object.entries(body).forEach(([key, value]) => {
@@ -305,22 +376,32 @@ export class APIProxy {
   }
 
   /**
+   * Converts body to JSON string
+   * @param {Object|FormData} body
+   */
+  bodyToJSON(body) {
+    const object = formDataToJPO(body);
+    return JSON.stringify(object);
+  }
+
+  /**
    * Generates an error from a Response object
    * @param {Response} fetchResponse
    * @private
    */
-  async generateError(fetchResponse) {
+  async generateError(fetchResponse, exception) {
     const result = (async () => {
+      const text = await fetchResponse.text();
       try {
-        return fetchResponse.json();
+        return JSON.parse(text);
       } catch {
-        return {};
+        return text;
       }
     })();
 
     return {
       status: fetchResponse.status,
-      error: fetchResponse.statusText,
+      error: exception?.message ?? fetchResponse.statusText,
       response: await result,
     };
   }
@@ -330,9 +411,16 @@ export class APIProxy {
    * @param {Error} exception
    * @private
    */
-  generateException(exception) {
+  generateException(exception, details) {
     console.error(exception);
-    return { error: exception.message };
+    const parsedDetails = () => {
+      try {
+        return JSON.parse(details);
+      } catch {
+        return details;
+      }
+    };
+    return { error: exception.message, details: parsedDetails() };
   }
 
   /**

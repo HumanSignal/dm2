@@ -27,7 +27,7 @@ export const DynamicModel = (name, columns, properties) => {
         propertyType = typeWrapper(CustomJSON);
         break;
       default:
-        propertyType = typeWrapper(types.string);
+        propertyType = typeWrapper(types.union(types.string, types.number));
         break;
     }
     modelProperties[col.id] = propertyType;

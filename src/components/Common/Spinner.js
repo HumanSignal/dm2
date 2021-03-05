@@ -1,6 +1,3 @@
-/* eslint-disable import/no-webpack-loader-syntax */
-
-import { Spin } from "antd";
 import React from "react";
 import Running from "../../assets/running";
 
@@ -38,10 +35,10 @@ export const Spinner = ({ ...props }) => {
   };
 
   return (
-    <Spin
+    <div
       {...props}
       style={{ width: size, height: size }}
-      indicator={
+      children={
         <div style={{ width: "100%", height: "100%" }}>
           <img
             src={source.x1}
@@ -51,7 +48,6 @@ export const Spinner = ({ ...props }) => {
           />
         </div>
       }
-      spinning={true}
     />
   );
 };

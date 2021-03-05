@@ -1,17 +1,25 @@
-import { Button, Dropdown } from "antd";
 import { inject, observer } from "mobx-react";
-import React from "react";
-import { VscListFilter } from "react-icons/vsc";
+import React, { useCallback, useEffect, useRef } from "react";
+import { FaFilter } from "react-icons/fa";
 import { Filters } from "../Filters/Filters";
+import { Button } from "./Button/Button";
+import { Dropdown } from "./Dropdown/Dropdown";
 
-export const FiltersButton = observer(({ onClick, active, size }) => {
-  return (
-    <Button onClick={onClick} type={active ? "primary" : "default"} size={size}>
-      <VscListFilter style={{ marginBottom: -2, marginRight: 7 }} />
-      Filters
-    </Button>
-  );
-});
+export const FiltersButton = observer(
+  React.forwardRef(({ active, size, ...rest }, ref) => {
+    return (
+      <Button
+        ref={ref}
+        look={active && "primary"}
+        size={size}
+        icon={<FaFilter />}
+        {...rest}
+      >
+        Filters
+      </Button>
+    );
+  })
+);
 
 const injector = inject(({ store }) => {
   const { viewsStore, currentView } = store;
@@ -25,8 +33,9 @@ const injector = inject(({ store }) => {
 });
 
 export const FiltersPane = injector(
-  ({ viewsStore, sidebarEnabled, size, filtersApplied }) => {
+  ({ viewsStore, sidebarEnabled, size, filtersApplied, ...rest }) => {
     const dropdownProps = {};
+    const dropdown = useRef();
 
     if (sidebarEnabled) {
       Object.assign(dropdownProps, {
@@ -35,14 +44,29 @@ export const FiltersPane = injector(
       });
     }
 
+    useEffect(() => {
+      if (sidebarEnabled) {
+        dropdown?.current?.close();
+      }
+    }, [sidebarEnabled]);
+
+    const toggleCallback = useCallback(() => {
+      if (sidebarEnabled) viewsStore.toggleSidebar();
+    }, [sidebarEnabled]);
+
     return (
-      <Dropdown trigger="click" overlay={() => <Filters />} {...dropdownProps}>
+      <Dropdown.Trigger
+        ref={dropdown}
+        disabled={sidebarEnabled}
+        content={<Filters />}
+      >
         <FiltersButton
           size={size}
           active={filtersApplied}
-          onClick={sidebarEnabled && (() => viewsStore.toggleSidebar())}
+          onClick={toggleCallback}
+          {...rest}
         />
-      </Dropdown>
+      </Dropdown.Trigger>
     );
   }
 );

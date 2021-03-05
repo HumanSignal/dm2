@@ -1,17 +1,23 @@
-const { REACT_APP_USE_LSB, REACT_APP_GATEWAY_API } = process.env;
+const { USE_LSB, GATEWAY_API } = process.env;
 
 /**
  * @param {import("../src/sdk/dm-sdk").DataManager} DataManager
  */
 export const initDevApp = async (DataManager) => {
-  const useExternalSource = !!REACT_APP_USE_LSB || !!REACT_APP_GATEWAY_API;
-  const gatewayAPI = REACT_APP_GATEWAY_API ?? "http://localhost:8080/api";
+  console.log(123);
+  const useExternalSource = !!USE_LSB || !!GATEWAY_API;
+  const gatewayAPI = GATEWAY_API ?? "http://localhost:8081/api/dm";
+  const token = process.env.HTX_ACCESS_TOKEN;
 
-  new DataManager({
+  const dm = new DataManager({
     root: document.getElementById("app"),
+    polling: false,
     apiGateway: gatewayAPI,
-    // apiGateway: "api/",
+    apiVersion: 2,
     apiMockDisabled: useExternalSource,
+    apiHeaders: {
+      Authorization: `Token ${token}`,
+    },
     labelStudio: {
       user: {
         pk: 1,
@@ -34,5 +40,13 @@ export const initDevApp = async (DataManager) => {
         ],
       },
     },
+  });
+
+  dm.on("importClicked", () => {
+    console.log("click");
+  });
+
+  dm.on("exportClicked", () => {
+    console.log("click");
   });
 };

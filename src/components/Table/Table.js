@@ -1,16 +1,18 @@
-import { Button, Empty, Tag, Tooltip } from "antd";
-import Modal from "antd/lib/modal/Modal";
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { VscQuestion } from "react-icons/vsc";
-import { FillContainer } from "../App/App.styles";
+import { FaQuestionCircle } from "react-icons/fa";
+import { Block, Elem } from "../../utils/bem";
+import { Icon } from "../Common/Icon/Icon";
+import { ImportButton } from "../Common/SDKButtons";
 import { Spinner } from "../Common/Spinner";
 import { Table } from "../Common/Table/Table";
+import { Tag } from "../Common/Tag/Tag";
+import { Tooltip } from "../Common/Tooltip/Tooltip";
 import * as CellViews from "./CellViews";
-import { GridView } from "./GridView";
-import { TableStyles } from "./Table.styles";
+import { GridView } from "./GridView/GridView";
+import "./Table.styl";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
@@ -53,8 +55,6 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
-    const [showSource, setShowSource] = React.useState();
-
     const focusedItem = React.useMemo(() => {
       return props.focusedItem;
     }, [props.focusedItem]);
@@ -94,7 +94,7 @@ export const DataView = injector(
         if (help && decoration?.help !== false) {
           children.push(
             <Tooltip key="help-tooltip" title={help}>
-              <VscQuestion size={16} style={{ opacity: 0.5 }} />
+              <Icon icon={FaQuestionCircle} style={{ opacity: 0.5 }} />
             </Tooltip>
           );
         }
@@ -125,33 +125,31 @@ export const DataView = injector(
       (content) => {
         if (isLoading && total === 0 && !isLabeling) {
           return (
-            <FillContainer>
+            <Block name="fill-container">
               <Spinner size="large" />
-            </FillContainer>
+            </Block>
           );
         } else if (total === 0 || !hasData) {
           return (
-            <Empty
-              description={
-                hasData ? (
-                  <span>Nothing found</span>
+            <Block name="no-results">
+              <Elem name="description">
+                {hasData ? (
+                  <>
+                    <h3>Nothing found</h3>
+                    Try adjusting the filter
+                  </>
                 ) : (
                   "Looks like you have not imported any data yet"
-                )
-              }
-              style={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
+                )}
+              </Elem>
               {!hasData && (
-                <Button type="primary" href="./import">
-                  Go to import
-                </Button>
+                <Elem name="navigation">
+                  <ImportButton look="primary" href="./import">
+                    Go to import
+                  </ImportButton>
+                </Elem>
               )}
-            </Empty>
+            </Block>
           );
         }
 
@@ -279,24 +277,13 @@ export const DataView = injector(
 
     // Render the UI for your table
     return (
-      <TableStyles
+      <Block
+        name="data-view"
         className="dm-content"
         style={{ pointerEvents: isLocked ? "none" : "auto" }}
       >
         {renderContent(content)}
-
-        <Modal
-          visible={!!showSource}
-          onOk={() => setShowSource("")}
-          onCancel={() => setShowSource("")}
-        >
-          <pre>
-            {showSource
-              ? JSON.stringify(JSON.parse(showSource), null, "  ")
-              : ""}
-          </pre>
-        </Modal>
-      </TableStyles>
+      </Block>
     );
   }
 );

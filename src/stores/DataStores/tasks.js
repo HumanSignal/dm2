@@ -1,4 +1,4 @@
-import { flow, types } from "mobx-state-tree";
+import { flow, getRoot, types } from "mobx-state-tree";
 import { DataStore, DataStoreItem } from "../../mixins/DataStore";
 import { getCompletionSnapshot } from "../../sdk/lsf-utils";
 import { DynamicModel } from "../DynamicModel";
@@ -9,6 +9,7 @@ export const create = (columns) => {
     completions: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
     source: types.maybeNull(types.string),
+    was_cancelled: false,
   })
     .views((self) => ({
       get lastCompletion() {
@@ -56,6 +57,14 @@ export const create = (columns) => {
 
         if (index >= 0) self.completions.splice(index, 1);
       },
+
+      loadAnnotations: flow(function* () {
+        const annotations = yield Promise.all([
+          getRoot(self).apiCall("completions", { taskID: self.id }),
+        ]);
+
+        self.completions = annotations[0];
+      }),
     }));
 
   const TaskModel = types.compose("TaskModel", TaskModelBase, DataStoreItem);
@@ -84,6 +93,7 @@ export const create = (columns) => {
         }
 
         if (select !== false) self.setSelected(task);
+        // yield task.loadAnnotations();
 
         self.finishLoading(taskID);
 

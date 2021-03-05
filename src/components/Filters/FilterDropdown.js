@@ -1,11 +1,18 @@
-import { CaretDownOutlined } from "@ant-design/icons";
-import { Select, Tag } from "antd";
 import React from "react";
+import { FaCaretDown } from "react-icons/fa";
+import { Icon } from "../Common/Icon/Icon";
+import { Select } from "../Common/Select/Select";
+import { Tag } from "../Common/Tag/Tag";
 
 const TagRender = (items) => ({ label, ...rest }) => {
   const color = items.find((el) => el.value === rest.value)?.color;
   return (
-    <Tag color={color ?? "#000"} {...rest}>
+    <Tag
+      color={color ?? "#000"}
+      {...rest}
+      size="small"
+      className="filter-data-tag"
+    >
       <div className="ant-tag-text">{label}</div>
     </Tag>
   );
@@ -70,7 +77,7 @@ export const FilterDropdown = ({
       onChange={onChange}
       disabled={disabled}
       size="small"
-      suffixIcon={<CaretDownOutlined style={{ pointerEvents: "none" }} />}
+      suffixIcon={<Icon icon={FaCaretDown} />}
       listItemHeight={20}
       listHeight={600}
       dropdownClassName={dropdownClassName}

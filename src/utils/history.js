@@ -42,7 +42,7 @@ export const History = {
   forceNavigate(params = {}, replace = false) {
     const resultParams = params ?? {};
 
-    Object.entries(this.getParams()).forEach(([key, value]) => {
+    Object.entries(this.getParams()).forEach(([key]) => {
       if (!isDefined(resultParams[key])) {
         resultParams[key] = null;
       }

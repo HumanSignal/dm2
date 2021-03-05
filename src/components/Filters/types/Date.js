@@ -1,30 +1,16 @@
-import { DatePicker } from "antd";
-import moment from "moment";
+import { isValid } from "date-fns";
 import React from "react";
-import styled, { css } from "styled-components";
-
-const cssOverride = css`
-  th,
-  td {
-    padding: 3px 0 !important;
-    border: none !important;
-  }
-`;
-
-const StyleWrapper = ({ children, className }) => {
-  return children({ className });
-};
-
-const Picker = styled(StyleWrapper)`
-  ${cssOverride}
-`;
+import { DatePicker } from "../../Common/DatePicker/DatePicker";
 
 export const DateTimeInput = ({ value, range, time, onChange }) => {
   const onValueChange = React.useCallback(
     (selectedDate) => {
       let value;
       if (Array.isArray(selectedDate)) {
-        const [min, max] = selectedDate.map((d) => d.toISOString());
+        const [min, max] = selectedDate
+          .map((d) => new Date(d))
+          .map((d) => (isValid(d) ? d.toISOString() : undefined));
+
         value = { min, max };
       } else {
         value = selectedDate?.toISOString();
@@ -38,27 +24,25 @@ export const DateTimeInput = ({ value, range, time, onChange }) => {
   const dateValue = React.useMemo(() => {
     if (range) {
       const { min, max } = value ?? {};
-      return [min, max].map((d) => (d ? moment(d) : undefined));
+
+      return [min, max]
+        .map((d) => (d === null ? undefined : d))
+        .map((d) => new Date(d))
+        .map((d) => (isValid(d) ? d : undefined));
     } else {
-      return value ? moment(value) : undefined;
+      const date = new Date(value === null ? undefined : value);
+      return isValid(date) ? date : undefined;
     }
   }, [range, value]);
 
-  const DateComponent = range ? DatePicker.RangePicker : DatePicker;
-
   return (
-    <Picker>
-      {({ className }) => (
-        <DateComponent
-          size="small"
-          value={dateValue}
-          dropdownClassName={className}
-          showTime={time === true}
-          style={{ flex: 1 }}
-          onChange={onValueChange}
-        />
-      )}
-    </Picker>
+    <DatePicker
+      size="small"
+      value={dateValue}
+      selectRange={range}
+      showTime={time === true}
+      onChange={onValueChange}
+    />
   );
 };
 

@@ -32,7 +32,8 @@ const createDynamicModels = (columns) => {
  * @returns {Promise<AppStore>}
  */
 export const createApp = async (rootNode, datamanager) => {
-  const { columns } = await datamanager.api.columns();
+  const response = await datamanager.api.columns();
+  const columns = response.columns ?? (Array.isArray(response) ? response : []);
 
   createDynamicModels(columns);
 
@@ -42,6 +43,7 @@ export const createApp = async (rootNode, datamanager) => {
       columnsRaw: columns,
     },
     mode: datamanager.mode,
+    showPreviews: datamanager.showPreviews,
   });
 
   appStore._sdk = datamanager;
