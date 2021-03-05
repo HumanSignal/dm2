@@ -47,14 +47,17 @@
     color #585858
 
   &__list
-    display grid
-    grid-template-columns 65px 110px 110px 1fr 24px
-    grid-gap 3px 4px
     padding 0 10px
 
+    &_withFilters
+      display grid
+      grid-template-columns 65px 1fr 110px 1fr 24px
+      grid-gap 3px 4px
+
   &_sidebar &__list
-    grid-template-columns 105px 1fr 24px
-    grid-row-gap 16px
+    &_withFilters
+      grid-template-columns 105px 1fr 24px
+      grid-row-gap 16px
 
 .filter-data-tag
   margin 1px

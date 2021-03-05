@@ -51,7 +51,7 @@ export const Filters = injector(({ views, currentView, filters }) => {
 
   return (
     <Block name="filters" mod={{ sidebar: sidebarEnabled }}>
-      <Elem name="list">
+      <Elem name="list" mod={{withFilters: !!filters.length}}>
         {filters.length ? (
           filters.map((filter, i) => (
             <FilterLine

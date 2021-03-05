@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { BemWithSpecifiContext } from "../../../utils/bem";
 import { Dropdown } from "../Dropdown/Dropdown";
 import "./Select.styl";
@@ -26,6 +26,7 @@ export const Select = ({
   onChange,
   style,
 }) => {
+  const dropdown = useRef();
   const [currentValue, setCurrentValue] = React.useState(value);
 
   const context = {
@@ -33,6 +34,7 @@ export const Select = ({
     setCurrentValue(value) {
       setCurrentValue(value);
       onChange?.(value);
+      dropdown.current?.close();
     },
   };
 
@@ -54,7 +56,7 @@ export const Select = ({
   return (
     <SelectContext.Provider value={context}>
       <Block name="select" mod={{ size }} style={style}>
-        <Dropdown.Trigger content={<Elem name="list">{children}</Elem>}>
+        <Dropdown.Trigger ref={dropdown} style={{maxHeight: 280, overflow: 'auto'}} content={<Elem name="list">{children}</Elem>}>
           <Elem name="selected">
             <Elem name="value">{selected ?? "Select value"}</Elem>
             <Elem name="icon" />

@@ -90,6 +90,10 @@ export const FieldsButton = injector(
             resetTitle={resetTitle}
           />
         }
+        style={{
+          maxHeight: 280,
+          overflow: 'auto',
+        }}
       >
         <Button
           size={size}

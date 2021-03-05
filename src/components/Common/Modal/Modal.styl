@@ -18,6 +18,7 @@
     max-height 100%
     padding 40px 0
     overflow auto
+    box-sizing border-box
     will-change transform
 
   &__content
@@ -26,15 +27,24 @@
     min-height 100px
     margin 0 auto
     background-color #fff
+    border-radius 5px
+    box-shadow 0 10px 30px rgba(#000, 0.3)
 
   &__header
     display flex
-    padding 27px 40px
-    font-weight 500
-    font-size 24px
-    line-height 22px
+    min-height 40px
     align-items center
     justify-content space-between
+    padding 16px 40px
+    box-sizing content-box
+
+    &_divided
+      border-bottom 1px solid rgba(0, 0, 0, 0.05)
+
+  &__title
+    margin 0
+    margin-right auto
+    font-size 20px
 
   &__body
     padding 0 40px 32px
@@ -48,11 +58,9 @@
     padding 16px 40px
     background rgba(0, 0, 0, 0.03)
     box-shadow inset 0px 1px 0px rgba(0, 0, 0, 0.05)
-
-  &__close
-    width 40px
-    height 40px
-    color $accent_color
+    text-align center
+    font-size 14px
+    line-height 22px
 
   &_fullscreen &__content
     width calc(100vw - 80px)

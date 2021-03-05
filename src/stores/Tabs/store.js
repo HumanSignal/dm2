@@ -311,6 +311,7 @@ export const TabStore = types
         defaultView = Tab.create({
           id: 0,
           title: "Default",
+          hiddenColumns: self.defaultHidden,
         });
 
         self.views.push(defaultView);
