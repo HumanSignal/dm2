@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { cn } from "../../../utils/bem";
 import { Dropdown } from "./DropdownComponent";
 import { DropdownContext } from "./DropdownContext";
@@ -123,3 +123,7 @@ export const DropdownTrigger = React.forwardRef(
     );
   }
 );
+
+export const useDropdown = () => {
+  return useContext(DropdownContext);
+};

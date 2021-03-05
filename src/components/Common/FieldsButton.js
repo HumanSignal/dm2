@@ -26,7 +26,7 @@ const FieldsMenu = observer(
     };
 
     return (
-      <Menu size="small" selectedKeys={selected ? [selected] : ["none"]}>
+      <Menu size="small" selectedKeys={selected ? [selected] : ["none"]} closeDropdownOnItemClick={false}>
         {onReset &&
           MenuItem(
             {
