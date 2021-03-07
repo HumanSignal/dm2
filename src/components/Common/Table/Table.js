@@ -75,12 +75,10 @@ export const Table = observer(
         },
         Cell: ({ data }) => {
           return (
-            <div style={{ width: 30 }}>
-              <TableCheckboxCell
-                checked={selectedItems.isSelected(data.id)}
-                onChange={() => props.onSelectRow(data.id)}
-              />
-            </div>
+            <TableCheckboxCell
+              checked={selectedItems.isSelected(data.id)}
+              onChange={() => props.onSelectRow(data.id)}
+            />
           );
         },
       });
