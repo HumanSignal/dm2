@@ -51,23 +51,27 @@ export const TabSelectedItems = types
     },
   }))
   .actions((self) => ({
+    afterCreate() {
+      self._invokeChangeEvent();
+    },
+
     toggleSelectedAll() {
       if (!self.all || !(self.all && self.isIndeterminate)) {
         self.all = !self.all;
       }
 
       self.list = [];
-      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
+      self._invokeChangeEvent();
     },
 
     addItem(id) {
       self.list.push(id);
-      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
+      self._invokeChangeEvent();
     },
 
     removeItem(id) {
       self.list.splice(self.list.indexOf(id), 1);
-      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
+      self._invokeChangeEvent();
     },
 
     toggleItem(id) {
@@ -76,20 +80,24 @@ export const TabSelectedItems = types
       } else {
         self.list.push(id);
       }
-      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
+      self._invokeChangeEvent();
     },
 
     update(data) {
       self.all = data?.all ?? self.all;
       self.list = data?.[self.listName] ?? self.list;
-      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
+      self._invokeChangeEvent();
     },
 
     clear() {
       self.all = false;
       self.list = [];
-      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
+      self._invokeChangeEvent();
     },
+
+    _invokeChangeEvent() {
+      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
+    }
   }))
   .preProcessSnapshot((sn) => {
     const { included, excluded, all } = sn ?? {};
