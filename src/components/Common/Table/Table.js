@@ -168,17 +168,26 @@ export const Table = observer(
     const renderRow = React.useCallback(
       ({ style, index }) => {
         const row = data[index - 1];
+        const isEven = index % 2 === 0;
+        const mods = {
+          even: isEven,
+          selected: row.isSelected,
+          highlighted: row.isHighlighted,
+          loading: row.isLoading,
+          disabled: stopInteractions,
+        };
 
         return (
-          <TableElem name="row-wrapper" style={style}>
+          <TableElem
+            name="row-wrapper"
+            mod={mods}
+            style={style}
+            onClick={(e) => props.onRowClick?.(row, e)}
+          >
             <TableRow
               key={row.id}
               data={row}
               even={index % 2 === 0}
-              isSelected={row.isSelected}
-              isHighlighted={row.isHighlighted}
-              onClick={props.onRowClick}
-              stopInteractions={stopInteractions}
               style={{
                 height: props.rowHeight,
                 width: props.fitContent ? "fit-content" : "auto",

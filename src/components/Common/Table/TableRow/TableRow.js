@@ -42,54 +42,30 @@ const CellRenderer = observer(
   }
 );
 
-export const TableRow = observer(
-  ({
-    data,
-    onClick,
-    style,
-    isSelected,
-    isHighlighted,
-    decoration,
-    stopInteractions,
-    even,
-  }) => {
-    const classNames = ["table-row"];
+export const TableRow = observer(({ data, style, decoration }) => {
+  const classNames = ["table-row"];
 
-    if (isSelected) classNames.push("selected");
-    if (isHighlighted) classNames.push("highlighted");
-    if (data.isLoading) classNames.push("loading");
-    if (even === true) classNames.push("even");
+  if (data.isLoading) classNames.push("loading");
 
-    const mods = {
-      even,
-      selected: isSelected,
-      highlighted: isHighlighted,
-      loading: data.isLoading,
-      disabled: stopInteractions,
-    };
+  const { columns, cellViews } = React.useContext(TableContext);
 
-    const { columns, cellViews } = React.useContext(TableContext);
-
-    return (
-      <Block
-        name="table-row"
-        style={style}
-        mod={mods}
-        className={classNames.join(" ")}
-        onClick={(e) => onClick?.(data, e)}
-      >
-        {columns.map((col) => {
-          return (
-            <CellRenderer
-              key={col.id}
-              col={col}
-              data={data}
-              cellViews={cellViews}
-              decoration={decoration}
-            />
-          );
-        })}
-      </Block>
-    );
-  }
-);
+  return (
+    <Block
+      name="table-row"
+      style={style}
+      className={classNames.join(" ")}
+    >
+      {columns.map((col) => {
+        return (
+          <CellRenderer
+            key={col.id}
+            col={col}
+            data={data}
+            cellViews={cellViews}
+            decoration={decoration}
+          />
+        );
+      })}
+    </Block>
+  );
+});
