@@ -163,7 +163,9 @@ export const DataView = injector(
 
       if (column.icon) {
         return (
-          <Tooltip title={column.help ?? col.title}>{column.icon}</Tooltip>
+          <Tooltip title={column.help ?? col.title}>
+            {column.icon}
+          </Tooltip>
         );
       }
 

@@ -1,36 +1,37 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import { Children, cloneElement, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "../../../utils/bem";
 import { alignElements } from "../../../utils/dom";
 import { aroundTransition } from "../../../utils/transition";
 import "./Tooltip.styl";
 
-export const Tooltip = React.forwardRef(
+export const Tooltip = forwardRef(
   ({ title, children, defaultVisible, style }, ref) => {
     if (!children || Array.isArray(children)) {
       throw new Error("Tooltip does accept a single child only");
     }
 
     const rootClass = cn("tooltip");
-    const triggerElement = ref ?? React.useRef();
-    const tooltipElement = React.useRef();
-    const [offset, setOffset] = React.useState({});
-    const [visibility, setVisibility] = React.useState(
+    const triggerElement = ref ?? useRef();
+    const tooltipElement = useRef();
+    const [offset, setOffset] = useState({});
+    const [visibility, setVisibility] = useState(
       defaultVisible ? "visible" : null
     );
-    const [injected, setInjected] = React.useState(false);
+    const [injected, setInjected] = useState(false);
 
-    const calculatePosition = React.useCallback(() => {
+    const calculatePosition = useCallback(() => {
       const { left, top } = alignElements(
         triggerElement.current,
         tooltipElement.current,
-        "top-center"
+        "top-center",
+        10
       );
 
       setOffset({ left, top });
     }, [triggerElement.current, tooltipElement.current]);
 
-    const performAnimation = React.useCallback(
+    const performAnimation = useCallback(
       (visible) => {
         if (tooltipElement.current) {
           aroundTransition(tooltipElement.current, {
@@ -51,7 +52,7 @@ export const Tooltip = React.forwardRef(
       [injected, calculatePosition, tooltipElement]
     );
 
-    const visibilityClasses = React.useMemo(() => {
+    const visibilityClasses = useMemo(() => {
       switch (visibility) {
         case "before-appear":
           return "before-appear";
@@ -68,12 +69,12 @@ export const Tooltip = React.forwardRef(
       }
     }, [visibility]);
 
-    const tooltipClass = React.useMemo(() => rootClass.mix(visibilityClasses), [
+    const tooltipClass = useMemo(() => rootClass.mix(visibilityClasses), [
       rootClass,
       visibilityClasses,
     ]);
 
-    const tooltip = React.useMemo(
+    const tooltip = useMemo(
       () =>
         injected ? (
           <div
@@ -87,8 +88,8 @@ export const Tooltip = React.forwardRef(
       [injected, offset, rootClass, title, tooltipClass, tooltipElement]
     );
 
-    const child = React.Children.only(children);
-    const clone = React.cloneElement(child, {
+    const child = Children.only(children);
+    const clone = cloneElement(child, {
       ...child.props,
       ref: triggerElement,
       onMouseEnter(e) {
@@ -101,14 +102,14 @@ export const Tooltip = React.forwardRef(
       },
     });
 
-    React.useEffect(() => {
+    useEffect(() => {
       if (injected) performAnimation(true);
     }, [injected]);
 
     return (
       <>
         {clone}
-        {ReactDOM.createPortal(tooltip, document.body)}
+        {createPortal(tooltip, document.body)}
       </>
     );
   }
