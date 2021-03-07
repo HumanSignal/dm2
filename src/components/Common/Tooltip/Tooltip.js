@@ -89,15 +89,15 @@ export const Tooltip = React.forwardRef(
 
     const child = React.Children.only(children);
     const clone = React.cloneElement(child, {
-      ...children.props,
+      ...child.props,
       ref: triggerElement,
       onMouseEnter(e) {
         setInjected(true);
-        children.props.onMouseEnter?.(e);
+        child.props.onMouseEnter?.(e);
       },
       onMouseLeave(e) {
         performAnimation(false);
-        children.props.onMouseLeave?.(e);
+        child.props.onMouseLeave?.(e);
       },
     });
 

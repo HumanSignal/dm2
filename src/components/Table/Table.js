@@ -1,6 +1,6 @@
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
-import React from "react";
+import { useCallback, useMemo } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { FaQuestionCircle } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
@@ -55,17 +55,17 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
-    const focusedItem = React.useMemo(() => {
+    const focusedItem = useMemo(() => {
       return props.focusedItem;
     }, [props.focusedItem]);
 
-    const loadMore = React.useCallback(() => {
+    const loadMore = useCallback(() => {
       if (!dataStore.hasNextPage || dataStore.loading) return;
 
       dataStore.fetch({ interaction: "scroll" });
     }, [dataStore]);
 
-    const isItemLoaded = React.useCallback(
+    const isItemLoaded = useCallback(
       (data, index) => {
         const rowExists = !!data[index];
         const hasNextPage = dataStore.hasNextPage;
@@ -75,7 +75,7 @@ export const DataView = injector(
       [dataStore.hasNextPage]
     );
 
-    const columnHeaderExtra = React.useCallback(
+    const columnHeaderExtra = useCallback(
       ({ parent, original, help }, decoration) => {
         const children = [];
 
@@ -104,13 +104,13 @@ export const DataView = injector(
       []
     );
 
-    const onSelectAll = React.useCallback(() => view.selectAll(), [view]);
+    const onSelectAll = useCallback(() => view.selectAll(), [view]);
 
-    const onRowSelect = React.useCallback((id) => view.toggleSelected(id), [
+    const onRowSelect = useCallback((id) => view.toggleSelected(id), [
       view,
     ]);
 
-    const onRowClick = React.useCallback(
+    const onRowClick = useCallback(
       (item, e) => {
         if (e.metaKey || e.ctrlKey) {
           window.open(`./?task=${item.task_id ?? item.id}`, "_blank");
@@ -121,7 +121,7 @@ export const DataView = injector(
       [view]
     );
 
-    const renderContent = React.useCallback(
+    const renderContent = useCallback(
       (content) => {
         if (isLoading && total === 0 && !isLabeling) {
           return (
@@ -170,7 +170,7 @@ export const DataView = injector(
       return column.title;
     };
 
-    const commonDecoration = React.useCallback(
+    const commonDecoration = useCallback(
       (alias, size, align = "flex-start", help = false) => ({
         alias,
         content: decorationContent,
@@ -180,7 +180,7 @@ export const DataView = injector(
       []
     );
 
-    const decoration = React.useMemo(
+    const decoration = useMemo(
       () => [
         commonDecoration("total_completions", 60, "center"),
         commonDecoration("cancelled_completions", 60, "center"),

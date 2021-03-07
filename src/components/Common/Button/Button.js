@@ -1,5 +1,6 @@
 import React from "react";
 import { Block, Elem } from "../../../utils/bem";
+import { isDefined } from "../../../utils/utils";
 import "./Button.styl";
 
 export const Button = React.forwardRef(
@@ -55,13 +56,13 @@ export const Button = React.forwardRef(
         {...rest}
       >
         <>
-          {iconElem && (
+          {isDefined(iconElem) && (
             <Elem tag="span" name="icon">
-              {iconElem}
+              {iconElem ?? null}
             </Elem>
           )}
-          {iconElem && children ? <span>{children}</span> : children}
-          {extra !== undefined ? <Elem name="extra">{extra}</Elem> : null}
+          {isDefined(iconElem) && isDefined(children) ? <span>{children}</span> : (children ?? null)}
+          {isDefined(extra) ? <Elem name="extra">{extra}</Elem> : null}
         </>
       </Block>
     );

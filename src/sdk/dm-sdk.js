@@ -96,6 +96,7 @@ export class DataManager {
   interfaces = objectToMap({
     import: true,
     export: true,
+    labelButton: true,
   });
 
   /**

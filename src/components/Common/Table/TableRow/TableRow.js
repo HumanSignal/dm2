@@ -26,7 +26,7 @@ const CellRenderer = observer(
     const style = getStyle(cellViews, col, Decoration);
 
     return (
-      <TableElem name="cell" mix="td">
+      <TableElem name="cell">
         <div
           style={{
             ...(style ?? {}),
