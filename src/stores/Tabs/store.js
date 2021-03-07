@@ -94,7 +94,7 @@ export const TabStore = types
         yield self.selected.reload();
 
         const root = getRoot(self);
-        root.invoke('tabChanged', selected);
+        root.SDK.invoke('tabChanged', selected);
         selected.selected._invokeChangeEvent();
       }
     }),
