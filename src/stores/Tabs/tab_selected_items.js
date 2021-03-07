@@ -57,17 +57,17 @@ export const TabSelectedItems = types
       }
 
       self.list = [];
-      getRoot(self).SDK.invoke('taskSelectionChanged', self);
+      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
     },
 
     addItem(id) {
       self.list.push(id);
-      getRoot(self).SDK.invoke('taskSelectionChanged', self);
+      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
     },
 
     removeItem(id) {
       self.list.splice(self.list.indexOf(id), 1);
-      getRoot(self).SDK.invoke('taskSelectionChanged', self);
+      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
     },
 
     toggleItem(id) {
@@ -76,19 +76,19 @@ export const TabSelectedItems = types
       } else {
         self.list.push(id);
       }
-      getRoot(self).SDK.invoke('taskSelectionChanged', self);
+      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
     },
 
     update(data) {
       self.all = data?.all ?? self.all;
       self.list = data?.[self.listName] ?? self.list;
-      getRoot(self).SDK.invoke('taskSelectionChanged', self);
+      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
     },
 
     clear() {
       self.all = false;
       self.list = [];
-      getRoot(self).SDK.invoke('taskSelectionChanged', self);
+      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
     },
   }))
   .preProcessSnapshot((sn) => {

@@ -257,8 +257,8 @@ export const AppStore = types
       const params =
         options && options.interaction
           ? {
-              interaction: options.interaction,
-            }
+            interaction: options.interaction,
+          }
           : null;
 
       try {
