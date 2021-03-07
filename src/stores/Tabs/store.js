@@ -92,6 +92,10 @@ export const TabStore = types
         self.dataStore.clear();
         self.selected = selected;
         yield self.selected.reload();
+
+        const root = getRoot(self);
+        root.invoke('tabChanged', selected);
+        selected.selected._invokeChangeEvent();
       }
     }),
 
