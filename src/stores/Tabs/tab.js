@@ -5,7 +5,7 @@ import {
   getParent,
   getRoot,
   getSnapshot,
-  types,
+  types
 } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 import { TabFilter } from "./tab_filter";
@@ -108,17 +108,17 @@ export const Tab = types
     get currentOrder() {
       return self.ordering.length
         ? self.ordering.reduce((res, field) => {
-            const fieldName = field.replace(/^-/, "");
-            const desc = field[0] === "-";
+          const fieldName = field.replace(/^-/, "");
+          const desc = field[0] === "-";
 
-            return {
-              ...res,
-              [fieldName]: desc,
-              desc,
-              field: fieldName,
-              column: self.columns.find((c) => c.id === fieldName),
-            };
-          }, {})
+          return {
+            ...res,
+            [fieldName]: desc,
+            desc,
+            field: fieldName,
+            column: self.columns.find((c) => c.id === fieldName),
+          };
+        }, {})
         : null;
     },
 
