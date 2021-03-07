@@ -247,6 +247,7 @@ export class DataManager {
   /** @private */
   async initApp() {
     this.store = await createApp(this.root, this);
+    this.invoke('ready', [this]);
   }
 
   /**
