@@ -1,5 +1,5 @@
 .modal
-  --transition-duration 150ms
+  --transition-duration 100ms
 
   top 0
   left 0
@@ -66,14 +66,26 @@
     width calc(100vw - 80px)
     height calc(100vh - 80px)
 
-  // Appearing
-  &.before-appear
+  &_visible
     opacity 0
     transition opacity var(--transition-duration) ease
 
-  &.before-appear &__wrapper
+  &_visible &__wrapper
     transform scale(1.05)
     transition transform var(--transition-duration) ease
+
+  &.visible
+    opacity 1
+
+  &.visible &__wrapper
+    transform none
+
+  // Appearing
+  &.before-appear
+    opacity 0
+
+  &.before-appear &__wrapper
+    transform scale(1.05)
 
   &.appear
     opacity 1
@@ -84,11 +96,9 @@
   // Disappearing
   &.before-disappear
     opacity 1
-    transition opacity var(--transition-duration) ease
 
   &.before-disappear &__wrapper
     transform scale(1)
-    transition transform var(--transition-duration) ease
 
   &.disappear
     opacity 0

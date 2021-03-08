@@ -30,7 +30,7 @@ const positioner = (source, target) => {
   };
 };
 
-export const alignElements = (elem, target, align) => {
+export const alignElements = (elem, target, align, padding = 0) => {
   let offsetLeft = 0;
   let offsetTop = 0;
 
@@ -38,27 +38,27 @@ export const alignElements = (elem, target, align) => {
 
   switch (align) {
     case "top-center":
-      offsetTop = pos.top;
+      offsetTop = pos.top - padding;
       offsetLeft = pos.horizontalCenter;
       break;
     case "top-left":
-      offsetTop = pos.top;
+      offsetTop = pos.top - padding;
       offsetLeft = pos.horizontalLeft;
       break;
     case "top-right":
-      offsetTop = pos.top;
+      offsetTop = pos.top - padding;
       offsetLeft = pos.horizontalRight;
       break;
     case "bottom-center":
-      offsetTop = pos.bottom;
+      offsetTop = pos.bottom + padding;
       offsetLeft = pos.horizontalCenter;
       break;
     case "bottom-left":
-      offsetTop = pos.bottom;
+      offsetTop = pos.bottom + padding;
       offsetLeft = pos.horizontalLeft;
       break;
     case "bottom-right":
-      offsetTop = pos.bottom;
+      offsetTop = pos.bottom + padding;
       offsetLeft = pos.horizontalRight;
       break;
     default:
@@ -66,12 +66,12 @@ export const alignElements = (elem, target, align) => {
   }
 
   if (offsetTop < window.scrollX) {
-    offsetTop = pos.bottom;
+    offsetTop = pos.bottom + padding;
   } else if (
     offsetTop + pos.target.height >
     window.scrollX + window.innerHeight
   ) {
-    offsetTop = pos.top;
+    offsetTop = pos.top - padding;
   }
 
   if (offsetLeft < 0) {

@@ -1,4 +1,4 @@
-import { types } from "mobx-state-tree";
+import { getRoot, types } from "mobx-state-tree";
 
 export const TabSelectedItems = types
   .model("TabSelectedItems", {
@@ -33,6 +33,15 @@ export const TabSelectedItems = types
       return self.list.length;
     },
 
+    get total() {
+      if (self.all) {
+        const totalCount = getRoot(self).project.task_count;
+        return totalCount - self.length;
+      } else {
+        return self.length;
+      }
+    },
+
     isSelected(id) {
       if (self.all) {
         return !self.list.includes(id);
@@ -42,20 +51,27 @@ export const TabSelectedItems = types
     },
   }))
   .actions((self) => ({
+    afterCreate() {
+      self._invokeChangeEvent();
+    },
+
     toggleSelectedAll() {
       if (!self.all || !(self.all && self.isIndeterminate)) {
         self.all = !self.all;
       }
 
       self.list = [];
+      self._invokeChangeEvent();
     },
 
     addItem(id) {
       self.list.push(id);
+      self._invokeChangeEvent();
     },
 
     removeItem(id) {
       self.list.splice(self.list.indexOf(id), 1);
+      self._invokeChangeEvent();
     },
 
     toggleItem(id) {
@@ -64,17 +80,24 @@ export const TabSelectedItems = types
       } else {
         self.list.push(id);
       }
+      self._invokeChangeEvent();
     },
 
     update(data) {
       self.all = data?.all ?? self.all;
       self.list = data?.[self.listName] ?? self.list;
+      self._invokeChangeEvent();
     },
 
     clear() {
       self.all = false;
       self.list = [];
+      self._invokeChangeEvent();
     },
+
+    _invokeChangeEvent() {
+      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
+    }
   }))
   .preProcessSnapshot((sn) => {
     const { included, excluded, all } = sn ?? {};

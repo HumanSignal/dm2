@@ -8,7 +8,7 @@ import {
   FaSortAmountDown,
   FaSortAmountUp,
   FaThLarge,
-  FaThList,
+  FaThList
 } from "react-icons/fa";
 import { cn } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
@@ -165,7 +165,7 @@ export const TablePanel = injector(
             <ExportButton size={toolbarSize}>Export</ExportButton>
           )}
 
-          {!labelingDisabled && (
+          {!labelingDisabled && store.SDK.interfaceEnabled("labelButton") && (
             <Button
               look="primary"
               size={toolbarSize}

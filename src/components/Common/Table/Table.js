@@ -1,12 +1,13 @@
 import { observer } from "mobx-react";
 import React from "react";
-import { BsCode } from "react-icons/bs";
+import { FaCode } from "react-icons/fa";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import { isDefined } from "../../../utils/utils";
 import { Button } from "../Button/Button";
-import { Modal } from "../Modal/Modal";
+import { Icon } from "../Icon/Icon";
+import { modal } from "../Modal/Modal";
 import { Tooltip } from "../Tooltip/Tooltip";
 import "./Table.styl";
 import { TableCheckboxCell } from "./TableCheckbox";
@@ -54,8 +55,8 @@ export const Table = observer(
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
         id: "select",
-        headerClassName: "th select-all",
-        cellClassName: "td select-row",
+        headerClassName: "select-all",
+        cellClassName: "select-row",
         style: {
           width: 40,
           maxWidth: 40,
@@ -68,19 +69,16 @@ export const Table = observer(
               checked={selectedItems.isAllSelected}
               indeterminate={selectedItems.isIndeterminate}
               onChange={() => props.onSelectAll()}
-              className="th select-all"
+              className="select-all"
             />
           );
         },
         Cell: ({ data }) => {
           return (
-            <div style={{ width: 30 }}>
-              <TableCheckboxCell
-                checked={selectedItems.isSelected(data.id)}
-                onChange={() => props.onSelectRow(data.id)}
-                className="td"
-              />
-            </div>
+            <TableCheckboxCell
+              checked={selectedItems.isSelected(data.id)}
+              onChange={() => props.onSelectRow(data.id)}
+            />
           );
         },
       });
@@ -88,7 +86,7 @@ export const Table = observer(
 
     columns.push({
       id: "show-source",
-      cellClassName: "td show-source",
+      cellClassName: "show-source",
       style: {
         width: 40,
         maxWidth: 40,
@@ -113,13 +111,13 @@ export const Table = observer(
               type="link"
               style={{ width: 32, height: 32, padding: 0 }}
               onClick={() => {
-                Modal.modal({
+                modal({
                   title: "Source for task " + out?.id,
                   width: 800,
                   body: <pre>{JSON.stringify(out, null, "  ")}</pre>,
                 });
               }}
-              icon={<BsCode />}
+              icon={<Icon icon={FaCode}/>}
             />
           </Tooltip>
         );
@@ -168,17 +166,26 @@ export const Table = observer(
     const renderRow = React.useCallback(
       ({ style, index }) => {
         const row = data[index - 1];
+        const isEven = index % 2 === 0;
+        const mods = {
+          even: isEven,
+          selected: row.isSelected,
+          highlighted: row.isHighlighted,
+          loading: row.isLoading,
+          disabled: stopInteractions,
+        };
 
         return (
-          <TableElem name="row-wrapper" style={style}>
+          <TableElem
+            name="row-wrapper"
+            mod={mods}
+            style={style}
+            onClick={(e) => props.onRowClick?.(row, e)}
+          >
             <TableRow
               key={row.id}
               data={row}
               even={index % 2 === 0}
-              isSelected={row.isSelected}
-              isHighlighted={row.isHighlighted}
-              onClick={props.onRowClick}
-              stopInteractions={stopInteractions}
               style={{
                 height: props.rowHeight,
                 width: props.fitContent ? "fit-content" : "auto",

@@ -4,7 +4,7 @@
   display flex
   flex-direction column
   overflow auto
-  background-color #efefef
+  background-color #fff
 
   &_fit
     width max-content
@@ -28,6 +28,34 @@
 
   &__row-wrapper
     min-width fit-content
+    position relative
+    cursor pointer
+    background-color #fff
+
+    &_disabled,
+    &_loading
+      opacity 0.6
+      pointer-events none
+
+    &_even:not(&_selected)
+      background-color #fafafa
+
+    &_selected
+      background-color #e3f1ff
+
+    &:not(&_selected):hover
+      background-color #f3f9ff
+
+    &_highlighted:not(&_selected)::after
+      top 0
+      left 0
+      width 100%
+      height 100%
+      content ""
+      z-index 50
+      position absolute
+      pointer-events none
+      box-shadow 0 0 0 1px rgba($accent_color, 0.8) inset
 
   &__cell
     flex 150 0 auto
@@ -39,7 +67,6 @@
     display flex
     align-items center
     position relative
-    background-color #fff
     overflow hidden
     word-break break-word
 

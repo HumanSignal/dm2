@@ -10,30 +10,27 @@
  * afterTransition: (element: HTMLElement) => void
  * }} param2
  */
-export const aroundTransition = (
-  element,
-  { init, transition, onStart, beforeTransition, afterTransition } = {}
-) => {
-  return new Promise((resolve) => {
+export const aroundTransition = (element, { init, transition, onStart, beforeTransition, afterTransition } = {}) => {
+  return new Promise(async (resolve) => {
     init?.(element);
 
     const onTransitionStarted = () => {
       onStart?.(element);
     };
 
-    const onTransitionEnded = () => {
-      afterTransition?.(element);
+    const onTransitionEnded = async () => {
+      await afterTransition?.(element);
 
-      element.removeEventListener("transitionstart", onTransitionStarted);
-      element.removeEventListener("transitionend", onTransitionEnded);
+      element.removeEventListener('transitionstart', onTransitionStarted);
+      element.removeEventListener('transitionend', onTransitionEnded);
       resolve();
     };
 
-    element.addEventListener("transitionstart", onTransitionStarted);
-    element.addEventListener("transitionend", onTransitionEnded);
+    element.addEventListener('transitionstart', onTransitionStarted);
+    element.addEventListener('transitionend', onTransitionEnded);
 
-    beforeTransition?.();
+    await beforeTransition?.();
 
-    setTimeout(() => transition(element), 50);
+    setTimeout(() => transition(element), 30);
   });
 };

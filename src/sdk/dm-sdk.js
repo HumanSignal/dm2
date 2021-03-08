@@ -96,6 +96,7 @@ export class DataManager {
   interfaces = objectToMap({
     import: true,
     export: true,
+    labelButton: true,
   });
 
   /**
@@ -247,6 +248,7 @@ export class DataManager {
   /** @private */
   async initApp() {
     this.store = await createApp(this.root, this);
+    this.invoke('ready', [this]);
   }
 
   /**

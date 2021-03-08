@@ -103,7 +103,9 @@ const babelLoader = {
   loader: "babel-loader",
   options: {
     presets: [
-      "@babel/preset-react",
+      ["@babel/preset-react", {
+        "runtime": "automatic"
+      }],
       "@babel/preset-typescript",
       [
         "@babel/preset-env",
@@ -247,6 +249,15 @@ module.exports = ({withDevServer = true} = {}) => ({
             },
           },
         ],
+      },
+      {
+        test: /\.svg$/,
+        use: [{
+          loader: '@svgr/webpack',
+          options: {
+            ref: true,
+          },
+        }],
       },
     ],
   },

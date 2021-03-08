@@ -1,19 +1,30 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { cn } from "../../../utils/bem";
+import { useDropdown } from "../Dropdown/DropdownTrigger";
 import "./Menu.styl";
 import { MenuContext } from "./MenuContext";
 import { MenuItem } from "./MenuItem";
 
 export const Menu = React.forwardRef(
-  ({ children, className, style, size, selectedKeys }, ref) => {
+  ({ children, className, style, size, selectedKeys, closeDropdownOnItemClick }, ref) => {
     const rootClass = cn("menu").mod({ size }).mix(className);
-    const selected = React.useMemo(() => {
+    const dropdown = useDropdown();
+
+    const selected = useMemo(() => {
       return new Set(selectedKeys ?? []);
     }, [selectedKeys]);
 
+    const clickHandler = useCallback((e) => {
+      const elem = cn('menu').elem('item').closest(e.target);
+
+      if (dropdown && elem && closeDropdownOnItemClick !== false) {
+        dropdown.close();
+      }
+    }, [dropdown]);
+
     return (
       <MenuContext.Provider value={{ selected }}>
-        <ul ref={ref} className={rootClass} style={style}>
+        <ul ref={ref} className={rootClass} style={style} onClick={clickHandler}>
           {children}
         </ul>
       </MenuContext.Provider>
