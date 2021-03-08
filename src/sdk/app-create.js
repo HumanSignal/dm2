@@ -2,9 +2,12 @@
  * views?: any[]
  * }} AppOptions */
 
+import { configureStore } from '@reduxjs/toolkit';
 import React from "react";
 import ReactDOM from "react-dom";
+import { Provider } from 'react-redux';
 import { App } from "../components/App/App";
+import { reducers } from '../store';
 import { AppStore } from "../stores/AppStore";
 import * as DataStores from "../stores/DataStores";
 import { registerModel } from "../stores/DynamicModel";
@@ -35,6 +38,15 @@ export const createApp = async (rootNode, datamanager) => {
   const response = await datamanager.api.columns();
   const columns = response.columns ?? (Array.isArray(response) ? response : []);
 
+  const reduxStore = configureStore({
+    reducer: reducers,
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+      thunk: {
+        extraArgument: { API: datamanager.api }
+      }
+    })
+  });
+
   createDynamicModels(columns);
 
   const appStore = AppStore.create({
@@ -51,7 +63,11 @@ export const createApp = async (rootNode, datamanager) => {
 
   window.DM = appStore;
 
-  ReactDOM.render(<App app={appStore} />, rootNode);
+  ReactDOM.render((
+    <Provider store={reduxStore}>
+      <App app={appStore} />
+    </Provider>
+  ), rootNode);
 
   return appStore;
 };

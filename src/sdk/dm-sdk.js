@@ -35,6 +35,7 @@
 
 import { APIProxy } from "../utils/api-proxy";
 import { objectToMap } from "../utils/helpers";
+import { API } from "./api";
 import { APIConfig } from "./api-config";
 import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
@@ -120,7 +121,7 @@ export class DataManager {
       ...config.interfaces,
     });
 
-    this.api = new APIProxy(
+    this.api = API(
       this.apiConfig({
         apiGateway: config.apiGateway,
         apiEndpoints: config.apiEndpoints,

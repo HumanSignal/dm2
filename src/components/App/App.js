@@ -1,6 +1,9 @@
 import { observer, Provider } from "mobx-react";
-import React from "react";
+import React, { useEffect } from "react";
+import { batch, shallowEqual, useDispatch, useSelector } from "react-redux";
 import { SDKProvider } from "../../providers/SDKProvider";
+import { projectActions, projectSelector } from "../../store/slices/project";
+import { taskActions } from "../../store/slices/tasks";
 import { Block, Elem } from "../../utils/bem";
 import { Spinner } from "../Common/Spinner";
 import { DataManager } from "../DataManager/DataManager";
@@ -30,6 +33,23 @@ class ErrorBoundary extends React.Component {
  * @param {{app: import("../../stores/AppStore").AppStore} param0
  */
 const AppComponent = ({ app }) => {
+  const dispatch = useDispatch();
+  const project = useSelector(projectSelector, shallowEqual);
+
+  useEffect(() => {
+    batch(() => {
+      dispatch(projectActions.fetch(app.SDK.projectId))
+        .then((result) => {
+          console.log(result);
+          if (result.meta.fullfilled) {
+            dispatch(taskActions.fetch(49));
+          }
+        });
+    });
+  }, []);
+
+  console.log({project});
+
   return (
     <ErrorBoundary>
       <Provider store={app}>
