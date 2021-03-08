@@ -11,7 +11,7 @@ import {
   FaInfoCircle,
   FaRedo,
   FaTrashAlt,
-  FaUndo,
+  FaUndo
 } from "react-icons/fa";
 import { Block, Elem } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
@@ -23,14 +23,14 @@ import "./Toolbar.styl";
 const TOOLTIP_DELAY = 0.8;
 
 export const Toolbar = observer(({ view, history, lsf, isLabelStream }) => {
-  const completion = lsf?.completionStore?.selected;
+  const annotation = lsf?.annotationStore?.selected;
 
   const task = view.dataStore.selected;
 
-  const { viewingAllCompletions, viewingAllPredictions } =
-    lsf?.completionStore ?? {};
+  const { viewingAllAnnotations, viewingAllPredictions } =
+    lsf?.annotationStore ?? {};
 
-  const viewAll = viewingAllCompletions || viewingAllPredictions;
+  const viewAll = viewingAllAnnotations || viewingAllPredictions;
 
   return lsf?.noTask === false && task ? (
     <Block name="label-toolbar" mod={{ labelStream: isLabelStream }}>
@@ -44,16 +44,16 @@ export const Toolbar = observer(({ view, history, lsf, isLabelStream }) => {
             </History>
           </div>
 
-          {!viewAll && <LSFOperations history={completion?.history} />}
+          {!viewAll && <LSFOperations history={annotation?.history} />}
         </Space>
       </Elem>
 
-      {!!lsf && !!completion && completion.type === "completion" && (
+      {!!lsf && !!annotation && annotation.type === "annotation" && (
         <Elem name="actions">
           {!viewAll && (
             <SubmissionButtons
               lsf={lsf}
-              completion={completion}
+              annotation={annotation}
               isLabelStream={isLabelStream}
               disabled={lsf.isLoading}
             />
@@ -114,13 +114,13 @@ const LSFOperations = observer(({ history }) => {
 });
 
 const SubmissionButtons = observer(
-  ({ lsf, completion, isLabelStream, disabled }) => {
-    const { userGenerate, sentUserGenerate } = completion;
+  ({ lsf, annotation, isLabelStream, disabled }) => {
+    const { userGenerate, sentUserGenerate } = annotation;
     const isNewTask = userGenerate && !sentUserGenerate;
 
-    const saveCompletion = React.useCallback(() => {
+    const saveAnnotation = React.useCallback(() => {
       if (!disabled) {
-        isNewTask ? lsf.submitCompletion() : lsf.updateCompletion();
+        isNewTask ? lsf.submitAnnotation() : lsf.updateAnnotation();
       }
     }, [disabled, isNewTask, lsf]);
 
@@ -159,14 +159,14 @@ const SubmissionButtons = observer(
           look="primary"
           disabled={disabled}
           icon={<Icon icon={isNewTask ? FaCheck : FaCheckCircle} />}
-          onClick={saveCompletion}
+          onClick={saveAnnotation}
         >
           {isNewTask || isLabelStream ? "Submit" : "Update"}
         </Button>
       </Tooltip>
     );
 
-    useHotkeys("ctrl+enter,cmd+alt+enter", saveCompletion, { keyup: false }, [
+    useHotkeys("ctrl+enter,cmd+alt+enter", saveAnnotation, { keyup: false }, [
       disabled,
     ]);
     useHotkeys("ctrl+space,cmd+alt+ ", skipTask, { keyup: false }, [disabled]);

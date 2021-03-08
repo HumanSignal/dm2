@@ -1,5 +1,5 @@
 export class LSFHistory {
-  /** @type {{taskID: number, completionID: number}} */
+  /** @type {{taskID: number, annotationID: number}} */
   history = [];
 
   /** @type {LabelStudio} */
@@ -15,8 +15,8 @@ export class LSFHistory {
     this.lsf = lsf;
   }
 
-  add(taskID, completionID) {
-    this.history.push({ taskID, completionID });
+  add(taskID, annotationID) {
+    this.history.push({ taskID, annotationID });
     this.current = this.length;
 
     if (this.callback) this.callback();
@@ -61,8 +61,8 @@ export class LSFHistory {
     const index = this.current;
 
     if (index >= 0 && index < this.length) {
-      const { taskID, completionID } = this.history[index];
-      await this.lsf.loadTask(taskID, completionID);
+      const { taskID, annotationID } = this.history[index];
+      await this.lsf.loadTask(taskID, annotationID);
       this.current = index;
     } else {
       await this.lsf.loadTask();

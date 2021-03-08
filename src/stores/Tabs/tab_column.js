@@ -174,9 +174,9 @@ export const TabColumn = types
       switch (self.alias) {
         default:
           return null;
-        case "total_completions":
+        case "total_annotations":
           return <TickCircle width="20" height="20"/>;
-        case "cancelled_completions":
+        case "cancelled_annotations":
           // return <Icon icon={FaBan} color="red" opacity="0.7" />;
           return <MinusCircle width="20" height="20"/>;
         case "total_predictions":

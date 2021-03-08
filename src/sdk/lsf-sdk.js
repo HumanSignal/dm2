@@ -11,16 +11,16 @@
  * }} LSFOptions */
 
 import { LSFHistory } from "./lsf-history";
-import { completionToServer, taskToLSFormat } from "./lsf-utils";
+import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
 const DEFAULT_INTERFACES = [
   "basic",
   "skip",
   "predictions",
   "predictions:menu", // right menu with prediction items
-  "completions:menu", // right menu with completion items
-  "completions:add-new",
-  "completions:delete",
+  "annotations:menu", // right menu with annotation items
+  "annotations:add-new",
+  "annotations:delete",
   "side-column", // entity
 ];
 
@@ -44,8 +44,8 @@ export class LSFWrapper {
   /** @type {Task} */
   task = null;
 
-  /** @type {Completion} */
-  initialCompletion = null;
+  /** @type {Annotation} */
+  initialAnnotation = null;
 
   /** @type {LabelStudio} */
   lsf = null;
@@ -67,7 +67,7 @@ export class LSFWrapper {
     this.root = element;
     this.task = options.task;
     this.labelStream = options.labelStream ?? false;
-    this.initialCompletion = options.completion;
+    this.initialAnnotation = options.annotation;
     this.history = this.datamanager.isLabelStream ? new LSFHistory(this) : null;
 
     const lsfProperties = {
@@ -79,14 +79,14 @@ export class LSFWrapper {
       /* EVENTS */
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
-      onSubmitCompletion: this.onSubmitCompletion,
-      onUpdateCompletion: this.onUpdateCompletion,
-      onDeleteCompletion: this.onDeleteCompletion,
+      onSubmitAnnotation: this.onSubmitAnnotation,
+      onUpdateAnnotation: this.onUpdateAnnotation,
+      onDeleteAnnotation: this.onDeleteAnnotation,
       onSkipTask: this.onSkipTask,
       onGroundTruth: this.onGroundTruth,
       onEntityCreate: this.onEntityCreate,
       onEntityDelete: this.onEntityDelete,
-      onSelectCompletion: this.onSelectCompletion,
+      onSelectAnnotation: this.onSelectAnnotation,
     };
 
     this.initLabelStudio(lsfProperties);
@@ -105,7 +105,7 @@ export class LSFWrapper {
   }
 
   /** @private */
-  async loadTask(taskID, completionID) {
+  async loadTask(taskID, annotationID) {
     if (!this.lsf) {
       return console.error("Make sure that LSF was properly initialized");
     }
@@ -114,8 +114,8 @@ export class LSFWrapper {
     const newTask = await this.withinLoadingState(async () => {
       return tasks.loadTask(taskID);
     });
-    const needsCompletionsMerge = newTask && this.task?.id === newTask.id;
-    const completions = needsCompletionsMerge ? [...this.completions] : [];
+    const needsAnnotationsMerge = newTask && this.task?.id === newTask.id;
+    const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
 
     this.task = newTask;
 
@@ -125,8 +125,8 @@ export class LSFWrapper {
       return;
     }
 
-    if (completions.length) {
-      this.task.mergeCompletions(completions);
+    if (annotations.length) {
+      this.task.mergeAnnotations(annotations);
     }
 
     /**
@@ -135,7 +135,7 @@ export class LSFWrapper {
     if (newTask) {
       this.setLoading(false);
       this.setTask(newTask);
-      this.setCompletion(completionID);
+      this.setAnnotation(annotationID);
     }
   }
 
@@ -147,24 +147,24 @@ export class LSFWrapper {
   }
 
   /** @private */
-  setCompletion(completionID) {
-    const id = completionID ? completionID.toString() : null;
-    let { completionStore: cs } = this.lsf;
-    let completion;
+  setAnnotation(annotationID) {
+    const id = annotationID ? annotationID.toString() : null;
+    let { annotationStore: cs } = this.lsf;
+    let annotation;
 
     if (this.predictions.length > 0 && this.labelStream) {
-      completion = cs.addCompletionFromPrediction(this.predictions[0]);
-    } else if (this.completions.length > 0 && id === "auto") {
-      completion = { id: this.completions[0].id };
-    } else if (this.completions.length > 0 && id) {
-      completion = this.completions.find((c) => c.pk === id || c.id === id);
+      annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
+    } else if (this.annotations.length > 0 && id === "auto") {
+      annotation = { id: this.annotations[0].id };
+    } else if (this.annotations.length > 0 && id) {
+      annotation = this.annotations.find((c) => c.pk === id || c.id === id);
     } else {
-      completion = cs.addCompletion({ userGenerate: true });
+      annotation = cs.addAnnotation({ userGenerate: true });
     }
 
-    if (completion) {
-      cs.selectCompletion(completion.id);
-      this.datamanager.invoke("completionSet", [completion]);
+    if (annotation) {
+      cs.selectAnnotation(annotation.id);
+      this.datamanager.invoke("annotationSet", [annotation]);
     }
   }
 
@@ -176,85 +176,85 @@ export class LSFWrapper {
     if (this.datamanager.mode === "labelstream") {
       await this.loadTask();
     } else if (this.task) {
-      const completionID =
-        this.initialCompletion?.pk ?? this.task.lastCompletion?.pk ?? "auto";
+      const annotationID =
+        this.initialAnnotation?.pk ?? this.task.lastAnnotation?.pk ?? "auto";
 
-      await this.loadTask(this.task.id, completionID);
+      await this.loadTask(this.task.id, annotationID);
     }
   };
 
   /** @private */
   onTaskLoad = async (...args) => {
-    this.datamanager.invoke("onSelectCompletion", args);
+    this.datamanager.invoke("onSelectAnnotation", args);
   };
 
   /** @private */
-  onSubmitCompletion = async (ls, completion) => {
-    await this.submitCurrentCompletion("submitCompletion", (taskID, body) =>
-      this.datamanager.apiCall("submitCompletion", { taskID }, { body })
+  onSubmitAnnotation = async (ls, annotation) => {
+    await this.submitCurrentAnnotation("submitAnnotation", (taskID, body) =>
+      this.datamanager.apiCall("submitAnnotation", { taskID }, { body })
     );
   };
 
   /** @private */
-  onUpdateCompletion = async (ls, completion) => {
+  onUpdateAnnotation = async (ls, annotation) => {
     const { task } = this;
-    const serializedCompletion = this.prepareData(completion);
+    const serializedAnnotation = this.prepareData(annotation);
 
     const result = await this.withinLoadingState(async () => {
       return this.datamanager.apiCall(
-        "updateCompletion",
+        "updateAnnotation",
         {
           taskID: task.id,
-          completionID: completion.pk,
+          annotationID: annotation.pk,
         },
         {
-          body: serializedCompletion,
+          body: serializedAnnotation,
         }
       );
     });
 
-    this.datamanager.invoke("updateCompletion", [ls, completion, result]);
+    this.datamanager.invoke("updateAnnotation", [ls, annotation, result]);
 
-    await this.loadTask(this.task.id, completion.pk);
+    await this.loadTask(this.task.id, annotation.pk);
   };
 
   /**@private */
-  onDeleteCompletion = async (ls, completion) => {
+  onDeleteAnnotation = async (ls, annotation) => {
     const { task } = this;
     let response;
 
-    if (completion.userGenerate && completion.sentUserGenerate === false) {
+    if (annotation.userGenerate && annotation.sentUserGenerate === false) {
       response = { ok: true };
     } else {
       response = await this.withinLoadingState(async () => {
-        return this.datamanager.apiCall("deleteCompletion", {
+        return this.datamanager.apiCall("deleteAnnotation", {
           taskID: task.id,
-          completionID: completion.pk,
+          annotationID: annotation.pk,
         });
       });
 
-      this.task.deleteCompletion(completion);
-      this.datamanager.invoke("deleteCompletion", [ls, completion]);
+      this.task.deleteAnnotation(annotation);
+      this.datamanager.invoke("deleteAnnotation", [ls, annotation]);
     }
 
     if (response.ok) {
-      const lastCompletion =
-        this.completions[this.completions.length - 1] ?? {};
-      const completionID = lastCompletion.pk ?? undefined;
+      const lastAnnotation =
+        this.annotations[this.annotations.length - 1] ?? {};
+      const annotationID = lastAnnotation.pk ?? undefined;
 
-      await this.loadTask(task.id, completionID);
+      await this.loadTask(task.id, annotationID);
     }
   };
 
   onSkipTask = async () => {
-    await this.submitCurrentCompletion(
+    await this.submitCurrentAnnotation(
       "skipTask",
       (taskID, body) => {
-        const { id, ...completion } = body;
+        const { id, ...annotation } = body;
         const params = { taskID, was_cancelled: 1 };
-        const options = { body: completion };
+        const options = { body: annotation };
 
-        if (id !== undefined) params.completionID = id;
+        if (id !== undefined) params.annotationID = id;
 
         return this.datamanager.apiCall("skipTask", params, options);
       },
@@ -265,47 +265,47 @@ export class LSFWrapper {
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", args);
-  onSelectCompletion = (...args) =>
-    this.datamanager.invoke("onSelectCompletion", args);
+  onSelectAnnotation = (...args) =>
+    this.datamanager.invoke("onSelectAnnotation", args);
 
-  async submitCurrentCompletion(eventName, submit, includeID = false) {
-    const { taskID, currentCompletion } = this;
-    const serializedCompletion = this.prepareData(currentCompletion, includeID);
+  async submitCurrentAnnotation(eventName, submit, includeID = false) {
+    const { taskID, currentAnnotation } = this;
+    const serializedAnnotation = this.prepareData(currentAnnotation, includeID);
 
     this.setLoading(true);
     const result = await this.withinLoadingState(async () => {
-      return submit(taskID, serializedCompletion);
+      return submit(taskID, serializedAnnotation);
     });
 
     if (result && result.id !== undefined) {
-      currentCompletion.updatePersonalKey(result.id.toString());
+      currentAnnotation.updatePersonalKey(result.id.toString());
 
-      const eventData = completionToServer(currentCompletion);
+      const eventData = annotationToServer(currentAnnotation);
       this.datamanager.invoke(eventName, [this.lsf, eventData, result]);
 
-      this.history?.add(taskID, currentCompletion.pk);
+      this.history?.add(taskID, currentAnnotation.pk);
     }
     this.setLoading(false);
 
     if (this.datamanager.isExplorer) {
-      await this.loadTask(taskID, currentCompletion.pk);
+      await this.loadTask(taskID, currentAnnotation.pk);
     } else {
       await this.loadTask();
     }
   }
 
   /** @private */
-  prepareData(completion, includeId) {
+  prepareData(annotation, includeId) {
     const userGenerate =
-      !completion.userGenerate || completion.sentUserGenerate;
+      !annotation.userGenerate || annotation.sentUserGenerate;
 
     const result = {
-      lead_time: (new Date() - completion.loadedDate) / 1000, // task execution time
-      result: completion.serializeCompletion(),
+      lead_time: (new Date() - annotation.loadedDate) / 1000, // task execution time
+      result: annotation.serializeAnnotation(),
     };
 
     if (includeId && userGenerate) {
-      result.id = parseInt(completion.pk);
+      result.id = parseInt(annotation.pk);
     }
 
     return result;
@@ -332,21 +332,21 @@ export class LSFWrapper {
     return this.task.id;
   }
 
-  get currentCompletion() {
+  get currentAnnotation() {
     try {
-      return this.lsf.completionStore.selected;
+      return this.lsf.annotationStore.selected;
     } catch {
-      console.trace("Something went wrong when accessing current completion");
+      console.trace("Something went wrong when accessing current annotation");
       return null;
     }
   }
 
-  get completions() {
-    return this.lsf.completionStore.completions;
+  get annotations() {
+    return this.lsf.annotationStore.annotations;
   }
 
   get predictions() {
-    return this.lsf.completionStore.predictions;
+    return this.lsf.annotationStore.predictions;
   }
 
   /** @returns {string|null} */

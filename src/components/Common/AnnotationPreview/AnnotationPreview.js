@@ -33,11 +33,11 @@ class PreviewGenerator {
     });
   }
 
-  generatePreview(task, completion) {
+  generatePreview(task, annotation) {
     return new Promise((resolve) => {
       this.queue.push({
         task,
-        completion,
+        annotation,
         resolve,
       });
 
@@ -56,11 +56,11 @@ class PreviewGenerator {
   }
 
   async processJob() {
-    const { task: taskRaw, completion, resolve } = this.queue.shift();
+    const { task: taskRaw, annotation, resolve } = this.queue.shift();
 
     const task = {
       id: taskRaw.id,
-      completions: taskRaw.completions,
+      annotations: taskRaw.annotations,
       predictions: taskRaw.predictions,
       data: taskRaw.data,
     };
@@ -68,7 +68,7 @@ class PreviewGenerator {
     this.lsf.resetState();
     this.lsf.assignTask(task);
     this.lsf.initializeStore(taskToLSFormat(task));
-    this.lsf.completionStore.selectCompletion(completion.pk ?? completion.id);
+    this.lsf.annotationStore.selectAnnotation(annotation.pk ?? annotation.id);
 
     await wait(1500);
     const preview = await this.createPreviews(5);
@@ -84,7 +84,7 @@ class PreviewGenerator {
     if (attempts === 0) return;
 
     try {
-      return this.lsf.completionStore.selected.generatePreviews();
+      return this.lsf.annotationStore.selected.generatePreviews();
     } catch (err) {
       await wait(1000);
       return this.createPreviews(attempts - 1);
@@ -99,7 +99,7 @@ const injector = inject(({ store }) => {
 });
 
 export const AnnotationPreview = injector(
-  observer(({ labelingConfig, name, task, completion, style, ...props }) => {
+  observer(({ labelingConfig, name, task, annotation, style, ...props }) => {
     const generator = React.useMemo(() => {
       if (labelingConfig) return PreviewGenerator.getInstance(labelingConfig);
     }, [labelingConfig]);
@@ -111,14 +111,14 @@ export const AnnotationPreview = injector(
       if (preview !== null) return;
 
       const start = async () => {
-        if (generator && task && completion) {
-          const preview = await generator.generatePreview(task, completion);
+        if (generator && task && annotation) {
+          const preview = await generator.generatePreview(task, annotation);
           setPreview(preview);
         }
       };
 
       start();
-    }, [task, completion, generator, preview]);
+    }, [task, annotation, generator, preview]);
 
     return preview ? (
       <img

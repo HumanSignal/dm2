@@ -123,17 +123,17 @@ export const AppStore = types
       self.mode = mode;
     },
 
-    setTask: flow(function* ({ taskID, completionID, pushState }) {
+    setTask: flow(function* ({ taskID, annotationID, pushState }) {
       if (pushState !== false) {
-        History.navigate({ task: taskID, annotation: completionID ?? null });
+        History.navigate({ task: taskID, annotation: annotationID ?? null });
       }
 
       yield self.taskStore.loadTask(taskID, {
-        select: !!taskID && !!completionID,
+        select: !!taskID && !!annotationID,
       });
 
-      if (completionID !== undefined) {
-        self.annotationStore.setSelected(completionID);
+      if (annotationID !== undefined) {
+        self.annotationStore.setSelected(annotationID);
       } else {
         self.taskStore.setSelected(taskID);
       }
@@ -186,7 +186,7 @@ export const AppStore = types
 
           if (isDefined(item.task_id)) {
             Object.assign(labelingParams, {
-              completionID: item.id,
+              annotationID: item.id,
               taskID: item.task_id,
             });
           } else {

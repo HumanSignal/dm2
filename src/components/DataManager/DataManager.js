@@ -24,7 +24,7 @@ const summaryInjector = inject(({ store }) => {
   return {
     totalTasks: project?.task_count ?? 0,
     totalFoundTasks: taskStore?.total ?? 0,
-    totalCompletions: taskStore?.totalCompletions ?? 0,
+    totalAnnotations: taskStore?.totalAnnotations ?? 0,
     totalPredictions: taskStore?.totalPredictions ?? 0,
     cloudSync: project.target_syncing ?? project.source_syncing ?? false,
   };
@@ -55,7 +55,7 @@ const ProjectSummary = summaryInjector((props) => {
           <span>
             Tasks: {props.totalFoundTasks} / {props.totalTasks}
           </span>
-          <span>Completions: {props.totalCompletions}</span>
+          <span>Annotations: {props.totalAnnotations}</span>
           <span>Predictions: {props.totalPredictions}</span>
         </Space>
       </span>

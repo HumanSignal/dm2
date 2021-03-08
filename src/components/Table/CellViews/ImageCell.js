@@ -10,7 +10,7 @@ export const ImageCell = (column) => {
   } = column;
   const root = getRoot(original);
 
-  return original.total_completions === 0 || !root.showPreviews ? (
+  return original.total_annotations === 0 || !root.showPreviews ? (
     <img
       key={value}
       src={value}
@@ -25,7 +25,7 @@ export const ImageCell = (column) => {
   ) : (
     <AnnotationPreview
       task={original}
-      completion={original.completions[0]}
+      annotation={original.annotations[0]}
       config={getRoot(original).SDK}
       name={alias}
       variant="120x120"
