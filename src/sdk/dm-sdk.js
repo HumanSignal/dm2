@@ -225,6 +225,10 @@ export class DataManager {
   async setMode(mode) {
     this.mode = mode;
     this.store.setMode(mode);
+
+    if (mode !== this.mode) {
+      this.invoke('modeChanged');
+    }
   }
 
   /**
