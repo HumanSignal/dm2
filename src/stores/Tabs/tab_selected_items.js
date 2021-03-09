@@ -35,7 +35,7 @@ export const TabSelectedItems = types
 
     get total() {
       if (self.all) {
-        const totalCount = getRoot(self).project.task_count;
+        const totalCount = getRoot(self).dataStore.total ?? 0;
         return totalCount - self.length;
       } else {
         return self.length;
