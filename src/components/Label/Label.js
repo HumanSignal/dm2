@@ -12,28 +12,28 @@ import { DataView } from "../Table/Table";
 import "./Label.styl";
 import { Toolbar } from "./Toolbar/Toolbar";
 
-const LabelingHeader = ({ onClick, isExplorerMode, children }) => {
+const LabelingHeader = ({ SDK, onClick, isExplorerMode, children }) => {
   return (
     <Elem name="header" mod={{ labelStream: !isExplorerMode }}>
-      <Space>
-        <Button
-          icon={<FaChevronLeft style={{ marginRight: 4, fontSize: 16 }} />}
-          type="link"
-          onClick={onClick}
-          style={{ fontSize: 18, padding: 0, color: "black" }}
-        >
-          Back
-        </Button>
+      <Space size="large">
+        {SDK.interfaceEnabled("backButton") && (
+          <Button
+            icon={<FaChevronLeft style={{ marginRight: 4, fontSize: 16 }} />}
+            type="link"
+            onClick={onClick}
+            style={{ fontSize: 18, padding: 0, color: "black" }}
+          >
+            Back
+          </Button>
+        )}
 
         {isExplorerMode ? (
-          <div style={{ paddingLeft: 20 }}>
-            <FieldsButton
-              wrapper={FieldsButton.Checkbox}
-              icon={<Icon icon={FaColumns} />}
-              trailingIcon={<Icon icon={FaCaretDown} />}
-              title={"Fields"}
-            />
-          </div>
+          <FieldsButton
+            wrapper={FieldsButton.Checkbox}
+            icon={<Icon icon={FaColumns} />}
+            trailingIcon={<Icon icon={FaCaretDown} />}
+            title={"Fields"}
+          />
         ) : null}
       </Space>
 
@@ -103,7 +103,7 @@ export const Labeling = injector(
     );
 
     const header = (
-      <LabelingHeader onClick={closeLabeling} isExplorerMode={isExplorerMode}>
+      <LabelingHeader SDK={SDK} onClick={closeLabeling} isExplorerMode={isExplorerMode}>
         {!isExplorerMode && toolbar}
       </LabelingHeader>
     );

@@ -97,6 +97,7 @@ export class DataManager {
     import: true,
     export: true,
     labelButton: true,
+    backButton: true,
   });
 
   /**
