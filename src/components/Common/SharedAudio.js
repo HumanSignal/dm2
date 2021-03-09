@@ -2,6 +2,7 @@ import { formatDuration } from "date-fns";
 import React, { Component } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { Button } from "./Button/Button";
+import { Space } from "./Space/Space";
 
 const Duration = ({ value, units, format }) =>
   formatDuration({ [units]: value }, { format });
@@ -58,14 +59,17 @@ export class SharedAudio extends Component {
     const paused = this.state.paused || this.state.audio === null;
 
     return (
-      <div
-        style={{ display: "flex", width: "100%" }}
+      <Space
+        size="small"
+        style={{ width: "100%", alignItems: 'center' }}
         onClick={(e) => e.stopPropagation()}
       >
         <Button onClick={paused ? this.play : this.pause}>
           {paused ? <FaPlay /> : <FaPause />}
         </Button>
-        {this.audio && (
+        {this.state.error ? (
+          <div>Unable to play</div>
+        ) : this.audio ? (
           <div style={{ display: "flex", flex: 1, alignItems: "center" }}>
             <PlaybackControl
               units="seconds"
@@ -74,8 +78,8 @@ export class SharedAudio extends Component {
               onChange={(time) => (this.audio.currentTime = time)}
             />
           </div>
-        )}
-      </div>
+        ) : null}
+      </Space>
     );
   }
 
@@ -110,16 +114,24 @@ export class SharedAudio extends Component {
       this.setState({ ...this.state, current: audio.currentTime });
     audio.ondurationchange = () =>
       this.setState({ ...this.state, duration: audio.duration });
+    audio.onload = () => {
+      this.setState(
+        {
+          audio,
+          duration: audio.duration,
+          current: audio.currentTime,
+          paused: audio.paused,
+        },
+        callback
+      );
+    };
 
-    this.setState(
-      {
-        audio,
-        duration: audio.duration,
-        current: audio.currentTime,
-        paused: audio.paused,
-      },
-      callback
-    );
+    audio.onerror = (e) => {
+      this.setState({
+        error: true,
+      });
+    };
+
   }
 
   destroy() {
