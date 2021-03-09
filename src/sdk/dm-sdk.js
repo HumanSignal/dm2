@@ -36,6 +36,7 @@
 import { APIProxy } from "../utils/api-proxy";
 import { objectToMap } from "../utils/helpers";
 import { APIConfig } from "./api-config";
+import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
 
 export class DataManager {
@@ -250,6 +251,7 @@ export class DataManager {
 
   /** @private */
   async initApp() {
+    this.store = await createApp(this.root, this);
     this.invoke('ready', [this]);
   }
 
