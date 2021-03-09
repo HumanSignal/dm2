@@ -36,7 +36,6 @@
 import { APIProxy } from "../utils/api-proxy";
 import { objectToMap } from "../utils/helpers";
 import { APIConfig } from "./api-config";
-import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
 
 export class DataManager {
@@ -223,12 +222,11 @@ export class DataManager {
    * @param {"explorer" | "labelstream"} mode
    */
   async setMode(mode) {
+    const modeChanged = mode !== this.mode;
     this.mode = mode;
     this.store.setMode(mode);
 
-    if (mode !== this.mode) {
-      this.invoke('modeChanged');
-    }
+    if (modeChanged) this.invoke('modeChanged');
   }
 
   /**
@@ -252,7 +250,6 @@ export class DataManager {
 
   /** @private */
   async initApp() {
-    this.store = await createApp(this.root, this);
     this.invoke('ready', [this]);
   }
 
