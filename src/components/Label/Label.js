@@ -131,7 +131,7 @@ export const Labeling = injector(
             </Elem>
           )}
 
-          <Elem name="lsf-wrapper">
+          <Elem name="lsf-wrapper" mod={{mode: isExplorerMode ? "explorer" : "labeling" }}>
             {isExplorerMode && toolbar}
 
             <Elem

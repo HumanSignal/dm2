@@ -61,18 +61,22 @@ export const Toolbar = observer(({ view, history, lsf, isLabelStream }) => {
 
           <Elem name="tools">
             <Space>
-              <Button
-                look={lsf.showingDescription ? "primary" : "dashed"}
-                ghost={lsf.showingDescription}
-                icon={<Icon icon={FaInfoCircle} />}
-                onClick={() => lsf.toggleDescription()}
-              />
+              <Tooltip title="ML Assisted Labeling">
+                <Button
+                  look={lsf.showingDescription ? "primary" : "dashed"}
+                  ghost={lsf.showingDescription}
+                  icon={<Icon icon={FaInfoCircle} />}
+                  onClick={() => lsf.toggleDescription()}
+                />
+              </Tooltip>
 
-              <Button
-                look="dashed"
-                icon={<Icon icon={FaCog} />}
-                onClick={() => lsf.toggleSettings()}
-              />
+              <Tooltip title="Settings">
+                <Button
+                  look="dashed"
+                  icon={<Icon icon={FaCog} />}
+                  onClick={() => lsf.toggleSettings()}
+                />
+              </Tooltip>
             </Space>
           </Elem>
         </Elem>

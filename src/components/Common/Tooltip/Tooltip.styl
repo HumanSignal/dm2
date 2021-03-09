@@ -23,7 +23,6 @@
     background-color #000
     transform translate(-50%, 50%) rotate(45deg)
 
-
   &.before-appear,
   &.before-disappear
     transition-property opacity, transform
@@ -52,3 +51,18 @@
   &.disappear
     opacity 0
     transform translate3d(0, var(--animation-start), 0)
+
+  &_align
+    &_top-center
+      --animation-start -10px
+
+      &::before
+        bottom 0
+        transform translate(-50%, 50%) rotate(45deg)
+
+    &_bottom-center
+      --animation-start 10px
+
+      &::before
+        top 0
+        transform translate(-50%, -50%) rotate(45deg)

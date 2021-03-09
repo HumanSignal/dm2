@@ -1,6 +1,6 @@
 import { Children, cloneElement, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { cn } from "../../../utils/bem";
+import { Block, Elem } from "../../../utils/bem";
 import { alignElements } from "../../../utils/dom";
 import { aroundTransition } from "../../../utils/transition";
 import "./Tooltip.styl";
@@ -11,7 +11,6 @@ export const Tooltip = forwardRef(
       throw new Error("Tooltip does accept a single child only");
     }
 
-    const rootClass = cn("tooltip");
     const triggerElement = ref ?? useRef();
     const tooltipElement = useRef();
     const [offset, setOffset] = useState({});
@@ -19,16 +18,18 @@ export const Tooltip = forwardRef(
       defaultVisible ? "visible" : null
     );
     const [injected, setInjected] = useState(false);
+    const [align, setAlign] = useState('top-center');
 
     const calculatePosition = useCallback(() => {
-      const { left, top } = alignElements(
+      const { left, top, align: resultAlign } = alignElements(
         triggerElement.current,
         tooltipElement.current,
-        "top-center",
+        align,
         10
       );
 
       setOffset({ left, top });
+      setAlign(resultAlign);
     }, [triggerElement.current, tooltipElement.current]);
 
     const performAnimation = useCallback(
@@ -69,23 +70,20 @@ export const Tooltip = forwardRef(
       }
     }, [visibility]);
 
-    const tooltipClass = useMemo(() => rootClass.mix(visibilityClasses), [
-      rootClass,
-      visibilityClasses,
-    ]);
-
     const tooltip = useMemo(
       () =>
         injected ? (
-          <div
-            className={tooltipClass}
+          <Block
             ref={tooltipElement}
+            name="tooltip"
+            mod={{align}}
+            mix={visibilityClasses}
             style={{ ...offset, ...(style ?? {}) }}
           >
-            <div className={rootClass.elem("body")}>{title}</div>
-          </div>
+            <Elem name="body">{title}</Elem>
+          </Block>
         ) : null,
-      [injected, offset, rootClass, title, tooltipClass, tooltipElement]
+      [injected, offset, title, visibilityClasses, tooltipElement]
     );
 
     const child = Children.only(children);
