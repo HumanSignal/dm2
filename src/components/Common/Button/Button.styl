@@ -106,6 +106,15 @@
     &_danger
       --button-color $danger_color
 
+    &_destructive
+      --button-color #fff
+      background-color $danger_color
+
+  &_look_destructive:disabled,
+  &_look_destructive&_waiting
+    --button-color rgba(#fff, 0.5)
+    background-color $danger_color
+
   &_size
     &_compact
       height 36px

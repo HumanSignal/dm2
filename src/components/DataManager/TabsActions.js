@@ -16,14 +16,15 @@ export const TabsActions = inject("store")(
       .filter((a) => !a.hidden)
       .sort((a, b) => a.order - b.order);
 
-    const invokeAction = (action) => {
+    const invokeAction = (action, destructive) => {
       if (action.dialog) {
         const { type: dialogType, text } = action.dialog;
         const dialog = Modal[dialogType] ?? Modal.confirm;
 
         dialog({
-          title: "Destructive action.",
+          title: destructive ? "Destructive action." : "Confirm action.",
           body: text,
+          buttonLook: destructive ? "destructive" : "primary",
           onOk() {
             store.invokeAction(action.id);
           },
@@ -38,7 +39,7 @@ export const TabsActions = inject("store")(
           size={size}
           key={action.id}
           danger={isDeleteAction}
-          onClick={() => invokeAction(action)}
+          onClick={() => invokeAction(action, isDeleteAction)}
           icon={isDeleteAction && <BsTrash />}
         >
           {action.title}
