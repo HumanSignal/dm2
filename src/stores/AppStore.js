@@ -10,7 +10,7 @@ import { CustomJSON } from "./types";
 export const AppStore = types
   .model("AppStore", {
     mode: types.optional(
-      types.enumeration(["explorer", "labelstream"]),
+      types.enumeration(["explorer", "labelstream", "labeling"]),
       "explorer"
     ),
 
@@ -68,7 +68,7 @@ export const AppStore = types
     },
 
     get isExplorerMode() {
-      return self.mode === "explorer";
+      return self.mode === "explorer" || self.mode === 'labeling';
     },
 
     get currentView() {
@@ -178,6 +178,8 @@ export const AppStore = types
         }
 
         if (self.dataStore.loadingItem) return;
+
+        self.SDK.setMode("labeling");
 
         if (item && !item.isSelected) {
           const labelingParams = {

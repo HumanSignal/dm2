@@ -16,16 +16,7 @@ export const Spinner = ({ ...props }) => {
   }, [props.size]);
 
   const source = React.useMemo(() => {
-    switch (props.size) {
-      case "large":
-        return Running["64"];
-      case "middle":
-        return Running["48"];
-      case "small":
-        return Running["24"];
-      default:
-        return Running["48"];
-    }
+    return Running.full;
   }, [props.size]);
 
   const videoStyles = {
