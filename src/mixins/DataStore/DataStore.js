@@ -40,6 +40,10 @@ const MixinBase = types
       return self.loadingItem || self.loadingItems.length > 0;
     },
 
+    get length() {
+      return self.list.length;
+    },
+
     itemIsLoading(id) {
       return self.loadingItems.includes(id);
     },
@@ -177,7 +181,7 @@ export const DataStore = (
 
         self.loading = false;
 
-        getRoot(self).SDK.invoke('dataFetched', self);
+        getRoot(self).SDK.invoke('dataFetched', [self]);
       }),
 
       reload: flow(function* ({ interaction } = {}) {
