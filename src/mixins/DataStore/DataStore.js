@@ -176,6 +176,8 @@ export const DataStore = (
         self.postProcessData?.(data);
 
         self.loading = false;
+
+        getRoot(self).SDK.invoke('dataFetched', self);
       }),
 
       reload: flow(function* ({ interaction } = {}) {
