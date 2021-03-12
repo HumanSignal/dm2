@@ -9,6 +9,12 @@
   "repository": {
     "url": "https://github.com/heartexlabs/dm2"
   },
+  "files": [
+    "build/",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "README.md"
+  ],
   "browser": {},
   "scripts": {
     "build:bundle": "npm run build:final",

@@ -361,6 +361,6 @@ export class LSFWrapper {
 
   /** @returns {string|null} */
   get instructions() {
-    return (this.project.instruction ?? "").trim() || null;
+    return (this.project.instruction ?? this.project.expert_instruction ?? "").trim() || null;
   }
 }

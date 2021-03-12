@@ -1,0 +1,22 @@
+.audio-seeker
+  height 5px
+  width 100%
+  display flex
+  position relative
+  align-items flex-end
+  background-color #efefef
+  border-radius 4px
+
+  &__progress
+    height 100%
+    border-radius 4px
+    background-color $accent_color
+
+  &::before
+    top -5px
+    left -5px
+    right -5px
+    bottom -5px
+    content ''
+    display block
+    position absolute

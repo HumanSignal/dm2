@@ -13,3 +13,10 @@ export const objectToMap = (object) => {
 export const mapToObject = (map) => {
   return Object.fromEntries(map);
 };
+
+export const filename = (string) => {
+  if (string) {
+    console.log({string});
+    return string.split('/').slice(-1)[0].match(/([^?]+)/g)?.[0] ?? string;
+  }
+};

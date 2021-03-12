@@ -134,6 +134,7 @@ const ColumnRenderer = observer(
             marginLeft: 9,
           }}
           initialWidth={style.width ?? 150}
+          minWidth={style.minWidth ?? 30}
           onResizeFinished={(width) => onResize?.(column, width)}
           onReset={() => onReset?.(column)}
         >

@@ -1,37 +1,48 @@
-import { formatDuration } from "date-fns";
 import React, { Component } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { Button } from "./Button/Button";
 import { Space } from "./Space/Space";
 
-const Duration = ({ value, units, format }) =>
-  formatDuration({ [units]: value }, { format });
+const Duration = ({ value, format }) => {
+  const formatted = new Date(value * 1000).toISOString().substr(11, 8);
 
-const PlaybackControl = ({ current, max, onChange, separator = " / " }) => {
-  const format = React.useMemo(() => {
-    if (max >= 3600) {
-      return "HH:mm:ss";
-    } else {
-      return "mm:ss";
+  const parsed = formatted.split(':');
+
+  const result = format.map(unit => {
+    switch (unit) {
+      case "hours": return parsed[0];
+      case "minutes": return parsed[1];
+      case "seconds": return parsed[2];
     }
-  }, [max]);
+  });
+
+  return result.join(':');
+};
+
+const PlaybackControl = ({ current, duration, onChange }) => {
+  const format = React.useMemo(() => {
+    if (duration >= 3600) {
+      return ["hours", "minutes", "seconds"];
+    } else {
+      return ["minutes", "seconds"];
+    }
+  }, [duration]);
 
   return (
     <>
-      <div style={{ padding: "0 10px" }}>
-        <Duration value={current} units="seconds" format={format} />
-        {separator}
-        <Duration value={max} units="seconds" format={format} />
-      </div>
-      <input
-        type="range"
-        min={0}
-        max={max}
-        step={0.01}
-        value={current}
-        style={{ flex: 1 }}
-        onChange={onChange}
-      />
+      <Space spread>
+        <Duration value={current} format={format}/>
+        <input
+          type="range"
+          min={0}
+          max={duration}
+          step={0.01}
+          value={current}
+          style={{ flex: 1 }}
+          onChange={(e) => onChange?.(e.target.value)}
+        />
+        <Duration value={duration} format={format}/>
+      </Space>
     </>
   );
 };
@@ -67,15 +78,18 @@ export class SharedAudio extends Component {
         <Button onClick={paused ? this.play : this.pause}>
           {paused ? <FaPlay /> : <FaPause />}
         </Button>
+
         {this.state.error ? (
           <div>Unable to play</div>
         ) : this.audio ? (
           <div style={{ display: "flex", flex: 1, alignItems: "center" }}>
             <PlaybackControl
-              units="seconds"
-              max={this.state.duration}
               current={this.state.current}
-              onChange={(time) => (this.audio.currentTime = time)}
+              duration={this.state.duration}
+              onChange={time => {
+                this.audio.currentTime = time;
+                if (paused) this.audio.pause();
+              }}
             />
           </div>
         ) : null}
@@ -103,18 +117,22 @@ export class SharedAudio extends Component {
 
     const audio = new Audio(this.props.src);
     document.body.appendChild(audio);
-
     audio.classList.add("dm-audio");
     audio.currentTime = 0;
     audio.volume = this.state.volume;
 
-    audio.onpause = () => this.setState({ ...this.state, paused: true });
-    audio.onplay = () => this.setState({ ...this.state, paused: false });
+    audio.onpause = () => this.setState({ paused: true });
+
+    audio.onplay = () => this.setState({ paused: false });
+
     audio.ontimeupdate = () =>
-      this.setState({ ...this.state, current: audio.currentTime });
+      this.setState({ current: audio.currentTime });
+
     audio.ondurationchange = () =>
-      this.setState({ ...this.state, duration: audio.duration });
-    audio.onload = () => {
+      this.setState({ duration: audio.duration });
+
+    audio.oncanplay = () => {
+
       this.setState(
         {
           audio,
@@ -126,23 +144,14 @@ export class SharedAudio extends Component {
       );
     };
 
-    audio.onerror = (e) => {
-      this.setState({
-        error: true,
-      });
+    audio.onerror = () => {
+      this.setState({ error: true });
     };
-
   }
 
   destroy() {
     if (this.audio) {
       this.audio.pause();
-
-      this.audio.onpause = null;
-      this.audio.onplay = null;
-      this.audio.ontimeupdate = null;
-      this.audio.ondurationchange = null;
-
       this.audio.remove();
       this.audio = null;
     }
@@ -156,6 +165,6 @@ export class SharedAudio extends Component {
    * @param {HTMLAudioElement} value
    */
   set audio(value) {
-    this.setState({ ...this.state, audio: value });
+    this.setState({ audio: value });
   }
 }
