@@ -11,6 +11,7 @@ import { Duration } from "./Duration";
 const initialState = {
   duration: 0,
   currentTime: 0,
+  buffer: null,
   error: false,
   loaded: false,
   playing: false,
@@ -25,6 +26,7 @@ export const AudioPlayer = ({ src }) => {
   const wasPlaying = useRef(false);
 
   const [state, dispatch] = useReducer((state, action) => {
+    console.log(action.type);
     switch(action.type) {
       case "duration": return { ...state, duration: action.payload };
       case "current": return { ...state, currentTime: action.payload };
@@ -32,6 +34,7 @@ export const AudioPlayer = ({ src }) => {
       case "error": return { ...state, error: true };
       case "play": return { ...state, playing: true };
       case "pause": return { ...state, playing: false };
+      case "buffer": return { ...state, buffer: action.payload };
     }
   }, initialState);
 
@@ -58,11 +61,14 @@ export const AudioPlayer = ({ src }) => {
   }, [audio, state]);
 
   const onSeekStart = useCallback(() => {
+    console.log(state.playing);
     wasPlaying.current = state.playing;
+    console.log(wasPlaying.current, state.playing);
     if (state.playing) audio.current.pause();
-  }, [audio, state.playing]);
+  }, [audio, state, wasPlaying]);
 
   const onSeekEnd = useCallback(() => {
+    console.log(wasPlaying.current);
     if (wasPlaying.current) {
       audio.current.play();
     }
@@ -75,7 +81,9 @@ export const AudioPlayer = ({ src }) => {
   return (
     <Block name="player" onClick={e => e.stopPropagation()}>
       {state.error ? (
-        "Unable to play"
+        <Elem name="loading">
+          Unable to play
+        </Elem>
       ) : state.loaded ? (
         <Elem name="playback">
           <Elem name="controls" tag={Space} spread>
@@ -97,6 +105,7 @@ export const AudioPlayer = ({ src }) => {
           <AudioSeeker
             currentTime={state.currentTime}
             duration={state.duration}
+            buffer={state.buffer}
             onSeekStart={onSeekStart}
             onSeekEnd={onSeekEnd}
             onChange={onSeek}
@@ -110,16 +119,18 @@ export const AudioPlayer = ({ src }) => {
 
       <audio
         ref={audio}
-        src={src}
         controls={false}
         preload="metadata"
         onPlay={() => dispatch({ type: 'play' })}
         onPause={() => dispatch({ type: 'pause' })}
-        onTimeUpdate={() => dispatch({type: "current", payload: audio.current.currentTime})}
-        onDurationChange={() => dispatch({type: "duration", payload: audio.current.duration})}
-        onCanPlay={() => dispatch({type: "loaded"})}
-        onError={() => dispatch({type: "error"})}
-      />
+        onTimeUpdate={() => dispatch({ type: "current", payload: audio.current.currentTime })}
+        onDurationChange={() => dispatch({ type: "duration", payload: audio.current.duration })}
+        onCanPlay={() => dispatch({ type: "loaded"})}
+        onProgress={() => dispatch({ type: "buffer", payload: audio.current.buffered })}
+        onError={() => dispatch({ type: "error" })}
+      >
+        <source src={src} type="audio/wav"/>
+      </audio>
     </Block>
   );
 
