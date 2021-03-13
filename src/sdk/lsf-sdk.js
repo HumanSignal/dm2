@@ -123,6 +123,9 @@ export class LSFWrapper {
     if (taskID === undefined && !newTask) {
       this.lsf.setFlags({ noTask: true });
       return;
+    } else {
+      // don't break the LSF - if user explores tasks after finishing labeling, show them
+      this.lsf.setFlags({ noTask: false });
     }
 
     if (annotations.length) {
@@ -152,9 +155,15 @@ export class LSFWrapper {
     let { annotationStore: cs } = this.lsf;
     let annotation;
 
+    const first = this.annotations[0];
+    // if we have annotations created automatically, we don't need to create another one
+    // automatically === created here and haven't saved yet, so they don't have pk
+    // @todo because of some weird reason pk may be string uid, so check flags then
+    const haveAutoAnnotations = !!first && (!first.pk || (first.userGenerate && first.sentUserGenerate === false));
+
     if (this.predictions.length > 0 && this.labelStream) {
       annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
-    } else if (this.annotations.length > 0 && id === "auto") {
+    } else if (this.annotations.length > 0 && (id === "auto" || haveAutoAnnotations)) {
       annotation = { id: this.annotations[0].id };
     } else if (this.annotations.length > 0 && id) {
       annotation = this.annotations.find((c) => c.pk === id || c.id === id);
