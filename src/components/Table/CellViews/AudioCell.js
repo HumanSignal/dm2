@@ -1,9 +1,8 @@
 import React from "react";
 import { AudioPlayer } from "../../Common/AudioPlayer/AudioPlayer";
-import { SharedAudio } from "../../Common/SharedAudio";
 
 export const AudioCell = (column) => {
-  return <SharedAudio src={column.value} />;
+  return <AudioPlayer src={column.value} />;
 };
 
 AudioCell.style = {

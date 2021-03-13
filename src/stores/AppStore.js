@@ -6,6 +6,7 @@ import * as DataStores from "./DataStores";
 import { DynamicModel, registerModel } from "./DynamicModel";
 import { TabStore } from "./Tabs";
 import { CustomJSON } from "./types";
+import { User } from "./Users";
 
 export const AppStore = types
   .model("AppStore", {
@@ -21,6 +22,8 @@ export const AppStore = types
     project: types.optional(CustomJSON, {}),
 
     loading: types.optional(types.boolean, false),
+
+    users: types.optional(types.array(User), []),
 
     taskStore: types.optional(
       types.late(() => {
@@ -280,12 +283,23 @@ export const AppStore = types
       self.availableActions = yield self.apiCall("actions");
     }),
 
+    fetchUsers: flow(function * () {
+      const list = yield self.apiCall("users");
+
+      self.users.push(...list);
+    }),
+
     fetchData: flow(function* () {
       self.loading = true;
 
       const { tab, task, labeling } = History.getParams();
 
-      if (yield self.fetchProject()) {
+      const [projectFetched] = yield Promise.all([
+        yield self.fetchProject(),
+        yield self.fetchUsers(),
+      ]);
+
+      if (projectFetched) {
         yield self.fetchActions();
         self.viewsStore.fetchColumns();
         yield self.viewsStore.fetchTabs(tab, task, labeling);
