@@ -171,7 +171,7 @@ const SubmissionButtons = observer(
       </Tooltip>
     );
 
-    useHotkeys("cmd+alt+enter", saveAnnotation, { keyup: false }, [
+    useHotkeys("ctrl+enter,cmd+alt+enter", saveAnnotation, { keyup: false }, [
       disabled,
     ]);
     useHotkeys("ctrl+space,cmd+alt+ ", skipTask, { keyup: false }, [disabled]);
