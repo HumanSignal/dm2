@@ -62,7 +62,7 @@ export const Toolbar = observer(({ view, history, lsf, isLabelStream, hasInstruc
           <Elem name="tools">
             <Space>
               {hasInstruction && (
-                <Tooltip title="Instruction">
+                <Tooltip title="Labeling Instructions">
                   <Button
                     look={lsf.showingDescription ? "primary" : "dashed"}
                     icon={<Icon icon={FaInfoCircle} />}
