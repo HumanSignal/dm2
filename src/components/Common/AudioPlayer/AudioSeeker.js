@@ -13,7 +13,6 @@ export const AudioSeeker = ({ currentTime, duration, buffer, onSeekStart, onSeek
    */
   const handleMouseDown = useCallback((e) => {
     if (cn('audio-seeker').closest(e.target)) {
-      console.log('mousedown');
       e.stopPropagation();
       e.preventDefault();
 

@@ -26,7 +26,6 @@ export const AudioPlayer = ({ src }) => {
   const wasPlaying = useRef(false);
 
   const [state, dispatch] = useReducer((state, action) => {
-    console.log(action.type);
     switch(action.type) {
       case "duration": return { ...state, duration: action.payload };
       case "current": return { ...state, currentTime: action.payload };
@@ -61,14 +60,11 @@ export const AudioPlayer = ({ src }) => {
   }, [audio, state]);
 
   const onSeekStart = useCallback(() => {
-    console.log(state.playing);
     wasPlaying.current = state.playing;
-    console.log(wasPlaying.current, state.playing);
     if (state.playing) audio.current.pause();
   }, [audio, state, wasPlaying]);
 
   const onSeekEnd = useCallback(() => {
-    console.log(wasPlaying.current);
     if (wasPlaying.current) {
       audio.current.play();
     }
