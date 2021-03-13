@@ -1,15 +1,14 @@
-const { GATEWAY_API, LS_ACCESS_TOKEN } = process.env;
+const API_GATEWAY = process.env.API_GATEWAY;
+const LS_ACCESS_TOKEN = process.env.LS_ACCESS_TOKEN;
 
 /**
  * @param {import("../src/sdk/dm-sdk").DataManager} DataManager
  */
 export const initDevApp = async (DataManager) => {
-  console.log(123);
-  const gatewayAPI = GATEWAY_API ?? "http://localhost:8081/api/dm";
+  const gatewayAPI = API_GATEWAY ?? "http://localhost:8081/api/dm";
   const useExternalSource = !!gatewayAPI;
 
-  console.log(GATEWAY_API);
-  console.log(process.env);
+  console.log(API_GATEWAY, LS_ACCESS_TOKEN);
 
   const dm = new DataManager({
     root: document.getElementById("app"),

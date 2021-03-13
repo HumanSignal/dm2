@@ -21,9 +21,9 @@ const dirPrefix = {
 };
 
 const LOCAL_ENV = {
-  NODE_ENV: process.env.NODE_ENV,
+  NODE_ENV: "development",
   CSS_PREFIX: "dm-",
-  GATEWAY_API: null,
+  API_GATEWAY: null,
   LS_ACCESS_TOKEN: "---",
 };
 
@@ -172,15 +172,15 @@ const devServer = () => {
 };
 
 const plugins = [
+  new Dotenv({
+    path: './.env',
+    safe: true,
+    allowEmptyValues: true,
+  }),
   new MiniCssExtractPlugin({
     ...cssOutput(),
   }),
   new webpack.EnvironmentPlugin(LOCAL_ENV),
-  new Dotenv({
-    allowEmptyValues: true,
-    systemvars: true,
-    ignoreStubs: true,
-  }),
 ];
 
 if (isDevelopment) {

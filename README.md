@@ -160,7 +160,7 @@ apiEndpoints: {
 Ensure that Label Studio is running, then execute a command in the command line:
 
 ```
-REACT_APP_USE_LSB=true REACT_APP_GATEWAY_API=http://localhost:8080/api npm run start
+REACT_APP_USE_LSB=true REACT_APP_API_GATEWAY=http://localhost:8080/api npm run start
 ```
 
 #### Build for production and standalone usage
