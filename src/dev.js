@@ -1,13 +1,15 @@
-const { USE_LSB, GATEWAY_API } = process.env;
+const { GATEWAY_API, LS_ACCESS_TOKEN } = process.env;
 
 /**
  * @param {import("../src/sdk/dm-sdk").DataManager} DataManager
  */
 export const initDevApp = async (DataManager) => {
   console.log(123);
-  const useExternalSource = !!USE_LSB || !!GATEWAY_API;
   const gatewayAPI = GATEWAY_API ?? "http://localhost:8081/api/dm";
-  const token = process.env.HTX_ACCESS_TOKEN;
+  const useExternalSource = !!gatewayAPI;
+
+  console.log(GATEWAY_API);
+  console.log(process.env);
 
   const dm = new DataManager({
     root: document.getElementById("app"),
@@ -16,7 +18,7 @@ export const initDevApp = async (DataManager) => {
     apiVersion: 2,
     apiMockDisabled: useExternalSource,
     apiHeaders: {
-      Authorization: `Token ${token}`,
+      Authorization: `Token ${LS_ACCESS_TOKEN}`,
     },
     labelStudio: {
       user: {

@@ -23,9 +23,8 @@ const dirPrefix = {
 const LOCAL_ENV = {
   NODE_ENV: process.env.NODE_ENV,
   CSS_PREFIX: "dm-",
-  USE_LSB: true,
-  GATEWAY_API: false,
-  HTX_ACCESS_TOKEN: "---",
+  GATEWAY_API: null,
+  LS_ACCESS_TOKEN: "---",
 };
 
 const babelOptimizeOptions = () => {
@@ -173,11 +172,15 @@ const devServer = () => {
 };
 
 const plugins = [
-  new Dotenv(),
   new MiniCssExtractPlugin({
     ...cssOutput(),
   }),
   new webpack.EnvironmentPlugin(LOCAL_ENV),
+  new Dotenv({
+    allowEmptyValues: true,
+    systemvars: true,
+    ignoreStubs: true,
+  }),
 ];
 
 if (isDevelopment) {
