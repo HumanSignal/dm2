@@ -23,8 +23,8 @@ const dirPrefix = {
 const LOCAL_ENV = {
   NODE_ENV: "development",
   CSS_PREFIX: "dm-",
-  API_GATEWAY: null,
-  LS_ACCESS_TOKEN: "---",
+  API_GATEWAY: "http://localhost:8081/api/dm",
+  LS_ACCESS_TOKEN: "",
 };
 
 const babelOptimizeOptions = () => {
@@ -176,6 +176,7 @@ const plugins = [
     path: './.env',
     safe: true,
     allowEmptyValues: true,
+    defaults: "./.env.defaults",
   }),
   new MiniCssExtractPlugin({
     ...cssOutput(),
