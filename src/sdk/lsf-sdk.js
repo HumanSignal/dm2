@@ -161,7 +161,7 @@ export class LSFWrapper {
     // @todo because of some weird reason pk may be string uid, so check flags then
     const haveAutoAnnotations = !!first && (!first.pk || (first.userGenerate && first.sentUserGenerate === false));
 
-    if (this.predictions.length > 0 && this.labelStream) {
+    if (this.project.show_collab_predictions === true && this.predictions.length > 0 && this.labelStream) {
       annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
     } else if (this.annotations.length > 0 && (id === "auto" || haveAutoAnnotations)) {
       annotation = { id: this.annotations[0].id };
