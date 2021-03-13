@@ -36,8 +36,6 @@ export const FilterLine = observer(
       return filter.currentValue;
     }, [filter.currentValue]);
 
-    console.log({ value });
-
     return (
       <Block name="filter-line" tag={Fragment}>
         <GroupWrapper wrap={sidebar}>

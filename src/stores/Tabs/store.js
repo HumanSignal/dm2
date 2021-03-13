@@ -27,6 +27,28 @@ const restoreValue = (name) => {
   return value ? (value === "true" ? true : false) : false;
 };
 
+const dataCleanup = (tab, columnIds) => {
+  const {data} = tab;
+
+  if (data.filters) {
+    data.filters.items = data.filters.items.filter(({filter}) => {
+      return columnIds.includes(filter.replace(/^filter:/, ''));
+    });
+  }
+
+  ['columnsDisplayType', 'columnWidths'].forEach(key => {
+    data[key] = Object.fromEntries(Object.entries(data[key] ?? {}).filter(([col]) => {
+      return columnIds.includes(col);
+    }));
+  });
+
+  Object.entries(data.hiddenColumns ?? {}).forEach(([key, list]) => {
+    data.hiddenColumns[key] = list.filter(k => columnIds.includes(k));
+  });
+
+  return { ...tab, data };
+};
+
 export const TabStore = types
   .model("TabStore", {
     selected: types.maybeNull(types.late(() => types.reference(Tab))),
@@ -91,7 +113,8 @@ export const TabStore = types
 
         self.dataStore.clear();
         self.selected = selected;
-        yield self.selected.reload();
+
+        yield selected.reload();
 
         const root = getRoot(self);
         root.SDK.invoke('tabChanged', selected);
@@ -293,9 +316,10 @@ export const TabStore = types
     fetchTabs: flow(function* (tabID, taskID, labeling) {
       const response = yield getRoot(self).apiCall("tabs");
       const tabs = response.tabs ?? response ?? [];
+      const columnIds = self.columns.map(c => c.id);
 
       const snapshots = tabs.map((t) => {
-        const { data, ...tab } = t;
+        const { data, ...tab } = dataCleanup(t, columnIds);
 
         return Tab.create({
           ...tab,

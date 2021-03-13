@@ -5,17 +5,14 @@ import "./RadioGroup.styl";
 const RadioContext = React.createContext();
 
 export const RadioGroup = ({ size, value, onChange, children }) => {
-  const [currentValue, setCurrentValue] = React.useState(value);
-
   const onRadioChange = (e) => {
-    setCurrentValue(e.target.value);
     onChange?.(e);
   };
 
   return (
     <RadioContext.Provider
       value={{
-        value: currentValue,
+        value: value,
         onChange: onRadioChange,
       }}
     >

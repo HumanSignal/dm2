@@ -167,7 +167,7 @@ export const AppStore = types
     },
 
     startLabeling(item, options = {}) {
-      const processLabeling = () => {
+      const processLabeling = async () => {
         if (!item && !self.dataStore.selected) {
           self.SDK.setMode("labelstream");
 

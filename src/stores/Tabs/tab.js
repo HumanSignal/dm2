@@ -229,6 +229,7 @@ export const Tab = types
         self.ordering[0] = ordering;
       }
 
+      self.clearSelection();
       self.save({ interaction: "ordering" });
     },
 

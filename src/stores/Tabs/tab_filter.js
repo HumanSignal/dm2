@@ -5,7 +5,7 @@ import { isDefined } from "../../utils/utils";
 import {
   FilterValue,
   FilterValueRange,
-  TabFilterType,
+  TabFilterType
 } from "./tab_filter_type";
 
 const operatorNames = Array.from(
@@ -104,6 +104,7 @@ export const TabFilter = types
       }
 
       self.setOperator(self.component[0].key);
+      self.view.clearSelection();
 
       self.save();
     },
