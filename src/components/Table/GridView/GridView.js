@@ -87,7 +87,7 @@ export const GridView = observer(
         const height = (DataGroups[f.currentType] ?? DataGroups.TextDataGroup)
           .height;
         return res + height;
-      }, 0);
+      }, 16);
 
     const renderItem = React.useCallback(
       ({ style, rowIndex, columnIndex }) => {

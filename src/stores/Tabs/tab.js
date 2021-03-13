@@ -158,7 +158,6 @@ export const Tab = types
           items: self.serializedFilters,
         },
         hiddenColumns: getSnapshot(self.hiddenColumns),
-        selectedItems: self.selected.snapshot,
         columnsWidth: self.columnsWidth.toPOJO(),
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
         gridWidth: self.gridWidth,
@@ -350,7 +349,7 @@ export const Tab = types
   .preProcessSnapshot((snapshot) => {
     if (snapshot === null) return snapshot;
 
-    const { filters, selectedItems, ...sn } = snapshot ?? {};
+    const { filters, ...sn } = snapshot ?? {};
 
     if (filters && !Array.isArray(filters)) {
       const { conjunction, items } = filters ?? {};
@@ -363,9 +362,7 @@ export const Tab = types
       sn.filters = filters;
     }
 
-    if (selectedItems) {
-      Object.assign(sn, { selected: selectedItems });
-    }
+    delete sn.selectedItems;
 
     return sn;
   });

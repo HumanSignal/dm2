@@ -1,10 +1,10 @@
 import React from "react";
-import { SharedAudio } from "../../Common/SharedAudio";
+import { AudioPlayer } from "../../Common/AudioPlayer/AudioPlayer";
 
 export const AudioDataGroup = ({ value }) => {
   return (
-    <div style={{ padding: 5, height: AudioDataGroup.height }}>
-      <SharedAudio src={value} />
+    <div style={{ padding: 10, height: AudioDataGroup.height }}>
+      <AudioPlayer src={value} />
     </div>
   );
 };
