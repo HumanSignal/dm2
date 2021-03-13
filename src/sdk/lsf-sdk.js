@@ -74,7 +74,7 @@ export class LSFWrapper {
       user: options.user,
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
-      description: this.instructions,
+      description: this.instruction,
       interfaces: DEFAULT_INTERFACES,
       /* EVENTS */
       onLabelStudioLoad: this.onLabelStudioLoad,
@@ -360,7 +360,7 @@ export class LSFWrapper {
   }
 
   /** @returns {string|null} */
-  get instructions() {
+  get instruction() {
     return (this.project.instruction ?? this.project.expert_instruction ?? "").trim() || null;
   }
 }

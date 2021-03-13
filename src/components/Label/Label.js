@@ -1,5 +1,5 @@
 import { inject } from "mobx-react";
-import React from "react";
+import React, { useRef } from "react";
 import { FaCaretDown, FaChevronLeft, FaColumns } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
 import { History } from "../../utils/history";
@@ -58,7 +58,7 @@ const injector = inject(({ store }) => {
  */
 export const Labeling = injector(
   ({ store, view, task, SDK, isLabelStreamMode, isExplorerMode }) => {
-    const lsfRef = React.createRef();
+    const lsfRef = useRef();
     const history = SDK.lsf?.history;
 
     const [annotation, setAnnotation] = React.useState(
@@ -99,6 +99,7 @@ export const Labeling = injector(
         lsf={SDK.lsf?.lsf}
         annotation={annotation}
         isLabelStream={isLabelStreamMode}
+        hasInstruction={!!SDK.lsf?.instruction}
       />
     );
 

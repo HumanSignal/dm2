@@ -22,7 +22,7 @@ import "./Toolbar.styl";
 
 const TOOLTIP_DELAY = 0.8;
 
-export const Toolbar = observer(({ view, history, lsf, isLabelStream }) => {
+export const Toolbar = observer(({ view, history, lsf, isLabelStream, hasInstruction }) => {
   const annotation = lsf?.annotationStore?.selected;
 
   const task = view.dataStore.selected;
@@ -61,14 +61,15 @@ export const Toolbar = observer(({ view, history, lsf, isLabelStream }) => {
 
           <Elem name="tools">
             <Space>
-              <Tooltip title="ML Assisted Labeling">
-                <Button
-                  look={lsf.showingDescription ? "primary" : "dashed"}
-                  ghost={lsf.showingDescription}
-                  icon={<Icon icon={FaInfoCircle} />}
-                  onClick={() => lsf.toggleDescription()}
-                />
-              </Tooltip>
+              {hasInstruction && (
+                <Tooltip title="Instruction">
+                  <Button
+                    look={lsf.showingDescription ? "primary" : "dashed"}
+                    icon={<Icon icon={FaInfoCircle} />}
+                    onClick={() => lsf.toggleDescription()}
+                  />
+                </Tooltip>
+              )}
 
               <Tooltip title="Settings">
                 <Button
