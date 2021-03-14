@@ -2,7 +2,6 @@ import { inject } from "mobx-react";
 import React, { useRef } from "react";
 import { FaCaretDown, FaChevronLeft, FaColumns } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
-import { History } from "../../utils/history";
 import { Button } from "../Common/Button/Button";
 import { FieldsButton } from "../Common/FieldsButton";
 import { Icon } from "../Common/Icon/Icon";
@@ -67,7 +66,6 @@ export const Labeling = injector(
 
     const closeLabeling = () => {
       store.closeLabeling();
-      History.forceNavigate({ tab: view.id });
     };
 
     React.useEffect(() => {

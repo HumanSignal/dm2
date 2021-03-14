@@ -225,6 +225,7 @@ export const AppStore = types
       const { SDK } = self;
 
       self.unsetTask(options);
+      History.forceNavigate({ tab: self.currentView.id });
       SDK.setMode("explorer");
       SDK.destroyLSF();
     },
