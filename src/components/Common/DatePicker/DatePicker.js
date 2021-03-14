@@ -112,7 +112,7 @@ export const DatePicker = ({
           />
         }
       >
-        <Elem name="output">
+        <Elem name="output" mod={{range: selectRange}}>
           <Input
             size={size}
             value={startDate || ""}
