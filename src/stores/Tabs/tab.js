@@ -244,28 +244,18 @@ export const Tab = types
 
     setSelected(ids) {
       self.selected = ids;
-      self.updateSelectedList("setSelectedItems", Array.from(self.selected));
     },
 
     selectAll() {
       self.selected.toggleSelectedAll();
-      self.updateSelectedList("setSelectedItems");
     },
 
     clearSelection() {
       self.selected.clear();
-      self.updateSelectedList("setSelectedItems");
     },
 
     toggleSelected(id) {
-      const isSelected = self.selected.list.includes(id);
-      const action = isSelected ? "deleteSelectedItem" : "addSelectedItem";
-
       self.selected.toggleItem(id);
-
-      self.updateSelectedList(action, {
-        [self.selected.listName]: [id],
-      });
     },
 
     setColumnWidth(columnID, width) {
@@ -283,17 +273,6 @@ export const Tab = types
         self.columnsDisplayType.delete(columnID);
       }
     },
-
-    updateSelectedList: flow(function* (action, extraData) {
-      const response = yield self.root.apiCall(
-        action,
-        { tabID: self.id },
-        { body: { ...self.selected.snapshot, ...(extraData ?? {}) } }
-      );
-
-      const selectedItems = response.selectedItems ?? response;
-      self.selected.update(selectedItems);
-    }),
 
     createFilter() {
       const filterType = self.availableFilters[0];

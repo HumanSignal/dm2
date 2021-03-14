@@ -113,7 +113,7 @@ export const Table = observer(
               onClick={() => {
                 modal({
                   title: "Source for task " + out?.id,
-                  width: 800,
+                  style: {width: 800},
                   body: <pre>{JSON.stringify(out, null, "  ")}</pre>,
                 });
               }}

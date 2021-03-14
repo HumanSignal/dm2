@@ -197,7 +197,6 @@ export const TabStore = types
       if (result.id !== view.id) {
         const newView = Tab.create({ ...newViewSnapshot, saved: true });
         self.views.push(newView);
-        self.setSelected(newView);
         newView.reload();
         destroy(view);
       } else {
