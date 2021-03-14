@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { createContext, forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
 import { FaCode } from "react-icons/fa";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
@@ -47,10 +47,10 @@ export const Table = observer(
     headerExtra,
     ...props
   }) => {
-    const tableHead = React.useRef();
-    const listRef = React.useRef();
+    const tableHead = useRef();
+    const listRef = useRef();
     const columns = prepareColumns(props.columns, props.hiddenColumns);
-    const Decoration = React.useMemo(() => Decorator(decoration), [decoration]);
+    const Decoration = useMemo(() => Decorator(decoration), [decoration]);
 
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
@@ -132,7 +132,7 @@ export const Table = observer(
 
     const headerHeight = 42;
 
-    const renderTableHeader = React.useCallback(
+    const renderTableHeader = useCallback(
       ({ style }) => (
         <TableHead
           ref={tableHead}
@@ -163,7 +163,7 @@ export const Table = observer(
       ]
     );
 
-    const renderRow = React.useCallback(
+    const renderRow = useCallback(
       ({ style, index }) => {
         const row = data[index - 1];
         const isEven = index % 2 === 0;
@@ -208,38 +208,44 @@ export const Table = observer(
       ]
     );
 
-    const isItemLoaded = React.useCallback(
+    const isItemLoaded = useCallback(
       (index) => {
         return props.isItemLoaded(data, index);
       },
       [props, data]
     );
 
-    const initialScrollOffset = (height) => {
+    const cachedScrollOffset = useRef();
+
+    const initialScrollOffset = useCallback((height) => {
+      if (isDefined(cachedScrollOffset.current)) {
+        return cachedScrollOffset.current;
+      }
+
       const { rowHeight: h } = props;
       const index = data.indexOf(focusedItem);
 
       if (index >= 0) {
         const scrollOffset = index * h - height / 2 + h / 2; // + headerHeight
-        return scrollOffset;
+        return cachedScrollOffset.current = scrollOffset;
       } else {
         return 0;
       }
-    };
+    }, []);
 
-    const itemKey = React.useCallback(
+    const itemKey = useCallback(
       (index) => {
         return data[index]?.key ?? index;
       },
       [data]
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
       const listComponent = listRef.current?._listRef;
       if (listComponent) {
         listComponent.scrollToItem(data.indexOf(focusedItem), "center");
       }
-    }, [data, focusedItem]);
+    }, [data]);
 
     return (
       <TableBlock name="table" mod={{ fit: props.fitToContent }}>
@@ -267,7 +273,7 @@ export const Table = observer(
   }
 );
 
-const StickyListContext = React.createContext();
+const StickyListContext = createContext();
 StickyListContext.Provider.displayName = "StickyListProvider";
 StickyListContext.Consumer.displayName = "StickyListConsumer";
 
@@ -282,7 +288,7 @@ const ItemWrapper = ({ data, index, style }) => {
 };
 
 const StickyList = observer(
-  React.forwardRef((props, listRef) => {
+  forwardRef((props, listRef) => {
     const {
       children,
       stickyComponent,
@@ -345,7 +351,7 @@ const StickyList = observer(
 
 StickyList.displayName = "StickyList";
 
-const innerElementType = React.forwardRef(({ children, ...rest }, ref) => {
+const innerElementType = forwardRef(({ children, ...rest }, ref) => {
   return (
     <StickyListContext.Consumer>
       {({ stickyItems, stickyItemsHeight, StickyComponent }) => (
