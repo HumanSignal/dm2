@@ -56,8 +56,12 @@
 
   &_sidebar &__list
     &_withFilters
-      grid-template-columns 105px 1fr 24px
-      grid-row-gap 16px
+      grid-template-columns 1fr 24px
+      grid-row-gap 5px
+      grid-auto-flow column
+      grid-auto-rows min-content
+      grid-template-rows min-content min-content
+      align-items center
 
 .filter-data-tag
   margin 1px
