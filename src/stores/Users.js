@@ -13,6 +13,5 @@ export const User = types
     initials: types.string
   })
   .preProcessSnapshot((sn) => {
-    console.log(camelizeKeys(sn));
     return camelizeKeys(sn);
   });

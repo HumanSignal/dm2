@@ -82,7 +82,6 @@ export const Labeling = injector(
     }, [SDK.lsf?.currentAnnotation?.id]);
 
     React.useEffect(() => {
-      console.log("Starting labeling");
       SDK.startLabeling(lsfRef.current);
     }, [task]);
 

@@ -27,7 +27,6 @@ export const Checkbox = ({
         className={rootClass.elem("input")}
         type="checkbox"
         onChange={(e) => {
-          console.log("change");
           onChange?.(e);
         }}
       />

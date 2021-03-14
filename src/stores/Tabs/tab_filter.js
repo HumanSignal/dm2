@@ -53,7 +53,7 @@ export const TabFilter = types
     },
 
     get component() {
-      return Filters[self.filter.type] ?? Filters.String;
+      return Filters[self.filter.currentType] ?? Filters.String;
     },
 
     get componentValueType() {
@@ -96,10 +96,10 @@ export const TabFilter = types
     },
 
     setFilter(value) {
-      const previousFilterType = self.filter.type;
+      const previousFilterType = self.filter.currentType;
       self.filter = value;
 
-      if (previousFilterType !== value.type) {
+      if (previousFilterType !== value.currentType) {
         self.setDefaultValue();
       }
 

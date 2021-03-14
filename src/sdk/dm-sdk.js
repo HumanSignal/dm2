@@ -171,8 +171,6 @@ export class DataManager {
       },
     });
 
-    console.log(config);
-
     return config;
   }
 
@@ -270,8 +268,6 @@ export class DataManager {
     // do nothing if the task is already selected
     if (this.lsf?.task && task && this.lsf.task.id === task.id) {
       return;
-    } else {
-      console.log([this.lsf?.task, task]);
     }
 
     let labelStream = this.mode === "labelstream";

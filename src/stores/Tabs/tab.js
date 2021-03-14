@@ -133,7 +133,7 @@ export const Tab = types
     get serializedFilters() {
       return self.validFilters.map((el) => ({
         ...getSnapshot(el),
-        type: el.filter.type,
+        type: el.filter.currentType,
       }));
     },
 

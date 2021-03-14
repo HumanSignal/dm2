@@ -1,4 +1,4 @@
-import { isPrimitiveType, types } from "mobx-state-tree";
+import { getRoot, isPrimitiveType, types } from "mobx-state-tree";
 import { TabColumn, ViewColumnType } from "./tab_column";
 
 export const FilterValue = types.union(
@@ -71,5 +71,11 @@ export const TabFilterType = types
         default:
           return undefined;
       }
+    },
+
+    get currentType () {
+      const view = getRoot(self).currentView;
+      const viewColumnDisplayType = view.columnsDisplayType?.get?.(self.field.id);
+      return viewColumnDisplayType ?? self.field.type;
     },
   }));

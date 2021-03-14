@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React, { Fragment } from "react";
+import React, { Fragment, useMemo } from "react";
 import { FaTrash } from "react-icons/fa";
 import { BemWithSpecifiContext } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
@@ -32,7 +32,7 @@ const GroupWrapper = ({ children, wrap = false }) => {
 
 export const FilterLine = observer(
   ({ filter, availableFilters, index, view, sidebar, dropdownClassName }) => {
-    const value = React.useMemo(() => {
+    const value = useMemo(() => {
       return filter.currentValue;
     }, [filter.currentValue]);
 
@@ -77,7 +77,7 @@ export const FilterLine = observer(
             filter={filter}
             value={value}
             operator={filter.operator}
-            field={filter.field}
+            field={filter.filter.field}
           />
         </GroupWrapper>
         <Elem name="remove">

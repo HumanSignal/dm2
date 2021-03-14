@@ -241,10 +241,6 @@ export const Table = observer(
       }
     }, [data, focusedItem]);
 
-    // React.useEffect(() => {
-    //   console.log(tableHead.current);
-    // }, [tableHead.current]);
-
     return (
       <TableBlock name="table" mod={{ fit: props.fitToContent }}>
         <TableContext.Provider value={contextValue}>

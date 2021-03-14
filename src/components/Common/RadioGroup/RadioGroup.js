@@ -16,10 +16,7 @@ export const RadioGroup = ({ size, value, onChange, children }) => {
         onChange: onRadioChange,
       }}
     >
-      <div
-        className={cn("radio-group").mod({ size })}
-        onChange={() => console.log("change")}
-      >
+      <div className={cn("radio-group").mod({ size })}>
         <div className={cn("radio-group").elem("buttons")}>{children}</div>
       </div>
     </RadioContext.Provider>

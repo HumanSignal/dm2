@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 import { Elem } from "../../../utils/bem";
 import { FilterDropdown } from "../FilterDropdown";
 import * as FilterInputs from "../types";
@@ -16,14 +16,15 @@ import { Common } from "../types/Common";
  */
 export const FilterOperation = observer(
   ({ filter, field, value, operator }) => {
-    const types = React.useMemo(() => {
-      const filterTypes = FilterInputs[field.type] ?? FilterInputs.String;
+    const types = useMemo(() => {
+      const filterTypes = FilterInputs[filter.filter.currentType] ?? FilterInputs.String;
       return [...filterTypes, ...Common];
-    }, [field, operator]);
+    }, [filter, operator]);
 
-    const selected = React.useMemo(() => {
+    const selected = useMemo(() => {
       if (operator) {
-        return types.find((t) => t.key === operator);
+        const selectedOperator = types.find((t) => t.key === operator);
+        return selectedOperator;
       } else {
         const type = types[0];
         filter.setOperator(type.key);
@@ -31,12 +32,9 @@ export const FilterOperation = observer(
       }
     }, [operator, types, filter]);
 
-    const onChange = React.useCallback(
-      (value) => {
-        filter.setValueDelayed(value);
-      },
-      [filter]
-    );
+    const onChange = useCallback((value) => {
+      filter.setValueDelayed(value);
+    }, [filter]);
 
     const Input = selected.input;
 

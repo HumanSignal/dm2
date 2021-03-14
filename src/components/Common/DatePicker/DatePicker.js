@@ -79,7 +79,7 @@ export const DatePicker = ({
     if (selectRange) {
       if (realStartDate && realEndDate) dropdownRef.current?.close();
       onChange?.([realStartDate, realEndDate]);
-    } else if (startDate) {
+    } else if (realStartDate) {
       dropdownRef.current?.close();
       onChange?.(realStartDate);
     }
@@ -96,7 +96,6 @@ export const DatePicker = ({
             ref={datepickerRef}
             selected={realStartDate}
             onSelect={(date) => {
-              console.log(date);
               if (realEndDate === null && selectRange) {
                 setRealEndDate(date);
               } else {

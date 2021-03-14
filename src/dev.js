@@ -8,8 +8,6 @@ export const initDevApp = async (DataManager) => {
   const gatewayAPI = API_GATEWAY ?? "http://localhost:8081/api/dm";
   const useExternalSource = !!gatewayAPI;
 
-  console.log(API_GATEWAY, LS_ACCESS_TOKEN);
-
   const dm = new DataManager({
     root: document.getElementById("app"),
     polling: false,
@@ -41,13 +39,5 @@ export const initDevApp = async (DataManager) => {
         ],
       },
     },
-  });
-
-  dm.on("importClicked", () => {
-    console.log("click");
-  });
-
-  dm.on("exportClicked", () => {
-    console.log("click");
   });
 };
