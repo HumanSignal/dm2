@@ -1,9 +1,10 @@
 import { format, isValid } from "date-fns";
-import React, { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { default as DP } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaExchangeAlt } from "react-icons/fa";
 import { BemWithSpecifiContext } from "../../../utils/bem";
+import { isDefined } from "../../../utils/utils";
 import { Dropdown } from "../Dropdown/Dropdown";
 import { Icon } from "../Icon/Icon";
 import Input from "../Input/Input";
@@ -24,12 +25,15 @@ export const DatePicker = ({
   const finalFormat = showTime ? `${dateFormat} ${timeFormat}` : dateFormat;
 
   /**@type {import("react").RefObject<DP>} */
-  const datepickerRef = React.useRef();
+  const datepickerRef = useRef();
 
-  const dropdownRef = React.useRef();
+  const dropdownRef = useRef();
 
   const formatDate = (date) => {
-    const parsedDate = new Date(date === null ? undefined : date);
+    if (!isDefined(date)) return "";
+
+    const parsedDate = new Date(date === null ? Date.now() : date);
+
     if (isValid(parsedDate)) {
       return format(parsedDate, finalFormat);
     }
@@ -41,22 +45,20 @@ export const DatePicker = ({
     ? value
     : [].concat(value);
 
-  const [realStartDate, setRealStartDate] = React.useState(
-    initialStartDate ?? null
-  );
-  const [realEndDate, setRealEndDate] = React.useState(initialEndDate ?? null);
+  const [realStartDate, setRealStartDate] = useState(initialStartDate ?? null);
+  const [realEndDate, setRealEndDate] = useState(initialEndDate ?? null);
 
   const [startDate, setStartDate] = useState(formatDate(realStartDate));
   const [endDate, setEndDate] = useState(formatDate(realEndDate));
 
   const updateDate = (date, dateSetter, realDateSetter) => {
-    const realDate = new Date(date);
+    const realDate = new Date(date || null);
     dateSetter?.(date);
 
     if (isValid(realDate)) realDateSetter?.(realDate);
   };
 
-  const dateRange = React.useMemo(
+  const dateRange = useMemo(
     () =>
       selectRange
         ? {
@@ -67,15 +69,15 @@ export const DatePicker = ({
     [selectRange, realStartDate, realEndDate]
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isValid(realStartDate)) setStartDate(formatDate(realStartDate));
   }, [realStartDate]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isValid(realEndDate)) setEndDate(formatDate(realEndDate));
   }, [realEndDate]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectRange) {
       if (realStartDate && realEndDate) dropdownRef.current?.close();
       onChange?.([realStartDate, realEndDate]);
@@ -96,7 +98,7 @@ export const DatePicker = ({
             ref={datepickerRef}
             selected={realStartDate}
             onSelect={(date) => {
-              if (realEndDate === null && selectRange) {
+              if (realStartDate !== null && realEndDate === null && selectRange) {
                 setRealEndDate(date);
               } else {
                 setRealStartDate(date);

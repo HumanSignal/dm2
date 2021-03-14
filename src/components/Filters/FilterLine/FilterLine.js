@@ -63,6 +63,7 @@ export const FilterLine = observer(
                       size="small"
                       className="filters-data-tag"
                       color="#1d91e4"
+                      style={{marginLeft: 7}}
                     >
                       {filter.field.parent.title}
                     </Tag>

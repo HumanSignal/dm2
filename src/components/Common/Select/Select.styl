@@ -29,9 +29,11 @@
 
   &__value
     width max-content
-    max-width 200px
     min-width 30px
     flex 1
+    white-space nowrap
+    overflow hidden
+    text-overflow ellipsis
 
   &__option
     cursor pointer
@@ -68,6 +70,8 @@
       transform translate(-50%, -50%) rotate(-135deg)
 
   &__optgroup
+    &-list
+      width max-content
     &-label
       padding 4px 16px
       color rgba(#000, 0.6)

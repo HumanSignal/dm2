@@ -8,8 +8,8 @@ export const DateTimeInput = ({ value, range, time, onChange }) => {
       let value;
       if (Array.isArray(selectedDate)) {
         const [min, max] = selectedDate
-          .map((d) => new Date(d))
-          .map((d) => (isValid(d) ? d.toISOString() : undefined));
+          .map((d) => d ? new Date(d) : null)
+          .map((d) => (isValid(d) ? d.toISOString() : null));
 
         value = { min, max };
       } else {
