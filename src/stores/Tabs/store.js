@@ -289,7 +289,7 @@ export const TabStore = types
 
         self.columnsTargetMap.get(c.target).push(column);
 
-        if (!c.children) {
+        if (!c.children && column.filterable) {
           self.availableFilters.push({
             id: `filter:${columnID}`,
             type: c.type,

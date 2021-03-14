@@ -1,5 +1,6 @@
 import { observer } from "mobx-react";
 import React from "react";
+import { toStudlyCaps } from 'strman';
 import { Block } from "../../../../utils/bem";
 import { TableContext, TableElem } from "../TableContext";
 import { getProperty, getStyle } from "../utils";
@@ -18,9 +19,12 @@ const CellRenderer = observer(
       );
     }
 
+
     const valuePath = id.split(":")[1] ?? id;
-    const Renderer = cellViews?.[col.original.currentType] ?? cellViews.String;
+    const altType = toStudlyCaps(valuePath);
     const value = getProperty(data, valuePath);
+
+    const Renderer = cellViews[col.original.currentType] ?? cellViews[altType] ?? cellViews.String;
     const renderProps = { column: col, original: data, value: value };
     const Decoration = decoration?.get?.(col);
     const style = getStyle(cellViews, col, Decoration);

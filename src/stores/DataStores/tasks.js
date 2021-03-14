@@ -3,9 +3,11 @@ import { DataStore, DataStoreItem } from "../../mixins/DataStore";
 import { getAnnotationSnapshot } from "../../sdk/lsf-utils";
 import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
+import { User } from "../Users";
 
 export const create = (columns) => {
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
+    annotators: types.optional(types.array(types.late(() => types.reference(User))), []),
     annotations: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
     source: types.maybeNull(types.string),

@@ -1,6 +1,8 @@
 import { getRoot, getSnapshot, types } from "mobx-state-tree";
 import React from "react";
+import { toStudlyCaps } from "strman";
 import { IdeaCircle, MinusCircle, TickCircle } from "../../assets/icons";
+import * as CellViews from "../../components/Table/CellViews";
 import { all } from "../../utils/utils";
 
 export const ViewColumnType = types.enumeration([
@@ -192,6 +194,10 @@ export const TabColumn = types
     get width() {
       return self.parentView?.columnsWidth?.get(self.id) ?? null;
     },
+
+    get filterable() {
+      return ((CellViews[self.type] ?? CellViews[toStudlyCaps(self.alias)])?.filterable) !== false;
+    }
   }))
   .actions((self) => ({
     toggleVisibility() {
