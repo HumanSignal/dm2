@@ -49,6 +49,26 @@ const dataCleanup = (tab, columnIds) => {
   return { ...tab, data };
 };
 
+const createNameCopy = (name) => {
+  let newName = name;
+  const matcher = /Copy(\s\(([\d]+)\))?/;
+  const copyNum = newName.match(matcher);
+
+  if (copyNum) {
+    newName = newName.replace(matcher, (...match) => {
+      const num = match[2];
+
+      if (num) return `Copy (${Number(num) + 1})`;
+
+      return 'Copy (2)';
+    });
+  } else {
+    newName += ' Copy';
+  }
+
+  return newName;
+};
+
 export const TabStore = types
   .model("TabStore", {
     selected: types.maybeNull(types.late(() => types.reference(Tab))),
@@ -211,14 +231,22 @@ export const TabStore = types
       }
     }),
 
-    duplicateView(view) {
+    duplicateView: flow(function * (view) {
       const sn = getSnapshot(view);
-      self.addView({
+
+      let newView = Tab.create({
         ...sn,
-        id: self.lastView.id + 1,
+        id: Number.MAX_SAFE_INTEGER,
         saved: false,
+        key: guidGenerator(),
+        title: createNameCopy(sn.title),
       });
-    },
+
+      self.views.push(newView);
+      newView = yield self.saveView(newView);
+      self.selected = newView;
+      self.selected.reload();
+    }),
 
     createView(viewSnapshot) {
       return Tab.create(viewSnapshot ?? {});
