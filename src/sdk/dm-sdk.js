@@ -225,7 +225,7 @@ export class DataManager {
     this.mode = mode;
     this.store.setMode(mode);
 
-    if (modeChanged) this.invoke('modeChanged');
+    if (modeChanged) this.invoke('modeChanged', [this.mode]);
   }
 
   /**
