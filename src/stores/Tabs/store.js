@@ -199,12 +199,15 @@ export const TabStore = types
         self.views.push(newView);
         newView.reload();
         destroy(view);
+
+        return newView;
       } else {
         applySnapshot(view, newViewSnapshot);
 
         if (reload !== false) view.reload({ interaction });
 
         view.unlock();
+        return view;
       }
     }),
 
@@ -339,7 +342,9 @@ export const TabStore = types
         });
 
         self.views.push(defaultView);
-        yield self.saveView(defaultView);
+        defaultView = yield self.saveView(defaultView);
+        self.selected = defaultView;
+        self.selected.reload();
       }
 
       const selected = tabID

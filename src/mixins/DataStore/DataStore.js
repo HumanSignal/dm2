@@ -144,7 +144,10 @@ export const DataStore = (
       },
 
       fetch: flow(function* ({ reload = false, interaction } = {}) {
+        const currentView = getRoot(self).viewsStore.selected;
+
         if (self.loading) return;
+        if (!currentView) return;
 
         self.loading = true;
 
@@ -154,7 +157,7 @@ export const DataStore = (
         const params = {
           page: self.page,
           page_size: self.pageSize,
-          tabID: getRoot(self).viewsStore.selected.id,
+          tabID: currentView.id,
         };
 
         if (interaction) Object.assign(params, { interaction });

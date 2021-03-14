@@ -295,21 +295,25 @@ export const AppStore = types
 
       const { tab, task, labeling } = History.getParams();
 
-      const [projectFetched] = yield Promise.all([
-        yield self.fetchProject(),
-        yield self.fetchUsers(),
-      ]);
+      try {
+        const [projectFetched] = yield Promise.all([
+          yield self.fetchProject(),
+          yield self.fetchUsers(),
+        ]);
 
-      if (projectFetched) {
-        yield self.fetchActions();
-        self.viewsStore.fetchColumns();
-        yield self.viewsStore.fetchTabs(tab, task, labeling);
+        if (projectFetched) {
+          yield self.fetchActions();
+          self.viewsStore.fetchColumns();
+          yield self.viewsStore.fetchTabs(tab, task, labeling);
 
-        self.resolveURLParams();
+          self.resolveURLParams();
 
-        self.loading = false;
+          self.loading = false;
 
-        self.startPolling();
+          self.startPolling();
+        }
+      } catch (err) {
+        console.err(err);
       }
     }),
 
