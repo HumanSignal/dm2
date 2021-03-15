@@ -84,7 +84,7 @@ export const DataView = injector(
             <Tag
               key="column-type"
               color="blue"
-              style={{ fontWeight: "bold", cursor: "pointer" }}
+              style={{ fontWeight: "500", fontSize: 14, cursor: "pointer" }}
             >
               {original?.readableType ?? parent.title}
             </Tag>

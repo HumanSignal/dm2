@@ -43,6 +43,7 @@ const DropdownWrapper = observer(
                         width: 45,
                         textAlign: "center",
                         cursor: "pointer",
+                        fontSize: 14,
                       }}
                     >
                       {ViewColumnTypeShort(type)}
@@ -64,6 +65,7 @@ const DropdownWrapper = observer(
             alignItems: "center",
             justifyContent: "space-between",
             background: "none",
+            fontSize: 14,
           }}
         >
           {children}
