@@ -7,6 +7,7 @@ import {
   FaPlus,
   FaSortAmountDown,
   FaSortAmountUp,
+  FaSync,
   FaThLarge,
   FaThList
 } from "react-icons/fa";
@@ -38,6 +39,8 @@ const injector = inject(({ store }) => {
     sidebarEnabled: store.viewsStore?.sidebarEnabled ?? false,
     ordering: currentView?.currentOrder,
     view: currentView,
+    needsDataFetch: store.needsDataFetch,
+    projectFetch: store.projectFetch,
   };
 });
 
@@ -119,7 +122,7 @@ const GridWidthButton = observer(({ view, gridWidth, size }) => {
 });
 
 export const TablePanel = injector(
-  ({ store, view, labelingDisabled, loading, target, ordering }) => {
+  ({ store, view, labelingDisabled, loading, target, ordering, needsDataFetch, projectFetch }) => {
     const toolbarSize = "small";
 
     return (
@@ -148,6 +151,14 @@ export const TablePanel = injector(
               size={toolbarSize}
             />
           )}
+
+          <Space size={toolbarSize}>
+            <Button size={toolbarSize} look={needsDataFetch && 'primary'} onClick={async () => {
+              await store.fetchProject();
+              await store.currentView?.reload();
+            }} icon={<FaSync/>} waiting={projectFetch}/>
+            {needsDataFetch && "Update available"}
+          </Space>
 
           {loading && <Spinner size="small" />}
 

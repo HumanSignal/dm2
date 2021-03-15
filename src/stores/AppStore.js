@@ -105,6 +105,10 @@ export const AppStore = types
       return this.SDK.showPreviews;
     },
   }))
+  .volatile(() => ({
+    needsDataFetch: false,
+    projectFetch: false,
+  }))
   .actions((self) => ({
     startPolling() {
       if (self._poll) return;
@@ -259,6 +263,8 @@ export const AppStore = types
     },
 
     fetchProject: flow(function* (options = {}) {
+      self.projectFetch = true;
+
       const oldProject = JSON.stringify(self.project ?? {});
       const params =
         options && options.interaction
@@ -270,6 +276,12 @@ export const AppStore = types
       try {
         const newProject = yield self.apiCall("project", params);
 
+        self.needsDataFetch = Object.entries(self.project ?? {}).length ? (
+          self.project.task_count !== newProject.task_count ||
+          self.project.annotation_count !== newProject.annotation_count ||
+          self.project.num_tasks_with_annotations !== newProject.num_tasks_with_annotations
+        ) : false;
+
         if (JSON.stringify(newProject ?? {}) !== oldProject) {
           self.project = newProject;
         }
@@ -277,6 +289,7 @@ export const AppStore = types
         self.crash();
         return false;
       }
+      self.projectFetch = false;
       return true;
     }),
 

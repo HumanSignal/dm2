@@ -10,7 +10,6 @@ export const initDevApp = async (DataManager) => {
 
   const dm = new DataManager({
     root: document.getElementById("app"),
-    polling: false,
     apiGateway: gatewayAPI,
     apiVersion: 2,
     apiMockDisabled: useExternalSource,
