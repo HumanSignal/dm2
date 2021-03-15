@@ -154,7 +154,7 @@ export const TablePanel = injector(
 
           <Space size={toolbarSize}>
             <Button size={toolbarSize} look={needsDataFetch && 'primary'} onClick={async () => {
-              await store.fetchProject();
+              await store.fetchProject({force: true, interaction: 'refresh'});
               await store.currentView?.reload();
             }} icon={<FaSync/>} waiting={projectFetch}/>
             {needsDataFetch && "Update available"}
