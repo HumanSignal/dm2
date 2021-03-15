@@ -279,7 +279,7 @@ export const TabStore = types
             createColumnPath(
               columns,
               columns.find((c) => {
-                return c.id === column.parent && c.target === column.target;
+                return !c.parent && c.id === column.parent && c.target === column.target;
               })
             ).columnPath
           );
