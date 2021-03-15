@@ -263,7 +263,7 @@ export const AppStore = types
     },
 
     fetchProject: flow(function* (options = {}) {
-      self.projectFetch = true;
+      self.projectFetch = options.force === true;
 
       const oldProject = JSON.stringify(self.project ?? {});
       const params =
