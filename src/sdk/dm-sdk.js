@@ -135,7 +135,7 @@ export class DataManager {
   }
 
   get isExplorer() {
-    return this.mode === "explorer";
+    return this.mode === "labeling";
   }
 
   get isLabelStream() {
