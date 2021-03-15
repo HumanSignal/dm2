@@ -1,4 +1,4 @@
-import { format, isValid } from "date-fns";
+import { format, isMatch, isValid } from "date-fns";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { default as DP } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -12,6 +12,8 @@ import "./DatePicker.global.styl";
 import "./DatePicker.styl";
 
 const { Block, Elem } = BemWithSpecifiContext();
+
+const DATE_REGEXP = /([\d]{2})/;
 
 export const DatePicker = ({
   size,
@@ -52,10 +54,15 @@ export const DatePicker = ({
   const [endDate, setEndDate] = useState(formatDate(realEndDate));
 
   const updateDate = (date, dateSetter, realDateSetter) => {
-    const realDate = new Date(date || null);
+    if (date.length > finalFormat.length) return;
+
     dateSetter?.(date);
 
-    if (isValid(realDate)) realDateSetter?.(realDate);
+    if (isDefined(date) && isMatch(date, finalFormat) && date.length === finalFormat.length) {
+      const realDate = new Date(date || null);
+
+      if (isValid(realDate)) realDateSetter?.(realDate);
+    }
   };
 
   const dateRange = useMemo(
@@ -79,10 +86,8 @@ export const DatePicker = ({
 
   useEffect(() => {
     if (selectRange) {
-      if (realStartDate && realEndDate) dropdownRef.current?.close();
       onChange?.([realStartDate, realEndDate]);
     } else if (realStartDate) {
-      dropdownRef.current?.close();
       onChange?.(realStartDate);
     }
   }, [realStartDate, realEndDate]);
@@ -100,9 +105,14 @@ export const DatePicker = ({
             onSelect={(date) => {
               if (realStartDate !== null && realEndDate === null && selectRange) {
                 setRealEndDate(date);
+                dropdownRef.current?.close();
               } else {
                 setRealStartDate(date);
-                if (selectRange) setRealEndDate(null);
+                if (selectRange) {
+                  setRealEndDate(null);
+                } else {
+                  dropdownRef.current?.close();
+                }
               }
             }}
             monthsShown={2}
