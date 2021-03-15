@@ -1,4 +1,5 @@
 import { Block, Elem } from "../../../../utils/bem";
+import { Tooltip } from "../../../Common/Tooltip/Tooltip";
 import { Userpic } from "../../../Common/Userpic/Userpic";
 import "./Annotators.styl";
 
@@ -9,11 +10,15 @@ export const Annotators = ({value}) => {
 
   return (
     <Block name="annotators">
-      {renderable.map(user => (
-        <Elem key={`user-${user.id}`} name="item">
-          <Userpic user={user}/>
-        </Elem>
-      ))}
+      {renderable.map(user => {
+        return (
+          <Elem key={`user-${user.id}`} name="item">
+            <Tooltip title={user.fullName || user.email}>
+              <Userpic user={user}/>
+            </Tooltip>
+          </Elem>
+        );
+      })}
       {(extra > 0) && (
         <Elem name="item">
           <Userpic username={`+${extra}`}/>

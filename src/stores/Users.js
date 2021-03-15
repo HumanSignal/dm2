@@ -12,6 +12,11 @@ export const User = types
     avatar: types.maybeNull(types.string),
     initials: types.string
   })
+  .views((self) => ({
+    get fullName() {
+      return [self.firstName, self.lastName].filter(n => !!n).join(" ").trim();
+    }
+  }))
   .preProcessSnapshot((sn) => {
     return camelizeKeys(sn);
   });

@@ -2,6 +2,7 @@
   display flex
 
   &__item
+    z-index 1
     width 28px
     height 28px
     overflow hidden
@@ -11,3 +12,6 @@
 
     & + &
       margin-left -10px
+
+    &:hover
+      z-index 10
