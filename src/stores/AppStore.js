@@ -326,7 +326,7 @@ export const AppStore = types
           self.startPolling();
         }
       } catch (err) {
-        console.err(err);
+        console.error(err);
       }
     }),
 
