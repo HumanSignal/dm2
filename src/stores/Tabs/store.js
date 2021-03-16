@@ -385,6 +385,8 @@ export const TabStore = types
         pushState: tabID === undefined,
       });
 
+      yield self.saveView(self.selected);
+
       if (taskID || labeling) {
         getRoot(self).startLabeling(
           taskID
