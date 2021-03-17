@@ -157,10 +157,17 @@ apiEndpoints: {
 
 #### Run in development mode with server API
 
-Ensure that Label Studio is running, then execute a command in the command line:
+Ensure that Label Studio is running, then configure your environment. Copy `.env.defaults` into `.env` and change settings:
+
+- `API_GATEWAY=http://localhost:8080/api/dm` or other API root if you have one
+- `LS_ACCESS_TOKEN` — to get this token go to LS, open menu from avatar in top right corner, go to Account page, copy token
+
+Also you have to change `data-project-id` in `public/index.html` to project you want to use. DM always works with only one project at a time.
+
+Then start DM with simple command:
 
 ```
-REACT_APP_USE_LSB=true REACT_APP_API_GATEWAY=http://localhost:8080/api npm run start
+npm run start
 ```
 
 #### Build for production and standalone usage
