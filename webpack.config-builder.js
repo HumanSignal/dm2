@@ -6,7 +6,9 @@ const Dotenv = require("dotenv-webpack");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
-const isDevelopment = process.env.NODE_ENV !== "production";
+const DEFAULT_NODE_ENV = process.env.BUILD_MODULE ? 'production' : (process.env.NODE_ENV || 'development')
+
+const isDevelopment = DEFAULT_NODE_ENV !== "production";
 
 const BUILD = {
   NO_MINIMIZE: isDevelopment || !!process.env.BUILD_NO_MINIMIZATION,
@@ -21,7 +23,7 @@ const dirPrefix = {
 };
 
 const LOCAL_ENV = {
-  NODE_ENV: "development",
+  NODE_ENV: DEFAULT_NODE_ENV,
   CSS_PREFIX: "dm-",
   API_GATEWAY: "http://localhost:8081/api/dm",
   LS_ACCESS_TOKEN: "",
