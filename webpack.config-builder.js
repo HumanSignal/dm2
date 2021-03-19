@@ -74,7 +74,8 @@ const output = () => {
   if (BUILD.MODULE) {
     result.library = "DataManager";
     result.libraryExport = "default";
-    result.libraryTarget = "commonjs";
+    result.libraryTarget = "umd";
+    result.globalObject = `(typeof self !== 'undefined' ? self : this)`;
   }
 
   result.filename = dirPrefix.js + result.filename;
@@ -196,7 +197,7 @@ if (isDevelopment) {
 const sourceMap = isDevelopment ? "cheap-module-source-map" : "source-map";
 
 module.exports = ({withDevServer = true} = {}) => ({
-  mode: process.env.NODE_ENV || "development",
+  mode: DEFAULT_NODE_ENV || "development",
   devtool: sourceMap,
   ...(withDevServer ? devServer() : {}),
   entry: path.resolve(__dirname, "src/index.js"),
