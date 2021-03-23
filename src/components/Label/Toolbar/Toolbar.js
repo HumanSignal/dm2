@@ -1,6 +1,5 @@
 import { observer } from "mobx-react";
 import React from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import {
   FaArrowLeft,
   FaArrowRight,
@@ -13,6 +12,7 @@ import {
   FaTrashAlt,
   FaUndo
 } from "react-icons/fa";
+import { useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
 import { Icon } from "../../Common/Icon/Icon";
@@ -87,15 +87,8 @@ export const Toolbar = observer(({ view, history, lsf, isLabelStream, hasInstruc
 });
 
 const LSFOperations = observer(({ history }) => {
-  useHotkeys("ctrl+z,cmd+z", () => history?.undo(), { keyup: false }, [
-    history,
-  ]);
-  useHotkeys(
-    "ctrl+shift+z,cmd+shift+z",
-    () => history?.redo(),
-    { keyup: false },
-    [history]
-  );
+  useShortcut("lsf.undo", () => history?.undo(), {}, [history]);
+  useShortcut("lsf.redo", () => history?.redo(), {}, [history]);
 
   return history ? (
     <Button.Group>
@@ -137,10 +130,13 @@ const SubmissionButtons = observer(
 
     const buttons = [];
 
+    const submitShortcut = useShortcut('lsf.save-annotation', saveAnnotation, {showShortcut: true}, [disabled]);
+    const rejectShortcut = useShortcut('lsf.reject-task', skipTask, {showShortcut: true}, [disabled]);
+
     buttons.push(
       <Tooltip
         key="skip"
-        title="Mark task as cancelled: [ Ctrl+Space ]"
+        title={rejectShortcut}
         mouseEnterDelay={TOOLTIP_DELAY}
       >
         <Button
@@ -157,7 +153,7 @@ const SubmissionButtons = observer(
     buttons.push(
       <Tooltip
         key="submit"
-        title="Save results: [ Ctrl+Enter ]"
+        title={submitShortcut}
         mouseEnterDelay={TOOLTIP_DELAY}
       >
         <Button
@@ -170,11 +166,6 @@ const SubmissionButtons = observer(
         </Button>
       </Tooltip>
     );
-
-    useHotkeys("cmd+alt+enter", saveAnnotation, { keyup: false }, [
-      disabled,
-    ]);
-    useHotkeys("ctrl+space,cmd+alt+ ", skipTask, { keyup: false }, [disabled]);
 
     return <Space>{buttons}</Space>;
   }

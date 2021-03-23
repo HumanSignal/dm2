@@ -1,8 +1,8 @@
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import { useCallback, useMemo } from "react";
-import { useHotkeys } from "react-hotkeys-hook";
 import { FaQuestionCircle } from "react-icons/fa";
+import { useShortcut } from "../../sdk/hotkeys";
 import { Block, Elem } from "../../utils/bem";
 import { Icon } from "../Common/Icon/Icon";
 import { ImportButton } from "../Common/SDKButtons";
@@ -253,24 +253,24 @@ export const DataView = injector(
         />
       );
 
-    useHotkeys("w,shift+up", () => {
+    useShortcut("dm.focus-previous", () => {
       if (document.activeElement !== document.body) return;
       dataStore.focusPrev();
     });
 
-    useHotkeys("s,shift+down", () => {
+    useShortcut("dm.focus-next", () => {
       if (document.activeElement !== document.body) return;
 
       dataStore.focusNext();
     });
 
-    useHotkeys("a,shift+left", () => {
+    useShortcut("dm.close-labeling", () => {
       if (document.activeElement !== document.body) return;
 
       if (dataStore.selected) store.closeLabeling();
     });
 
-    useHotkeys("d,shift+right,enter", () => {
+    useShortcut("dm.open-labeling", () => {
       if (document.activeElement !== document.body) return;
 
       const { highlighted } = dataStore;
