@@ -210,10 +210,6 @@ export const Tab = types
       self.save();
     },
 
-    setFilters(filters) {
-      self.filters.push(...(filters ?? []));
-    },
-
     setOrdering(value) {
       if (value === null) {
         self.ordering = [];

@@ -104,8 +104,6 @@ export const TabFilter = types
       }
 
       self.setOperator(self.component[0].key);
-      self.view.clearSelection();
-
       self.save();
     },
 
@@ -131,6 +129,7 @@ export const TabFilter = types
     save() {
       if (self.isValidFilter) {
         getRoot(self)?.unsetSelection();
+        self.view?.clearSelection();
         self.view?.save({ interaction: "filter" });
       }
     },
