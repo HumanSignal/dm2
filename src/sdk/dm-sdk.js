@@ -33,6 +33,7 @@
  * }} DMConfig
  */
 
+import { unmountComponentAtNode } from "react-dom";
 import { APIProxy } from "../utils/api-proxy";
 import { objectToMap } from "../utils/helpers";
 import { APIConfig } from "./api-config";
@@ -304,8 +305,14 @@ export class DataManager {
 
   destroy() {
     if (this.store) this.store.destroy?.();
+    unmountComponentAtNode(this.root);
     this.callbacks.forEach((callbacks) => callbacks.clear());
     this.callbacks.clear();
+  }
+
+  reload() {
+    this.destroy();
+    this.initApp();
   }
 
   async apiCall(...args) {
