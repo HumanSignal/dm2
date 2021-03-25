@@ -63,7 +63,7 @@ export const AppStore = types
     },
 
     get isLabeling() {
-      return !!self.dataStore?.selected || self.isLabelStreamMode;
+      return !!self.dataStore?.selected || self.isLabelStreamMode || self.mode === 'labeling';
     },
 
     get isLabelStreamMode() {

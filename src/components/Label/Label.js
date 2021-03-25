@@ -1,5 +1,6 @@
 import { inject } from "mobx-react";
-import React, { useRef } from "react";
+import React, { useCallback, useRef } from "react";
+import { unmountComponentAtNode } from "react-dom";
 import { FaCaretDown, FaChevronLeft, FaColumns } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
 import { Button } from "../Common/Button/Button";
@@ -72,7 +73,13 @@ export const Labeling = injector(
       const callback = (annotation) => setAnnotation(annotation);
       SDK.on("annotationSet", callback);
 
-      return () => SDK.off("annotationSet", callback);
+      return () => {
+        if (lsfRef.current) {
+          unmountComponentAtNode(lsfRef.current);
+        }
+
+        SDK.off("annotationSet", callback);
+      };
     }, []);
 
     React.useEffect(() => {
@@ -83,11 +90,11 @@ export const Labeling = injector(
       SDK.startLabeling(lsfRef.current);
     }, [task]);
 
-    const onResize = (width) => {
+    const onResize = useCallback((width) => {
       view.setLabelingTableWidth(width);
       // trigger resize events inside LSF
       window.dispatchEvent(new Event("resize"));
-    };
+    }, []);
 
     const toolbar = (
       <Toolbar
