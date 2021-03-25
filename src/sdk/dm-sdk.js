@@ -311,6 +311,7 @@ export class DataManager {
   }
 
   reload() {
+    console.log('DataManager is reloading');
     this.destroy();
     this.initApp();
   }

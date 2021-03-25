@@ -388,6 +388,11 @@ export const AppStore = types
         }
       );
 
+      if (result.reload) {
+        self.SDK.reload();
+        return;
+      }
+
       if (options.reload !== false) {
         yield view.reload();
         self.fetchProject();
