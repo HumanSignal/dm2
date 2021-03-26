@@ -81,6 +81,12 @@ export class DataManager {
    */
   callbacks = new Map();
 
+  /**
+   * @private
+   * @type {Map<String, Set<Function>>}
+   */
+  actions = new Map();
+
   /** @type {Number} */
   apiVersion = 1;
 
@@ -173,6 +179,29 @@ export class DataManager {
     });
 
     return config;
+  }
+
+
+  /**
+   *
+   * @param {impotr("../stores/Action.js").Action} action
+   */
+  addAction(action, callback) {
+    const {id} = action;
+
+    if (!id) throw new Error("Action must provide a unique ID");
+
+    this.actions.set(id, callback);
+    this.store.addActions(action);
+  }
+
+  removeAction(id) {
+    this.actions.delete(id);
+    this.store.removeAction(id);
+  }
+
+  getAction(id) {
+    return this.actions.get(id);
   }
 
   /**

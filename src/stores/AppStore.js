@@ -1,7 +1,8 @@
-import { flow, types } from "mobx-state-tree";
+import { destroy, flow, types } from "mobx-state-tree";
 import { Modal } from "../components/Common/Modal/Modal";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
+import { Action } from "./Action";
 import * as DataStores from "./DataStores";
 import { DynamicModel, registerModel } from "./DynamicModel";
 import { TabStore } from "./Tabs";
@@ -39,7 +40,7 @@ export const AppStore = types
       {}
     ),
 
-    availableActions: types.optional(types.array(CustomJSON), []),
+    availableActions: types.optional(types.array(Action), []),
 
     serverError: types.map(CustomJSON),
 
@@ -128,6 +129,15 @@ export const AppStore = types
 
     setMode(mode) {
       self.mode = mode;
+    },
+
+    addActions(...actions) {
+      self.availableActions.push(...actions);
+    },
+
+    removeAction(id) {
+      const action = self.availableActions.find((action) => action.id === id);
+      if (action) destroy(action);
     },
 
     setTask: flow(function* ({ taskID, annotationID, pushState }) {
@@ -295,7 +305,8 @@ export const AppStore = types
     }),
 
     fetchActions: flow(function* () {
-      self.availableActions = yield self.apiCall("actions");
+      const serverActions = yield self.apiCall("actions");
+      self.addActions(...(serverActions ?? []));
     }),
 
     fetchUsers: flow(function * () {
@@ -363,6 +374,9 @@ export const AppStore = types
       const needsLock =
         self.availableActions.findIndex((a) => a.id === actionId) >= 0;
       const { selected } = view;
+      const actionCallback = self.SDK.getAction(actionId);
+
+      console.log({actionCallback});
 
       if (needsLock) view.lock();
 
@@ -376,6 +390,11 @@ export const AppStore = types
           items: view.serializedFilters,
         },
       };
+
+      if (actionCallback instanceof Function) {
+        console.log("calling", actionCallback);
+        return actionCallback(actionParams);
+      }
 
       const result = yield self.apiCall(
         "invokeAction",

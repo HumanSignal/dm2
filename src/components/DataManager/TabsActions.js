@@ -29,6 +29,8 @@ export const TabsActions = inject("store")(
             store.invokeAction(action.id);
           },
         });
+      } else {
+        store.invokeAction(action.id);
       }
     };
 
@@ -39,7 +41,9 @@ export const TabsActions = inject("store")(
           size={size}
           key={action.id}
           danger={isDeleteAction}
-          onClick={() => invokeAction(action, isDeleteAction)}
+          onClick={() => {
+            invokeAction(action, isDeleteAction);
+          }}
           icon={isDeleteAction && <BsTrash />}
         >
           {action.title}
