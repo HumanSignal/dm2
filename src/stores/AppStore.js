@@ -378,7 +378,7 @@ export const AppStore = types
 
       console.log({actionCallback});
 
-      if (needsLock) view.lock();
+      if (needsLock && !actionCallback) view.lock();
 
       const actionParams = {
         ordering: view.ordering,
@@ -393,7 +393,7 @@ export const AppStore = types
 
       if (actionCallback instanceof Function) {
         console.log("calling", actionCallback);
-        return actionCallback(actionParams);
+        return actionCallback(actionParams, view);
       }
 
       const result = yield self.apiCall(
