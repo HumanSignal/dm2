@@ -191,7 +191,7 @@ export class DataManager {
 
     if (!id) throw new Error("Action must provide a unique ID");
 
-    this.actions.set(id, callback);
+    this.actions.set(id, {action, callback});
     this.store.addActions(action);
   }
 
@@ -201,7 +201,13 @@ export class DataManager {
   }
 
   getAction(id) {
-    return this.actions.get(id);
+    return this.actions.get(id)?.callback;
+  }
+
+  installActions() {
+    this.actions.forEach(({action, callback}) => {
+      this.addAction(action, callback);
+    });
   }
 
   /**
@@ -332,17 +338,20 @@ export class DataManager {
     this.lsf = undefined;
   }
 
-  destroy() {
+  destroy(detachCallbacks = true) {
     if (this.store) this.store.destroy?.();
     unmountComponentAtNode(this.root);
-    this.callbacks.forEach((callbacks) => callbacks.clear());
-    this.callbacks.clear();
+
+    if (detachCallbacks) {
+      this.callbacks.forEach((callbacks) => callbacks.clear());
+      this.callbacks.clear();
+    }
   }
 
   reload() {
-    console.log('DataManager is reloading');
-    this.destroy();
+    this.destroy(false);
     this.initApp();
+    this.installActions();
   }
 
   async apiCall(...args) {
