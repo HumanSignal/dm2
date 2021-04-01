@@ -1,5 +1,4 @@
 import { inject } from "mobx-react";
-import { FaSync } from "react-icons/fa";
 import { Button } from "../../Common/Button/Button";
 import { Space } from "../../Common/Space/Space";
 
@@ -17,13 +16,12 @@ export const RefreshButton = injector(({store, needsDataFetch, projectFetch, siz
       <Button
         size={size}
         look={needsDataFetch && 'primary'}
-        icon={<FaSync/>}
         waiting={projectFetch}
         onClick={async () => {
           await store.fetchProject({force: true, interaction: 'refresh'});
           await store.currentView?.reload();
         }}
-      />
+      >Refresh</Button>
       {needsDataFetch && "Update available"}
     </Space>
   );

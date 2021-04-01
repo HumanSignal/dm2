@@ -1,6 +1,4 @@
 import { inject, observer } from "mobx-react";
-import { FaThLarge, FaThList } from "react-icons/fa";
-import { Icon } from "../../Common/Icon/Icon";
 import { RadioGroup } from "../../Common/RadioGroup/RadioGroup";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
 
@@ -18,12 +16,12 @@ export const ViewToggle = viewInjector(observer(({ view, size }) => {
       >
         <RadioGroup.Button value="list">
           <Tooltip title="List view">
-            <Icon icon={FaThList} />
+            <span>List</span>
           </Tooltip>
         </RadioGroup.Button>
         <RadioGroup.Button value="grid">
           <Tooltip title="Grid view">
-            <Icon icon={FaThLarge} />
+            <span>Grid</span>
           </Tooltip>
         </RadioGroup.Button>
       </RadioGroup>

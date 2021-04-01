@@ -23,7 +23,7 @@ export const Toolbar = injector(observer(({store, instruments}) => {
               return Instrument ? (
                 <Instrument
                   key={`instrument-${instrument}`}
-                  size="small"
+                  size="medium"
                 />
               ) : null;
             })}
