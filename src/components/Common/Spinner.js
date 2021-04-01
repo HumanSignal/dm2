@@ -1,7 +1,7 @@
 import React from "react";
 import Running from "../../assets/running";
 
-export const Spinner = ({ ...props }) => {
+export const Spinner = ({ visible = true, ...props }) => {
   const size = React.useMemo(() => {
     switch (props.size) {
       case "large":
@@ -25,7 +25,7 @@ export const Spinner = ({ ...props }) => {
     objectFit: "contain",
   };
 
-  return (
+  return visible ? (
     <div
       {...props}
       style={{ width: size, height: size }}
@@ -40,5 +40,5 @@ export const Spinner = ({ ...props }) => {
         </div>
       }
     />
-  );
+  ) : null;
 };

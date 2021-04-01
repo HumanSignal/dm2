@@ -29,11 +29,14 @@
  * links: Dict<string|null>,
  * showPreviews: boolean,
  * projectId: number,
- * interfaces: Dict<boolean>
+ * interfaces: Dict<boolean>,
+ * instruments: Dict<any>,
  * }} DMConfig
  */
 
+import { inject, observer } from "mobx-react";
 import { unmountComponentAtNode } from "react-dom";
+import { instruments } from "../components/DataManager/Toolbar/instruments";
 import { APIProxy } from "../utils/api-proxy";
 import { objectToMap } from "../utils/helpers";
 import { APIConfig } from "./api-config";
@@ -99,15 +102,7 @@ export class DataManager {
   /** @type {boolean} */
   started = false;
 
-  /** @type {Map<string, boolean>} */
-  interfaces = objectToMap({
-    tabs: true,
-    toolbar: true,
-    import: true,
-    export: true,
-    labelButton: true,
-    backButton: true,
-  });
+  instruments = new Map();
 
   /**
    * Constructor
@@ -125,8 +120,14 @@ export class DataManager {
     this.links = Object.assign(this.links, config.links ?? {});
     this.showPreviews = config.showPreviews ?? false;
     this.polling = config.polling;
+    this.instruments = objectToMap(config.instruments),
     this.interfaces = objectToMap({
-      ...Object.fromEntries(this.interfaces),
+      tabs: true,
+      toolbar: true,
+      import: true,
+      export: true,
+      labelButton: true,
+      backButton: true,
       ...config.interfaces,
     });
 
@@ -212,6 +213,18 @@ export class DataManager {
     });
   }
 
+  registerInstrument(name, initializer) {
+    if (instruments[name]) {
+      return console.warn(`Can't override native instrument ${name}`);
+    }
+
+    this.instruments.set(name, initializer({
+      store: this.store,
+      observer: observer,
+      inject: inject
+    }));
+  }
+
   /**
    * Assign an event handler
    * @param {string} eventName
@@ -251,7 +264,7 @@ export class DataManager {
    * @param {string} name Name of the interface
    */
   interfaceEnabled(name) {
-    return this.interfaces.get(name) === true;
+    return this.store.interfaceEnabled(name);
   }
 
   /**

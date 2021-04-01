@@ -44,6 +44,8 @@ export const createApp = async (rootNode, datamanager) => {
     },
     mode: datamanager.mode,
     showPreviews: datamanager.showPreviews,
+    interfaces: Object.fromEntries(datamanager.interfaces),
+    toolbar: "actions columns filters ordering label-button loading-possum error-box | refresh view-toggle"
   });
 
   appStore._sdk = datamanager;

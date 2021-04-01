@@ -2,18 +2,18 @@ import { inject } from "mobx-react";
 import React from "react";
 import { FaPlus } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
+import { Interface } from "../Common/Interface";
 import { Space } from "../Common/Space/Space";
 import { Spinner } from "../Common/Spinner";
 import { Tabs, TabsItem } from "../Common/Tabs/Tabs";
 import { FiltersSidebar } from "../Filters/FiltersSidebar/FilterSidebar";
 import { DataView } from "../Table/Table";
 import "./DataManager.styl";
-import { TablePanel } from "./TabPanel/TabPanel";
+import { Toolbar } from "./Toolbar/Toolbar";
 
 const injector = inject(({ store }) => {
   const { sidebarEnabled, sidebarVisible } = store.viewsStore ?? {};
   return {
-    store,
     shrinkWidth: sidebarEnabled && sidebarVisible,
   };
 });
@@ -92,16 +92,18 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
   );
 });
 
-export const DataManager = injector(({ store, shrinkWidth }) => {
+export const DataManager = injector(({ shrinkWidth }) => {
   return (
     <Block name="tabs-content">
       <Elem name="tab" mod={{ shrink: shrinkWidth }}>
-        {store.SDK.interfaceEnabled('tabs') && (
+        <Interface name="tabs">
           <TabsSwitch />
-        )}
-        {store.SDK.interfaceEnabled('toolbar') && (
-          <TablePanel />
-        )}
+        </Interface>
+
+        <Interface name="toolbar">
+          <Toolbar />
+        </Interface>
+
         <DataView />
       </Elem>
       <FiltersSidebar />
