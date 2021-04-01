@@ -183,43 +183,50 @@ export const AppStore = types
       });
     },
 
+    startLabelStream(options = {}) {
+      if (!self.confirmLabelingConfigured()) return;
+
+      self.SDK.setMode("labelstream");
+
+      if (options?.pushState !== false) {
+        History.navigate({ labeling: 1 });
+      }
+
+      self.setTask(options);
+
+      return;
+    },
+
     startLabeling(item, options = {}) {
-      const processLabeling = async () => {
-        if (!item && !self.dataStore.selected) {
-          self.SDK.setMode("labelstream");
+      if (!self.confirmLabelingConfigured()) return;
 
-          if (options?.pushState !== false) {
-            History.navigate({ labeling: 1 });
-          }
-          return;
-        }
+      if (self.dataStore.loadingItem) return;
 
-        if (self.dataStore.loadingItem) return;
+      self.SDK.setMode("labeling");
 
-        self.SDK.setMode("labeling");
+      if (item && !item.isSelected) {
+        const labelingParams = {
+          pushState: options?.pushState,
+        };
 
-        if (item && !item.isSelected) {
-          const labelingParams = {
-            pushState: options?.pushState,
-          };
-
-          if (isDefined(item.task_id)) {
-            Object.assign(labelingParams, {
-              annotationID: item.id,
-              taskID: item.task_id,
-            });
-          } else {
-            Object.assign(labelingParams, {
-              taskID: item.id,
-            });
-          }
-
-          self.setTask(labelingParams);
+        if (isDefined(item.task_id)) {
+          Object.assign(labelingParams, {
+            annotationID: item.id,
+            taskID: item.task_id,
+          });
         } else {
-          self.closeLabeling();
+          Object.assign(labelingParams, {
+            taskID: item.id,
+          });
         }
-      };
 
+        self.setTask(labelingParams);
+      } else {
+        self.closeLabeling();
+      }
+    },
+
+    confirmLabelingConfigured() {
       if (!self.labelingIsConfigured) {
         Modal.confirm({
           title: "You're almost there!",
@@ -230,8 +237,9 @@ export const AppStore = types
           },
           okText: "Go to setup",
         });
+        return false;
       } else {
-        processLabeling.call(self);
+        return true;
       }
     },
 
@@ -265,7 +273,7 @@ export const AppStore = types
 
           self.startLabeling(params, { pushState: false });
         } else if (labeling) {
-          self.startLabeling(null, { pushState: false });
+          self.startLabelStream({ pushState: false });
         } else {
           self.closeLabeling({ pushState: false });
         }

@@ -289,43 +289,44 @@ export class DataManager {
     this.invoke('ready', [this]);
   }
 
+  initLSF(element) {
+    const task = this.store.taskStore.selected;
+    const annotation = this.store.annotationStore.selected;
+    const isLabelStream = this.mode === 'labelstream';
+
+    if (!this.lsf) {
+      console.log("Initialize LSF");
+
+      this.lsf = new LSFWrapper(this, element, {
+        ...this.labelStudioOptions,
+        task,
+        annotation,
+        isLabelStream,
+      });
+    }
+  }
+
   /**
    * Initialize LSF or use already initialized instance.
    * Render LSF interface and load task for labeling.
    * @param {HTMLElement} element Root element LSF will be rendered into
    * @param {import("../stores/Tasks").TaskModel} task
    */
-  async startLabeling(element) {
+  async startLabeling() {
     let [task, annotation] = [
       this.store.taskStore.selected,
       this.store.annotationStore.selected,
     ];
+
+    const isLabelStream = this.mode === 'labelstream';
 
     // do nothing if the task is already selected
     if (this.lsf?.task && task && this.lsf.task.id === task.id) {
       return;
     }
 
-    let labelStream = this.mode === "labelstream";
-
-    // Load task if there's no selected one
-    if (!task) {
-      task = await this.store.taskStore.loadTask();
-    }
-
-    if (!this.lsf) {
-      this.lsf = new LSFWrapper(this, element, {
-        ...this.labelStudioOptions,
-        task,
-        annotation,
-        labelStream,
-      });
-
-      return;
-    }
-
     if (
-      !labelStream &&
+      !isLabelStream &&
       this.lsf &&
       (this.lsf.task?.id !== task?.id || annotation !== undefined)
     ) {
@@ -335,6 +336,7 @@ export class DataManager {
   }
 
   destroyLSF() {
+    this.lsf?.destroy();
     this.lsf = undefined;
   }
 

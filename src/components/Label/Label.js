@@ -45,11 +45,7 @@ const LabelingHeader = ({ SDK, onClick, isExplorerMode, children }) => {
 const injector = inject(({ store }) => {
   return {
     store,
-    view: store.viewsStore?.selected,
     task: store.dataStore?.selected,
-    isLabelStreamMode: store.isLabelStreamMode,
-    isExplorerMode: store.isExplorerMode,
-    SDK: store.SDK,
   };
 });
 
@@ -57,9 +53,12 @@ const injector = inject(({ store }) => {
  * @param {{store: import("../../stores/AppStore").AppStore}} param1
  */
 export const Labeling = injector(
-  ({ store, view, task, SDK, isLabelStreamMode, isExplorerMode }) => {
+  ({ store }) => {
     const lsfRef = useRef();
+    const SDK = store?.SDK;
     const history = SDK.lsf?.history;
+    const view = store?.currentView;
+    const { isLabelStreamMode, isExplorerMode } = store;
 
     const [annotation, setAnnotation] = React.useState(
       SDK.lsf?.currentAnnotation
@@ -68,6 +67,11 @@ export const Labeling = injector(
     const closeLabeling = () => {
       store.closeLabeling();
     };
+
+    const initLabeling = useCallback(() => {
+      SDK.initLSF(lsfRef.current);
+      SDK.startLabeling();
+    }, [lsfRef]);
 
     React.useEffect(() => {
       const callback = (annotation) => setAnnotation(annotation);
@@ -87,8 +91,13 @@ export const Labeling = injector(
     }, [SDK.lsf?.currentAnnotation?.id]);
 
     React.useEffect(() => {
-      SDK.startLabeling(lsfRef.current);
-    }, [task]);
+      SDK.on("taskSelected", initLabeling);
+
+      return () => {
+        SDK.off("taskSelected", initLabeling);
+        SDK.destroyLSF();
+      };
+    }, []);
 
     const onResize = useCallback((width) => {
       view.setLabelingTableWidth(width);

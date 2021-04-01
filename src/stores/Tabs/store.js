@@ -9,7 +9,7 @@ import {
 } from "mobx-state-tree";
 import { History } from "../../utils/history";
 import { guidGenerator } from "../../utils/random";
-import { unique } from "../../utils/utils";
+import { isDefined, unique } from "../../utils/utils";
 import { CustomJSON } from "../types";
 import { Tab } from "./tab";
 import { TabColumn } from "./tab_column";
@@ -387,15 +387,16 @@ export const TabStore = types
 
       yield self.saveView(self.selected);
 
-      if (taskID || labeling) {
-        getRoot(self).startLabeling(
-          taskID
-            ? {
-              id: parseInt(taskID),
-            }
-            : null,
-          { pushState: false }
-        );
+      if (labeling) {
+        getRoot(self).startLabelStream({
+          pushState: false
+        });
+      } else if (isDefined(taskID)) {
+        const task = { id: parseInt(taskID) };
+
+        getRoot(self).startLabeling(task, {
+          pushState: false
+        });
       }
     }),
   }));

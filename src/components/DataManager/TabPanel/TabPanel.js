@@ -181,7 +181,7 @@ export const TablePanel = injector(
               look="primary"
               size={toolbarSize}
               disabled={target === "annotations"}
-              onClick={() => store.startLabeling()}
+              onClick={() => store.startLabelStream()}
             >
               Label
             </Button>

@@ -10,6 +10,7 @@
  * labelStream: boolean,
  * }} LSFOptions */
 
+import { unmountComponentAtNode } from "react-dom";
 import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
@@ -337,6 +338,10 @@ export class LSFWrapper {
     return result;
   }
 
+  destroy() {
+    unmountComponentAtNode(this.root);
+  }
+
   get taskID() {
     return this.task.id;
   }
@@ -345,7 +350,6 @@ export class LSFWrapper {
     try {
       return this.lsf.annotationStore.selected;
     } catch {
-      console.trace("Something went wrong when accessing current annotation");
       return null;
     }
   }

@@ -51,6 +51,7 @@ const MixinBase = types
   .actions((self) => ({
     setSelected(val) {
       let selected;
+
       if (typeof val === "number") {
         selected = self.list.find((t) => t.id === val);
       } else {
@@ -61,6 +62,8 @@ const MixinBase = types
         self.selected = selected;
         self.highlighted = selected;
       }
+
+      getRoot(self).SDK.invoke('taskSelected');
     },
 
     unset({ withHightlight = false } = {}) {

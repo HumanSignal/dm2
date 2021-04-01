@@ -81,6 +81,7 @@ export const create = (columns) => {
   })
     .actions((self) => ({
       loadTask: flow(function* (taskID, { select = true } = {}) {
+        console.log("Loading task");
         let task = null;
 
         self.setLoading(taskID);
