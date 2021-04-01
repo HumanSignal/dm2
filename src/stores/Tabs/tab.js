@@ -43,6 +43,8 @@ export const Tab = types
     saved: false,
     virtual: false,
     locked: false,
+    editable: true,
+    deletable: true,
   })
   .volatile(() => {
     const defaultWidth = window.innerWidth * 0.35;

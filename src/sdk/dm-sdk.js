@@ -101,6 +101,8 @@ export class DataManager {
 
   /** @type {Map<string, boolean>} */
   interfaces = objectToMap({
+    tabs: true,
+    toolbar: true,
     import: true,
     export: true,
     labelButton: true,

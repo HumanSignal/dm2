@@ -164,8 +164,11 @@ export const TabStore = types
     }),
 
     addView: flow(function* (viewSnapshot = {}, options) {
-      const { autoselect = true, autosave = true, reload = true } =
-        options ?? {};
+      const {
+        autoselect = true,
+        autosave = true,
+        reload = true,
+      } = options ?? {};
 
       const snapshot = viewSnapshot ?? {};
       const lastView = self.views[self.views.length - 1];
@@ -179,13 +182,17 @@ export const TabStore = types
         hiddenColumns: snapshot.hiddenColumns ?? clone(self.defaultHidden),
       };
 
-      const newView = self.createView(newSnapshot);
+      let newView = self.createView(newSnapshot);
 
       self.views.push(newView);
 
-      if (autoselect) self.setSelected(newView);
+      if (autosave) {
+        newView = yield self.saveView(newView, { reload });
+      }
 
-      if (autosave) yield newView.save({ reload });
+      if (autoselect) {
+        self.setSelected(newView);
+      }
 
       return newView;
     }),
@@ -218,6 +225,7 @@ export const TabStore = types
         const newView = Tab.create({ ...newViewSnapshot, saved: true });
         self.views.push(newView);
         newView.reload();
+        self.setSelected(newView);
         destroy(view);
 
         return newView;

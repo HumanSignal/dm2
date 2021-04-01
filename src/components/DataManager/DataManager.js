@@ -4,16 +4,16 @@ import { FaPlus } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
 import { Space } from "../Common/Space/Space";
 import { Spinner } from "../Common/Spinner";
-import { Tabs } from "../Common/Tabs/Tabs";
+import { Tabs, TabsItem } from "../Common/Tabs/Tabs";
 import { FiltersSidebar } from "../Filters/FiltersSidebar/FilterSidebar";
 import { DataView } from "../Table/Table";
 import "./DataManager.styl";
 import { TablePanel } from "./TabPanel/TabPanel";
-import { TabTitle } from "./TabTitle";
 
 const injector = inject(({ store }) => {
   const { sidebarEnabled, sidebarVisible } = store.viewsStore ?? {};
   return {
+    store,
     shrinkWidth: sidebarEnabled && sidebarVisible,
   };
 });
@@ -67,29 +67,41 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
   return (
     <Tabs
       activeTab={selectedKey}
-      onEdit={() => views.addView()}
+      onAdd={() => views.addView()}
       onChange={(key) => views.setSelected(key)}
       tabBarExtraContent={<ProjectSummary />}
       addIcon={<FaPlus color="#595959" />}
     >
       {tabs.map((tab) => (
-        <TabTitle
+        <TabsItem
           key={tab.key}
           tab={tab.key}
-          item={tab}
+          title={tab.title}
+          onFinishEditing={(title) => {
+            tab.setTitle(title);
+            tab.save();
+          }}
+          onDuplicate={() => tab.parent.duplicateView(tab)}
+          onClose={() => tab.parent.deleteView(tab)}
           active={tab.key === selectedKey}
+          editable={tab.editable}
+          deletable={tab.deletable}
         />
       ))}
     </Tabs>
   );
 });
 
-export const DataManager = injector(({ shrinkWidth }) => {
+export const DataManager = injector(({ store, shrinkWidth }) => {
   return (
     <Block name="tabs-content">
       <Elem name="tab" mod={{ shrink: shrinkWidth }}>
-        <TabsSwitch />
-        <TablePanel />
+        {store.SDK.interfaceEnabled('tabs') && (
+          <TabsSwitch />
+        )}
+        {store.SDK.interfaceEnabled('toolbar') && (
+          <TablePanel />
+        )}
         <DataView />
       </Elem>
       <FiltersSidebar />
