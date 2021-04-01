@@ -11,10 +11,11 @@ const injector = inject(({ store }) => {
     store,
     labelingDisabled: totalTasks === 0 || foundTasks === 0,
     target: currentView?.target ?? "tasks",
+    selectedCount: currentView?.selectedLength
   };
 });
 
-export const LabelButton = injector(({store, labelingDisabled, size, target}) => {
+export const LabelButton = injector(({store, selectedCount, labelingDisabled, size, target}) => {
   return labelingDisabled ? null : (
     <Interface name="labelButton">
       <Button
@@ -23,7 +24,7 @@ export const LabelButton = injector(({store, labelingDisabled, size, target}) =>
         disabled={target === "annotations"}
         onClick={() => store.startLabelStream()}
       >
-        Label
+        Label {selectedCount ? selectedCount : null}
       </Button>
     </Interface>
   );
