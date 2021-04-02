@@ -160,17 +160,27 @@ export class LSFWrapper {
     // if we have annotations created automatically, we don't need to create another one
     // automatically === created here and haven't saved yet, so they don't have pk
     // @todo because of some weird reason pk may be string uid, so check flags then
-    const haveAutoAnnotations = !!first && (!first.pk || (first.userGenerate && first.sentUserGenerate === false));
+    const hasAutoAnnotations = !!first && (!first.pk || (first.userGenerate && first.sentUserGenerate === false));
+    const showPredictions = this.project.show_collab_predictions === true;
 
-    if (this.predictions.length > 0 && this.labelStream) {
-      annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
-    } else if (this.annotations.length > 0 && (id === "auto" || haveAutoAnnotations)) {
-      annotation = { id: this.annotations[0].id };
-    } else if (this.annotations.length > 0 && id) {
-      annotation = this.annotations.find((c) => c.pk === id || c.id === id);
+    if (this.labelStream) {
+      if (showPredictions && this.predictions.length > 0) {
+        annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
+      } else {
+        annotation = cs.addAnnotation({ userGenerate: true });
+      }
     } else {
-      annotation = cs.addAnnotation({ userGenerate: true });
+      if (showPredictions && this.annotations.length === 0 && this.predictions.length > 0) {
+        annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
+      } else if (this.annotations.length > 0 && (id === "auto" || hasAutoAnnotations)) {
+        annotation = { id: this.annotations[0].id };
+      } else if (this.annotations.length > 0 && id) {
+        annotation = this.annotations.find((c) => c.pk === id || c.id === id);
+      } else {
+        annotation = cs.addAnnotation({ userGenerate: true });
+      }
     }
+
 
     if (annotation) {
       cs.selectAnnotation(annotation.id);
@@ -199,7 +209,7 @@ export class LSFWrapper {
   };
 
   /** @private */
-  onSubmitAnnotation = async (ls, annotation) => {
+  onSubmitAnnotation = async () => {
     await this.submitCurrentAnnotation("submitAnnotation", (taskID, body) =>
       this.datamanager.apiCall("submitAnnotation", { taskID }, { body })
     );
