@@ -128,6 +128,7 @@ export class DataManager {
       export: true,
       labelButton: true,
       backButton: true,
+      labelingHeader: true,
       ...config.interfaces,
     });
 

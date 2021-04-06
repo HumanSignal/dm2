@@ -1,6 +1,5 @@
 import { inject } from "mobx-react";
 import React, { useCallback, useRef } from "react";
-import { unmountComponentAtNode } from "react-dom";
 import { FaCaretDown, FaChevronLeft, FaColumns } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
 import { Button } from "../Common/Button/Button";
@@ -10,9 +9,8 @@ import { Resizer } from "../Common/Resizer/Resizer";
 import { Space } from "../Common/Space/Space";
 import { DataView } from "../Table/Table";
 import "./Label.styl";
-import { Toolbar } from "./Toolbar/Toolbar";
 
-const LabelingHeader = ({ SDK, onClick, isExplorerMode, children }) => {
+const LabelingHeader = ({ SDK, onClick, isExplorerMode }) => {
   return (
     <Elem name="header" mod={{ labelStream: !isExplorerMode }}>
       <Space size="large">
@@ -36,8 +34,6 @@ const LabelingHeader = ({ SDK, onClick, isExplorerMode, children }) => {
           />
         ) : null}
       </Space>
-
-      {children}
     </Elem>
   );
 };
@@ -56,13 +52,8 @@ export const Labeling = injector(
   ({ store }) => {
     const lsfRef = useRef();
     const SDK = store?.SDK;
-    const history = SDK.lsf?.history;
     const view = store?.currentView;
-    const { isLabelStreamMode, isExplorerMode } = store;
-
-    const [annotation, setAnnotation] = React.useState(
-      SDK.lsf?.currentAnnotation
-    );
+    const { isExplorerMode } = store;
 
     const closeLabeling = () => {
       store.closeLabeling();
@@ -72,23 +63,6 @@ export const Labeling = injector(
       SDK.initLSF(lsfRef.current);
       SDK.startLabeling();
     }, [lsfRef]);
-
-    React.useEffect(() => {
-      const callback = (annotation) => setAnnotation(annotation);
-      SDK.on("annotationSet", callback);
-
-      return () => {
-        if (lsfRef.current) {
-          unmountComponentAtNode(lsfRef.current);
-        }
-
-        SDK.off("annotationSet", callback);
-      };
-    }, []);
-
-    React.useEffect(() => {
-      setAnnotation(SDK.lsf?.currentAnnotation);
-    }, [SDK.lsf?.currentAnnotation?.id]);
 
     React.useEffect(() => {
       SDK.on("taskSelected", initLabeling);
@@ -105,31 +79,19 @@ export const Labeling = injector(
       window.dispatchEvent(new Event("resize"));
     }, []);
 
-    const toolbar = (
-      <Toolbar
-        view={view}
-        history={history}
-        lsf={SDK.lsf?.lsf}
-        annotation={annotation}
-        isLabelStream={isLabelStreamMode}
-        hasInstruction={!!SDK.lsf?.instruction}
-      />
-    );
-
-    const header = (
-      <LabelingHeader SDK={SDK} onClick={closeLabeling} isExplorerMode={isExplorerMode}>
-        {!isExplorerMode && toolbar}
-      </LabelingHeader>
-    );
-
     return (
       <Block name="label-view">
-        {!isExplorerMode && header}
+        {SDK.interfaceEnabled("labelingHeader") && (
+          <LabelingHeader
+            SDK={SDK}
+            onClick={closeLabeling}
+            isExplorerMode={isExplorerMode}
+          />
+        )}
 
         <Elem name="content">
           {isExplorerMode && (
             <Elem name="table">
-              {isExplorerMode && header}
               <Elem
                 tag={Resizer}
                 name="dataview"
@@ -146,8 +108,6 @@ export const Labeling = injector(
           )}
 
           <Elem name="lsf-wrapper" mod={{mode: isExplorerMode ? "explorer" : "labeling" }}>
-            {isExplorerMode && toolbar}
-
             <Elem
               ref={lsfRef}
               id="label-studio-dm"

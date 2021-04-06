@@ -10,7 +10,6 @@
  * labelStream: boolean,
  * }} LSFOptions */
 
-import { unmountComponentAtNode } from "react-dom";
 import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
@@ -115,7 +114,7 @@ export class LSFWrapper {
     try {
       const LSF = await resolveLabelStudio();
       this.globalLSF = window.LabelStudio === LSF;
-      new LSF(this.root, settings);
+      this.lsfInstance = new LSF(this.root, settings);
     } catch (err) {
       console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
@@ -366,7 +365,7 @@ export class LSFWrapper {
   }
 
   destroy() {
-    unmountComponentAtNode(this.root);
+    this.lsfInstance?.destroy?.();
   }
 
   get taskID() {
