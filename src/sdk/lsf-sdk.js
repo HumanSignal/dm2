@@ -17,11 +17,17 @@ import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 const DEFAULT_INTERFACES = [
   "basic",
   "skip",
+  "controls",
+  "submit",
+  "update",
   "predictions",
   "predictions:menu", // right menu with prediction items
   "annotations:menu", // right menu with annotation items
   "annotations:add-new",
   "annotations:delete",
+  "annotations:current",
+  "annotations:tabs",
+  "predictions:tabs",
   "side-column", // entity
 ];
 
@@ -88,6 +94,17 @@ export class LSFWrapper {
       onEntityCreate: this.onEntityCreate,
       onEntityDelete: this.onEntityDelete,
       onSelectAnnotation: this.onSelectAnnotation,
+
+      panels: [{
+        title: "Comments",
+        name: "comments",
+        builder({inject}) {
+          return inject('store')(({store}) => {
+            console.log(store);
+            return <div>Hello world</div>;
+          });
+        }
+      }]
     };
 
     this.initLabelStudio(lsfProperties);
