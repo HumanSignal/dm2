@@ -1,6 +1,5 @@
 import { destroy, flow, types } from "mobx-state-tree";
 import { Modal } from "../components/Common/Modal/Modal";
-import { instruments } from "../components/DataManager/Toolbar/instruments";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import { Action } from "./Action";
@@ -110,25 +109,6 @@ export const AppStore = types
     get showPreviews() {
       return this.SDK.showPreviews;
     },
-
-    get toolbarInstruments() {
-      const sections = self.toolbar.split("|").map(s => s.trim());
-
-      const instrumentsList = sections.map(section => {
-        return section.split(" ").filter((instrument) => {
-          const nativeInstrument = !!instruments[instrument];
-          const customInstrument = !!self.SDK.instruments.has(instrument);
-
-          if (!nativeInstrument && !customInstrument) {
-            console.warn(`Unknwown instrument detected: ${instrument}. Did you forget to register it?`);
-          }
-
-          return nativeInstrument || customInstrument;
-        });
-      });
-
-      return instrumentsList;
-    },
   }))
   .volatile(() => ({
     needsDataFetch: false,
@@ -186,14 +166,6 @@ export const AppStore = types
 
     setToolbar(toolbarString) {
       self.toolbar = toolbarString;
-    },
-
-    getInstrument(name) {
-      if (instruments[name]) {
-        return instruments[name];
-      } else if (self.SDK.instruments.has(name)) {
-        return self.SDK.instruments.get(name);
-      }
     },
 
     setTask: flow(function* ({ taskID, annotationID, pushState }) {

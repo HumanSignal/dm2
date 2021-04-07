@@ -43,7 +43,7 @@ export const initDevApp = async (DataManager) => {
     },
     instruments: {
       'review-button': ({inject}) => {
-        return inject("store")(() => <Button style={{width: 105}}>Review</Button>);
+        return () => <Button style={{width: 105}}>Review</Button>;
       }
     }
   });

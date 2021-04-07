@@ -388,4 +388,27 @@ export class DataManager {
   async apiCall(...args) {
     return this.store.apiCall(...args);
   }
+
+  getInstrument(name) {
+    return instruments[name] ?? this.instruments.get(name) ?? null;
+  }
+
+  get toolbarInstruments() {
+    const sections = this.toolbar.split("|").map(s => s.trim());
+
+    const instrumentsList = sections.map(section => {
+      return section.split(" ").filter((instrument) => {
+        const nativeInstrument = !!instruments[instrument];
+        const customInstrument = !!this.instruments.has(instrument);
+
+        if (!nativeInstrument && !customInstrument) {
+          console.warn(`Unknwown instrument detected: ${instrument}. Did you forget to register it?`);
+        }
+
+        return nativeInstrument || customInstrument;
+      });
+    });
+
+    return instrumentsList;
+  }
 }

@@ -7,21 +7,17 @@ import "./TabPanel.styl";
 const injector = inject(({store}) => {
   return {
     store,
-    instruments: store.toolbarInstruments,
   };
 });
 
-export const Toolbar = injector(observer(({store, instruments}) => {
+export const Toolbar = injector(observer(({store}) => {
   return (
     <Block name="tab-panel">
-      {instruments.map((section, i) => {
-        console.log({section});
+      {store.SDK.toolbarInstruments.map((section, i) => {
         return (
           <Space size="small" key={`section-${i}`}>
             {section.map((instrument, i) => {
-              const Instrument = store.getInstrument(instrument);
-
-              console.log({Instrument});
+              const Instrument = store.SDK.getInstrument(instrument);
 
               return Instrument ? (
                 <Instrument
