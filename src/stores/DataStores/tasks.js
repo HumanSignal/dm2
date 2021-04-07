@@ -8,6 +8,7 @@ import { User } from "../Users";
 export const create = (columns) => {
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
     annotators: types.optional(types.array(types.late(() => types.reference(User))), []),
+    reviewers: types.optional(types.array(types.late(() => types.reference(User))), []),
     annotations: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
     source: types.maybeNull(types.string),
