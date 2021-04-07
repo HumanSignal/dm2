@@ -47,11 +47,11 @@ import { LSFWrapper } from "./lsf-sdk";
 const DEFAULT_TOOLBAR = "actions columns filters ordering label-button loading-possum error-box | refresh view-toggle";
 
 const prepareInstruments = (instruments) => {
-  const result = Object.fromEntries(Object.entries(instruments).map(([name, builder]) => {
-    return [name, builder({inject, observer})];
-  }));
+  const result = Object
+    .entries(instruments)
+    .map(([name, builder]) => [name, builder({inject, observer})]);
 
-  return objectToMap(result);
+  return objectToMap(Object.fromEntries(result));
 };
 
 export class DataManager {
