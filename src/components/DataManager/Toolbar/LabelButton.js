@@ -23,6 +23,7 @@ export const LabelButton = injector(({store, selectedCount, labelingDisabled, si
         size={size}
         disabled={target === "annotations"}
         onClick={() => store.startLabelStream()}
+        style={{width: 105}}
       >
         Label {selectedCount ? selectedCount : null}
       </Button>

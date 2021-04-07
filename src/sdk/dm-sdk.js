@@ -31,6 +31,7 @@
  * projectId: number,
  * interfaces: Dict<boolean>,
  * instruments: Dict<any>,
+ * toolbar?: string,
  * }} DMConfig
  */
 
@@ -42,6 +43,16 @@ import { objectToMap } from "../utils/helpers";
 import { APIConfig } from "./api-config";
 import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
+
+const DEFAULT_TOOLBAR = "actions columns filters ordering label-button loading-possum error-box | refresh view-toggle";
+
+const prepareInstruments = (instruments) => {
+  const result = Object.fromEntries(Object.entries(instruments).map(([name, builder]) => {
+    return [name, builder({inject, observer})];
+  }));
+
+  return objectToMap(result);
+};
 
 export class DataManager {
   /** @type {HTMLElement} */
@@ -120,7 +131,8 @@ export class DataManager {
     this.links = Object.assign(this.links, config.links ?? {});
     this.showPreviews = config.showPreviews ?? false;
     this.polling = config.polling;
-    this.instruments = objectToMap(config.instruments),
+    this.toolbar = config.toolbar ?? DEFAULT_TOOLBAR;
+    this.instruments = prepareInstruments(config.instruments),
     this.interfaces = objectToMap({
       tabs: true,
       toolbar: true,

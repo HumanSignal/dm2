@@ -130,7 +130,7 @@ export const Table = observer(
       cellViews,
     };
 
-    const headerHeight = 44;
+    const headerHeight = 43;
 
     const renderTableHeader = useCallback(
       ({ style }) => (

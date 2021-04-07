@@ -119,7 +119,7 @@ export const AppStore = types
       const instrumentsList = sections.map(section => {
         return section.split(" ").filter((instrument) => {
           const nativeInstrument = !!instruments[instrument];
-          const customInstrument = !!self.SDK.instruments[instrument];
+          const customInstrument = !!self.SDK.instruments.has(instrument);
 
           if (!nativeInstrument && !customInstrument) {
             console.warn(`Unknwown instrument detected: ${instrument}. Did you forget to register it?`);
