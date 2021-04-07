@@ -132,7 +132,7 @@ export class DataManager {
     this.showPreviews = config.showPreviews ?? false;
     this.polling = config.polling;
     this.toolbar = config.toolbar ?? DEFAULT_TOOLBAR;
-    this.instruments = prepareInstruments(config.instruments),
+    this.instruments = prepareInstruments(config.instruments ?? {}),
     this.interfaces = objectToMap({
       tabs: true,
       toolbar: true,
