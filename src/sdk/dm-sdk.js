@@ -185,7 +185,6 @@ export class DataManager {
     return config;
   }
 
-
   /**
    *
    * @param {impotr("../stores/Action.js").Action} action
@@ -224,6 +223,8 @@ export class DataManager {
       observer: observer,
       inject: inject
     }));
+
+    this.store.updateInstruments();
   }
 
   /**
