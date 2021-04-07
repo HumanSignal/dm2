@@ -50,8 +50,6 @@ export const AppStore = types
     interfaces: types.map(types.boolean),
 
     toolbar: types.string,
-
-    instrumentsVersion: 1,
   })
   .views((self) => ({
     get SDK() {
@@ -196,10 +194,6 @@ export const AppStore = types
       } else if (self.SDK.instruments.has(name)) {
         return self.SDK.instruments.get(name);
       }
-    },
-
-    updateInstruments() {
-      self.instrumentsVersion += 1;
     },
 
     setTask: flow(function* ({ taskID, annotationID, pushState }) {

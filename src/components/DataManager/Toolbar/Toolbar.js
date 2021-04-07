@@ -8,7 +8,6 @@ const injector = inject(({store}) => {
   return {
     store,
     instruments: store.toolbarInstruments,
-    version: store.instrumentsVersion,
   };
 });
 
@@ -21,6 +20,8 @@ export const Toolbar = injector(observer(({store, instruments}) => {
           <Space size="small" key={`section-${i}`}>
             {section.map((instrument, i) => {
               const Instrument = store.getInstrument(instrument);
+
+              console.log({Instrument});
 
               return Instrument ? (
                 <Instrument
