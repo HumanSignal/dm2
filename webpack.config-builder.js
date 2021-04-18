@@ -188,6 +188,10 @@ const plugins = [
 ];
 
 if (isDevelopment) {
+  plugins.push(new webpack.ProgressPlugin());
+}
+
+if (isDevelopment) {
   plugins.push( new HtmlWebPackPlugin({
     title: "Heartex DataManager 2.0",
     template: "public/index.html",
