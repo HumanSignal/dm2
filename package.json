@@ -1,6 +1,6 @@
 {
   "name": "@heartexlabs/datamanager",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "",
   "publishConfig": {
     "access": "public"
@@ -99,7 +99,7 @@
   },
   "lint-staged": {
     "*.(js|jsx)": [
-      "eslint --fix",
+      "eslint --fix --quiet",
       "git add"
     ]
   },

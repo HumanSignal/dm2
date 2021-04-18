@@ -1,7 +1,7 @@
 import { getRoot, getSnapshot, types } from "mobx-state-tree";
 import React from "react";
 import { toStudlyCaps } from "strman";
-import { IdeaCircle, MinusCircle, TickCircle } from "../../assets/icons";
+import { LsAnnotation, LsBanSquare, LsSparkSquare, LsThumbsDown, LsThumbsUp } from "../../assets/icons";
 import * as CellViews from "../../components/Table/CellViews";
 import { all } from "../../utils/utils";
 
@@ -177,13 +177,15 @@ export const TabColumn = types
         default:
           return null;
         case "total_annotations":
-          return <TickCircle width="20" height="20"/>;
+          return <LsAnnotation width="20" height="20" style={{color: '#0099FF'}}/>;
         case "cancelled_annotations":
-          // return <Icon icon={FaBan} color="red" opacity="0.7" />;
-          return <MinusCircle width="20" height="20"/>;
+          return <LsBanSquare width="20" height="20" style={{color: '#DD0000'}}/>;
         case "total_predictions":
-          // return <Icon icon={FaBrain} color="#1890ff" opacity="0.7" />;
-          return <IdeaCircle width="20" height="20"/>;
+          return <LsSparkSquare width="20" height="20" style={{color: '#944BFF'}}/>;
+        case "reviews_accepted":
+          return <LsThumbsUp width="20" height="20" style={{color: '#2AA000'}}/>;
+        case "reviews_rejected":
+          return <LsThumbsDown width="20" height="20" style={{color: '#DD0000'}}/>;
       }
     },
 

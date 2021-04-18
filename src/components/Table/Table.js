@@ -172,15 +172,17 @@ export const DataView = injector(
       return column.title;
     };
 
-    const commonDecoration = useCallback(
-      (alias, size, align = "flex-start", help = false) => ({
-        alias,
-        content: decorationContent,
-        style: (col) => ({ width: col.width ?? size, justifyContent: align }),
-        help,
-      }),
-      []
-    );
+    const commonDecoration = useCallback((
+      alias,
+      size,
+      align = "flex-start",
+      help = false
+    ) => ({
+      alias,
+      content: decorationContent,
+      style: (col) => ({ width: col.width ?? size, justifyContent: align }),
+      help,
+    }), []);
 
     const decoration = useMemo(
       () => [
@@ -188,6 +190,8 @@ export const DataView = injector(
         commonDecoration("cancelled_annotations", 60, "center"),
         commonDecoration("total_predictions", 60, "center"),
         commonDecoration("completed_at", 180, "space-between", true),
+        commonDecoration("reviews_accepted", 60, "center"),
+        commonDecoration("reviews_rejected", 60, "center"),
         {
           resolver: (col) => col.type === "Number",
           style(col) {
