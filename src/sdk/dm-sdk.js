@@ -32,6 +32,7 @@
  * interfaces: Dict<boolean>,
  * instruments: Dict<any>,
  * toolbar?: string,
+ * panels?: Object[]
  * }} DMConfig
  */
 
@@ -132,6 +133,7 @@ export class DataManager {
     this.showPreviews = config.showPreviews ?? false;
     this.polling = config.polling;
     this.toolbar = config.toolbar ?? DEFAULT_TOOLBAR;
+    this.panels = config.panels;
     this.instruments = prepareInstruments(config.instruments ?? {}),
     this.interfaces = objectToMap({
       tabs: true,

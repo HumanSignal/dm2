@@ -93,17 +93,7 @@ export class LSFWrapper {
       onEntityCreate: this.onEntityCreate,
       onEntityDelete: this.onEntityDelete,
       onSelectAnnotation: this.onSelectAnnotation,
-
-      panels: [{
-        title: "Comments",
-        name: "comments",
-        builder({inject}) {
-          return inject('store')(({store}) => {
-            console.log(store);
-            return <div>Hello world</div>;
-          });
-        }
-      }]
+      panels: this.datamanager.panels,
     };
 
     this.initLabelStudio(lsfProperties);
