@@ -10,6 +10,7 @@
  * labelStream: boolean,
  * }} LSFOptions */
 
+import { isDefined } from "../utils/utils";
 import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
@@ -119,11 +120,10 @@ export class LSFWrapper {
       return console.error("Make sure that LSF was properly initialized");
     }
 
-
     const tasks = this.datamanager.store.taskStore;
 
     const newTask = await this.withinLoadingState(async () => {
-      if (this.labelStream) {
+      if (!isDefined(taskID)) {
         console.log("Loading next task");
         return tasks.loadNextTask();
       } else {
@@ -232,9 +232,11 @@ export class LSFWrapper {
 
   /** @private */
   onSubmitAnnotation = async () => {
-    await this.submitCurrentAnnotation("submitAnnotation", (taskID, body) =>
-      this.datamanager.apiCall("submitAnnotation", { taskID }, { body })
-    );
+    await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
+      const annotation = await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
+      await this.loadTask(taskID, annotation.id);
+      return annotation;
+    });
   };
 
   /** @private */
