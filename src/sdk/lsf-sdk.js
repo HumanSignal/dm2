@@ -200,12 +200,14 @@ export class LSFWrapper {
     this.lsf = ls;
 
     if (this.datamanager.mode === "labelstream") {
+      console.log('is labelstream');
       await this.loadTask();
     } else if (this.task) {
       const annotationID =
         this.initialAnnotation?.pk ?? this.task.lastAnnotation?.pk ?? "auto";
 
-      await this.loadTask(this.task.id, annotationID);
+      // await this.loadTask(this.task.id, annotationID);
+      this.setAnnotation(annotationID);
     }
   };
 

@@ -1,5 +1,5 @@
 import { inject } from "mobx-react";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { FaCaretDown, FaChevronLeft, FaColumns } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
 import { Button } from "../Common/Button/Button";
@@ -55,16 +55,16 @@ export const Labeling = injector(
     const view = store?.currentView;
     const { isExplorerMode } = store;
 
-    const closeLabeling = () => {
+    const closeLabeling = useCallback(() => {
       store.closeLabeling();
-    };
+    }, [store]);
 
     const initLabeling = useCallback(() => {
       SDK.initLSF(lsfRef.current);
       SDK.startLabeling();
     }, [lsfRef]);
 
-    React.useEffect(() => {
+    useEffect(() => {
       SDK.on("taskSelected", initLabeling);
 
       return () => {
@@ -73,11 +73,20 @@ export const Labeling = injector(
       };
     }, []);
 
+    useEffect(() => {
+      if (SDK.mode === 'labelstream') {
+        SDK.initLSF(lsfRef.current);
+        SDK.startLabeling();
+      }
+    }, []);
+
     const onResize = useCallback((width) => {
       view.setLabelingTableWidth(width);
       // trigger resize events inside LSF
       window.dispatchEvent(new Event("resize"));
     }, []);
+
+    console.log('woohoo');
 
     return (
       <Block name="label-view">

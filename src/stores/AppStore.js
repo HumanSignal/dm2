@@ -173,6 +173,8 @@ export const AppStore = types
         History.navigate({ task: taskID, annotation: annotationID ?? null });
       }
 
+      if (!isDefined(taskID)) return;
+
       yield self.taskStore.loadTask(taskID, {
         select: !!taskID && !!annotationID,
       });
@@ -212,6 +214,7 @@ export const AppStore = types
     },
 
     startLabelStream(options = {}) {
+      console.log(options);
       if (!self.confirmLabelingConfigured()) return;
 
       self.SDK.setMode("labelstream");
@@ -220,7 +223,7 @@ export const AppStore = types
         History.navigate({ labeling: 1 });
       }
 
-      self.setTask(options);
+      // self.setTask(options);
 
       return;
     },
