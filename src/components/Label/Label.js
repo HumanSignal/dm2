@@ -65,7 +65,9 @@ export const Labeling = injector(
     }, [lsfRef]);
 
     useEffect(() => {
-      SDK.on("taskSelected", initLabeling);
+      if (SDK.mode !== 'labelstream') {
+        SDK.on("taskSelected", initLabeling);
+      }
 
       return () => {
         SDK.off("taskSelected", initLabeling);
@@ -78,6 +80,8 @@ export const Labeling = injector(
         SDK.initLSF(lsfRef.current);
         SDK.startLabeling();
       }
+
+      return () => SDK.startLabeling();
     }, []);
 
     const onResize = useCallback((width) => {
