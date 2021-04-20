@@ -65,7 +65,7 @@ export class LSFHistory {
       await this.lsf.loadTask(taskID, annotationID);
       this.current = index;
     } else {
-      await this.lsf.loadTask();
+      await this.lsf.loadNextTask();
     }
 
     if (this.callback) this.callback();

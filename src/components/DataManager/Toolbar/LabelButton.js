@@ -9,14 +9,14 @@ const injector = inject(({ store }) => {
 
   return {
     store,
-    labelingDisabled: totalTasks === 0 || foundTasks === 0,
+    canLabel: totalTasks > 0 || foundTasks > 0,
     target: currentView?.target ?? "tasks",
     selectedCount: currentView?.selectedLength
   };
 });
 
-export const LabelButton = injector(({store, selectedCount, labelingDisabled, size, target}) => {
-  return labelingDisabled ? null : (
+export const LabelButton = injector(({store, selectedCount, canLabel, size, target}) => {
+  return canLabel ? (
     <Interface name="labelButton">
       <Button
         look="primary"
@@ -28,5 +28,5 @@ export const LabelButton = injector(({store, selectedCount, labelingDisabled, si
         Label {selectedCount ? selectedCount : null}
       </Button>
     </Interface>
-  );
+  ) : null;
 });

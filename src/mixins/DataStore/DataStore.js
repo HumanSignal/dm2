@@ -50,6 +50,7 @@ const MixinBase = types
   }))
   .actions((self) => ({
     setSelected(val) {
+      console.log("set selected");
       let selected;
 
       if (typeof val === "number") {
@@ -58,15 +59,18 @@ const MixinBase = types
         selected = val;
       }
 
-      if (selected) {
+      if (selected && selected.id !== self.selected?.id) {
         self.selected = selected;
         self.highlighted = selected;
-      }
 
-      getRoot(self).SDK.invoke('taskSelected');
+        getRoot(self).SDK.invoke('taskSelected');
+
+      }
+      console.log(self.selected?.id);
     },
 
     unset({ withHightlight = false } = {}) {
+      console.log('unset task');
       self.selected = undefined;
       if (withHightlight) self.highlighted = undefined;
     },
@@ -147,6 +151,7 @@ export const DataStore = (
       },
 
       fetch: flow(function* ({ reload = false, interaction } = {}) {
+        console.log('fetching list');
         const currentView = getRoot(self).viewsStore.selected;
 
         if (self.loading) return;
@@ -165,18 +170,20 @@ export const DataStore = (
 
         if (interaction) Object.assign(params, { interaction });
 
+        const data = yield getRoot(self).apiCall(apiMethod, params);
+
         const [selectedID, highlightedID] = [
           self.selected?.id,
           self.highlighted?.id,
         ];
 
-        const data = yield getRoot(self).apiCall(apiMethod, params);
         const { total, [apiMethod]: list } = data;
 
         if (list) self.setList({ total, list, reload });
 
         if (!listIncludes(self.list, selectedID)) {
           self.selected = null;
+          console.log('unset', self.list, selectedID);
         }
 
         if (!listIncludes(self.list, highlightedID)) {

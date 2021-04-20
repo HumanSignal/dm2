@@ -72,9 +72,9 @@ export class LSFWrapper {
     this.datamanager = dm;
     this.root = element;
     this.task = options.task;
-    this.labelStream = options.labelStream ?? false;
+    this.labelStream = options.isLabelStream ?? false;
     this.initialAnnotation = options.annotation;
-    this.history = this.datamanager.isLabelStream ? new LSFHistory(this) : null;
+    this.history = this.labelStream ? new LSFHistory(this) : null;
 
     const lsfProperties = {
       user: options.user,
@@ -85,6 +85,7 @@ export class LSFWrapper {
       /* EVENTS */
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
+      onStorageInitialized: this.onStorageInitialized,
       onSubmitAnnotation: this.onSubmitAnnotation,
       onUpdateAnnotation: this.onUpdateAnnotation,
       onDeleteAnnotation: this.onDeleteAnnotation,
@@ -104,6 +105,7 @@ export class LSFWrapper {
     try {
       const LSF = await resolveLabelStudio();
       this.globalLSF = window.LabelStudio === LSF;
+      console.log(settings);
       this.lsfInstance = new LSF(this.root, settings);
     } catch (err) {
       console.error("Failed to initialize LabelStudio", settings);
@@ -117,17 +119,21 @@ export class LSFWrapper {
       return console.error("Make sure that LSF was properly initialized");
     }
 
-    const tasks = this.datamanager.store.taskStore;
-    const newTask = await this.withinLoadingState(async () => {
-      return tasks.loadTask(taskID);
-    });
-    const needsAnnotationsMerge = newTask && this.task?.id === newTask.id;
-    const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
 
-    this.task = newTask;
+    const tasks = this.datamanager.store.taskStore;
+
+    const newTask = await this.withinLoadingState(async () => {
+      if (this.labelStream) {
+        console.log("Loading next task");
+        return tasks.loadNextTask();
+      } else {
+        console.log("Loading task", taskID);
+        return tasks.loadTask(taskID);
+      }
+    });
 
     /* If we're in label stream and there's no task – end the stream */
-    if (taskID === undefined && !newTask) {
+    if (this.labelStream && !newTask) {
       this.lsf.setFlags({ noTask: true });
       return;
     } else {
@@ -135,25 +141,30 @@ export class LSFWrapper {
       this.lsf.setFlags({ noTask: false });
     }
 
-    if (annotations.length) {
+    // Add new data from received task
+    if (newTask) this.selectTask(newTask, annotationID);
+  }
+
+  selectTask(task, annotationID) {
+    console.log("Select task", {task, annotationID});
+    const needsAnnotationsMerge = task && this.task?.id === task.id;
+    const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
+
+    this.task = task;
+
+    if (needsAnnotationsMerge) {
       this.task.mergeAnnotations(annotations);
     }
 
-    /**
-     * Add new data from received task
-     */
-    if (newTask) {
-      this.setLoading(false);
-      this.setTask(newTask);
-      this.setAnnotation(annotationID);
-    }
-  }
+    this.setLoading(false);
 
-  /** @private */
-  setTask(task) {
+    const lsfTask = taskToLSFormat(task);
+    console.log({lsfTask});
+
     this.lsf.resetState();
     this.lsf.assignTask(task);
-    this.lsf.initializeStore(taskToLSFormat(task));
+    this.lsf.initializeStore(lsfTask);
+    this.setAnnotation(annotationID);
   }
 
   /** @private */
@@ -196,18 +207,10 @@ export class LSFWrapper {
 
   onLabelStudioLoad = async (ls) => {
     this.datamanager.invoke("labelStudioLoad", [ls]);
-
     this.lsf = ls;
 
-    if (this.datamanager.mode === "labelstream") {
-      console.log('is labelstream');
+    if (this.labelStream) {
       await this.loadTask();
-    } else if (this.task) {
-      const annotationID =
-        this.initialAnnotation?.pk ?? this.task.lastAnnotation?.pk ?? "auto";
-
-      // await this.loadTask(this.task.id, annotationID);
-      this.setAnnotation(annotationID);
     }
   };
 
@@ -215,6 +218,17 @@ export class LSFWrapper {
   onTaskLoad = async (...args) => {
     this.datamanager.invoke("onSelectAnnotation", args);
   };
+
+  onStorageInitialized = async (ls) => {
+    this.datamanager.invoke("onStorageInitialized", [ls]);
+
+    if (this.task && this.labelStream === false) {
+      const annotationID =
+        this.initialAnnotation?.pk ?? this.task.lastAnnotation?.pk ?? this.task.lastAnnotation?.id ?? "auto";
+
+      this.setAnnotation(annotationID);
+    }
+  }
 
   /** @private */
   onSubmitAnnotation = async () => {

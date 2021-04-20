@@ -1,6 +1,7 @@
 import { flow, getRoot, types } from "mobx-state-tree";
 import { DataStore, DataStoreItem } from "../../mixins/DataStore";
 import { getAnnotationSnapshot } from "../../sdk/lsf-utils";
+import { isDefined } from "../../utils/utils";
 import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 import { User } from "../Users";
@@ -82,24 +83,30 @@ export const create = (columns) => {
   })
     .actions((self) => ({
       loadTask: flow(function* (taskID, { select = true } = {}) {
-        console.log("Loading task");
-        let task = null;
+        if (!isDefined(taskID)) {
+          console.warn("Task ID must be provided");
+          return;
+        }
 
         self.setLoading(taskID);
 
-        if (taskID !== undefined) {
-          task = yield self.updateTaskByID(taskID);
-        } else {
-          if (self.selected) {
-            yield self.updateTaskByID(self.selected.id);
-          }
-          task = yield self.loadNextTask();
-        }
+        const task = yield self.updateTaskByID(taskID);
 
         if (select !== false) self.setSelected(task);
-        // yield task.loadAnnotations();
 
         self.finishLoading(taskID);
+
+        return task;
+      }),
+
+      loadNextTask: flow(function* ({ select = true } = {}) {
+        const taskData = yield self.root.invokeAction("next_task", {
+          reload: false,
+        });
+
+        const task = self.applyTaskSnapshot(taskData);
+
+        if (select !== false) self.setSelected(task);
 
         return task;
       }),
@@ -114,13 +121,6 @@ export const create = (columns) => {
         }
 
         return self.applyTaskSnapshot(taskData, taskID);
-      }),
-
-      loadNextTask: flow(function* () {
-        const taskData = yield self.root.invokeAction("next_task", {
-          reload: false,
-        });
-        return self.applyTaskSnapshot(taskData);
       }),
 
       applyTaskSnapshot(taskData, taskID) {

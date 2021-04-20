@@ -175,9 +175,15 @@ export const AppStore = types
 
       if (!isDefined(taskID)) return;
 
-      yield self.taskStore.loadTask(taskID, {
-        select: !!taskID && !!annotationID,
-      });
+      if (self.mode === 'labelstream') {
+        yield self.taskStore.loadNextTask({
+          select: !!taskID && !!annotationID,
+        });
+      } else {
+        yield self.taskStore.loadTask(taskID, {
+          select: !!taskID && !!annotationID,
+        });
+      }
 
       if (annotationID !== undefined) {
         self.annotationStore.setSelected(annotationID);

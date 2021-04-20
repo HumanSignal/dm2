@@ -1,5 +1,5 @@
 import { inject } from "mobx-react";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { FaCaretDown, FaChevronLeft, FaColumns } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
 import { Button } from "../Common/Button/Button";
@@ -41,7 +41,6 @@ const LabelingHeader = ({ SDK, onClick, isExplorerMode }) => {
 const injector = inject(({ store }) => {
   return {
     store,
-    task: store.dataStore?.selected,
   };
 });
 
@@ -55,33 +54,44 @@ export const Labeling = injector(
     const view = store?.currentView;
     const { isExplorerMode } = store;
 
+    const isLabelStream = useMemo(() => {
+      return SDK.mode === 'labelstream';
+    }, []);
+
     const closeLabeling = useCallback(() => {
       store.closeLabeling();
     }, [store]);
 
     const initLabeling = useCallback(() => {
-      SDK.initLSF(lsfRef.current);
+      console.log("Init labeling");
+      if (!SDK.lsf) SDK.initLSF(lsfRef.current);
       SDK.startLabeling();
     }, [lsfRef]);
 
     useEffect(() => {
-      if (SDK.mode !== 'labelstream') {
-        SDK.on("taskSelected", initLabeling);
-      }
+      if (!isLabelStream) SDK.on("taskSelected", initLabeling);
 
       return () => {
-        SDK.off("taskSelected", initLabeling);
-        SDK.destroyLSF();
+        if (!isLabelStream) {
+          console.log("destroy (quickview)");
+          SDK.off("taskSelected", initLabeling);
+          SDK.destroyLSF();
+        }
       };
     }, []);
 
     useEffect(() => {
-      if (SDK.mode === 'labelstream') {
+      if (isLabelStream) {
         SDK.initLSF(lsfRef.current);
         SDK.startLabeling();
       }
 
-      return () => SDK.startLabeling();
+      return () => {
+        if (isLabelStream) {
+          console.log("destroy (stream)");
+          SDK.destroyLSF();
+        }
+      };
     }, []);
 
     const onResize = useCallback((width) => {

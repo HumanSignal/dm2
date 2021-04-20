@@ -41,6 +41,7 @@ import { unmountComponentAtNode } from "react-dom";
 import { instruments } from "../components/DataManager/Toolbar/instruments";
 import { APIProxy } from "../utils/api-proxy";
 import { objectToMap } from "../utils/helpers";
+import { isDefined } from "../utils/utils";
 import { APIConfig } from "./api-config";
 import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
@@ -321,20 +322,15 @@ export class DataManager {
   }
 
   initLSF(element) {
-    const task = this.store.taskStore.selected;
-    const annotation = this.store.annotationStore.selected;
-    const isLabelStream = this.mode === 'labelstream';
+    if (this.lsf) return;
 
-    if (!this.lsf) {
-      console.log("Initialize LSF");
-
-      this.lsf = new LSFWrapper(this, element, {
-        ...this.labelStudioOptions,
-        task,
-        annotation,
-        isLabelStream,
-      });
-    }
+    console.log("LS initialized", this.mode);
+    this.lsf = new LSFWrapper(this, element, {
+      ...this.labelStudioOptions,
+      task: this.store.taskStore.selected,
+      // annotation: this.store.annotationStore.selected,
+      isLabelStream: this.mode === 'labelstream',
+    });
   }
 
   /**
@@ -344,25 +340,29 @@ export class DataManager {
    * @param {import("../stores/Tasks").TaskModel} task
    */
   async startLabeling() {
+    if (!this.lsf) return;
+
     let [task, annotation] = [
       this.store.taskStore.selected,
       this.store.annotationStore.selected,
     ];
 
     const isLabelStream = this.mode === 'labelstream';
+    const taskExists = isDefined(this.lsf.task) && isDefined(task);
+    const taskSelected = this.lsf.task?.id === task?.id;
 
     // do nothing if the task is already selected
-    if (this.lsf?.task && task && this.lsf.task.id === task.id) {
+    if (taskExists && taskSelected) {
+      console.log("Already selected", task);
       return;
     }
 
-    if (
-      !isLabelStream &&
-      this.lsf &&
-      (this.lsf.task?.id !== task?.id || annotation !== undefined)
-    ) {
+    if (!isLabelStream && (!taskSelected || isDefined(annotation))) {
       const annotationID = annotation?.id ?? task.lastAnnotation?.id;
-      this.lsf.loadTask(task.id, annotationID);
+      console.log("select", task, annotationID);
+
+      // this.lsf.loadTask(task.id, annotationID);
+      this.lsf.selectTask(task, annotationID);
     }
   }
 
