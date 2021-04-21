@@ -32,13 +32,17 @@ export const Spinner = injector(({ SDK, visible = true, ...props }) => {
     objectFit: "contain",
   };
 
+  const ExternalSpinner = SDK.spinner;
+
   return visible ? (
     <div
       {...props}
       style={{ width: size, height: size }}
       children={
         <div style={{ width: "100%", height: "100%" }}>
-          {SDK.spinner ?? (<img
+          {ExternalSpinner ? (
+            <ExternalSpinner size={size}/>
+          ) : (<img
             src={source.x1}
             srcSet={[`${source.x1} 1x`, `${source.x2} 2x`].join(",")}
             style={videoStyles}
