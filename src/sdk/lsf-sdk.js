@@ -77,12 +77,20 @@ export class LSFWrapper {
     this.initialAnnotation = options.annotation;
     this.history = this.labelStream ? new LSFHistory(this) : null;
 
+    const interfaces = [...DEFAULT_INTERFACES];
+
+    if (this.labelStream) {
+      interfaces.push("infobar");
+    }
+
+    console.log({interfaces});
+
     const lsfProperties = {
       user: options.user,
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
       description: this.instruction,
-      interfaces: DEFAULT_INTERFACES,
+      interfaces: interfaces,
       /* EVENTS */
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
