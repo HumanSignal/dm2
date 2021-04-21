@@ -288,7 +288,7 @@ export class DataManager {
    *
    * @param {"explorer" | "labelstream"} mode
    */
-  async setMode(mode) {
+  setMode(mode) {
     const modeChanged = mode !== this.mode;
     this.mode = mode;
     this.store.setMode(mode);

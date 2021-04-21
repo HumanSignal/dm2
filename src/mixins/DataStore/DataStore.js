@@ -70,7 +70,6 @@ const MixinBase = types
     },
 
     unset({ withHightlight = false } = {}) {
-      console.log('unset task');
       self.selected = undefined;
       if (withHightlight) self.highlighted = undefined;
     },
