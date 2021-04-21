@@ -137,6 +137,7 @@ export class DataManager {
     this.toolbar = config.toolbar ?? DEFAULT_TOOLBAR;
     this.panels = config.panels;
     this.spinner = config.spinner;
+    this.spinnerSize = config.spinnerSize;
     this.instruments = prepareInstruments(config.instruments ?? {}),
     this.interfaces = objectToMap({
       tabs: true,
