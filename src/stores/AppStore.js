@@ -317,6 +317,10 @@ export const AppStore = types
       });
     },
 
+    setLoading(value) {
+      self.loading = value;
+    },
+
     fetchProject: flow(function* (options = {}) {
       self.projectFetch = options.force === true;
 
@@ -361,7 +365,7 @@ export const AppStore = types
     }),
 
     fetchData: flow(function* () {
-      self.loading = true;
+      self.setLoading(true);
 
       const { tab, task, labeling } = History.getParams();
 
@@ -378,7 +382,7 @@ export const AppStore = types
 
           self.resolveURLParams();
 
-          self.loading = false;
+          self.setLoading(false);
 
           self.startPolling();
         }
