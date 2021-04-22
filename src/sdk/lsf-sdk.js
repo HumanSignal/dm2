@@ -23,7 +23,6 @@ const DEFAULT_INTERFACES = [
   "predictions",
   "predictions:menu", // right menu with prediction items
   "annotations:menu", // right menu with annotation items
-  "annotations:add-new",
   "annotations:delete",
   "annotations:current",
   "annotations:tabs",
@@ -81,6 +80,11 @@ export class LSFWrapper {
 
     if (this.labelStream) {
       interfaces.push("infobar");
+    } else {
+      interfaces.push(
+        "annotations:add-new",
+        "annotations:view-all",
+      );
     }
 
     console.log({interfaces});
