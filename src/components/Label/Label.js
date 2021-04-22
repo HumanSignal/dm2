@@ -63,7 +63,6 @@ export const Labeling = injector(
     }, [store]);
 
     const initLabeling = useCallback(() => {
-      console.log("Init labeling");
       if (!SDK.lsf) SDK.initLSF(lsfRef.current);
       SDK.startLabeling();
     }, [lsfRef]);
@@ -73,7 +72,6 @@ export const Labeling = injector(
 
       return () => {
         if (!isLabelStream) {
-          console.log("destroy (quickview)");
           SDK.off("taskSelected", initLabeling);
           SDK.destroyLSF();
         }
@@ -88,7 +86,6 @@ export const Labeling = injector(
 
       return () => {
         if (isLabelStream) {
-          console.log("destroy (stream)");
           SDK.destroyLSF();
         }
       };
@@ -99,8 +96,6 @@ export const Labeling = injector(
       // trigger resize events inside LSF
       window.dispatchEvent(new Event("resize"));
     }, []);
-
-    console.log('woohoo');
 
     return (
       <Block name="label-view">

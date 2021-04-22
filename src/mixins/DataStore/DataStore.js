@@ -50,7 +50,6 @@ const MixinBase = types
   }))
   .actions((self) => ({
     setSelected(val) {
-      console.log("set selected");
       let selected;
 
       if (typeof val === "number") {
@@ -66,7 +65,6 @@ const MixinBase = types
         getRoot(self).SDK.invoke('taskSelected');
 
       }
-      console.log(self.selected?.id);
     },
 
     unset({ withHightlight = false } = {}) {
@@ -150,7 +148,6 @@ export const DataStore = (
       },
 
       fetch: flow(function* ({ reload = false, interaction } = {}) {
-        console.log('fetching list');
         const currentView = getRoot(self).viewsStore.selected;
 
         if (self.loading) return;
@@ -182,7 +179,6 @@ export const DataStore = (
 
         if (!listIncludes(self.list, selectedID)) {
           self.selected = null;
-          console.log('unset', self.list, selectedID);
         }
 
         if (!listIncludes(self.list, highlightedID)) {

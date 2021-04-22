@@ -327,7 +327,6 @@ export class DataManager {
   initLSF(element) {
     if (this.lsf) return;
 
-    console.log("LS initialized", this.mode);
     this.lsf = new LSFWrapper(this, element, {
       ...this.labelStudioOptions,
       task: this.store.taskStore.selected,
@@ -356,13 +355,11 @@ export class DataManager {
 
     // do nothing if the task is already selected
     if (taskExists && taskSelected) {
-      console.log("Already selected", task);
       return;
     }
 
     if (!isLabelStream && (!taskSelected || isDefined(annotation))) {
       const annotationID = annotation?.id ?? task.lastAnnotation?.id;
-      console.log("select", task, annotationID);
 
       // this.lsf.loadTask(task.id, annotationID);
       this.lsf.selectTask(task, annotationID);

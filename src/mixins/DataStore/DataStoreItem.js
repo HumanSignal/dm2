@@ -25,11 +25,13 @@ export const DataStoreItem = types
   }))
   .actions((self) => ({
     update(newData) {
-      applySnapshot(self, {
+      const patch = {
         ...getSnapshot(self),
         ...newData,
         updated: guidGenerator(),
-      });
+      };
+
+      applySnapshot(self, patch);
       return self;
     },
 

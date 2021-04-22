@@ -220,7 +220,6 @@ export const AppStore = types
     },
 
     startLabelStream(options = {}) {
-      console.log(options);
       if (!self.confirmLabelingConfigured()) return;
 
       self.SDK.setMode("labelstream");
@@ -425,8 +424,6 @@ export const AppStore = types
       const { selected } = view;
       const actionCallback = self.SDK.getAction(actionId);
 
-      console.log({actionCallback});
-
       if (needsLock && !actionCallback) view.lock();
 
       const actionParams = {
@@ -441,7 +438,6 @@ export const AppStore = types
       };
 
       if (actionCallback instanceof Function) {
-        console.log("calling", actionCallback);
         return actionCallback(actionParams, view);
       }
 

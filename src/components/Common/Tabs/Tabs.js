@@ -105,7 +105,6 @@ export const TabsItem = ({
           onKeyDownCapture={saveTabTitle}
           onBlur={saveTabTitle}
           onChange={(ev) => {
-            console.log(ev.target.value);
             setCurrentTitle(ev.target.value);
           }}
         />

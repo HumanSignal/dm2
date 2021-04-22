@@ -87,8 +87,6 @@ export class LSFWrapper {
       );
     }
 
-    console.log({interfaces});
-
     const lsfProperties = {
       user: options.user,
       config: this.lsfConfig,
@@ -118,7 +116,6 @@ export class LSFWrapper {
     try {
       const LSF = await resolveLabelStudio();
       this.globalLSF = window.LabelStudio === LSF;
-      console.log(settings);
       this.lsfInstance = new LSF(this.root, settings);
     } catch (err) {
       console.error("Failed to initialize LabelStudio", settings);
@@ -136,10 +133,8 @@ export class LSFWrapper {
 
     const newTask = await this.withinLoadingState(async () => {
       if (!isDefined(taskID)) {
-        console.log("Loading next task");
         return tasks.loadNextTask();
       } else {
-        console.log("Loading task", taskID);
         return tasks.loadTask(taskID);
       }
     });
@@ -158,7 +153,6 @@ export class LSFWrapper {
   }
 
   selectTask(task, annotationID) {
-    console.log("Select task", {task, annotationID});
     const needsAnnotationsMerge = task && this.task?.id === task.id;
     const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
 
@@ -171,7 +165,6 @@ export class LSFWrapper {
     this.setLoading(false);
 
     const lsfTask = taskToLSFormat(task);
-    console.log({lsfTask});
 
     this.lsf.resetState();
     this.lsf.assignTask(task);
@@ -245,9 +238,7 @@ export class LSFWrapper {
   /** @private */
   onSubmitAnnotation = async () => {
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
-      const annotation = await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
-      await this.loadTask(taskID, annotation.id);
-      return annotation;
+      return await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
     });
   };
 
@@ -341,6 +332,7 @@ export class LSFWrapper {
 
       this.history?.add(taskID, currentAnnotation.pk);
     }
+
     this.setLoading(false);
 
     if (this.datamanager.isExplorer) {
