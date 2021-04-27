@@ -16,10 +16,7 @@ import { Common } from "../types/Common";
  */
 export const FilterOperation = observer(
   ({ filter, field, value, operator }) => {
-    const types = useMemo(() => {
-      const filterTypes = FilterInputs[filter.filter.currentType] ?? FilterInputs.String;
-      return [...filterTypes, ...Common];
-    }, [filter, operator]);
+    const types = [...(FilterInputs[filter.filter.currentType] ?? FilterInputs.String), ...Common];
 
     const selected = useMemo(() => {
       if (operator) {
@@ -52,7 +49,7 @@ export const FilterOperation = observer(
         <Elem block="filter-line" name="column" mix="value">
           <Input
             {...field}
-            key={filter.filter.id}
+            key={`${filter.filter.id}-${filter.filter.currentType}`}
             schema={filter.schema}
             value={value}
             onChange={onChange}
