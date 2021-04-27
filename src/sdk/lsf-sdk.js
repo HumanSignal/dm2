@@ -84,6 +84,7 @@ export class LSFWrapper {
       interfaces.push(
         "annotations:add-new",
         "annotations:view-all",
+        "infobar",
       );
     }
 
