@@ -1,5 +1,7 @@
 .annotators
-  display flex
+  display grid
+  grid-auto-flow column
+  grid-column-gap 4px
 
   &__item
     z-index 1
@@ -8,10 +10,6 @@
     overflow hidden
     border-radius 100%
     position relative
-    box-shadow 0 0 0 2px rgba(#fff, 1)
-
-    & + &
-      margin-left -10px
 
     &:hover
       z-index 10
