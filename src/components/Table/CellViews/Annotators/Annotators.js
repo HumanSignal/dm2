@@ -27,7 +27,11 @@ export const Annotators = (cell) => {
         );
       })}
       {(extra > 0) && (
-        <Elem name="item">
+        <Elem name="item" onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          sdk.invoke("userCellCounterClick", [e, column.alias, userList]);
+        }}>
           <Userpic username={`+${extra}`}/>
         </Elem>
       )}
