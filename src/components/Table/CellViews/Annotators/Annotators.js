@@ -5,11 +5,13 @@ import { Userpic } from "../../../Common/Userpic/Userpic";
 import "./Annotators.styl";
 
 export const Annotators = (cell) => {
-  const {value, column} = cell;
+  const {value, column, original: task} = cell;
   const sdk = useSDK();
   const userList = Array.from(value);
   const renderable = userList.slice(0, 10);
   const extra = userList.length - renderable.length;
+
+  console.log({cell});
 
   return (
     <Block name="annotators">
@@ -18,7 +20,7 @@ export const Annotators = (cell) => {
           <Elem key={`user-${user.id}`} name="item" onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            sdk.invoke("userCellClick", [e, column.alias, user]);
+            sdk.invoke("userCellClick", [e, column.alias, task, user]);
           }}>
             <Tooltip title={user.fullName || user.email}>
               <Userpic user={user}/>
@@ -30,7 +32,7 @@ export const Annotators = (cell) => {
         <Elem name="item" onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          sdk.invoke("userCellCounterClick", [e, column.alias, userList]);
+          sdk.invoke("userCellCounterClick", [e, column.alias, task, userList]);
         }}>
           <Userpic username={`+${extra}`}/>
         </Elem>
