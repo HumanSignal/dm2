@@ -6,9 +6,35 @@ import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 import { User } from "../Users";
 
+const Annotator = types
+  .model("Assignee", {
+    id: types.identifierNumber,
+    user: types.late(() => types.reference(User)),
+    review: types.maybeNull(types.enumeration(["accepted", "rejected", "fixed"])),
+    annotated: false,
+  })
+  .views((self) => ({
+    get firstName() { return self.user.firstName; },
+    get lastName() { return self.user.lastName; },
+    get username() { return self.user.username; },
+    get email() { return self.user.email; },
+    get lastActivity() { return self.user.lastActivity; },
+    get avatar() { return self.user.avatar; },
+    get initials() { return self.user.initials; },
+    get fullName() { return self.user.fullName; }
+  }))
+  .preProcessSnapshot((sn) => {
+    const {user_id, ...rest} = sn;
+    return {
+      ...rest,
+      id: user_id,
+      user: user_id,
+    };
+  });
+
 export const create = (columns) => {
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
-    annotators: types.optional(types.array(types.late(() => types.reference(User))), []),
+    annotators: types.optional(types.array(Annotator), []),
     reviewers: types.optional(types.array(types.late(() => types.reference(User))), []),
     annotations: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),

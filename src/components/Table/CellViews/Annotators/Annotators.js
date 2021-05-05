@@ -11,11 +11,11 @@ export const Annotators = (cell) => {
   const renderable = userList.slice(0, 10);
   const extra = userList.length - renderable.length;
 
-  console.log({cell});
-
   return (
     <Block name="annotators">
-      {renderable.map(user => {
+      {renderable.map((item) => {
+        const user = item.user ?? item;
+
         return (
           <Elem key={`user-${user.id}`} name="item" onClick={(e) => {
             e.preventDefault();
