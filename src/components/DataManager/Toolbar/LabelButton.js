@@ -11,11 +11,12 @@ const injector = inject(({ store }) => {
     store,
     canLabel: totalTasks > 0 || foundTasks > 0,
     target: currentView?.target ?? "tasks",
-    selectedCount: currentView?.selectedLength
+    selectedCount: currentView?.selectedCount,
+    allSelected: currentView?.allSelected,
   };
 });
 
-export const LabelButton = injector(({store, selectedCount, canLabel, size, target}) => {
+export const LabelButton = injector(({store, allSelected, selectedCount, canLabel, size, target}) => {
   return canLabel ? (
     <Interface name="labelButton">
       <Button
@@ -25,7 +26,7 @@ export const LabelButton = injector(({store, selectedCount, canLabel, size, targ
         onClick={() => store.startLabelStream()}
         style={{width: 105}}
       >
-        Label {selectedCount ? selectedCount : null}
+        Label {selectedCount === 0 || allSelected ? "All" : selectedCount} Tasks
       </Button>
     </Interface>
   ) : null;

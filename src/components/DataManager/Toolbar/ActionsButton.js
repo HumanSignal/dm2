@@ -11,7 +11,7 @@ const injector = inject(({ store }) => ({
 }));
 
 export const ActionsButton = injector(observer(({ store, size, hasSelected }) => {
-  const selectedLength = store.currentView.selectedLength;
+  const selectedCount = store.currentView.selectedCount;
   const actions = store.availableActions
     .filter((a) => !a.hidden)
     .sort((a, b) => a.order - b.order);
@@ -54,7 +54,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected }) =>
   return hasSelected ? (
     <Dropdown.Trigger content={<Menu size="compact">{actionButtons}</Menu>}>
       <Button size={size}>
-        {selectedLength} tasks
+        {selectedCount} tasks
         <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
       </Button>
     </Dropdown.Trigger>
