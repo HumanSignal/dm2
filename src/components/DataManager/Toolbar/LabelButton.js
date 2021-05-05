@@ -17,16 +17,18 @@ const injector = inject(({ store }) => {
 });
 
 export const LabelButton = injector(({store, allSelected, selectedCount, canLabel, size, target}) => {
+  const all = selectedCount === 0 || allSelected;
+
   return canLabel ? (
     <Interface name="labelButton">
       <Button
         look="primary"
         size={size}
+        style={{width: 160, padding: 0}}
         disabled={target === "annotations"}
         onClick={() => store.startLabelStream()}
-        style={{width: 105}}
       >
-        Label {selectedCount === 0 || allSelected ? "All" : selectedCount} Tasks
+        Label {all ? "All" : selectedCount} Task{all || selectedCount > 1 ? "s" : ''}
       </Button>
     </Interface>
   ) : null;
