@@ -95,6 +95,7 @@ export class LSFWrapper {
       description: this.instruction,
       interfaces: interfaces,
       /* EVENTS */
+      onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
       onStorageInitialized: this.onStorageInitialized,
@@ -178,6 +179,35 @@ export class LSFWrapper {
     const id = annotationID ? annotationID.toString() : null;
     let { annotationStore: cs } = this.lsf;
     let annotation;
+
+    if (this.task.drafts) {
+      for (const draft of this.task.drafts) {
+        let c;
+        if (draft.annotation) {
+          // Annotation existed - add draft to existed annotation
+          const draftAnnotationPk = String(draft.annotation);
+          c = cs.annotations.find(c => c.pk === draftAnnotationPk);
+          if (c) {
+            c.addVersions({draft: draft.result});
+            c.deleteAllRegions({ deleteReadOnly: true });
+          } else {
+            // that's shouldn't happen
+            console.error(`No annotation found for pk=${draftAnnotationPk}`);
+          }
+        } else {
+          // Annotation not found - create new annotation from draft
+          c = cs.addAnnotation({
+            draft: draft.result,
+            userGenerate: true,
+            createdBy: draft.created_username,
+            createdAgo: draft.created_ago
+          });
+        }
+        cs.selectAnnotation(c.id);
+        c.deserializeAnnotation(draft.result);
+        c.setDraftId(draft.id);
+      }
+    }
 
     const first = this.annotations[0];
     // if we have annotations created automatically, we don't need to create another one
@@ -292,6 +322,35 @@ export class LSFWrapper {
 
       await this.loadTask(task.id, annotationID);
     }
+  };
+
+  onSubmitDraft = async (studio, annotation) => {
+    const annotationDoesntExist = !annotation.pk;
+    const data = { body: this.prepareData(annotation) }; // serializedAnnotation
+
+    var req;
+    if (annotation.draftId > 0) {
+      // draft has been already created
+      return this.datamanager.apiCall("updateDraft", { draftID: annotation.draftId }, data);
+    } else {
+      if (annotationDoesntExist) {
+        return this.datamanager.apiCall("createDraftForTask", { taskID: this.task.id }, data);
+      } else {
+        return this.datamanager.apiCall(
+          "createDraftForAnnotation",
+          { taskID: this.task.id, annotationID: annotation.pk },
+          data
+        );
+      }
+    }
+
+    // return req.then(httpres => httpres.json()
+    //     .then(function(res) {
+    //       isNewDraft && res.id && annotation.setDraftId(res.id);
+    //       return res;
+    //     })
+    //     .catch(() => true)
+    // );
   };
 
   onSkipTask = async () => {

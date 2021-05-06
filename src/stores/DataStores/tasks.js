@@ -12,6 +12,7 @@ export const create = (columns) => {
     reviewers: types.optional(types.array(types.late(() => types.reference(User))), []),
     annotations: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
+    drafts: types.frozen(),
     source: types.maybeNull(types.string),
     was_cancelled: false,
   })
@@ -90,7 +91,17 @@ export const create = (columns) => {
 
         self.setLoading(taskID);
 
-        const task = yield self.updateTaskByID(taskID);
+        const taskData = yield self.root.apiCall("task", { taskID });
+        const drafts = yield self.root.apiCall("taskDrafts", { taskID });
+        if (drafts) taskData.drafts = drafts;
+
+        if (taskData.predictions) {
+          taskData.predictions.forEach((p) => {
+            p.created_by = (p.model_version?.trim() ?? "") || p.created_by;
+          });
+        }
+
+        const task = self.applyTaskSnapshot(taskData, taskID);
 
         if (select !== false) self.setSelected(task);
 
@@ -109,18 +120,6 @@ export const create = (columns) => {
         if (select !== false) self.setSelected(task);
 
         return task;
-      }),
-
-      updateTaskByID: flow(function* (taskID) {
-        const taskData = yield self.root.apiCall("task", { taskID });
-
-        if (taskData.predictions) {
-          taskData.predictions.forEach((p) => {
-            p.created_by = (p.model_version?.trim() ?? "") || p.created_by;
-          });
-        }
-
-        return self.applyTaskSnapshot(taskData, taskID);
       }),
 
       applyTaskSnapshot(taskData, taskID) {
