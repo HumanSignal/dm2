@@ -55,7 +55,7 @@ export const Userpic = forwardRef(({
         ref={imgRef}
         src={finalSrc}
         alt={(finalUsername ?? "").toUpperCase()}
-        style={{opacity: imgVisible ? 1 : 0}}
+        style={{opacity: imgVisible ? (faded ? 0.3 : 1) : 0}}
         onLoad={onImageLoaded}
         onError={() => setFinalSrc(FALLBACK_IMAGE) }
         mod={{faded}}
