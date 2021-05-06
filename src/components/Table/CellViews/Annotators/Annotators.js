@@ -1,3 +1,4 @@
+import { LsCheckAlt, LsCrossAlt } from "../../../../assets/icons";
 import { useSDK } from "../../../../providers/SDKProvider";
 import { Block, Elem } from "../../../../utils/bem";
 import { Tooltip } from "../../../Common/Tooltip/Tooltip";
@@ -11,19 +12,34 @@ export const Annotators = (cell) => {
   const renderable = userList.slice(0, 10);
   const extra = userList.length - renderable.length;
 
-  console.log({cell});
-
   return (
     <Block name="annotators">
-      {renderable.map(user => {
+      {renderable.map((item) => {
+        const user = item.user ?? item;
+        const {annotated, review} = item;
+
         return (
-          <Elem key={`user-${user.id}`} name="item" onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            sdk.invoke("userCellClick", [e, column.alias, task, user]);
-          }}>
+          <Elem
+            key={`user-${user.id}`}
+            name="item"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              sdk.invoke("userCellClick", [e, column.alias, task, user]);
+            }}
+          >
             <Tooltip title={user.fullName || user.email}>
-              <Userpic user={user}/>
+              <Userpic
+                user={user}
+                faded={annotated === false}
+                badge={{
+                  bottomRight: review && (
+                    <Block name="badge" mod={{[review]: true}}>
+                      {review === 'rejected' ? <LsCrossAlt/> : <LsCheckAlt/>}
+                    </Block>
+                  )
+                }}
+              />
             </Tooltip>
           </Elem>
         );
