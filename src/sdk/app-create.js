@@ -33,6 +33,14 @@ const createDynamicModels = (columns) => {
  */
 export const createApp = async (rootNode, datamanager) => {
   const response = await datamanager.api.columns();
+  if (!response || response.error) {
+    const message = `
+      ${response?.error ?? ""}
+      LS API not available; check \`API_GATEWAY\` and \`LS_ACCESS_TOKEN\` env vars;
+      also check \`data-project-id\` in \`public/index.html\`
+    `;
+    throw new Error(message);
+  }
   const columns = response.columns ?? (Array.isArray(response) ? response : []);
 
   createDynamicModels(columns);
