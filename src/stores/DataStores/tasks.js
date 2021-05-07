@@ -28,7 +28,7 @@ const Annotator = types
       return {
         id: sn,
         user: sn,
-        annotated: false,
+        annotated: true,
         review: null,
       };
     }
