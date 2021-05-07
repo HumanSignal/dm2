@@ -1,4 +1,4 @@
-import { flow, getRoot, types } from "mobx-state-tree";
+import { flow, getRoot, getSnapshot, types } from "mobx-state-tree";
 import { DataStore, DataStoreItem } from "../../mixins/DataStore";
 import { getAnnotationSnapshot } from "../../sdk/lsf-utils";
 import { isDefined } from "../../utils/utils";
@@ -24,21 +24,24 @@ const Annotator = types
     get fullName() { return self.user.fullName; }
   }))
   .preProcessSnapshot((sn) => {
+    let result = sn;
     if (typeof sn === 'number') {
-      return {
+      result = {
         id: sn,
         user: sn,
         annotated: true,
         review: null,
       };
+    } else {
+      const {user_id, user, ...rest} = sn;
+      result = {
+        ...rest,
+        id: user_id ?? user,
+        user: user_id ?? user,
+      };
     }
 
-    const {user_id, ...rest} = sn;
-    return {
-      ...rest,
-      id: user_id,
-      user: user_id,
-    };
+    return result;
   });
 
 export const create = (columns) => {
@@ -148,27 +151,45 @@ export const create = (columns) => {
 
       updateTaskByID: flow(function* (taskID) {
         const taskData = yield self.root.apiCall("task", { taskID });
+        const snapshot = self.mergeSnapshow(taskID, taskData);
 
-        if (taskData.predictions) {
-          taskData.predictions.forEach((p) => {
+        if (snapshot.predictions) {
+          snapshot.predictions.forEach((p) => {
             p.created_by = (p.model_version?.trim() ?? "") || p.created_by;
           });
         }
 
-        return self.applyTaskSnapshot(taskData, taskID);
+        return self.applyTaskSnapshot(snapshot, taskID);
       }),
 
       applyTaskSnapshot(taskData, taskID) {
         let task;
 
         if (taskData && !taskData?.error) {
+          const id = taskID ?? taskData.id;
+          const snapshot = self.mergeSnapshow(id, taskData);
+
           task = self.updateItem(taskID ?? taskData.id, {
-            ...taskData,
+            ...snapshot,
             source: JSON.stringify(taskData),
           });
         }
 
         return task;
+      },
+
+      mergeSnapshow(taskID, taskData){
+        const task = self.list.find(({id}) => id === taskID);
+        const snapshot = task ? {...getSnapshot(task)} : {};
+        Object.assign(snapshot, taskData);
+
+        if (snapshot.predictions) {
+          snapshot.predictions.forEach((p) => {
+            p.created_by = (p.model_version?.trim() ?? "") || p.created_by;
+          });
+        }
+
+        return snapshot;
       },
 
       unsetTask() {
@@ -189,6 +210,11 @@ export const create = (columns) => {
 
       return {
         ...sn,
+        reviewers: (sn.reviewers ?? []).map(r => ({
+          id: r,
+          annotated: false,
+          review: null,
+        })),
         totalAnnotations: total_annotations,
         totalPredictions: total_predictions,
       };
