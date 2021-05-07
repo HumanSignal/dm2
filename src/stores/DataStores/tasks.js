@@ -24,6 +24,15 @@ const Annotator = types
     get fullName() { return self.user.fullName; }
   }))
   .preProcessSnapshot((sn) => {
+    if (typeof sn === 'number') {
+      return {
+        id: sn,
+        user: sn,
+        annotated: false,
+        review: null,
+      };
+    }
+
     const {user_id, ...rest} = sn;
     return {
       ...rest,
