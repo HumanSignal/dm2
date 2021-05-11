@@ -80,10 +80,16 @@ export const APIConfig = {
     /** Task drafts */
     taskDrafts: "/../tasks/:taskID/drafts",
 
-    /** Create draft for existing annotation */
+    /** Update draft by id */
     updateDraft: {
       path: "/../drafts/:draftID",
       method: "patch",
+    },
+
+    /** Delete draft by id */
+    deleteDraft: {
+      path: "/../drafts/:draftID",
+      method: "delete",
     },
 
     /** Create draft for existing annotation */

@@ -179,8 +179,9 @@ export class LSFWrapper {
     const id = annotationID ? annotationID.toString() : null;
     let { annotationStore: cs } = this.lsf;
     let annotation;
+    const hasDrafts = cs.annotations.some(a => a.draftId);
 
-    if (this.task.drafts) {
+    if (this.task.drafts && !hasDrafts) {
       for (const draft of this.task.drafts) {
         let c;
         if (draft.annotation) {
@@ -191,7 +192,7 @@ export class LSFWrapper {
             c.addVersions({draft: draft.result});
             c.deleteAllRegions({ deleteReadOnly: true });
           } else {
-            // that's shouldn't happen
+            // that shouldn't happen
             console.error(`No annotation found for pk=${draftAnnotationPk}`);
           }
         } else {
@@ -296,13 +297,26 @@ export class LSFWrapper {
     await this.loadTask(this.task.id, annotation.pk);
   };
 
+  deleteDraft = async (id) => {
+    const response = await this.datamanager.apiCall("deleteDraft", {
+      draftID: id,
+    });
+    const index = this.task?.drafts.findIndex(d => d.id === id);
+    if (index >= 0) this.task.drafts.splice(index, 1);
+    return response;
+  }
+
   /**@private */
   onDeleteAnnotation = async (ls, annotation) => {
     const { task } = this;
     let response;
 
     if (annotation.userGenerate && annotation.sentUserGenerate === false) {
-      response = { ok: true };
+      if (annotation.draftId) {
+        response = await this.deleteDraft(annotation.draftId);
+      } else {
+        response = { ok: true };
+      }
     } else {
       response = await this.withinLoadingState(async () => {
         return this.datamanager.apiCall("deleteAnnotation", {
@@ -311,7 +325,7 @@ export class LSFWrapper {
         });
       });
 
-      this.task.deleteAnnotation(annotation);
+      // this.task.deleteAnnotation(annotation);
       this.datamanager.invoke("deleteAnnotation", [ls, annotation]);
     }
 
@@ -320,7 +334,7 @@ export class LSFWrapper {
         this.annotations[this.annotations.length - 1] ?? {};
       const annotationID = lastAnnotation.pk ?? undefined;
 
-      await this.loadTask(task.id, annotationID);
+      this.setAnnotation(annotationID);
     }
   };
 
@@ -328,29 +342,22 @@ export class LSFWrapper {
     const annotationDoesntExist = !annotation.pk;
     const data = { body: this.prepareData(annotation) }; // serializedAnnotation
 
-    var req;
     if (annotation.draftId > 0) {
       // draft has been already created
       return this.datamanager.apiCall("updateDraft", { draftID: annotation.draftId }, data);
     } else {
+      let response;
       if (annotationDoesntExist) {
-        return this.datamanager.apiCall("createDraftForTask", { taskID: this.task.id }, data);
+        response = await this.datamanager.apiCall("createDraftForTask", { taskID: this.task.id }, data);
       } else {
-        return this.datamanager.apiCall(
+        response = await this.datamanager.apiCall(
           "createDraftForAnnotation",
           { taskID: this.task.id, annotationID: annotation.pk },
           data
         );
       }
+      response?.id && annotation.setDraftId(response?.id);
     }
-
-    // return req.then(httpres => httpres.json()
-    //     .then(function(res) {
-    //       isNewDraft && res.id && annotation.setDraftId(res.id);
-    //       return res;
-    //     })
-    //     .catch(() => true)
-    // );
   };
 
   onSkipTask = async () => {
@@ -377,11 +384,14 @@ export class LSFWrapper {
 
   async submitCurrentAnnotation(eventName, submit, includeID = false) {
     const { taskID, currentAnnotation } = this;
+    const { draftId } = currentAnnotation;
     const serializedAnnotation = this.prepareData(currentAnnotation, includeID);
 
     this.setLoading(true);
     const result = await this.withinLoadingState(async () => {
-      return submit(taskID, serializedAnnotation);
+      const result = await submit(taskID, serializedAnnotation);
+      if (draftId) await this.deleteDraft(draftId);
+      return result;
     });
 
     if (result && result.id !== undefined) {
