@@ -130,15 +130,8 @@ export const create = (columns) => {
         self.setLoading(taskID);
 
         const taskData = yield self.root.apiCall("task", { taskID });
-        const drafts = yield self.root.apiCall("taskDrafts", { taskID });
-        const snapshot = self.mergeSnapshow(taskID, taskData);
-        if (drafts) taskData.drafts = drafts;
 
-        if (taskData.predictions) {
-          taskData.predictions.forEach((p) => {
-            p.created_by = (p.model_version?.trim() ?? "") || p.created_by;
-          });
-        }
+        yield self.addDraftsToTaskData(taskData);
 
         const task = self.applyTaskSnapshot(taskData, taskID);
 
@@ -154,6 +147,8 @@ export const create = (columns) => {
           reload: false,
         });
 
+        yield self.addDraftsToTaskData(taskData);
+
         const task = self.applyTaskSnapshot(taskData);
 
         if (select !== false) self.setSelected(task);
@@ -161,25 +156,18 @@ export const create = (columns) => {
         return task;
       }),
 
-      updateTaskByID: flow(function* (taskID) {
-        const taskData = yield self.root.apiCall("task", { taskID });
-        const snapshot = self.mergeSnapshow(taskID, taskData);
-
-        if (snapshot.predictions) {
-          snapshot.predictions.forEach((p) => {
-            p.created_by = (p.model_version?.trim() ?? "") || p.created_by;
-          });
-        }
-
-        return self.applyTaskSnapshot(snapshot, taskID);
-      }),
+      async addDraftsToTaskData(taskData) {
+        const drafts = await self.root.apiCall("taskDrafts", { taskID: taskData.id });
+        if (drafts) taskData.drafts = drafts;
+        return taskData;
+      },
 
       applyTaskSnapshot(taskData, taskID) {
         let task;
 
         if (taskData && !taskData?.error) {
           const id = taskID ?? taskData.id;
-          const snapshot = self.mergeSnapshow(id, taskData);
+          const snapshot = self.mergeSnapshot(id, taskData);
 
           task = self.updateItem(taskID ?? taskData.id, {
             ...snapshot,
@@ -190,7 +178,7 @@ export const create = (columns) => {
         return task;
       },
 
-      mergeSnapshow(taskID, taskData){
+      mergeSnapshot(taskID, taskData){
         const task = self.list.find(({id}) => id === taskID);
         const snapshot = task ? {...getSnapshot(task)} : {};
         Object.assign(snapshot, taskData);
@@ -216,6 +204,12 @@ export const create = (columns) => {
         if (total_predictions !== null)
           self.totalPredictions = total_predictions;
       },
+
+      deleteDraft(id) {
+        if (!self.drafts) return;
+        const index = self.drafts.findIndex(d => d.id === id);
+        if (index >= 0) self.drafts.splice(index, 1);
+      }
     }))
     .preProcessSnapshot((snapshot) => {
       const { total_annotations, total_predictions, ...sn } = snapshot;

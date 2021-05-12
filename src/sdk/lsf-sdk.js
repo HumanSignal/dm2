@@ -179,10 +179,11 @@ export class LSFWrapper {
     const id = annotationID ? annotationID.toString() : null;
     let { annotationStore: cs } = this.lsf;
     let annotation;
-    const hasDrafts = cs.annotations.some(a => a.draftId);
+    const activeDrafts = cs.annotations.map(a => a.draftId).filter(Boolean);
 
-    if (this.task.drafts && !hasDrafts) {
+    if (this.task.drafts) {
       for (const draft of this.task.drafts) {
+        if (activeDrafts.includes(draft.id)) continue;
         let c;
         if (draft.annotation) {
           // Annotation existed - add draft to existed annotation
@@ -194,6 +195,7 @@ export class LSFWrapper {
           } else {
             // that shouldn't happen
             console.error(`No annotation found for pk=${draftAnnotationPk}`);
+            continue;
           }
         } else {
           // Annotation not found - create new annotation from draft
@@ -301,8 +303,7 @@ export class LSFWrapper {
     const response = await this.datamanager.apiCall("deleteDraft", {
       draftID: id,
     });
-    const index = this.task?.drafts.findIndex(d => d.id === id);
-    if (index >= 0) this.task.drafts.splice(index, 1);
+    this.task.deleteDraft(id);
     return response;
   }
 
@@ -384,13 +385,11 @@ export class LSFWrapper {
 
   async submitCurrentAnnotation(eventName, submit, includeID = false) {
     const { taskID, currentAnnotation } = this;
-    const { draftId } = currentAnnotation;
     const serializedAnnotation = this.prepareData(currentAnnotation, includeID);
 
     this.setLoading(true);
     const result = await this.withinLoadingState(async () => {
       const result = await submit(taskID, serializedAnnotation);
-      if (draftId) await this.deleteDraft(draftId);
       return result;
     });
 
@@ -420,6 +419,7 @@ export class LSFWrapper {
     const result = {
       lead_time: (new Date() - annotation.loadedDate) / 1000, // task execution time
       result: annotation.serializeAnnotation(),
+      draft_id: annotation.draftId,
     };
 
     if (includeId && userGenerate) {
