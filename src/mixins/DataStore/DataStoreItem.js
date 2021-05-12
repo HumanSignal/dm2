@@ -31,7 +31,11 @@ export const DataStoreItem = types
         updated: guidGenerator(),
       };
 
-      applySnapshot(self, patch);
+      try {
+        applySnapshot(self, patch);
+      } catch (err) {
+        console.log(err);
+      }
       return self;
     },
 
