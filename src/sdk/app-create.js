@@ -46,6 +46,7 @@ export const createApp = async (rootNode, datamanager) => {
     showPreviews: datamanager.showPreviews,
     interfaces: Object.fromEntries(datamanager.interfaces),
     toolbar: datamanager.toolbar,
+    availableActions: Array.from(datamanager.actions.values()).map(({action}) => action)
   });
 
   appStore._sdk = datamanager;
