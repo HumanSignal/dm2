@@ -160,6 +160,15 @@ export class DataManager {
       })
     );
 
+    if (config.actions) {
+      config.actions.forEach(([action, callback]) => {
+        if (!isDefined(action.id)) {
+          throw new Error("Every action must provide a unique ID");
+        }
+        this.actions.set(action.id, {action, callback});
+      });
+    }
+
     this.initApp();
   }
 
@@ -204,7 +213,6 @@ export class DataManager {
   }
 
   /**
-   *
    * @param {impotr("../stores/Action.js").Action} action
    */
   addAction(action, callback) {
