@@ -11,6 +11,7 @@ const Assignee = types
     id: types.identifierNumber,
     user: types.late(() => types.reference(User)),
     review: types.maybeNull(types.enumeration(["accepted", "rejected", "fixed"])),
+    reviewed: false,
     annotated: false,
   })
   .views((self) => ({
