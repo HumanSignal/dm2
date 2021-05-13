@@ -6,7 +6,7 @@ import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 import { User } from "../Users";
 
-const Annotator = types
+const Assignee = types
   .model("Assignee", {
     id: types.identifierNumber,
     user: types.late(() => types.reference(User)),
@@ -31,6 +31,7 @@ const Annotator = types
         user: sn,
         annotated: true,
         review: null,
+        reviewed: false,
       };
     } else {
       const {user_id, user, ...rest} = sn;
@@ -46,8 +47,8 @@ const Annotator = types
 
 export const create = (columns) => {
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
-    annotators: types.optional(types.array(Annotator), []),
-    reviewers: types.optional(types.array(types.late(() => types.reference(User))), []),
+    annotators: types.optional(types.array(Assignee), []),
+    reviewers: types.optional(types.array(Assignee), []),
     annotations: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
     source: types.maybeNull(types.string),
