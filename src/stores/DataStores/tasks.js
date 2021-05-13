@@ -130,8 +130,9 @@ export const create = (columns) => {
         self.setLoading(taskID);
 
         const taskData = yield self.root.apiCall("task", { taskID });
+        const drafts = yield self.root.apiCall("taskDrafts", { taskID: taskData.id });
 
-        yield self.addDraftsToTaskData(taskData);
+        if (drafts) taskData.drafts = drafts;
 
         const task = self.applyTaskSnapshot(taskData, taskID);
 
@@ -147,20 +148,12 @@ export const create = (columns) => {
           reload: false,
         });
 
-        yield self.addDraftsToTaskData(taskData);
-
         const task = self.applyTaskSnapshot(taskData);
 
         if (select !== false) self.setSelected(task);
 
         return task;
       }),
-
-      async addDraftsToTaskData(taskData) {
-        const drafts = await self.root.apiCall("taskDrafts", { taskID: taskData.id });
-        if (drafts) taskData.drafts = drafts;
-        return taskData;
-      },
 
       applyTaskSnapshot(taskData, taskID) {
         let task;

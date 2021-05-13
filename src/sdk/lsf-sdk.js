@@ -220,7 +220,10 @@ export class LSFWrapper {
     const showPredictions = this.project.show_collab_predictions === true;
 
     if (this.labelStream) {
-      if (showPredictions && this.predictions.length > 0) {
+      if (first?.draftId) {
+        // not submitted draft, most likely from previous labeling session
+        annotation = first;
+      } else if (showPredictions && this.predictions.length > 0) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else {
         annotation = cs.addAnnotation({ userGenerate: true });
@@ -229,7 +232,7 @@ export class LSFWrapper {
       if (showPredictions && this.annotations.length === 0 && this.predictions.length > 0) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else if (this.annotations.length > 0 && (id === "auto" || hasAutoAnnotations)) {
-        annotation = { id: this.annotations[0].id };
+        annotation = first;
       } else if (this.annotations.length > 0 && id) {
         annotation = this.annotations.find((c) => c.pk === id || c.id === id);
       } else {
