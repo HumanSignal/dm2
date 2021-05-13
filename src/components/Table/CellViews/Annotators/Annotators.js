@@ -16,7 +16,7 @@ export const Annotators = (cell) => {
     <Block name="annotators">
       {renderable.map((item) => {
         const user = item.user ?? item;
-        const {annotated, review} = item;
+        const {annotated, reviewed, review} = item;
 
         return (
           <Elem
@@ -31,7 +31,7 @@ export const Annotators = (cell) => {
             <Tooltip title={user.fullName || user.email}>
               <Userpic
                 user={user}
-                faded={annotated === false}
+                faded={annotated === false || reviewed === false}
                 badge={{
                   bottomRight: review && (
                     <Block name="badge" mod={{[review]: true}}>

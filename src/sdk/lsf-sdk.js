@@ -26,7 +26,6 @@ const DEFAULT_INTERFACES = [
   "annotations:delete",
   "annotations:current",
   "annotations:tabs",
-  "predictions:tabs",
   "side-column", // entity
 ];
 
@@ -85,6 +84,7 @@ export class LSFWrapper {
         "annotations:add-new",
         "annotations:view-all",
         "infobar",
+        "predictions:tabs",
       );
     }
 
