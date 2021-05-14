@@ -77,6 +77,33 @@ export const APIConfig = {
       method: "delete",
     },
 
+    /** Task drafts */
+    taskDrafts: "/../tasks/:taskID/drafts",
+
+    /** Update draft by id */
+    updateDraft: {
+      path: "/../drafts/:draftID",
+      method: "patch",
+    },
+
+    /** Delete draft by id */
+    deleteDraft: {
+      path: "/../drafts/:draftID",
+      method: "delete",
+    },
+
+    /** Create draft for existing annotation */
+    createDraftForAnnotation: {
+      path: "/../tasks/:taskID/annotations/:annotationID/drafts",
+      method: "post",
+    },
+
+    /** Create draft for new annotation */
+    createDraftForTask: {
+      path: "/../tasks/:taskID/drafts",
+      method: "post",
+    },
+
     /** Override selected items list (checkboxes) */
     setSelectedItems: {
       path: "/views/:tabID/selected-items",
