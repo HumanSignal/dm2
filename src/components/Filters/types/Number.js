@@ -1,13 +1,28 @@
 import { observer } from "mobx-react";
 import React from "react";
+import { isDefined } from "../../../utils/utils";
 import { FilterInput } from "../FilterInput";
+
+const valueFilter = (value) => {
+  if (isDefined(value)) {
+    if (typeof value === 'number') {
+      return value;
+    } else if (typeof value === 'string' && value.match(/\d$/)) {
+      return Number(value);
+    } else {
+      return value || null;
+    }
+  }
+
+  return null;
+};
 
 const NumberInput = ({ onChange, ...rest }) => {
   return (
     <FilterInput
       type="number"
       {...rest}
-      onChange={(value) => onChange(value ? Number(value) : null)}
+      onChange={(value) => onChange(valueFilter(value))}
     />
   );
 };
