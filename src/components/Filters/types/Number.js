@@ -7,8 +7,8 @@ const valueFilter = (value) => {
   if (isDefined(value)) {
     if (typeof value === 'number') {
       return value;
-    } else if (typeof value === 'string' && value.match(/\d$/)) {
-      return Number(value);
+    } else if (typeof value === 'string') {
+      return value.replace(/([^\d.,]+)/, '');
     } else {
       return value || null;
     }
