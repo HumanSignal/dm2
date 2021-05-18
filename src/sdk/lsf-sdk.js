@@ -217,7 +217,7 @@ export class LSFWrapper {
     // automatically === created here and haven't saved yet, so they don't have pk
     // @todo because of some weird reason pk may be string uid, so check flags then
     const hasAutoAnnotations = !!first && (!first.pk || (first.userGenerate && first.sentUserGenerate === false));
-    const showPredictions = this.project.evaluate_predictions_automatically === true;
+    const showPredictions = true; //this.project.evaluate_predictions_automatically === true;
 
     if (this.labelStream) {
       if (first?.draftId) {
