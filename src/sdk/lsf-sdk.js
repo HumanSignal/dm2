@@ -217,7 +217,7 @@ export class LSFWrapper {
     // automatically === created here and haven't saved yet, so they don't have pk
     // @todo because of some weird reason pk may be string uid, so check flags then
     const hasAutoAnnotations = !!first && (!first.pk || (first.userGenerate && first.sentUserGenerate === false));
-    const showPredictions = true; //this.project.evaluate_predictions_automatically === true;
+    const showPredictions = this.project.show_collab_predictions === true;
 
     if (this.labelStream) {
       if (first?.draftId) {
@@ -229,7 +229,7 @@ export class LSFWrapper {
         annotation = cs.addAnnotation({ userGenerate: true });
       }
     } else {
-      if (showPredictions && this.annotations.length === 0 && this.predictions.length > 0) {
+      if (this.annotations.length === 0 && this.predictions.length > 0) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else if (this.annotations.length > 0 && (id === "auto" || hasAutoAnnotations)) {
         annotation = first;
