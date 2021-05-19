@@ -270,6 +270,14 @@ export const Tab = types
 
     setColumnDisplayType(columnID, type) {
       if (type !== null) {
+        const filters = self.filters.filter(({ filter }) => {
+          return columnID === filter.field.id;
+        });
+
+        filters.forEach(f => {
+          if (f.type !== type) f.delete();
+        });
+
         self.columnsDisplayType.set(columnID, type);
       } else {
         self.columnsDisplayType.delete(columnID);

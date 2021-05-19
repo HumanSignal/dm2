@@ -33,9 +33,9 @@ export const FilterOperation = observer(
       filter.setValueDelayed(value);
     }, [filter]);
 
-    const Input = selected.input;
+    const Input = selected?.input;
 
-    return (
+    return Input ? (
       <>
         <Elem block="filter-line" name="column" mix="operation">
           <FilterDropdown
@@ -56,6 +56,6 @@ export const FilterOperation = observer(
           />
         </Elem>
       </>
-    );
+    ) : null;
   }
 );

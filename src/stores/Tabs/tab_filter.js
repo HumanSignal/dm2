@@ -65,6 +65,10 @@ export const TabFilter = types
       return self.filter.field.target;
     },
 
+    get type() {
+      return self.field.currentType;
+    },
+
     get isValidFilter() {
       const { value } = self;
 
