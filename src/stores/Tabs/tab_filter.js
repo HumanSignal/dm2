@@ -99,7 +99,7 @@ export const TabFilter = types
       const previousFilterType = self.filter.currentType;
       self.filter = value;
 
-      if (previousFilterType !== value.currentType) {
+      if (previousFilterType !== self.filter.currentType) {
         self.setDefaultValue();
       }
 
@@ -141,7 +141,7 @@ export const TabFilter = types
     },
 
     setValueDelayed(value) {
-      self.value = value;
+      self.setValue(value);
       setTimeout(self.saveDelayed);
     },
 
