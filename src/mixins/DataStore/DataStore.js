@@ -58,12 +58,13 @@ const MixinBase = types
         selected = val;
       }
 
-      if (selected) {
+      if (selected && selected.id !== self.selected?.id) {
         self.selected = selected;
         self.highlighted = selected;
-      }
 
-      getRoot(self).SDK.invoke('taskSelected');
+        getRoot(self).SDK.invoke('taskSelected');
+
+      }
     },
 
     unset({ withHightlight = false } = {}) {
@@ -137,6 +138,7 @@ export const DataStore = (
         let item = self.list.find((t) => t.id === itemID);
 
         if (item) {
+          console.log({patch, item});
           item.update(patch);
         } else {
           item = listItemType.create(patch);
@@ -165,12 +167,13 @@ export const DataStore = (
 
         if (interaction) Object.assign(params, { interaction });
 
+        const data = yield getRoot(self).apiCall(apiMethod, params);
+
         const [selectedID, highlightedID] = [
           self.selected?.id,
           self.highlighted?.id,
         ];
 
-        const data = yield getRoot(self).apiCall(apiMethod, params);
         const { total, [apiMethod]: list } = data;
 
         if (list) self.setList({ total, list, reload });

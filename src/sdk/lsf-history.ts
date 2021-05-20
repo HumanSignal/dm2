@@ -1,28 +1,26 @@
+type LabelStudio = any;
+
 export class LSFHistory {
-  /** @type {{taskID: number, annotationID: number}} */
-  history = [];
+  history: Array<{taskID: number, annotationID: number}> = [];
 
-  /** @type {LabelStudio} */
-  lsf = null;
+  lsf: LabelStudio = null;
 
-  /** @type {number} */
   current = -1;
 
-  /** @type {Function} */
-  callback = null;
+  callback?: () => void;
 
-  constructor(lsf) {
+  constructor(lsf: LabelStudio) {
     this.lsf = lsf;
   }
 
-  add(taskID, annotationID) {
+  add(taskID: number, annotationID: number) {
     this.history.push({ taskID, annotationID });
     this.current = this.length;
 
     if (this.callback) this.callback();
   }
 
-  onChange(callback) {
+  onChange(callback: () => void) {
     this.callback = callback;
   }
 
@@ -56,8 +54,7 @@ export class LSFHistory {
     await this.load();
   }
 
-  /**@private */
-  async load() {
+  private async load() {
     const index = this.current;
 
     if (index >= 0 && index < this.length) {
@@ -65,7 +62,7 @@ export class LSFHistory {
       await this.lsf.loadTask(taskID, annotationID);
       this.current = index;
     } else {
-      await this.lsf.loadTask();
+      await this.lsf.loadNextTask();
     }
 
     if (this.callback) this.callback();

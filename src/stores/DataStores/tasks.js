@@ -1,15 +1,58 @@
-import { flow, getRoot, types } from "mobx-state-tree";
+import { flow, getRoot, getSnapshot, types } from "mobx-state-tree";
 import { DataStore, DataStoreItem } from "../../mixins/DataStore";
 import { getAnnotationSnapshot } from "../../sdk/lsf-utils";
+import { isDefined } from "../../utils/utils";
 import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 import { User } from "../Users";
 
+const Assignee = types
+  .model("Assignee", {
+    id: types.identifierNumber,
+    user: types.late(() => types.reference(User)),
+    review: types.maybeNull(types.enumeration(["accepted", "rejected", "fixed"])),
+    reviewed: false,
+    annotated: false,
+  })
+  .views((self) => ({
+    get firstName() { return self.user.firstName; },
+    get lastName() { return self.user.lastName; },
+    get username() { return self.user.username; },
+    get email() { return self.user.email; },
+    get lastActivity() { return self.user.lastActivity; },
+    get avatar() { return self.user.avatar; },
+    get initials() { return self.user.initials; },
+    get fullName() { return self.user.fullName; }
+  }))
+  .preProcessSnapshot((sn) => {
+    let result = sn;
+    if (typeof sn === 'number') {
+      result = {
+        id: sn,
+        user: sn,
+        annotated: true,
+        review: null,
+        reviewed: false,
+      };
+    } else {
+      const {user_id, user, ...rest} = sn;
+      result = {
+        ...rest,
+        id: user_id ?? user,
+        user: user_id ?? user,
+      };
+    }
+
+    return result;
+  });
+
 export const create = (columns) => {
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
-    annotators: types.optional(types.array(types.late(() => types.reference(User))), []),
+    annotators: types.optional(types.array(Assignee), []),
+    reviewers: types.optional(types.array(Assignee), []),
     annotations: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
+    drafts: types.frozen(),
     source: types.maybeNull(types.string),
     was_cancelled: false,
   })
@@ -81,58 +124,67 @@ export const create = (columns) => {
   })
     .actions((self) => ({
       loadTask: flow(function* (taskID, { select = true } = {}) {
-        console.log("Loading task");
-        let task = null;
+        if (!isDefined(taskID)) {
+          console.warn("Task ID must be provided");
+          return;
+        }
 
         self.setLoading(taskID);
 
-        if (taskID !== undefined) {
-          task = yield self.updateTaskByID(taskID);
-        } else {
-          if (self.selected) {
-            yield self.updateTaskByID(self.selected.id);
-          }
-          task = yield self.loadNextTask();
-        }
+        const taskData = yield self.root.apiCall("task", { taskID });
+        const drafts = yield self.root.apiCall("taskDrafts", { taskID: taskData.id });
+
+        if (drafts) taskData.drafts = drafts;
+
+        const task = self.applyTaskSnapshot(taskData, taskID);
 
         if (select !== false) self.setSelected(task);
-        // yield task.loadAnnotations();
 
         self.finishLoading(taskID);
 
         return task;
       }),
 
-      updateTaskByID: flow(function* (taskID) {
-        const taskData = yield self.root.apiCall("task", { taskID });
-
-        if (taskData.predictions) {
-          taskData.predictions.forEach((p) => {
-            p.created_by = (p.model_version?.trim() ?? "") || p.created_by;
-          });
-        }
-
-        return self.applyTaskSnapshot(taskData, taskID);
-      }),
-
-      loadNextTask: flow(function* () {
+      loadNextTask: flow(function* ({ select = true } = {}) {
         const taskData = yield self.root.invokeAction("next_task", {
           reload: false,
         });
-        return self.applyTaskSnapshot(taskData);
+
+        const task = self.applyTaskSnapshot(taskData);
+
+        if (select !== false) self.setSelected(task);
+
+        return task;
       }),
 
       applyTaskSnapshot(taskData, taskID) {
         let task;
 
         if (taskData && !taskData?.error) {
+          const id = taskID ?? taskData.id;
+          const snapshot = self.mergeSnapshot(id, taskData);
+
           task = self.updateItem(taskID ?? taskData.id, {
-            ...taskData,
+            ...snapshot,
             source: JSON.stringify(taskData),
           });
         }
 
         return task;
+      },
+
+      mergeSnapshot(taskID, taskData){
+        const task = self.list.find(({id}) => id === taskID);
+        const snapshot = task ? {...getSnapshot(task)} : {};
+        Object.assign(snapshot, taskData);
+
+        if (snapshot.predictions) {
+          snapshot.predictions.forEach((p) => {
+            p.created_by = (p.model_version?.trim() ?? "") || p.created_by;
+          });
+        }
+
+        return snapshot;
       },
 
       unsetTask() {
@@ -147,12 +199,23 @@ export const create = (columns) => {
         if (total_predictions !== null)
           self.totalPredictions = total_predictions;
       },
+
+      deleteDraft(id) {
+        if (!self.drafts) return;
+        const index = self.drafts.findIndex(d => d.id === id);
+        if (index >= 0) self.drafts.splice(index, 1);
+      }
     }))
     .preProcessSnapshot((snapshot) => {
       const { total_annotations, total_predictions, ...sn } = snapshot;
 
       return {
         ...sn,
+        reviewers: (sn.reviewers ?? []).map(r => ({
+          id: r,
+          annotated: false,
+          review: null,
+        })),
         totalAnnotations: total_annotations,
         totalPredictions: total_predictions,
       };

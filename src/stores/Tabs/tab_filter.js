@@ -65,6 +65,10 @@ export const TabFilter = types
       return self.filter.field.target;
     },
 
+    get type() {
+      return self.field.currentType;
+    },
+
     get isValidFilter() {
       const { value } = self;
 
@@ -99,7 +103,7 @@ export const TabFilter = types
       const previousFilterType = self.filter.currentType;
       self.filter = value;
 
-      if (previousFilterType !== value.currentType) {
+      if (previousFilterType !== self.filter.currentType) {
         self.setDefaultValue();
       }
 
@@ -141,7 +145,7 @@ export const TabFilter = types
     },
 
     setValueDelayed(value) {
-      self.value = value;
+      self.setValue(value);
       setTimeout(self.saveDelayed);
     },
 

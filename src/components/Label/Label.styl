@@ -5,15 +5,12 @@
   flex-direction column
 
   &__header
-    flex 0
+    flex none
     display flex
-    min-height 46px
-    padding 0 1em 1em
-    align-items flex-start
+    min-height 56px
+    padding 0 1em
+    align-items center
     justify-content space-between
-
-    &_labelStream
-      padding 1em 1em 0
 
   &__table
     display flex
@@ -23,7 +20,6 @@
   &__content
     flex 1
     display flex
-    padding-top 1em
     height calc(100% - 46px)
 
   &__dataview
@@ -35,15 +31,16 @@
 
   &__lsf-wrapper
     flex 1
-    overflow auto
     box-sizing border-box
-    padding-left 1em
     display flex
     flex-direction column
+    min-width 0
 
     &_mode
       &_explorer
-        margin-top -13px
+        margin-left 1px
+        margin-top: -1px;
+        border-top: 1px solid rgba(#000, 0.15);
 
   &__lsf-container
     width 100%
@@ -51,7 +48,12 @@
     display flex
     flex-direction column
     overflow-y auto
-    padding 0 16px 16px 0
+
+    & > div
+      --main-bg-color #FAFAFA
+
+      flex 1
+      height auto
 
   &__lsf-toolbar
     height 50px

@@ -31,6 +31,9 @@
  * projectId: number,
  * interfaces: Dict<boolean>,
  * instruments: Dict<any>,
+ * toolbar?: string,
+ * panels?: Object[]
+ * spinner?: import("react").ReactNode
  * }} DMConfig
  */
 
@@ -39,9 +42,20 @@ import { unmountComponentAtNode } from "react-dom";
 import { instruments } from "../components/DataManager/Toolbar/instruments";
 import { APIProxy } from "../utils/api-proxy";
 import { objectToMap } from "../utils/helpers";
+import { isDefined } from "../utils/utils";
 import { APIConfig } from "./api-config";
 import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
+
+const DEFAULT_TOOLBAR = "actions columns filters ordering label-button loading-possum error-box | refresh view-toggle";
+
+const prepareInstruments = (instruments) => {
+  const result = Object
+    .entries(instruments)
+    .map(([name, builder]) => [name, builder({inject, observer})]);
+
+  return objectToMap(Object.fromEntries(result));
+};
 
 export class DataManager {
   /** @type {HTMLElement} */
@@ -120,7 +134,11 @@ export class DataManager {
     this.links = Object.assign(this.links, config.links ?? {});
     this.showPreviews = config.showPreviews ?? false;
     this.polling = config.polling;
-    this.instruments = objectToMap(config.instruments),
+    this.toolbar = config.toolbar ?? DEFAULT_TOOLBAR;
+    this.panels = config.panels;
+    this.spinner = config.spinner;
+    this.spinnerSize = config.spinnerSize;
+    this.instruments = prepareInstruments(config.instruments ?? {}),
     this.interfaces = objectToMap({
       tabs: true,
       toolbar: true,
@@ -128,6 +146,7 @@ export class DataManager {
       export: true,
       labelButton: true,
       backButton: true,
+      labelingHeader: true,
       ...config.interfaces,
     });
 
@@ -140,6 +159,15 @@ export class DataManager {
         apiHeaders: config.apiHeaders,
       })
     );
+
+    if (config.actions) {
+      config.actions.forEach(([action, callback]) => {
+        if (!isDefined(action.id)) {
+          throw new Error("Every action must provide a unique ID");
+        }
+        this.actions.set(action.id, {action, callback});
+      });
+    }
 
     this.initApp();
   }
@@ -184,9 +212,7 @@ export class DataManager {
     return config;
   }
 
-
   /**
-   *
    * @param {impotr("../stores/Action.js").Action} action
    */
   addAction(action, callback) {
@@ -223,6 +249,8 @@ export class DataManager {
       observer: observer,
       inject: inject
     }));
+
+    this.store.updateInstruments();
   }
 
   /**
@@ -271,7 +299,7 @@ export class DataManager {
    *
    * @param {"explorer" | "labelstream"} mode
    */
-  async setMode(mode) {
+  setMode(mode) {
     const modeChanged = mode !== this.mode;
     this.mode = mode;
     this.store.setMode(mode);
@@ -305,20 +333,14 @@ export class DataManager {
   }
 
   initLSF(element) {
-    const task = this.store.taskStore.selected;
-    const annotation = this.store.annotationStore.selected;
-    const isLabelStream = this.mode === 'labelstream';
+    if (this.lsf) return;
 
-    if (!this.lsf) {
-      console.log("Initialize LSF");
-
-      this.lsf = new LSFWrapper(this, element, {
-        ...this.labelStudioOptions,
-        task,
-        annotation,
-        isLabelStream,
-      });
-    }
+    this.lsf = new LSFWrapper(this, element, {
+      ...this.labelStudioOptions,
+      task: this.store.taskStore.selected,
+      // annotation: this.store.annotationStore.selected,
+      isLabelStream: this.mode === 'labelstream',
+    });
   }
 
   /**
@@ -328,25 +350,27 @@ export class DataManager {
    * @param {import("../stores/Tasks").TaskModel} task
    */
   async startLabeling() {
+    if (!this.lsf) return;
+
     let [task, annotation] = [
       this.store.taskStore.selected,
       this.store.annotationStore.selected,
     ];
 
     const isLabelStream = this.mode === 'labelstream';
+    const taskExists = isDefined(this.lsf.task) && isDefined(task);
+    const taskSelected = this.lsf.task?.id === task?.id;
 
     // do nothing if the task is already selected
-    if (this.lsf?.task && task && this.lsf.task.id === task.id) {
+    if (taskExists && taskSelected) {
       return;
     }
 
-    if (
-      !isLabelStream &&
-      this.lsf &&
-      (this.lsf.task?.id !== task?.id || annotation !== undefined)
-    ) {
+    if (!isLabelStream && (!taskSelected || isDefined(annotation))) {
       const annotationID = annotation?.id ?? task.lastAnnotation?.id;
-      this.lsf.loadTask(task.id, annotationID);
+
+      // this.lsf.loadTask(task.id, annotationID);
+      this.lsf.selectTask(task, annotationID);
     }
   }
 
@@ -373,5 +397,28 @@ export class DataManager {
 
   async apiCall(...args) {
     return this.store.apiCall(...args);
+  }
+
+  getInstrument(name) {
+    return instruments[name] ?? this.instruments.get(name) ?? null;
+  }
+
+  get toolbarInstruments() {
+    const sections = this.toolbar.split("|").map(s => s.trim());
+
+    const instrumentsList = sections.map(section => {
+      return section.split(" ").filter((instrument) => {
+        const nativeInstrument = !!instruments[instrument];
+        const customInstrument = !!this.instruments.has(instrument);
+
+        if (!nativeInstrument && !customInstrument) {
+          console.warn(`Unknwown instrument detected: ${instrument}. Did you forget to register it?`);
+        }
+
+        return nativeInstrument || customInstrument;
+      });
+    });
+
+    return instrumentsList;
   }
 }

@@ -1,18 +1,32 @@
-import { observer } from "mobx-react";
 import React from "react";
+import { isDefined } from "../../../utils/utils";
 import { FilterInput } from "../FilterInput";
+
+const valueFilter = (value) => {
+  if (isDefined(value)) {
+    if (typeof value === 'number') {
+      return value;
+    } else if (typeof value === 'string') {
+      return value.replace(/([^\d.,]+)/, '');
+    } else {
+      return value || null;
+    }
+  }
+
+  return null;
+};
 
 const NumberInput = ({ onChange, ...rest }) => {
   return (
     <FilterInput
-      type="number"
       {...rest}
-      onChange={(value) => onChange(value ? Number(value) : null)}
+      type="number"
+      onChange={(value) => onChange(valueFilter(value))}
     />
   );
 };
 
-const RangeInput = observer(({ schema, value, onChange }) => {
+const RangeInput = ({ schema, value, onChange }) => {
   const min = value?.min;
   const max = value?.max;
 
@@ -47,7 +61,7 @@ const RangeInput = observer(({ schema, value, onChange }) => {
       />
     </>
   );
-});
+};
 
 export const NumberFilter = [
   {

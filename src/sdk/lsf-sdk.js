@@ -10,18 +10,22 @@
  * labelStream: boolean,
  * }} LSFOptions */
 
-import { unmountComponentAtNode } from "react-dom";
+import { isDefined } from "../utils/utils";
 import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
 const DEFAULT_INTERFACES = [
   "basic",
   "skip",
+  "controls",
+  "submit",
+  "update",
   "predictions",
   "predictions:menu", // right menu with prediction items
   "annotations:menu", // right menu with annotation items
-  "annotations:add-new",
   "annotations:delete",
+  "annotations:current",
+  "annotations:tabs",
   "side-column", // entity
 ];
 
@@ -67,19 +71,34 @@ export class LSFWrapper {
     this.datamanager = dm;
     this.root = element;
     this.task = options.task;
-    this.labelStream = options.labelStream ?? false;
+    this.labelStream = options.isLabelStream ?? false;
     this.initialAnnotation = options.annotation;
-    this.history = this.datamanager.isLabelStream ? new LSFHistory(this) : null;
+    this.history = this.labelStream ? new LSFHistory(this) : null;
+
+    const interfaces = [...DEFAULT_INTERFACES];
+
+    if (this.labelStream) {
+      interfaces.push("infobar");
+    } else {
+      interfaces.push(
+        "annotations:add-new",
+        "annotations:view-all",
+        "infobar",
+        "predictions:tabs",
+      );
+    }
 
     const lsfProperties = {
       user: options.user,
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
       description: this.instruction,
-      interfaces: DEFAULT_INTERFACES,
+      interfaces: interfaces,
       /* EVENTS */
+      onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
+      onStorageInitialized: this.onStorageInitialized,
       onSubmitAnnotation: this.onSubmitAnnotation,
       onUpdateAnnotation: this.onUpdateAnnotation,
       onDeleteAnnotation: this.onDeleteAnnotation,
@@ -88,6 +107,7 @@ export class LSFWrapper {
       onEntityCreate: this.onEntityCreate,
       onEntityDelete: this.onEntityDelete,
       onSelectAnnotation: this.onSelectAnnotation,
+      panels: this.datamanager.panels,
     };
 
     this.initLabelStudio(lsfProperties);
@@ -98,7 +118,7 @@ export class LSFWrapper {
     try {
       const LSF = await resolveLabelStudio();
       this.globalLSF = window.LabelStudio === LSF;
-      new LSF(this.root, settings);
+      this.lsfInstance = new LSF(this.root, settings);
     } catch (err) {
       console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
@@ -112,16 +132,17 @@ export class LSFWrapper {
     }
 
     const tasks = this.datamanager.store.taskStore;
-    const newTask = await this.withinLoadingState(async () => {
-      return tasks.loadTask(taskID);
-    });
-    const needsAnnotationsMerge = newTask && this.task?.id === newTask.id;
-    const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
 
-    this.task = newTask;
+    const newTask = await this.withinLoadingState(async () => {
+      if (!isDefined(taskID)) {
+        return tasks.loadNextTask();
+      } else {
+        return tasks.loadTask(taskID);
+      }
+    });
 
     /* If we're in label stream and there's no task – end the stream */
-    if (taskID === undefined && !newTask) {
+    if (this.labelStream && !newTask) {
       this.lsf.setFlags({ noTask: true });
       return;
     } else {
@@ -129,25 +150,28 @@ export class LSFWrapper {
       this.lsf.setFlags({ noTask: false });
     }
 
-    if (annotations.length) {
+    // Add new data from received task
+    if (newTask) this.selectTask(newTask, annotationID);
+  }
+
+  selectTask(task, annotationID) {
+    const needsAnnotationsMerge = task && this.task?.id === task.id;
+    const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
+
+    this.task = task;
+
+    if (needsAnnotationsMerge) {
       this.task.mergeAnnotations(annotations);
     }
 
-    /**
-     * Add new data from received task
-     */
-    if (newTask) {
-      this.setLoading(false);
-      this.setTask(newTask);
-      this.setAnnotation(annotationID);
-    }
-  }
+    this.setLoading(false);
 
-  /** @private */
-  setTask(task) {
+    const lsfTask = taskToLSFormat(task);
+
     this.lsf.resetState();
     this.lsf.assignTask(task);
-    this.lsf.initializeStore(taskToLSFormat(task));
+    this.lsf.initializeStore(lsfTask);
+    this.setAnnotation(annotationID);
   }
 
   /** @private */
@@ -155,6 +179,38 @@ export class LSFWrapper {
     const id = annotationID ? annotationID.toString() : null;
     let { annotationStore: cs } = this.lsf;
     let annotation;
+    const activeDrafts = cs.annotations.map(a => a.draftId).filter(Boolean);
+
+    if (this.task.drafts) {
+      for (const draft of this.task.drafts) {
+        if (activeDrafts.includes(draft.id)) continue;
+        let c;
+        if (draft.annotation) {
+          // Annotation existed - add draft to existed annotation
+          const draftAnnotationPk = String(draft.annotation);
+          c = cs.annotations.find(c => c.pk === draftAnnotationPk);
+          if (c) {
+            c.addVersions({draft: draft.result});
+            c.deleteAllRegions({ deleteReadOnly: true });
+          } else {
+            // that shouldn't happen
+            console.error(`No annotation found for pk=${draftAnnotationPk}`);
+            continue;
+          }
+        } else {
+          // Annotation not found - create new annotation from draft
+          c = cs.addAnnotation({
+            draft: draft.result,
+            userGenerate: true,
+            createdBy: draft.created_username,
+            createdAgo: draft.created_ago
+          });
+        }
+        cs.selectAnnotation(c.id);
+        c.deserializeAnnotation(draft.result);
+        c.setDraftId(draft.id);
+      }
+    }
 
     const first = this.annotations[0];
     // if we have annotations created automatically, we don't need to create another one
@@ -164,16 +220,19 @@ export class LSFWrapper {
     const showPredictions = this.project.show_collab_predictions === true;
 
     if (this.labelStream) {
-      if (showPredictions && this.predictions.length > 0) {
+      if (first?.draftId) {
+        // not submitted draft, most likely from previous labeling session
+        annotation = first;
+      } else if (showPredictions && this.predictions.length > 0) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else {
         annotation = cs.addAnnotation({ userGenerate: true });
       }
     } else {
-      if (showPredictions && this.annotations.length === 0 && this.predictions.length > 0) {
+      if (this.annotations.length === 0 && this.predictions.length > 0) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else if (this.annotations.length > 0 && (id === "auto" || hasAutoAnnotations)) {
-        annotation = { id: this.annotations[0].id };
+        annotation = first;
       } else if (this.annotations.length > 0 && id) {
         annotation = this.annotations.find((c) => c.pk === id || c.id === id);
       } else {
@@ -190,16 +249,10 @@ export class LSFWrapper {
 
   onLabelStudioLoad = async (ls) => {
     this.datamanager.invoke("labelStudioLoad", [ls]);
-
     this.lsf = ls;
 
-    if (this.datamanager.mode === "labelstream") {
+    if (this.labelStream) {
       await this.loadTask();
-    } else if (this.task) {
-      const annotationID =
-        this.initialAnnotation?.pk ?? this.task.lastAnnotation?.pk ?? "auto";
-
-      await this.loadTask(this.task.id, annotationID);
     }
   };
 
@@ -208,11 +261,22 @@ export class LSFWrapper {
     this.datamanager.invoke("onSelectAnnotation", args);
   };
 
+  onStorageInitialized = async (ls) => {
+    this.datamanager.invoke("onStorageInitialized", [ls]);
+
+    if (this.task && this.labelStream === false) {
+      const annotationID =
+        this.initialAnnotation?.pk ?? this.task.lastAnnotation?.pk ?? this.task.lastAnnotation?.id ?? "auto";
+
+      this.setAnnotation(annotationID);
+    }
+  }
+
   /** @private */
   onSubmitAnnotation = async () => {
-    await this.submitCurrentAnnotation("submitAnnotation", (taskID, body) =>
-      this.datamanager.apiCall("submitAnnotation", { taskID }, { body })
-    );
+    await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
+      return await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
+    });
   };
 
   /** @private */
@@ -238,13 +302,25 @@ export class LSFWrapper {
     await this.loadTask(this.task.id, annotation.pk);
   };
 
+  deleteDraft = async (id) => {
+    const response = await this.datamanager.apiCall("deleteDraft", {
+      draftID: id,
+    });
+    this.task.deleteDraft(id);
+    return response;
+  }
+
   /**@private */
   onDeleteAnnotation = async (ls, annotation) => {
     const { task } = this;
     let response;
 
     if (annotation.userGenerate && annotation.sentUserGenerate === false) {
-      response = { ok: true };
+      if (annotation.draftId) {
+        response = await this.deleteDraft(annotation.draftId);
+      } else {
+        response = { ok: true };
+      }
     } else {
       response = await this.withinLoadingState(async () => {
         return this.datamanager.apiCall("deleteAnnotation", {
@@ -253,7 +329,7 @@ export class LSFWrapper {
         });
       });
 
-      this.task.deleteAnnotation(annotation);
+      // this.task.deleteAnnotation(annotation);
       this.datamanager.invoke("deleteAnnotation", [ls, annotation]);
     }
 
@@ -262,7 +338,29 @@ export class LSFWrapper {
         this.annotations[this.annotations.length - 1] ?? {};
       const annotationID = lastAnnotation.pk ?? undefined;
 
-      await this.loadTask(task.id, annotationID);
+      this.setAnnotation(annotationID);
+    }
+  };
+
+  onSubmitDraft = async (studio, annotation) => {
+    const annotationDoesntExist = !annotation.pk;
+    const data = { body: this.prepareData(annotation) }; // serializedAnnotation
+
+    if (annotation.draftId > 0) {
+      // draft has been already created
+      return this.datamanager.apiCall("updateDraft", { draftID: annotation.draftId }, data);
+    } else {
+      let response;
+      if (annotationDoesntExist) {
+        response = await this.datamanager.apiCall("createDraftForTask", { taskID: this.task.id }, data);
+      } else {
+        response = await this.datamanager.apiCall(
+          "createDraftForAnnotation",
+          { taskID: this.task.id, annotationID: annotation.pk },
+          data
+        );
+      }
+      response?.id && annotation.setDraftId(response?.id);
     }
   };
 
@@ -294,7 +392,8 @@ export class LSFWrapper {
 
     this.setLoading(true);
     const result = await this.withinLoadingState(async () => {
-      return submit(taskID, serializedAnnotation);
+      const result = await submit(taskID, serializedAnnotation);
+      return result;
     });
 
     if (result && result.id !== undefined) {
@@ -305,6 +404,7 @@ export class LSFWrapper {
 
       this.history?.add(taskID, currentAnnotation.pk);
     }
+
     this.setLoading(false);
 
     if (this.datamanager.isExplorer) {
@@ -322,6 +422,7 @@ export class LSFWrapper {
     const result = {
       lead_time: (new Date() - annotation.loadedDate) / 1000, // task execution time
       result: annotation.serializeAnnotation(),
+      draft_id: annotation.draftId,
     };
 
     if (includeId && userGenerate) {
@@ -349,7 +450,7 @@ export class LSFWrapper {
   }
 
   destroy() {
-    unmountComponentAtNode(this.root);
+    this.lsfInstance?.destroy?.();
   }
 
   get taskID() {

@@ -139,11 +139,15 @@ export const Tab = types
       }));
     },
 
-    get selectedLength() {
-      const selectedLength = self.selected.list.length;
+    get selectedCount() {
+      const selectedCount = self.selected.list.length;
       const dataLength = self.dataStore.total;
 
-      return self.selected.all ? dataLength - selectedLength : selectedLength;
+      return self.selected.all ? dataLength - selectedCount : selectedCount;
+    },
+
+    get allSelected() {
+      return self.selectedCount === self.dataStore.total;
     },
 
     serialize() {
@@ -266,6 +270,14 @@ export const Tab = types
 
     setColumnDisplayType(columnID, type) {
       if (type !== null) {
+        const filters = self.filters.filter(({ filter }) => {
+          return columnID === filter.field.id;
+        });
+
+        filters.forEach(f => {
+          if (f.type !== type) f.delete();
+        });
+
         self.columnsDisplayType.set(columnID, type);
       } else {
         self.columnsDisplayType.delete(columnID);

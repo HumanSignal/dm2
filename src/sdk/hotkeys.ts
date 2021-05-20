@@ -24,7 +24,6 @@ export const useShortcut = (
   const shortcut = action.shortcut ?? (isMacos ? action.macos : action.other) as string;
 
   useHotkeys(shortcut, () => {
-    console.log(`Fired ${actionName} [${shortcut}]`);
     callback();
   }, {
     keyup: false,

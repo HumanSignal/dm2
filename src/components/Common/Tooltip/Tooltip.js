@@ -7,10 +7,7 @@ import "./Tooltip.styl";
 
 export const Tooltip = forwardRef(
   ({ title, children, defaultVisible, style }, ref) => {
-    if (!children || Array.isArray(children)) {
-      throw new Error("Tooltip does accept a single child only");
-    }
-
+    const child = Children.only(children);
     const triggerElement = ref ?? useRef();
     const tooltipElement = useRef();
     const [offset, setOffset] = useState({});
@@ -86,7 +83,6 @@ export const Tooltip = forwardRef(
       [injected, offset, title, visibilityClasses, tooltipElement]
     );
 
-    const child = Children.only(children);
     const clone = cloneElement(child, {
       ...child.props,
       ref: triggerElement,

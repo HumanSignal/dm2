@@ -1,3 +1,4 @@
+import { observer } from "mobx-react";
 import React from "react";
 import { FaCaretDown } from "react-icons/fa";
 import { Icon } from "../Common/Icon/Icon";
@@ -18,25 +19,22 @@ const TagRender = (items) => ({ label, ...rest }) => {
   );
 };
 
-const renderOptGroup = ({ id, title, options }, optionRender) => {
-  return (
-    <Select.OptGroup key={id} label={title}>
-      {options.map(renderSelectItem(optionRender))}
-    </Select.OptGroup>
-  );
-};
-
-const renderSelectItem = (optionRender) => (item) => {
+const renderOptions = (optionRender) => (item) => {
   const value = item.value ?? item;
   const label = item.label ?? item.title ?? value;
+  const key = `${item.id}-${value}-${label}`;
 
   if (item.options) {
-    return renderOptGroup(item, optionRender);
+    return (
+      <Select.OptGroup key={key} label={item.title}>
+        {item.options.map(renderOptions(optionRender))}
+      </Select.OptGroup>
+    );
   }
 
   return (
     <Select.Option
-      key={value}
+      key={`${value}-${label}`}
       value={value}
       style={{ fontSize: 12 }}
       title={label}
@@ -46,7 +44,7 @@ const renderSelectItem = (optionRender) => (item) => {
   );
 };
 
-export const FilterDropdown = ({
+export const FilterDropdown = observer(({
   placeholder,
   defaultValue,
   items,
@@ -82,7 +80,7 @@ export const FilterDropdown = ({
       listHeight={600}
       dropdownClassName={dropdownClassName}
     >
-      {items.map(renderSelectItem(optionRender))}
+      {items.map(renderOptions(optionRender))}
     </Select>
   );
-};
+});

@@ -1,13 +1,13 @@
-import React, { useRef } from "react";
+import React, { Children, cloneElement, createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { BemWithSpecifiContext } from "../../../utils/bem";
 import { Dropdown } from "../Dropdown/Dropdown";
 import "./Select.styl";
 
-const SelectContext = React.createContext();
+const SelectContext = createContext();
 const { Block, Elem } = BemWithSpecifiContext();
 
 const findSelectedChild = (children, value) => {
-  return React.Children.toArray(children).reduce((res, child) => {
+  return Children.toArray(children).reduce((res, child) => {
     if (res !== null) return res;
     if (child.type.displayName === "Select.Option") {
       if (child.props.value === value) res = child;
@@ -27,7 +27,7 @@ export const Select = ({
   style,
 }) => {
   const dropdown = useRef();
-  const [currentValue, setCurrentValue] = React.useState(value);
+  const [currentValue, setCurrentValue] = useState(value);
 
   const context = {
     currentValue,
@@ -38,16 +38,16 @@ export const Select = ({
     },
   };
 
-  const selected = React.useMemo(() => {
+  const selected = useMemo(() => {
     const foundChild = findSelectedChild(
       children,
       defaultValue ?? currentValue
     );
     const result = foundChild?.props?.children;
-    return result ? React.cloneElement(<>{result}</>) : null;
-  }, [currentValue, defaultValue]);
+    return result ? cloneElement(<>{result}</>) : null;
+  }, [currentValue, defaultValue, children, value]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (value !== currentValue) {
       context.setCurrentValue(value);
     }
@@ -69,7 +69,7 @@ export const Select = ({
 Select.displayName = "Select";
 
 Select.Option = ({ value, children, style }) => {
-  const { setCurrentValue, currentValue } = React.useContext(SelectContext);
+  const { setCurrentValue, currentValue } = useContext(SelectContext);
   return (
     <Elem
       name="option"

@@ -11,6 +11,8 @@ export const Userpic = forwardRef(({
   user,
   className,
   showUsername,
+  faded = false,
+  badge = null,
   ...rest
 }, ref) => {
   const imgRef = useRef();
@@ -46,22 +48,31 @@ export const Userpic = forwardRef(({
   }, [finalSrc]);
 
   const userpic = (
-    <Block ref={ref} name="userpic" mix={className} {...rest}>
+    <Block ref={ref} name="userpic" mix={className} mod={{faded}} {...rest}>
       <Elem
         tag="img"
         name="avatar"
         ref={imgRef}
         src={finalSrc}
         alt={(finalUsername ?? "").toUpperCase()}
-        style={{opacity: imgVisible ? 1 : 0}}
+        style={{opacity: imgVisible ? (faded ? 0.3 : 1) : 0}}
         onLoad={onImageLoaded}
         onError={() => setFinalSrc(FALLBACK_IMAGE) }
+        mod={{faded}}
       />
       {nameVisible && (
         <Elem tag="span" name="username">
           {(finalUsername ?? "").toUpperCase()}
         </Elem>
       )}
+
+      {badge && Object.entries(badge).map(([align, content], i) => {
+        return (
+          <Elem key={`badge-${i}`} name="badge" mod={{[align]: true}}>
+            {content}
+          </Elem>
+        );
+      })}
     </Block>
   );
 

@@ -1,17 +1,24 @@
+import { inject } from "mobx-react";
 import React from "react";
 import Running from "../../assets/running";
 
-export const Spinner = ({ visible = true, ...props }) => {
+const injector = inject(({store}) => {
+  return {
+    SDK: store.SDK,
+  };
+});
+
+export const Spinner = injector(({ SDK, visible = true, ...props }) => {
   const size = React.useMemo(() => {
     switch (props.size) {
       case "large":
-        return 128;
+        return SDK.spinnerSize?.large ?? 128;
       case "middle":
-        return 48;
+        return SDK.spinnerSize?.middle ??48;
       case "small":
-        return 24;
+        return SDK.spinnerSize?.small ?? 24;
       default:
-        return 48;
+        return SDK.spinnerSize?.middle ??48;
     }
   }, [props.size]);
 
@@ -25,20 +32,24 @@ export const Spinner = ({ visible = true, ...props }) => {
     objectFit: "contain",
   };
 
+  const ExternalSpinner = SDK.spinner;
+
   return visible ? (
     <div
       {...props}
       style={{ width: size, height: size }}
       children={
         <div style={{ width: "100%", height: "100%" }}>
-          <img
+          {ExternalSpinner ? (
+            <ExternalSpinner size={size}/>
+          ) : (<img
             src={source.x1}
             srcSet={[`${source.x1} 1x`, `${source.x2} 2x`].join(",")}
             style={videoStyles}
             alt="opossum loader"
-          />
+          />)}
         </div>
       }
     />
   ) : null;
-};
+});

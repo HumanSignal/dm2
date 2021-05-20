@@ -1,3 +1,5 @@
+import { Button } from "./components/Common/Button/Button";
+
 const API_GATEWAY = process.env.API_GATEWAY;
 const LS_ACCESS_TOKEN = process.env.LS_ACCESS_TOKEN;
 
@@ -10,6 +12,7 @@ export const initDevApp = async (DataManager) => {
 
   const dm = new DataManager({
     root: document.getElementById("app"),
+    toolbar: "actions columns filters ordering review-button label-button loading-possum error-box | refresh view-toggle",
     apiGateway: gatewayAPI,
     apiVersion: 2,
     apiMockDisabled: useExternalSource,
@@ -38,5 +41,10 @@ export const initDevApp = async (DataManager) => {
         ],
       },
     },
+    instruments: {
+      'review-button': ({inject}) => {
+        return () => <Button style={{width: 105}}>Review</Button>;
+      }
+    }
   });
 };

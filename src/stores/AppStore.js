@@ -1,6 +1,5 @@
 import { destroy, flow, types } from "mobx-state-tree";
 import { Modal } from "../components/Common/Modal/Modal";
-import { instruments } from "../components/DataManager/Toolbar/instruments";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import { Action } from "./Action";
@@ -110,25 +109,6 @@ export const AppStore = types
     get showPreviews() {
       return this.SDK.showPreviews;
     },
-
-    get toolbarInstruments() {
-      const sections = self.toolbar.split("|").map(s => s.trim());
-
-      const instrumentsList = sections.map(section => {
-        return section.split(" ").filter((instrument) => {
-          const nativeInstrument = !!instruments[instrument];
-          const customInstrument = !!self.SDK.instruments[instrument];
-
-          if (!nativeInstrument && !customInstrument) {
-            console.warn(`Unknwown instrument detected: ${instrument}. Did you forget to register it?`);
-          }
-
-          return nativeInstrument || customInstrument;
-        });
-      });
-
-      return instrumentsList;
-    },
   }))
   .volatile(() => ({
     needsDataFetch: false,
@@ -188,22 +168,22 @@ export const AppStore = types
       self.toolbar = toolbarString;
     },
 
-    getInstrument(name) {
-      if (instruments[name]) {
-        return instruments[name];
-      } else if (self.SDK.instruments.has(name)) {
-        return self.SDK.instruments.get(name);
-      }
-    },
-
     setTask: flow(function* ({ taskID, annotationID, pushState }) {
       if (pushState !== false) {
         History.navigate({ task: taskID, annotation: annotationID ?? null });
       }
 
-      yield self.taskStore.loadTask(taskID, {
-        select: !!taskID && !!annotationID,
-      });
+      if (!isDefined(taskID)) return;
+
+      if (self.mode === 'labelstream') {
+        yield self.taskStore.loadNextTask({
+          select: !!taskID && !!annotationID,
+        });
+      } else {
+        yield self.taskStore.loadTask(taskID, {
+          select: !!taskID && !!annotationID,
+        });
+      }
 
       if (annotationID !== undefined) {
         self.annotationStore.setSelected(annotationID);
@@ -248,7 +228,7 @@ export const AppStore = types
         History.navigate({ labeling: 1 });
       }
 
-      self.setTask(options);
+      // self.setTask(options);
 
       return;
     },
@@ -336,6 +316,10 @@ export const AppStore = types
       });
     },
 
+    setLoading(value) {
+      self.loading = value;
+    },
+
     fetchProject: flow(function* (options = {}) {
       self.projectFetch = options.force === true;
 
@@ -380,7 +364,7 @@ export const AppStore = types
     }),
 
     fetchData: flow(function* () {
-      self.loading = true;
+      self.setLoading(true);
 
       const { tab, task, labeling } = History.getParams();
 
@@ -397,7 +381,7 @@ export const AppStore = types
 
           self.resolveURLParams();
 
-          self.loading = false;
+          self.setLoading(false);
 
           self.startPolling();
         }
@@ -440,8 +424,6 @@ export const AppStore = types
       const { selected } = view;
       const actionCallback = self.SDK.getAction(actionId);
 
-      console.log({actionCallback});
-
       if (needsLock && !actionCallback) view.lock();
 
       const actionParams = {
@@ -456,7 +438,6 @@ export const AppStore = types
       };
 
       if (actionCallback instanceof Function) {
-        console.log("calling", actionCallback);
         return actionCallback(actionParams, view);
       }
 

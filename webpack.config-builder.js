@@ -196,6 +196,7 @@ if (isDevelopment) {
     title: "Heartex DataManager 2.0",
     template: "public/index.html",
   }));
+  plugins.push(new webpack.ProgressPlugin());
 }
 
 const sourceMap = isDevelopment ? "cheap-module-source-map" : "source-map";

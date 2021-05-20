@@ -9,23 +9,27 @@ const injector = inject(({ store }) => {
 
   return {
     store,
-    labelingDisabled: totalTasks === 0 || foundTasks === 0,
+    canLabel: totalTasks > 0 || foundTasks > 0,
     target: currentView?.target ?? "tasks",
-    selectedCount: currentView?.selectedLength
+    selectedCount: currentView?.selectedCount,
+    allSelected: currentView?.allSelected,
   };
 });
 
-export const LabelButton = injector(({store, selectedCount, labelingDisabled, size, target}) => {
-  return labelingDisabled ? null : (
+export const LabelButton = injector(({store, allSelected, selectedCount, canLabel, size, target}) => {
+  const all = selectedCount === 0 || allSelected;
+
+  return canLabel ? (
     <Interface name="labelButton">
       <Button
         look="primary"
         size={size}
+        style={{width: 160, padding: 0}}
         disabled={target === "annotations"}
         onClick={() => store.startLabelStream()}
       >
-        Label {selectedCount ? selectedCount : null}
+        Label {all ? "All" : selectedCount} Task{all || selectedCount > 1 ? "s" : ''}
       </Button>
     </Interface>
-  );
+  ) : null;
 });
