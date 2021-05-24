@@ -24,7 +24,7 @@ const CellRenderer = observer(
     const altType = toStudlyCaps(valuePath);
     const value = getProperty(data, valuePath);
 
-    const Renderer = cellViews[col.original.currentType] ?? cellViews[altType] ?? cellViews.String;
+    const Renderer = cellViews[altType] ?? cellViews[col.original.currentType] ?? cellViews.String;
     const renderProps = { column: col, original: data, value: value };
     const Decoration = decoration?.get?.(col);
     const style = getStyle(cellViews, col, Decoration);

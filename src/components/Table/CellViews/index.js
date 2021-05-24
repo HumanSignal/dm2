@@ -1,3 +1,4 @@
+export { Agreement } from './Agreement/Agreement';
 export { Annotators, Annotators as Reviewers } from './Annotators/Annotators';
 export { AudioCell as Audio, AudioPlusCell as AudioPlus } from "./AudioCell";
 export { BooleanCell as Boolean } from "./BooleanCell";
