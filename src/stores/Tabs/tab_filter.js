@@ -87,7 +87,7 @@ export const TabFilter = types
       if (self.filter.schema === null) {
         return self.value;
       } else {
-        return self.value?.value ?? null;
+        return self.value?.value ?? self.value ?? null;
       }
     },
 

@@ -29,8 +29,8 @@ export const FilterOperation = observer(
       }
     }, [operator, types, filter]);
 
-    const onChange = useCallback((value) => {
-      filter.setValueDelayed(value);
+    const onChange = useCallback((newValue) => {
+      filter.setValueDelayed(newValue);
     }, [filter]);
 
     const Input = selected?.input;
