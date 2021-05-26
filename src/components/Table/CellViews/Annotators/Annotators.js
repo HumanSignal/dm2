@@ -1,6 +1,7 @@
 import { LsCheckAlt, LsCrossAlt } from "../../../../assets/icons";
 import { useSDK } from "../../../../providers/SDKProvider";
 import { Block, Elem } from "../../../../utils/bem";
+import { isDefined } from "../../../../utils/utils";
 import { Tooltip } from "../../../Common/Tooltip/Tooltip";
 import { Userpic } from "../../../Common/Userpic/Userpic";
 import "./Annotators.styl";
@@ -18,6 +19,8 @@ export const Annotators = (cell) => {
         const user = item.user ?? item;
         const {annotated, reviewed, review} = item;
 
+        const userpicIsFaded = (isDefined(annotated) && annotated === false) || (isDefined(reviewed) && reviewed === false);
+
         return (
           <Elem
             key={`user-${user.id}`}
@@ -31,7 +34,7 @@ export const Annotators = (cell) => {
             <Tooltip title={user.fullName || user.email}>
               <Userpic
                 user={user}
-                faded={annotated === false || reviewed === false}
+                faded={userpicIsFaded}
                 badge={{
                   bottomRight: review && (
                     <Block name="badge" mod={{[review]: true}}>
@@ -57,4 +60,4 @@ export const Annotators = (cell) => {
   );
 };
 
-Annotators.filterable = false;
+Annotators.filterable = true;
