@@ -1,7 +1,7 @@
 import React from "react";
 import { FilterDropdown } from "../FilterDropdown";
 
-const VariantSelect = ({ schema, onChange, multiple, value }) => {
+const VariantSelect = ({ filter, schema, onChange, multiple, value }) => {
   const { items } = schema;
 
   const selected = multiple
@@ -10,11 +10,17 @@ const VariantSelect = ({ schema, onChange, multiple, value }) => {
       : undefined
     : value;
 
+  const FilterItem = filter.cellView?.FilterItem;
+
+  console.log({value});
+
   return (
     <FilterDropdown
       items={items}
       value={selected}
       multiple={multiple}
+      optionRender={FilterItem}
+      // outputFormat={(value) => [].concat(String(value))}
       onChange={(value) => onChange(value)}
     />
   );

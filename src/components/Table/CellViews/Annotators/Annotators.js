@@ -1,7 +1,9 @@
+import { inject } from "mobx-react";
 import { LsCheckAlt, LsCrossAlt } from "../../../../assets/icons";
 import { useSDK } from "../../../../providers/SDKProvider";
 import { Block, Elem } from "../../../../utils/bem";
 import { isDefined } from "../../../../utils/utils";
+import { Space } from "../../../Common/Space/Space";
 import { Tooltip } from "../../../Common/Tooltip/Tooltip";
 import { Userpic } from "../../../Common/Userpic/Userpic";
 import "./Annotators.styl";
@@ -59,5 +61,23 @@ export const Annotators = (cell) => {
     </Block>
   );
 };
+
+const UsersInjector = inject(({store}) => {
+  return {
+    users: store.users
+  };
+});
+
+Annotators.FilterItem = UsersInjector(({users, item}) => {
+  console.log(users.map(u => u.id), item);
+  const user = users.find(u => u.id === item);
+
+  return (
+    <Space size="small">
+      <Userpic user={user} size={16}/>
+      {user.displayName}
+    </Space>
+  );
+});
 
 Annotators.filterable = true;

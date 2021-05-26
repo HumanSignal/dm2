@@ -6,13 +6,15 @@ import './Userpic.styl';
 const FALLBACK_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
 export const Userpic = forwardRef(({
-  username,
-  src,
-  user,
-  className,
-  showUsername,
-  faded = false,
   badge = null,
+  className,
+  faded = false,
+  showUsername,
+  size,
+  src,
+  style,
+  user,
+  username,
   ...rest
 }, ref) => {
   const imgRef = useRef();
@@ -20,6 +22,10 @@ export const Userpic = forwardRef(({
   const [finalSrc, setFinalSrc] = useState(user?.avatar ?? src);
   const [imgVisible, setImgVisible] = useState(false);
   const [nameVisible, setNameVisible] = useState(true);
+
+  if (size) {
+    style = Object.assign({ width: size, height: size, fontSize: size * 0.4 }, style);
+  }
 
   useEffect(() => {
     if (user) {
@@ -29,8 +35,8 @@ export const Userpic = forwardRef(({
         setFinalUsername(initials);
       } else if (username) {
         setFinalUsername(username);
-      } else if (first_name && last_name) {
-        setFinalUsername(`${first_name[0]}${last_name[0]}`);
+      } else if (first_name || last_name) {
+        setFinalUsername((first_name?.[0] ?? "") + (last_name?.[0] ?? ""));
       } else if (email) {
         setFinalUsername(email.substring(0, 2));
       }
@@ -48,7 +54,7 @@ export const Userpic = forwardRef(({
   }, [finalSrc]);
 
   const userpic = (
-    <Block ref={ref} name="userpic" mix={className} mod={{faded}} {...rest}>
+    <Block ref={ref} name="userpic" mix={className} mod={{faded}} style={style} {...rest}>
       <Elem
         tag="img"
         name="avatar"
@@ -92,3 +98,5 @@ export const Userpic = forwardRef(({
     </Tooltip>
   ) : userpic;
 });
+
+Userpic.displayName = 'Userpic';

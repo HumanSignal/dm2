@@ -51,6 +51,7 @@ export const FilterOperation = observer(
             {...field}
             key={`${filter.filter.id}-${filter.filter.currentType}`}
             schema={filter.schema}
+            filter={filter}
             value={value}
             onChange={onChange}
           />

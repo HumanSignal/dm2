@@ -25,6 +25,7 @@ export const Select = ({
   children,
   onChange,
   style,
+  multiple,
 }) => {
   const dropdown = useRef();
   const [currentValue, setCurrentValue] = useState(value);
@@ -34,7 +35,7 @@ export const Select = ({
     setCurrentValue(value) {
       setCurrentValue(value);
       onChange?.(value);
-      dropdown.current?.close();
+      if (multiple !== true) dropdown.current?.close();
     },
   };
 

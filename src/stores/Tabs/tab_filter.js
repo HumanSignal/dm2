@@ -1,5 +1,7 @@
 import { getParent, getRoot, types } from "mobx-state-tree";
+import { toStudlyCaps } from "strman";
 import * as Filters from "../../components/Filters/types";
+import * as CellViews from "../../components/Table/CellViews";
 import { debounce } from "../../utils/debounce";
 import { isDefined } from "../../utils/utils";
 import {
@@ -88,6 +90,11 @@ export const TabFilter = types
         return self.value?.value ?? null;
       }
     },
+
+    get cellView() {
+      const col = self.filter.field;
+      return CellViews[col.type] ?? CellViews[toStudlyCaps(col.alias)];
+    }
   }))
   .actions((self) => ({
     afterAttach() {

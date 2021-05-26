@@ -15,6 +15,10 @@ export const User = types
   .views((self) => ({
     get fullName() {
       return [self.firstName, self.lastName].filter(n => !!n).join(" ").trim();
+    },
+
+    get displayName() {
+      return self.fullName || ((self.username) ? self.username : self.email);
     }
   }))
   .preProcessSnapshot((sn) => {
