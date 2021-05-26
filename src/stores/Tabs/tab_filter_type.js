@@ -1,4 +1,4 @@
-import { getRoot, isPrimitiveType, types } from "mobx-state-tree";
+import { getRoot, types } from "mobx-state-tree";
 import { TabColumn, ViewColumnType } from "./tab_column";
 
 export const FilterValue = types.union(
@@ -15,7 +15,8 @@ export const FilterItemValue = types.model("FilterItemValue", {
 
 export const FilterItemType = types.union({
   dispatcher(s) {
-    if (isPrimitiveType(s)) {
+
+    if (typeof s === 'number' || typeof s === 'string' || typeof s === 'boolean') {
       return FilterValue;
     } else {
       return FilterItemValue;
@@ -61,7 +62,7 @@ export const TabFilterType = types
     id: types.identifier,
     field: types.reference(TabColumn),
     type: ViewColumnType,
-    // schema: types.maybeNull(FilterSchema),
+    schema: types.maybeNull(FilterSchema),
   })
   .views((self) => ({
     get defaultValue() {
