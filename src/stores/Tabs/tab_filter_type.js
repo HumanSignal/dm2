@@ -61,7 +61,7 @@ export const TabFilterType = types
     id: types.identifier,
     field: types.reference(TabColumn),
     type: ViewColumnType,
-    schema: types.maybeNull(FilterSchema),
+    // schema: types.maybeNull(FilterSchema),
   })
   .views((self) => ({
     get defaultValue() {
