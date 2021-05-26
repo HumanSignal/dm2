@@ -20,25 +20,13 @@ const VariantSelect = ({ filter, schema, onChange, multiple, value }) => {
       value={selected}
       multiple={multiple}
       optionRender={FilterItem}
-      // outputFormat={(value) => [].concat(String(value))}
+      outputFormat={(value) => [].concat(value)}
       onChange={(value) => onChange(value)}
     />
   );
 };
 
 export const ListFilter = [
-  {
-    key: "equal",
-    label: "is...",
-    valueType: "single",
-    input: (props) => <VariantSelect {...props} />,
-  },
-  {
-    key: "not_equal",
-    label: "is not...",
-    valueType: "single",
-    input: (props) => <VariantSelect {...props} />,
-  },
   {
     key: "contains",
     label: "any of...",
