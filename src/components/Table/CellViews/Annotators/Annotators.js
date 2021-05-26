@@ -69,12 +69,11 @@ const UsersInjector = inject(({store}) => {
 });
 
 Annotators.FilterItem = UsersInjector(({users, item}) => {
-  console.log(users.map(u => u.id), item);
   const user = users.find(u => u.id === item);
 
   return (
     <Space size="small">
-      <Userpic user={user} size={16}/>
+      <Userpic user={user} size={16} key={`user-${item}`}/>
       {user.displayName}
     </Space>
   );
