@@ -235,6 +235,9 @@ export const Table = observer(
 
     const itemKey = useCallback(
       (index) => {
+        if (index > (data.length - 1)) {
+          return index;
+        }
         return data[index]?.key ?? index;
       },
       [data]
@@ -274,8 +277,7 @@ export const Table = observer(
 );
 
 const StickyListContext = createContext();
-StickyListContext.Provider.displayName = "StickyListProvider";
-StickyListContext.Consumer.displayName = "StickyListConsumer";
+StickyListContext.displayName = "StickyListProvider";
 
 const ItemWrapper = ({ data, index, style }) => {
   const { Renderer, stickyItems } = data;

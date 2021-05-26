@@ -37,12 +37,12 @@ export const ListFilter = [
     key: "in",
     label: "any of...",
     valueType: "list",
-    input: (props) => <VariantSelect {...props} multiple="true" />,
+    input: (props) => <VariantSelect {...props} multiple/>,
   },
   {
     key: "not_in",
     label: "none of...",
     valueType: "list",
-    input: (props) => <VariantSelect {...props} multiple="true" />,
+    input: (props) => <VariantSelect {...props} multiple/>,
   },
 ];

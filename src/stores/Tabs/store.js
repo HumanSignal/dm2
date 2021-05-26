@@ -302,38 +302,38 @@ export const TabStore = types
         return { parentPath, columnPath };
       };
 
-      targets.forEach((t) => {
-        self.columnsTargetMap.set(t, []);
+      targets.forEach((target) => {
+        self.columnsTargetMap.set(target, []);
       });
 
-      columns.forEach((c) => {
-        const { target, visibility_defaults: visibility } = c;
+      columns.forEach((col) => {
+        const { target, visibility_defaults: visibility } = col;
 
-        const { columnPath, parentPath } = createColumnPath(columns, c);
+        const { columnPath, parentPath } = createColumnPath(columns, col);
 
         const columnID = `${target}:${columnPath}`;
         const parent = parentPath ? `${target}:${parentPath}` : undefined;
 
-        const children = c.children
-          ? c.children.map((ch) => `${target}:${columnPath}.${ch}`)
+        const children = col.children
+          ? col.children.map((ch) => `${target}:${columnPath}.${ch}`)
           : undefined;
 
         const column = TabColumn.create({
-          ...c,
+          ...col,
           id: columnID,
-          alias: c.id,
+          alias: col.id,
           parent,
           children,
         });
 
-        self.columnsTargetMap.get(c.target).push(column);
+        self.columnsTargetMap.get(col.target).push(column);
 
-        if (!c.children && column.filterable) {
+        if (!col.children && column.filterable) {
           self.availableFilters.push({
             id: `filter:${columnID}`,
-            type: c.type,
+            type: col.type,
             field: columnID,
-            schema: c.schema ?? null,
+            schema: col.schema ?? null,
           });
         }
 
