@@ -1,5 +1,6 @@
-import React, { Children, cloneElement, createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { Children, cloneElement, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { BemWithSpecifiContext } from "../../../utils/bem";
+import { isDefined } from "../../../utils/utils";
 import { Dropdown } from "../Dropdown/Dropdown";
 import "./Select.styl";
 
@@ -26,13 +27,20 @@ export const Select = ({
   onChange,
   style,
   multiple,
+  tabIndex=0
 }) => {
   const dropdown = useRef();
+  const rootRef = useRef();
   const [currentValue, setCurrentValue] = useState(value);
+  const [focused, setFocused] = useState();
+
+  const options = Children.toArray(children);
 
   const context = {
     currentValue,
+    focused,
     setCurrentValue(value) {
+      setFocused(null);
       setCurrentValue(value);
       onChange?.(value);
       if (multiple !== true) dropdown.current?.close();
@@ -48,6 +56,41 @@ export const Select = ({
     return result ? cloneElement(<>{result}</>) : null;
   }, [currentValue, defaultValue, children, value]);
 
+  const focusItem = (i) => {
+    setFocused(options[i ?? 0].props.value);
+  };
+
+  const focusNext = useCallback((direction) => {
+    const selectedIndex = options.findIndex(c => c.props.value === focused);
+    let nextIndex = selectedIndex === -1 ? 0 : selectedIndex + direction;
+
+    if (nextIndex >= options.length) {
+      nextIndex = 0;
+    } else if (nextIndex < 0) {
+      nextIndex = options.length - 1;
+    }
+
+    focusItem(nextIndex);
+  }, [focused]);
+
+  const handleKeyboard = (e) => {
+    if (document.activeElement !== rootRef.current) {
+      return;
+    }
+
+    if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
+      if (dropdown?.current.visible) {
+        focusNext(e.key === 'ArrowDown' ? 1 : -1);
+      } else {
+        dropdown.current?.open();
+        focusItem();
+      }
+    } else if ((e.code === 'Space' || e.code === 'Enter') && isDefined(focused)) {
+      context.setCurrentValue(focused);
+      setFocused(null);
+    }
+  };
+
   useEffect(() => {
     if (value !== currentValue) {
       context.setCurrentValue(value);
@@ -56,8 +99,12 @@ export const Select = ({
 
   return (
     <SelectContext.Provider value={context}>
-      <Block name="select" mod={{ size }} style={style}>
-        <Dropdown.Trigger ref={dropdown} style={{maxHeight: 280, overflow: 'auto'}} content={<Elem name="list">{children}</Elem>}>
+      <Block ref={rootRef} name="select" mod={{ size }} style={style} tabIndex={tabIndex} onKeyDown={handleKeyboard}>
+        <Dropdown.Trigger
+          ref={dropdown}
+          style={{maxHeight: 280, overflow: 'auto'}}
+          content={<Elem name="list">{children}</Elem>}
+        >
           <Elem name="selected">
             <Elem name="value">{selected ?? "Select value"}</Elem>
             <Elem name="icon" />
@@ -70,11 +117,14 @@ export const Select = ({
 Select.displayName = "Select";
 
 Select.Option = ({ value, children, style }) => {
-  const { setCurrentValue, currentValue } = useContext(SelectContext);
+  const { setCurrentValue, currentValue, focused } = useContext(SelectContext);
+
+  const isSelected = (String(value) === String(focused)) || (String(value) === String(currentValue));
+
   return (
     <Elem
       name="option"
-      mod={{ selected: value === currentValue }}
+      mod={{ selected: isSelected }}
       onClick={(e) => {
         e.stopPropagation();
         setCurrentValue(value);

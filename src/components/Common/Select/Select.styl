@@ -39,7 +39,8 @@
     cursor pointer
     padding 4px 16px
 
-    &:hover
+    &:hover,
+    &_selected
       background-color #f7f7f7
 
   &__icon
@@ -81,3 +82,8 @@
 
   &_disabled
     pointer-events none
+
+  &:focus
+    outline none
+    box-shadow 0px 0px 0px 6px rgba($accent_color, 0.2), inset 0px -1px 0px rgba(#000, 0.1), inset 0px 0px 0px 1px rgba(#000, 0.15), inset 0px 0px 0px 1px rgba($accent_color, 0.2)
+    border-color rgba($accent_color, 0.2)
