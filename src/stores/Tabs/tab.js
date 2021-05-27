@@ -150,6 +150,13 @@ export const Tab = types
       return self.selectedCount === self.dataStore.total;
     },
 
+    get filterSnposhot() {
+      return {
+        conjunction: self.conjunction,
+        items: self.serializedFilters,
+      };
+    },
+
     serialize() {
       const tab = {};
       const { apiVersion } = self.root;
@@ -159,10 +166,7 @@ export const Tab = types
         ordering: self.ordering,
         type: self.type,
         target: self.target,
-        filters: {
-          conjunction: self.conjunction,
-          items: self.serializedFilters,
-        },
+        filters: self.filterSnposhot,
         hiddenColumns: getSnapshot(self.hiddenColumns),
         columnsWidth: self.columnsWidth.toPOJO(),
         columnsDisplayType: self.columnsDisplayType.toPOJO(),

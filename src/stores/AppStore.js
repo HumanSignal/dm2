@@ -109,6 +109,14 @@ export const AppStore = types
     get showPreviews() {
       return this.SDK.showPreviews;
     },
+
+    get currentSelection() {
+      return this.currentView.selected.snapshot;
+    },
+
+    get currentFilter() {
+      return this.currentView.filterSnposhot;
+    }
   }))
   .volatile(() => ({
     needsDataFetch: false,
