@@ -120,6 +120,7 @@ export const create = (columns) => {
     properties: {
       totalAnnotations: 0,
       totalPredictions: 0,
+      assigned_task: false,
     },
   })
     .actions((self) => ({
@@ -150,9 +151,18 @@ export const create = (columns) => {
           reload: false,
         });
 
+        const labelStreamModeChanged = (
+          self.assigned_task !== taskData.assigned_task
+          && taskData.assigned_task === false
+        );
+
         const task = self.applyTaskSnapshot(taskData);
 
         if (select !== false) self.setSelected(task);
+
+        if (labelStreamModeChanged) {
+          getRoot(self).SDK.invoke("assignedStreamFinished");
+        }
 
         return task;
       }),
