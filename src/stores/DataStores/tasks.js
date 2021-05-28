@@ -55,6 +55,7 @@ export const create = (columns) => {
     drafts: types.frozen(),
     source: types.maybeNull(types.string),
     was_cancelled: false,
+    assigned_task: false,
   })
     .views((self) => ({
       get lastAnnotation() {
@@ -120,7 +121,6 @@ export const create = (columns) => {
     properties: {
       totalAnnotations: 0,
       totalPredictions: 0,
-      assigned_task: false,
     },
   })
     .actions((self) => ({
@@ -152,7 +152,7 @@ export const create = (columns) => {
         });
 
         const labelStreamModeChanged = (
-          self.assigned_task !== taskData.assigned_task
+          self.selected.assigned_task !== taskData.assigned_task
           && taskData.assigned_task === false
         );
 
