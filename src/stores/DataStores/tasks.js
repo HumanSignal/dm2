@@ -151,7 +151,7 @@ export const create = (columns) => {
           reload: false,
         });
 
-        const labelStreamModeChanged = (
+        const labelStreamModeChanged = self.selected && (
           self.selected.assigned_task !== taskData.assigned_task
           && taskData.assigned_task === false
         );
