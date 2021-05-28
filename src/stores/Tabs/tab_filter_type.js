@@ -1,4 +1,5 @@
 import { getRoot, types } from "mobx-state-tree";
+import { isDefined } from "../../utils/utils";
 import { TabColumn, ViewColumnType } from "./tab_column";
 
 export const FilterValue = types.union(
@@ -16,10 +17,10 @@ export const FilterItemValue = types.model("FilterItemValue", {
 export const FilterItemType = types.union({
   dispatcher(s) {
 
-    if (typeof s === 'number' || typeof s === 'string' || typeof s === 'boolean') {
-      return FilterValue;
-    } else {
+    if (isDefined(s.value)) {
       return FilterItemValue;
+    } else {
+      return FilterValue;
     }
   },
 });
@@ -30,7 +31,7 @@ export const FilterValueList = types
   })
   .views((self) => ({
     get value() {
-      return Array.from(self.items);
+      return self.items.toJSON();
     },
   }));
 
@@ -49,7 +50,9 @@ export const FilterSchema = types.union({
   dispatcher(s) {
     if (!s) return types.null;
 
-    if (s.items) {
+    console.log({s}, s.items);
+
+    if (isDefined(s.items)) {
       return FilterValueList;
     } else {
       return FilterValueRange;

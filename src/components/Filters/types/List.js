@@ -12,15 +12,16 @@ const VariantSelect = ({ filter, schema, onChange, multiple, value }) => {
 
   const FilterItem = filter.cellView?.FilterItem;
 
-  console.log({value});
-
   return (
     <FilterDropdown
       items={items}
-      value={selected}
+      value={value}
       multiple={multiple}
       optionRender={FilterItem}
-      outputFormat={(value) => [].concat(value)}
+      outputFormat={(value) => {
+        console.log('changed', {value});
+        return { items: [].concat(value) };
+      }}
       onChange={(value) => onChange(value)}
     />
   );

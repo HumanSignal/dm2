@@ -78,6 +78,7 @@
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.6",
     "react-window-infinite-loader": "^1.0.5",
+    "shallow-equal": "^1.2.1",
     "source-map-loader": "^2.0.1",
     "strman": "^2.0.1",
     "stylus": "^0.54.8",

@@ -6,6 +6,7 @@ import { debounce } from "../../utils/debounce";
 import { isDefined } from "../../utils/utils";
 import {
   FilterValue,
+  FilterValueList,
   FilterValueRange,
   TabFilterType
 } from "./tab_filter_type";
@@ -37,7 +38,12 @@ export const TabFilter = types
     filter: types.reference(TabFilterType),
     operator: types.maybeNull(Operators),
     value: types.maybeNull(
-      types.union(FilterValue, FilterValueRange, types.array(FilterValue))
+      types.union(
+        FilterValue,
+        FilterValueList,
+        FilterValueRange,
+        types.array(FilterValue),
+      )
     ),
   })
   .views((self) => ({
@@ -84,6 +90,7 @@ export const TabFilter = types
     },
 
     get currentValue() {
+      console.log({filterValue: self.value});
       if (self.filter.schema === null) {
         return self.value;
       } else {
@@ -107,6 +114,8 @@ export const TabFilter = types
     },
 
     setFilter(value) {
+      if (!isDefined(value)) return;
+
       const previousFilterType = self.filter.currentType;
       self.filter = value;
 
@@ -130,7 +139,14 @@ export const TabFilter = types
     },
 
     setValue(value) {
-      self.value = value;
+      let resultValue = value;
+
+      if (value?.items) {
+        console.log('with items', {value});
+        resultValue = FilterValueList.create(value);
+      }
+
+      self.value = resultValue;
     },
 
     delete() {

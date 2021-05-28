@@ -1,4 +1,5 @@
 import React, { Children, cloneElement, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { shallowEqualArrays } from 'shallow-equal';
 import { BemWithSpecifiContext } from "../../../utils/bem";
 import { isDefined } from "../../../utils/utils";
 import { Dropdown } from "../Dropdown/Dropdown";
@@ -10,11 +11,17 @@ const { Block, Elem } = BemWithSpecifiContext();
 const findSelectedChild = (children, value) => {
   return Children.toArray(children).reduce((res, child) => {
     if (res !== null) return res;
+
     if (child.type.displayName === "Select.Option") {
-      if (child.props.value === value) res = child;
+      if (child.props.value === value) {
+        res = child;
+      } else if (Array.isArray(value) && value.length === 1) {
+        res = findSelectedChild(children, value[0]);
+      }
     } else if (child.type.displayName === "Select.OptGroup") {
       res = findSelectedChild(child.props.children, value);
     }
+
     return res;
   }, null);
 };
@@ -31,28 +38,51 @@ export const Select = ({
 }) => {
   const dropdown = useRef();
   const rootRef = useRef();
-  const [currentValue, setCurrentValue] = useState(value);
+  const [currentValue, setCurrentValue] = useState(multiple ? [].concat(value ?? []).flat(10) : value);
   const [focused, setFocused] = useState();
 
   const options = Children.toArray(children);
 
+  console.log({inputValue: value});
+
+  const setValue = (newValue) => {
+    let updatedValue = newValue;
+
+    if (multiple) {
+      if (currentValue.includes(newValue)) {
+        updatedValue = currentValue.filter(v => v === newValue);
+      } else {
+        updatedValue = [...currentValue, newValue].flat(10);
+      }
+    }
+
+    setCurrentValue(updatedValue);
+    return updatedValue;
+  };
+
   const context = {
     currentValue,
     focused,
+    multiple,
     setCurrentValue(value) {
       setFocused(null);
-      setCurrentValue(value);
-      onChange?.(value);
+      onChange?.(setValue(value));
       if (multiple !== true) dropdown.current?.close();
     },
   };
 
   const selected = useMemo(() => {
+    if (multiple && currentValue?.length > 1) {
+      return <>Multiple values selected</>;
+    }
+
     const foundChild = findSelectedChild(
       children,
       defaultValue ?? currentValue
     );
+
     const result = foundChild?.props?.children;
+
     return result ? cloneElement(<>{result}</>) : null;
   }, [currentValue, defaultValue, children, value]);
 
@@ -92,10 +122,15 @@ export const Select = ({
   };
 
   useEffect(() => {
-    if (value !== currentValue) {
+    if (multiple) {
+      if (shallowEqualArrays(value ?? [], currentValue ?? []) === false) {
+        console.log({value, currentValue});
+        context.setCurrentValue(value?.flat?.(10) ?? []);
+      }
+    } else if (value !== currentValue) {
       context.setCurrentValue(value);
     }
-  }, [value]);
+  }, [value, multiple]);
 
   return (
     <SelectContext.Provider value={context}>
@@ -117,9 +152,18 @@ export const Select = ({
 Select.displayName = "Select";
 
 Select.Option = ({ value, children, style }) => {
-  const { setCurrentValue, currentValue, focused } = useContext(SelectContext);
+  const { setCurrentValue, multiple, currentValue, focused } = useContext(SelectContext);
 
-  const isSelected = (String(value) === String(focused)) || (String(value) === String(currentValue));
+  const isSelected = useMemo(() => {
+    const option = String(value);
+    const isFocused = option === String(focused);
+
+    if (multiple) {
+      return isFocused || currentValue.map(v => String(v)).includes(option);
+    } else {
+      return isFocused || option === String(currentValue);
+    }
+  }, [value, focused, currentValue]);
 
   return (
     <Elem
