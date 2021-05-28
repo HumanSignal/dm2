@@ -90,7 +90,6 @@ export const TabFilter = types
     },
 
     get currentValue() {
-      console.log({filterValue: self.value});
       if (self.filter.schema === null) {
         return self.value;
       } else {
@@ -142,7 +141,6 @@ export const TabFilter = types
       let resultValue = value;
 
       if (value?.items) {
-        console.log('with items', {value});
         resultValue = FilterValueList.create(value);
       }
 

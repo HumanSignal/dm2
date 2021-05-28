@@ -43,14 +43,12 @@ export const Select = ({
 
   const options = Children.toArray(children);
 
-  console.log({inputValue: value});
-
   const setValue = (newValue) => {
     let updatedValue = newValue;
 
     if (multiple) {
       if (currentValue.includes(newValue)) {
-        updatedValue = currentValue.filter(v => v === newValue);
+        updatedValue = currentValue.filter(v => v !== newValue);
       } else {
         updatedValue = [...currentValue, newValue].flat(10);
       }
@@ -65,9 +63,12 @@ export const Select = ({
     focused,
     multiple,
     setCurrentValue(value) {
-      setFocused(null);
-      onChange?.(setValue(value));
-      if (multiple !== true) dropdown.current?.close();
+      const newValue = setValue(value);
+      onChange?.(newValue);
+
+      if (multiple !== true) {
+        dropdown.current?.close();
+      }
     },
   };
 
@@ -117,14 +118,12 @@ export const Select = ({
       }
     } else if ((e.code === 'Space' || e.code === 'Enter') && isDefined(focused)) {
       context.setCurrentValue(focused);
-      setFocused(null);
     }
   };
 
   useEffect(() => {
     if (multiple) {
       if (shallowEqualArrays(value ?? [], currentValue ?? []) === false) {
-        console.log({value, currentValue});
         context.setCurrentValue(value?.flat?.(10) ?? []);
       }
     } else if (value !== currentValue) {
@@ -139,6 +138,9 @@ export const Select = ({
           ref={dropdown}
           style={{maxHeight: 280, overflow: 'auto'}}
           content={<Elem name="list">{children}</Elem>}
+          onToggle={(visible) => {
+            if (!visible) setFocused(null);
+          }}
         >
           <Elem name="selected">
             <Elem name="value">{selected ?? "Select value"}</Elem>
@@ -156,19 +158,25 @@ Select.Option = ({ value, children, style }) => {
 
   const isSelected = useMemo(() => {
     const option = String(value);
-    const isFocused = option === String(focused);
 
     if (multiple) {
-      return isFocused || currentValue.map(v => String(v)).includes(option);
+      return currentValue.map(v => String(v)).includes(option);
     } else {
-      return isFocused || option === String(currentValue);
+      return option === String(currentValue);
     }
   }, [value, focused, currentValue]);
+
+  const isFocused = useMemo(() => {
+    return String(value) === String(focused);
+  }, [value, focused]);
 
   return (
     <Elem
       name="option"
-      mod={{ selected: isSelected }}
+      mod={{
+        selected: isSelected,
+        focused: isFocused,
+      }}
       onClick={(e) => {
         e.stopPropagation();
         setCurrentValue(value);

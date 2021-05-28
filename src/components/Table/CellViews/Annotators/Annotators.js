@@ -6,6 +6,7 @@ import { isDefined } from "../../../../utils/utils";
 import { Space } from "../../../Common/Space/Space";
 import { Tooltip } from "../../../Common/Tooltip/Tooltip";
 import { Userpic } from "../../../Common/Userpic/Userpic";
+import { VariantSelect } from "../../../Filters/types/List";
 import "./Annotators.styl";
 
 export const Annotators = (cell) => {
@@ -80,3 +81,14 @@ Annotators.FilterItem = UsersInjector(({users, item}) => {
 });
 
 Annotators.filterable = true;
+Annotators.customOperators = [{
+  key: "contains",
+  label: "contains",
+  valueType: "list",
+  input: (props) => <VariantSelect {...props}/>,
+}, {
+  key: "not_contains",
+  label: "not contains",
+  valueType: "list",
+  input: (props) => <VariantSelect {...props}/>,
+}];

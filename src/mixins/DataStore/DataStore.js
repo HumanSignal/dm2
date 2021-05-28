@@ -138,7 +138,6 @@ export const DataStore = (
         let item = self.list.find((t) => t.id === itemID);
 
         if (item) {
-          console.log({patch, item});
           item.update(patch);
         } else {
           item = listItemType.create(patch);

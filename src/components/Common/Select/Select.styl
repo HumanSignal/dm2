@@ -40,8 +40,16 @@
     padding 4px 16px
 
     &:hover,
-    &_selected
+    &_focused
       background-color #f7f7f7
+
+    &_selected
+      color white
+      background-color $accent_color
+
+    &_selected:hover,
+    &_selected&_focused
+      background-color lighten($accent_color, 10)
 
   &__icon
     width 16px

@@ -16,17 +16,22 @@ import { Common } from "../types/Common";
  */
 export const FilterOperation = observer(
   ({ filter, field, value, operator }) => {
-    const types = [...(FilterInputs[filter.filter.currentType] ?? FilterInputs.String), ...Common];
+    const cellView = filter.cellView;
+    const types = cellView?.customOperators ?? [...(FilterInputs[filter.filter.currentType] ?? FilterInputs.String), ...Common];
 
     const selected = useMemo(() => {
+      let result;
+
       if (operator) {
-        const selectedOperator = types.find((t) => t.key === operator);
-        return selectedOperator;
-      } else {
-        const type = types[0];
-        filter.setOperator(type.key);
-        return type;
+        result = types.find((t) => t.key === operator);
       }
+
+      if (!result) {
+        result = types[0];
+      }
+
+      filter.setOperator(result.key);
+      return result;
     }, [operator, types, filter]);
 
     const onChange = useCallback((newValue) => {
@@ -35,6 +40,9 @@ export const FilterOperation = observer(
 
     const Input = selected?.input;
 
+    const availableOperators = filter.cellView?.filterOperators;
+    const operators = types.map(({ key, label }) => ({ value: key, label }));
+
     return Input ? (
       <>
         <Elem block="filter-line" name="column" mix="operation">
@@ -42,7 +50,11 @@ export const FilterOperation = observer(
             placeholder="Condition"
             value={filter.operator}
             disabled={types.length === 1}
-            items={types.map(({ key, label }) => ({ value: key, label }))}
+            items={(
+              availableOperators
+                ? operators.filter(op => availableOperators.includes(op.value))
+                : operators
+            )}
             onChange={(selectedKey) => filter.setOperator(selectedKey)}
           />
         </Elem>

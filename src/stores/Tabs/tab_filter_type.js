@@ -50,8 +50,6 @@ export const FilterSchema = types.union({
   dispatcher(s) {
     if (!s) return types.null;
 
-    console.log({s}, s.items);
-
     if (isDefined(s.items)) {
       return FilterValueList;
     } else {

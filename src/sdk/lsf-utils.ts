@@ -9,8 +9,6 @@ import { APITask, APIAnnotation, APIPrediction, LSFAnnotation, LSFTaskData } fro
 export const taskToLSFormat = (task: APITask): LSFTaskData | void => {
   if (!task) return;
 
-  console.log("WOW TASK", task.created_at, task);
-
   const result: LSFTaskData = {
     ...task,
     annotations: [],
@@ -44,7 +42,6 @@ export const annotationToLSF = (annotation: APIAnnotation) => {
 };
 
 export const predictionToLSF = (prediction: APIPrediction) => {
-  console.log("WOW PREDICTION", prediction);
   return {
     ...prediction,
     id: undefined,
