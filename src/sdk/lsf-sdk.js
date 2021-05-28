@@ -16,7 +16,6 @@ import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
 const DEFAULT_INTERFACES = [
   "basic",
-  "skip",
   "controls",
   "submit",
   "update",
@@ -78,7 +77,10 @@ export class LSFWrapper {
     const interfaces = [...DEFAULT_INTERFACES];
 
     if (this.labelStream) {
-      interfaces.push("infobar");
+      interfaces.push(
+        "infobar",
+        "skip",
+      );
     } else {
       interfaces.push(
         "annotations:add-new",
