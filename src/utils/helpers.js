@@ -1,4 +1,5 @@
 import { toCamelCase } from 'strman';
+import { isDefined } from './utils';
 
 export const formDataToJPO = (formData) => {
   if (formData instanceof FormData === false) return formData;
@@ -30,4 +31,14 @@ export const camelizeKeys = (object) => {
       return [toCamelCase(key), value];
     }
   }));
+};
+
+export const hasProperties = (obj, properties, all) => {
+  if (!isDefined(obj)) return false;
+
+  return all ? properties.reduce((res, prop) => {
+    return res && Object.prototype.hasOwnProperty.call(obj, prop);
+  }, true) : (properties.findIndex((prop) => {
+    return Object.prototype.hasOwnProperty.call(obj, prop);
+  }) >= 0);
 };

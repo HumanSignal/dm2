@@ -1,8 +1,9 @@
 import { isValid } from "date-fns";
+import { observer } from "mobx-react";
 import React from "react";
 import { DatePicker } from "../../Common/DatePicker/DatePicker";
 
-export const DateTimeInput = ({ value, range, time, onChange }) => {
+export const DateTimeInput = observer(({ value, range, time, onChange }) => {
   const onValueChange = React.useCallback(
     (selectedDate) => {
       let value;
@@ -44,7 +45,7 @@ export const DateTimeInput = ({ value, range, time, onChange }) => {
       onChange={onValueChange}
     />
   );
-};
+});
 
 export const DateFields = (extraProps) => {
   return [

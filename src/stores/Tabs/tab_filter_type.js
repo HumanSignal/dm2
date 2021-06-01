@@ -1,4 +1,5 @@
 import { getRoot, types } from "mobx-state-tree";
+import { hasProperties } from "../../utils/helpers";
 import { isDefined } from "../../utils/utils";
 import { TabColumn, ViewColumnType } from "./tab_column";
 
@@ -45,6 +46,23 @@ export const FilterValueRange = types
       return { min: self.min, max: self.max };
     },
   }));
+
+export const FilterValueType = types.union({
+  dispatcher(sn) {
+    if (!isDefined(sn)) return FilterValue;
+    if (sn.$treenode) return sn.$treenode.type;
+
+    if (hasProperties(sn, ['items'])) {
+      return FilterValueList;
+    } else if (hasProperties(sn, ['min', 'max'])) {
+      return FilterValueRange;
+    } else if (Array.isArray(sn)) {
+      return types.array(FilterValueType);
+    }
+
+    return FilterValue;
+  }
+});
 
 export const FilterSchema = types.union({
   dispatcher(s) {

@@ -13,8 +13,10 @@
     justify-content space-between
 
   &__table
+    z-index 2
     display flex
     flex 200px 0 0
+    position relative
     flex-direction column
 
   &__content
@@ -31,10 +33,12 @@
 
   &__lsf-wrapper
     flex 1
-    box-sizing border-box
-    display flex
-    flex-direction column
+    z-index 1
     min-width 0
+    display flex
+    position relative
+    box-sizing border-box
+    flex-direction column
 
     &_mode
       &_explorer

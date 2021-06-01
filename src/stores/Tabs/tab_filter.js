@@ -5,9 +5,8 @@ import * as CellViews from "../../components/Table/CellViews";
 import { debounce } from "../../utils/debounce";
 import { isDefined } from "../../utils/utils";
 import {
-  FilterValue,
-  FilterValueList,
   FilterValueRange,
+  FilterValueType,
   TabFilterType
 } from "./tab_filter_type";
 
@@ -37,14 +36,7 @@ export const TabFilter = types
   .model("TabFilter", {
     filter: types.reference(TabFilterType),
     operator: types.maybeNull(Operators),
-    value: types.maybeNull(
-      types.union(
-        FilterValue,
-        FilterValueList,
-        FilterValueRange,
-        types.array(FilterValue),
-      )
-    ),
+    value: types.maybeNull(FilterValueType),
   })
   .views((self) => ({
     get field() {
@@ -78,7 +70,7 @@ export const TabFilter = types
     },
 
     get isValidFilter() {
-      const { value } = self;
+      const { currentValue: value } = self;
 
       if (!isDefined(value)) {
         return false;
@@ -137,14 +129,17 @@ export const TabFilter = types
       self.save();
     },
 
-    setValue(value) {
-      let resultValue = value;
+    setValue(newValue) {
+      self.value = newValue;
+      // let resultValue = newValue;
 
-      if (value?.items) {
-        resultValue = FilterValueList.create(value);
-      }
+      // if (hasProperties(newValue, ['items'])) {
+      //   resultValue = FilterValueList.create(newValue);
+      // } else if (hasProperties(newValue, ['min', 'max'])) {
+      //   resultValue = FilterValueRange.create(newValue);
+      // }
 
-      self.value = resultValue;
+      // self.value = resultValue;
     },
 
     delete() {
@@ -173,4 +168,6 @@ export const TabFilter = types
     saveDelayed: debounce(() => {
       self.save();
     }, 300),
-  }));
+  })).preProcessSnapshot((sn) => {
+    return {...sn, value: sn.value ?? null};
+  });

@@ -15,7 +15,7 @@ import { Common } from "../types/Common";
  * @param {{field: FieldConfig}} param0
  */
 export const FilterOperation = observer(
-  ({ filter, field, value, operator }) => {
+  ({ filter, field, operator, value }) => {
     const cellView = filter.cellView;
     const types = cellView?.customOperators ?? [...(FilterInputs[filter.filter.currentType] ?? FilterInputs.String), ...Common];
 

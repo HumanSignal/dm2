@@ -1,7 +1,8 @@
+import { observer } from "mobx-react";
 import React from "react";
 import { FilterInput } from "../FilterInput";
 
-const BaseInput = ({ value, onChange, placeholder }) => {
+const BaseInput = observer(({ value, onChange, placeholder }) => {
   return (
     <FilterInput
       type="text"
@@ -11,7 +12,7 @@ const BaseInput = ({ value, onChange, placeholder }) => {
       placeholder={placeholder}
     />
   );
-};
+});
 
 export const StringFilter = [
   {

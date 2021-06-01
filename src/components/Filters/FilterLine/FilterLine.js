@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React, { Fragment, useMemo } from "react";
+import React, { Fragment } from "react";
 import { FaTrash } from "react-icons/fa";
 import { BemWithSpecifiContext } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
@@ -35,13 +35,10 @@ export const FilterLine = observer(({
   availableFilters,
   index,
   view,
+  value,
   sidebar,
   dropdownClassName
 }) => {
-  const value = useMemo(() => {
-    return filter.currentValue;
-  }, [filter.currentValue]);
-
   return (
     <Block name="filter-line" tag={Fragment}>
       <GroupWrapper wrap={sidebar}>
@@ -82,9 +79,9 @@ export const FilterLine = observer(({
       <GroupWrapper wrap={sidebar}>
         <FilterOperation
           filter={filter}
-          value={value}
+          value={filter.currentValue}
           operator={filter.operator}
-          field={filter.filter.field}
+          field={filter.field}
         />
       </GroupWrapper>
       <Elem name="remove">
