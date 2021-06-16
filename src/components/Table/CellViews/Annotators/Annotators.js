@@ -40,7 +40,7 @@ export const Annotators = (cell) => {
                 faded={userpicIsFaded}
                 badge={{
                   bottomRight: review && (
-                    <Block name="badge" mod={{[review]: true}}>
+                    <Block name="userpic-badge" mod={{[review]: true}}>
                       {review === 'rejected' ? <LsCrossAlt/> : <LsCheckAlt/>}
                     </Block>
                   )

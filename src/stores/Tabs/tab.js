@@ -125,7 +125,7 @@ export const Tab = types
     },
 
     get filtersApplied() {
-      return self.validFilters.length > 0;
+      return self.validFilters.length;
     },
 
     get validFilters() {

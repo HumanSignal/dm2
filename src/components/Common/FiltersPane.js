@@ -1,7 +1,8 @@
 import { inject, observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
-import { FaFilter } from "react-icons/fa";
+import { FaAngleDown, FaFilter } from "react-icons/fa";
 import { Filters } from "../Filters/Filters";
+import { Badge } from "./Badge/Badge";
 import { Button } from "./Button/Button";
 import { Dropdown } from "./Dropdown/Dropdown";
 
@@ -11,22 +12,25 @@ const buttonInjector = inject(({store}) => {
   return {
     viewsStore,
     sidebarEnabled: viewsStore?.sidebarEnabled ?? false,
-    active: currentView?.filtersApplied ?? false,
+    activeFiltersNumber: currentView?.filtersApplied ?? false,
   };
 });
 
 export const FiltersButton = buttonInjector(observer(
-  React.forwardRef(({ active, size, sidebarEnabled, viewsStore, ...rest }, ref) => {
+  React.forwardRef(({ activeFiltersNumber, size, sidebarEnabled, viewsStore, ...rest }, ref) => {
+    const hasFilters = activeFiltersNumber > 0;
     return (
       <Button
         ref={ref}
-        look={active && "primary"}
         size={size}
         icon={<FaFilter />}
         onClick={() => sidebarEnabled && viewsStore.toggleSidebar()}
         {...rest}
       >
-        Filters
+        Filters {hasFilters && (
+          <Badge size="small" style={{marginLeft: 5}}>{activeFiltersNumber}</Badge>
+        )}
+        <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
       </Button>
     );
   })

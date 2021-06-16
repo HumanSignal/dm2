@@ -52,7 +52,7 @@ export const APIConfig = {
     /** Mark sample as skipped */
     skipTask: {
       path: (params) => {
-        const pathBase = "/../tasks/:taskID/annotations";
+        const pathBase = "/../annotations";
         const isNewAnnotation = !isDefined(params.annotationID);
         return isNewAnnotation ? pathBase : `${pathBase}/:annotationID`;
       },
