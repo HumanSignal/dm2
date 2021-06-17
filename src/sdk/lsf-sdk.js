@@ -233,10 +233,10 @@ export class LSFWrapper {
     } else {
       if (this.annotations.length === 0 && this.predictions.length > 0) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
+      } else if (this.annotations.length > 0 && id && id !== "auto") {
+        annotation = this.annotations.find((c) => c.pk === id || c.id === id);
       } else if (this.annotations.length > 0 && (id === "auto" || hasAutoAnnotations)) {
         annotation = first;
-      } else if (this.annotations.length > 0 && id) {
-        annotation = this.annotations.find((c) => c.pk === id || c.id === id);
       } else {
         annotation = cs.addAnnotation({ userGenerate: true });
       }

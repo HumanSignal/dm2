@@ -64,7 +64,8 @@ export const create = (columns) => {
     }))
     .actions((self) => ({
       mergeAnnotations(annotations) {
-        self.annotations = annotations.map((c) => {
+        // skip drafts, they'll be added later
+        self.annotations = annotations.filter(a => a.pk).map((c) => {
           const existingAnnotation = self.annotations.find(
             (ec) => ec.id === Number(c.pk)
           );
@@ -75,6 +76,7 @@ export const create = (columns) => {
             return {
               id: c.id,
               pk: c.pk,
+              draftId: c.draftId,
               result: c.serializeAnnotation(),
               leadTime: c.leadTime,
               userGenerate: !!c.userGenerate,
