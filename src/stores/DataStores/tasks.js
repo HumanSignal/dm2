@@ -133,9 +133,6 @@ export const create = (columns) => {
         self.setLoading(taskID);
 
         const taskData = yield self.root.apiCall("task", { taskID });
-        const drafts = yield self.root.apiCall("taskDrafts", { taskID: taskData.id });
-
-        if (drafts) taskData.drafts = drafts;
 
         const task = self.applyTaskSnapshot(taskData, taskID);
 
