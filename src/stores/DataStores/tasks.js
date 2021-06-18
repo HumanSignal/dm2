@@ -151,6 +151,11 @@ export const create = (columns) => {
           reload: false,
         });
 
+        if (taskData.$meta.status === 404) {
+          getRoot(self).SDK.invoke("labelStreamFinished");
+          return null;
+        }
+
         const labelStreamModeChanged = self.selected && (
           self.selected.assigned_task !== taskData.assigned_task
           && taskData.assigned_task === false
