@@ -91,12 +91,14 @@ export class LSFWrapper {
       );
     }
 
+
     const lsfProperties = {
       user: options.user,
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
       description: this.instruction,
       interfaces: interfaces,
+      users: dm.store.users.map(u => u.toJSON()),
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
