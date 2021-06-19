@@ -232,13 +232,13 @@ export class APIProxy {
           rawResponse = await fetch(apiCallURL, requestParams);
         }
 
+        if (raw) return rawResponse;
+
         responseMeta = {
           headers: new Map(Array.from(rawResponse.headers)),
           status: rawResponse.status,
           url: rawResponse.url,
         };
-
-        if (raw) return rawResponse;
 
         if (rawResponse.ok && rawResponse.status !== 401) {
           const responseText = await rawResponse.text();
@@ -252,15 +252,16 @@ export class APIProxy {
                 : { ok: true };
 
             if (methodSettings.convert instanceof Function) {
-              return await methodSettings.convert(responseData);
+              responseResult = await methodSettings.convert(responseData);
+            } else {
+              responseResult = responseData;
             }
 
-            responseResult = responseData;
           } catch (err) {
             responseResult = this.generateException(err, responseText);
           }
         } else {
-          responseResult = this.generateError(rawResponse);
+          responseResult = await this.generateError(rawResponse);
         }
       } catch (exception) {
         responseResult = this.generateException(exception);
