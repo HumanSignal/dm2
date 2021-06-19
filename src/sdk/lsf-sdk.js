@@ -87,6 +87,7 @@ export class LSFWrapper {
         "annotations:view-all",
         "infobar",
         "predictions:tabs",
+        "ground-truth"
       );
     }
 
