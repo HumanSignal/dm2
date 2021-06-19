@@ -32,8 +32,9 @@
  * interfaces: Dict<boolean>,
  * instruments: Dict<any>,
  * toolbar?: string,
- * panels?: Object[]
+ * panels?: Record<string, any>[]
  * spinner?: import("react").ReactNode
+ * apiTransform?: Record<string, Record<string, Function>
  * }} DMConfig
  */
 
@@ -139,6 +140,7 @@ export class DataManager {
     this.spinner = config.spinner;
     this.spinnerSize = config.spinnerSize;
     this.instruments = prepareInstruments(config.instruments ?? {}),
+    this.apiTransform = config.apiTransform ?? {};
     this.interfaces = objectToMap({
       tabs: true,
       toolbar: true,

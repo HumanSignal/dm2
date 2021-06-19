@@ -399,7 +399,11 @@ export const AppStore = types
     }),
 
     apiCall: flow(function* (methodName, params, body) {
-      let result = yield self.API[methodName](params, body);
+      const apiTransform = self.SDK.apiTransform?.[methodName];
+      const requestParams = apiTransform?.params?.(params) ?? params ?? {};
+      const requestBody = apiTransform?.body?.(body) ?? body ?? undefined;
+
+      let result = yield self.API[methodName](requestParams, requestBody);
 
       if (result.error && result.status !== 404) {
         if (result.response) {
