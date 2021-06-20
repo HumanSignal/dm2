@@ -40,6 +40,7 @@
 
 import { inject, observer } from "mobx-react";
 import { unmountComponentAtNode } from "react-dom";
+import { toCamelCase } from "strman";
 import { instruments } from "../components/DataManager/Toolbar/instruments";
 import { APIProxy } from "../utils/api-proxy";
 import { objectToMap } from "../utils/helpers";
@@ -262,7 +263,8 @@ export class DataManager {
    */
   on(eventName, callback) {
     if (eventName.startsWith('lsf:')) {
-      this.lsf?.on(eventName.replace(/^lsf:/, ''), callback);
+      const evt = toCamelCase(eventName.replace(/^lsf:/, ''));
+      this.lsf?.on(evt, callback);
       return;
     }
 
@@ -279,7 +281,8 @@ export class DataManager {
    */
   off(eventName, callback) {
     if (eventName.startsWith('lsf:')) {
-      this.lsf?.off(eventName.replace(/^lsf:/, ''), callback);
+      const evt = toCamelCase(eventName.replace(/^lsf:/, ''));
+      this.lsf?.off(evt, callback);
       return;
     }
 
