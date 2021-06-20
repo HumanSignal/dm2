@@ -391,9 +391,14 @@ export const TabStore = types
 
         defaultView = self.views[self.views.length - 1];
 
+        console.log(self.views.map(({id}) => id));
         yield defaultView.save(defaultView);
+
+        // at this point newly created tab does not exist
+        // so we need to take in from the list once again
+        defaultView = self.views[self.views.length - 1];
         self.selected = defaultView;
-        self.selected.reload();
+        defaultView.reload();
       }
 
       const selected = tabID
