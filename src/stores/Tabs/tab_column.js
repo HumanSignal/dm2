@@ -1,7 +1,7 @@
 import { getRoot, getSnapshot, types } from "mobx-state-tree";
 import React from "react";
 import { toStudlyCaps } from "strman";
-import { LsAnnotation, LsBanSquare, LsSparkSquare, LsThumbsDown, LsThumbsUp } from "../../assets/icons";
+import { LsAnnotation, LsBanSquare, LsSparkSquare, LsStarSquare, LsThumbsDown, LsThumbsUp } from "../../assets/icons";
 import * as CellViews from "../../components/Table/CellViews";
 import { all } from "../../utils/utils";
 
@@ -186,6 +186,8 @@ export const TabColumn = types
           return <LsThumbsUp width="20" height="20" style={{color: '#2AA000'}}/>;
         case "reviews_rejected":
           return <LsThumbsDown width="20" height="20" style={{color: '#DD0000'}}/>;
+        case "ground_truth":
+          return <LsStarSquare width="20" height="20" style={{color: '#FFB700'}}/>;
       }
     },
 

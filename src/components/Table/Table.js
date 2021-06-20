@@ -192,6 +192,7 @@ export const DataView = injector(
         commonDecoration("completed_at", 180, "space-between", true),
         commonDecoration("reviews_accepted", 60, "center"),
         commonDecoration("reviews_rejected", 60, "center"),
+        commonDecoration("ground_truth", 60, "center"),
         {
           resolver: (col) => col.type === "Number",
           style(col) {
