@@ -261,6 +261,11 @@ export class DataManager {
    * @param {Function} callback
    */
   on(eventName, callback) {
+    if (eventName.startsWith('lsf:')) {
+      this.lsf?.on(eventName, callback);
+      return;
+    }
+
     const events = this.getEventCallbacks(eventName);
     events.add(callback);
     this.callbacks.set(eventName, events);
@@ -273,6 +278,11 @@ export class DataManager {
    * @param {Function?} callback
    */
   off(eventName, callback) {
+    if (eventName.startsWith('lsf:')) {
+      this.lsf?.off(eventName, callback);
+      return;
+    }
+
     const events = this.getEventCallbacks(eventName);
     if (callback) {
       events.delete(callback);
