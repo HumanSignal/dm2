@@ -76,6 +76,10 @@ export class LSFWrapper {
 
     const interfaces = [...DEFAULT_INTERFACES];
 
+    if (this.project.enable_empty_annotation === false) {
+      interfaces.push("annotations:deny-empty");
+    }
+
     if (this.labelStream) {
       interfaces.push(
         "infobar",
