@@ -189,7 +189,7 @@ export const DataStore = (
 
         self.loading = false;
 
-        getRoot(self).SDK.invoke('dataFetched', [self]);
+        getRoot(self).SDK.invoke('dataFetched', self);
       }),
 
       reload: flow(function* ({ interaction } = {}) {

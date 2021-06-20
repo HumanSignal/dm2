@@ -252,12 +252,12 @@ export class LSFWrapper {
 
     if (annotation) {
       cs.selectAnnotation(annotation.id);
-      this.datamanager.invoke("annotationSet", [annotation]);
+      this.datamanager.invoke("annotationSet", annotation);
     }
   }
 
   onLabelStudioLoad = async (ls) => {
-    this.datamanager.invoke("labelStudioLoad", [ls]);
+    this.datamanager.invoke("labelStudioLoad", ls);
     this.lsf = ls;
 
     if (this.labelStream) {
@@ -267,11 +267,11 @@ export class LSFWrapper {
 
   /** @private */
   onTaskLoad = async (...args) => {
-    this.datamanager.invoke("onSelectAnnotation", args);
+    this.datamanager.invoke("onSelectAnnotation", ...args);
   };
 
   onStorageInitialized = async (ls) => {
-    this.datamanager.invoke("onStorageInitialized", [ls]);
+    this.datamanager.invoke("onStorageInitialized", ls);
 
     if (this.task && this.labelStream === false) {
       const annotationID =
@@ -306,7 +306,7 @@ export class LSFWrapper {
       );
     });
 
-    this.datamanager.invoke("updateAnnotation", [ls, annotation, result]);
+    this.datamanager.invoke("updateAnnotation", ls, annotation, result);
 
     await this.loadTask(this.task.id, annotation.pk);
   };
@@ -339,7 +339,7 @@ export class LSFWrapper {
       });
 
       // this.task.deleteAnnotation(annotation);
-      this.datamanager.invoke("deleteAnnotation", [ls, annotation]);
+      this.datamanager.invoke("deleteAnnotation", ls, annotation);
     }
 
     if (response.ok) {
@@ -390,10 +390,10 @@ export class LSFWrapper {
   };
 
   // Proxy events that are unused by DM integration
-  onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", args);
-  onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", args);
+  onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
+  onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
   onSelectAnnotation = (...args) =>
-    this.datamanager.invoke("onSelectAnnotation", args);
+    this.datamanager.invoke("onSelectAnnotation", ...args);
 
   async submitCurrentAnnotation(eventName, submit, includeID = false) {
     const { taskID, currentAnnotation } = this;
@@ -409,7 +409,7 @@ export class LSFWrapper {
       currentAnnotation.updatePersonalKey(result.id.toString());
 
       const eventData = annotationToServer(currentAnnotation);
-      this.datamanager.invoke(eventName, [this.lsf, eventData, result]);
+      this.datamanager.invoke(eventName, this.lsf, eventData, result);
 
       this.history?.add(taskID, currentAnnotation.pk);
     }

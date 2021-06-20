@@ -31,7 +31,7 @@ export const Annotators = (cell) => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              sdk.invoke("userCellClick", [e, column.alias, task, user]);
+              sdk.invoke("userCellClick", e, column.alias, task, user);
             }}
           >
             <Tooltip title={user.fullName || user.email}>
@@ -54,7 +54,7 @@ export const Annotators = (cell) => {
         <Elem name="item" onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          sdk.invoke("userCellCounterClick", [e, column.alias, task, userList]);
+          sdk.invoke("userCellCounterClick", e, column.alias, task, userList);
         }}>
           <Userpic username={`+${extra}`}/>
         </Elem>

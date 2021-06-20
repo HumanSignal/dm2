@@ -262,7 +262,7 @@ export class DataManager {
    */
   on(eventName, callback) {
     if (eventName.startsWith('lsf:')) {
-      this.lsf?.on(eventName, callback);
+      this.lsf?.on(eventName.replace(/^lsf:/, ''), callback);
       return;
     }
 
@@ -279,7 +279,7 @@ export class DataManager {
    */
   off(eventName, callback) {
     if (eventName.startsWith('lsf:')) {
-      this.lsf?.off(eventName, callback);
+      this.lsf?.off(eventName.replace(/^lsf:/, ''), callback);
       return;
     }
 
@@ -316,7 +316,7 @@ export class DataManager {
     this.mode = mode;
     this.store.setMode(mode);
 
-    if (modeChanged) this.invoke('modeChanged', [this.mode]);
+    if (modeChanged) this.invoke('modeChanged', this.mode);
   }
 
   /**
@@ -324,7 +324,7 @@ export class DataManager {
    * @param {string} eventName
    * @param {any[]} args
    */
-  async invoke(eventName, args) {
+  async invoke(eventName, ...args) {
     this.getEventCallbacks(eventName).forEach((callback) =>
       callback.apply(this, args)
     );
