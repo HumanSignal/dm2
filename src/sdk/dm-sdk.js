@@ -262,10 +262,9 @@ export class DataManager {
    * @param {Function} callback
    */
   on(eventName, callback) {
-    if (eventName.startsWith('lsf:')) {
+    if (this.lsf && eventName.startsWith('lsf:')) {
       const evt = toCamelCase(eventName.replace(/^lsf:/, ''));
-      this.lsf?.on(evt, callback);
-      return;
+      this.lsf?.lsfInstance?.on(evt, callback);
     }
 
     const events = this.getEventCallbacks(eventName);
@@ -280,10 +279,9 @@ export class DataManager {
    * @param {Function?} callback
    */
   off(eventName, callback) {
-    if (eventName.startsWith('lsf:')) {
+    if (this.lsf && eventName.startsWith('lsf:')) {
       const evt = toCamelCase(eventName.replace(/^lsf:/, ''));
-      this.lsf?.off(evt, callback);
-      return;
+      this.lsf?.lsfInstance?.off(evt, callback);
     }
 
     const events = this.getEventCallbacks(eventName);
@@ -328,6 +326,8 @@ export class DataManager {
    * @param {any[]} args
    */
   async invoke(eventName, ...args) {
+    if (eventName.startsWith('lsf:')) return;
+
     this.getEventCallbacks(eventName).forEach((callback) =>
       callback.apply(this, args)
     );

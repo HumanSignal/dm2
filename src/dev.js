@@ -11,7 +11,6 @@ export const initDevApp = async (DataManager) => {
   const useExternalSource = !!gatewayAPI;
 
   const dm = new DataManager({
-    mode: "labelstream",
     root: document.getElementById("app"),
     toolbar: "actions columns filters ordering review-button label-button loading-possum error-box | refresh view-toggle",
     apiGateway: gatewayAPI,

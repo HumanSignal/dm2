@@ -128,6 +128,15 @@ export class LSFWrapper {
       const LSF = await resolveLabelStudio();
       this.globalLSF = window.LabelStudio === LSF;
       this.lsfInstance = new LSF(this.root, settings);
+
+      const names = Array.from(this.datamanager.callbacks.keys())
+        .filter(k => k.startsWith('lsf:'));
+
+      names.forEach(name => {
+        this.datamanager.getEventCallbacks(name).forEach(clb => {
+          this.lsfInstance.on(name.replace(/^lsf:/, ''), clb);
+        });
+      });
     } catch (err) {
       console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
