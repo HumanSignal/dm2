@@ -283,6 +283,7 @@ export const TabStore = types
       const columns = self.columnsRaw;
       const targets = unique(columns.map((c) => c.target));
       const hiddenColumns = {};
+      const addedColumns = new Set();
 
       const createColumnPath = (columns, column) => {
         const result = [];
@@ -317,19 +318,27 @@ export const TabStore = types
         const { columnPath, parentPath } = createColumnPath(columns, col);
 
         const columnID = `${target}:${columnPath}`;
+
+        if (addedColumns.has(columnID)) return;
+
         const parent = parentPath ? `${target}:${parentPath}` : undefined;
 
         const children = col.children
           ? col.children.map((ch) => `${target}:${columnPath}.${ch}`)
           : undefined;
 
-        const column = TabColumn.create({
+        const colsList = self.columnsTargetMap.get(col.target);
+
+        colsList.push({
           ...col,
           id: columnID,
           alias: col.id,
           parent,
           children,
         });
+
+        const column = colsList[colsList.length - 1];
+        addedColumns.add(column.id);
 
         self.columnsTargetMap.get(col.target).push(column);
 
