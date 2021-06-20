@@ -1,3 +1,4 @@
+import deepEqual from "deep-equal";
 import {
   clone,
   destroy,
@@ -133,10 +134,25 @@ export const Tab = types
     },
 
     get serializedFilters() {
-      return self.validFilters.map((el) => ({
-        ...getSnapshot(el),
-        type: el.filter.currentType,
-      }));
+      return self.validFilters.map((el) => {
+        const filterItem = {
+          ...getSnapshot(el),
+          type: el.filter.currentType,
+        };
+
+        switch(filterItem.type) {
+          case "Number": {
+            filterItem.value = Number(filterItem.value);
+            break;
+          }
+          case "String": {
+            filterItem.value = String(filterItem.value);
+            break;
+          }
+        }
+
+        return filterItem;
+      });
     },
 
     get selectedCount() {
@@ -186,6 +202,9 @@ export const Tab = types
 
       return tab;
     },
+  }))
+  .volatile(() => ({
+    snapshot: {},
   }))
   .actions((self) => ({
     lock() {
@@ -327,8 +346,16 @@ export const Tab = types
         self.hiddenColumns ?? clone(self.parent.defaultHidden);
     },
 
+    afterCreate() {
+      self.snapshot = self.serialize();
+    },
+
     save: flow(function* ({ reload, interaction } = {}) {
-      yield self.parent.saveView(self, { reload, interaction });
+      const serialized = self.serialize();
+      if (!self.saved || !deepEqual(self.snapshot, serialized)) {
+        self.snapshot = serialized;
+        yield self.parent.saveView(self, { reload, interaction });
+      }
     }),
 
     delete: flow(function* () {

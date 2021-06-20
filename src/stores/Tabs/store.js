@@ -182,16 +182,16 @@ export const TabStore = types
         hiddenColumns: snapshot.hiddenColumns ?? clone(self.defaultHidden),
       };
 
-      let newView = self.createView(newSnapshot);
-
-      self.views.push(newView);
+      self.views.push(newSnapshot);
+      let newView = self.views[self.views.length - 1];
 
       if (autosave) {
-        newView = yield self.saveView(newView, { reload });
+        yield newView.save({ reload });
       }
 
       if (autoselect) {
         self.setSelected(newView);
+        newView.reload();
       }
 
       return newView;
@@ -202,7 +202,7 @@ export const TabStore = types
 
       if (needsLock) view.lock();
       const { id: tabID } = view;
-      const body = { body: view.serialize() };
+      const body = { body: view.snapshot };
       const params = { tabID };
 
       if (interaction !== undefined) Object.assign(params, { interaction });
@@ -222,17 +222,21 @@ export const TabStore = types
       };
 
       if (result.id !== view.id) {
-        const newView = Tab.create({ ...newViewSnapshot, saved: true });
-        self.views.push(newView);
+        self.views.push({ ...newViewSnapshot, saved: true });
+        const newView = self.views[self.views.length - 1];
+
         newView.reload();
         self.setSelected(newView);
         destroy(view);
 
         return newView;
       } else {
+
         applySnapshot(view, newViewSnapshot);
 
-        if (reload !== false) view.reload({ interaction });
+        if (reload !== false) {
+          view.reload({ interaction });
+        }
 
         view.unlock();
         return view;
@@ -242,7 +246,7 @@ export const TabStore = types
     duplicateView: flow(function * (view) {
       const sn = getSnapshot(view);
 
-      let newView = Tab.create({
+      self.views.push({
         ...sn,
         id: Number.MAX_SAFE_INTEGER,
         saved: false,
@@ -250,8 +254,9 @@ export const TabStore = types
         title: createNameCopy(sn.title),
       });
 
-      self.views.push(newView);
-      newView = yield self.saveView(newView);
+      const newView = self.views[self.views.length - 1];
+
+      yield newView.save();
       self.selected = newView;
       self.selected.reload();
     }),
@@ -356,12 +361,12 @@ export const TabStore = types
       const snapshots = tabs.map((t) => {
         const { data, ...tab } = dataCleanup(t, columnIds);
 
-        return Tab.create({
+        return {
           ...tab,
           ...(data ?? {}),
           saved: true,
           hasData: !!data,
-        });
+        };
       });
 
       self.views.push(...snapshots);
@@ -371,14 +376,15 @@ export const TabStore = types
       if (self.views.length === 0) {
         tabID = null;
 
-        defaultView = Tab.create({
+        self.views.push({
           id: 0,
           title: "Default",
           hiddenColumns: self.defaultHidden,
         });
 
-        self.views.push(defaultView);
-        defaultView = yield self.saveView(defaultView);
+        defaultView = self.views[self.views.length - 1];
+
+        yield defaultView.save(defaultView);
         self.selected = defaultView;
         self.selected.reload();
       }
@@ -393,7 +399,7 @@ export const TabStore = types
         pushState: tabID === undefined,
       });
 
-      yield self.saveView(self.selected);
+      yield self.selected.save();
 
       if (labeling) {
         getRoot(self).startLabelStream({

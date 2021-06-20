@@ -371,30 +371,29 @@ export const AppStore = types
       self.users.push(...list);
     }),
 
-    fetchData: flow(function* () {
+    fetchData: flow(function* ({isLabelStream} = {}) {
       self.setLoading(true);
 
       const { tab, task, labeling } = History.getParams();
 
-      try {
-        const [projectFetched] = yield Promise.all([
-          yield self.fetchProject(),
-          yield self.fetchUsers(),
-        ]);
+      const [projectFetched] = yield Promise.all([
+        yield self.fetchProject(),
+        yield self.fetchUsers(),
+      ]);
 
-        if (projectFetched) {
+      if (projectFetched) {
+
+        if (!isLabelStream) {
           yield self.fetchActions();
           self.viewsStore.fetchColumns();
           yield self.viewsStore.fetchTabs(tab, task, labeling);
-
-          self.resolveURLParams();
-
-          self.setLoading(false);
-
-          self.startPolling();
         }
-      } catch (err) {
-        console.error(err);
+
+        self.resolveURLParams();
+
+        self.setLoading(false);
+
+        self.startPolling();
       }
     }),
 
@@ -430,22 +429,24 @@ export const AppStore = types
     }),
 
     invokeAction: flow(function* (actionId, options = {}) {
-      const view = self.currentView;
+      const view = self.currentView ?? {};
+
       const needsLock =
         self.availableActions.findIndex((a) => a.id === actionId) >= 0;
+
       const { selected } = view;
       const actionCallback = self.SDK.getAction(actionId);
 
-      if (needsLock && !actionCallback) view.lock();
+      if (view && needsLock && !actionCallback) view.lock();
 
       const actionParams = {
         ordering: view.ordering,
-        selectedItems: selected.hasSelected
+        selectedItems: selected?.hasSelected
           ? selected.snapshot
           : { all: true, excluded: [] },
         filters: {
-          conjunction: view.conjunction,
-          items: view.serializedFilters,
+          conjunction: view.conjunction ?? 'and',
+          items: view.serializedFilters ?? [],
         },
       };
 
@@ -453,12 +454,17 @@ export const AppStore = types
         return actionCallback(actionParams, view);
       }
 
+      const requestParams = {
+        id: actionId,
+      };
+
+      if (isDefined(view.id)) {
+        requestParams.tabID = view.id;
+      }
+
       const result = yield self.apiCall(
         "invokeAction",
-        {
-          id: actionId,
-          tabID: view.id,
-        },
+        requestParams,
         {
           body: actionParams,
         }
@@ -475,7 +481,7 @@ export const AppStore = types
         view.clearSelection();
       }
 
-      view.unlock();
+      view?.unlock?.();
 
       return result;
     }),

@@ -1,6 +1,7 @@
 import { observer } from "mobx-react";
 import React, { useCallback, useMemo } from "react";
 import { Elem } from "../../../utils/bem";
+import { debounce } from "../../../utils/debounce";
 import { FilterDropdown } from "../FilterDropdown";
 import * as FilterInputs from "../types";
 import { Common } from "../types/Common";
@@ -34,9 +35,19 @@ export const FilterOperation = observer(
       return result;
     }, [operator, types, filter]);
 
+    const saveFilter = useCallback(debounce(() => {
+      console.log('changed');
+      filter.save(true);
+    }, 300), []);
+
     const onChange = useCallback((newValue) => {
-      filter.setValueDelayed(newValue);
-    }, [filter]);
+      filter.setValue(newValue);
+      saveFilter();
+    }, []);
+
+    const onOperatorSelected = useCallback((selectedKey) => {
+      filter.setOperator(selectedKey);
+    }, []);
 
     const Input = selected?.input;
 
@@ -55,7 +66,7 @@ export const FilterOperation = observer(
                 ? operators.filter(op => availableOperators.includes(op.value))
                 : operators
             )}
-            onChange={(selectedKey) => filter.setOperator(selectedKey)}
+            onChange={onOperatorSelected}
           />
         </Elem>
         <Elem block="filter-line" name="column" mix="value">
