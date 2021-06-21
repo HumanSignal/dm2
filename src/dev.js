@@ -20,6 +20,9 @@ export const initDevApp = async (DataManager) => {
     apiHeaders: {
       Authorization: `Token ${LS_ACCESS_TOKEN}`,
     },
+    interfaces: {
+      groundTruth: true
+    },
     labelStudio: {
       user: {
         pk: 1,
@@ -47,5 +50,13 @@ export const initDevApp = async (DataManager) => {
         return () => <Button style={{width: 105}}>Review</Button>;
       }
     }
+  });
+
+  dm.on("lsf:groundTruth", () => {
+    console.log('lsf ground truth set');
+  });
+
+  dm.on("taskSelected", () => {
+    console.log('task selected');
   });
 };

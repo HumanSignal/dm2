@@ -293,6 +293,18 @@ export class DataManager {
     }
   }
 
+  removeAllListeners() {
+    const lsfEvents = Array.from(this.callbacks.keys()).filter(evt => evt.startsWith('lsf:'));
+
+    lsfEvents.forEach(evt => {
+      const callbacks = Array.from(this.getEventCallbacks(evt));
+      const eventName = toCamelCase(evt.replace(/^lsf:/, ''));
+      callbacks.forEach(clb => this.lsf?.lsfInstance?.off(eventName, clb));
+    });
+
+    this.callbacks.clear();
+  }
+
   /**
    * Check if an event has at least one handler
    * @param {string} eventName Name of the event to check

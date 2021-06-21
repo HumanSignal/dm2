@@ -6,6 +6,7 @@ import { isDefined } from "../../../../utils/utils";
 import { Space } from "../../../Common/Space/Space";
 import { Tooltip } from "../../../Common/Tooltip/Tooltip";
 import { Userpic } from "../../../Common/Userpic/Userpic";
+import { Common } from "../../../Filters/types";
 import { VariantSelect } from "../../../Filters/types/List";
 import "./Annotators.styl";
 
@@ -91,4 +92,4 @@ Annotators.customOperators = [{
   label: "not contains",
   valueType: "list",
   input: (props) => <VariantSelect {...props}/>,
-}];
+}, ...Common];

@@ -1,6 +1,7 @@
 import { observer } from "mobx-react";
 import React from "react";
 import { FilterDropdown } from "../FilterDropdown";
+import { Common } from "./Common";
 
 export const VariantSelect = observer(({ filter, schema, onChange, multiple, value }) => {
   const { items } = schema;
@@ -54,4 +55,5 @@ export const ListFilter = [
     valueType: "list",
     input: (props) => <VariantSelect {...props} multiple/>,
   },
+  ...Common,
 ];
