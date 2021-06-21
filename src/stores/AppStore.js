@@ -390,7 +390,7 @@ export const AppStore = types
           yield self.viewsStore.fetchTabs(tab, task, labeling);
         } else if (isLabelStream && !!tab) {
           const { selectedItems } = JSON.parse(decodeURIComponent(query ?? "{}"));
-          yield self.viewsStore.fetchSingleTab(tab, selectedItems);
+          yield self.viewsStore.fetchSingleTab(tab, selectedItems ?? {});
         }
 
         self.resolveURLParams();
