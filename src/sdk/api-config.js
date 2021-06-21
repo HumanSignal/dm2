@@ -16,6 +16,9 @@ export const APIConfig = {
     /** Tabs (materialized views) */
     tabs: "/views",
 
+    /** Single tab */
+    tab: "/views/:tabId",
+
     /** Creates a new tab */
     createTab: {
       path: "/views",

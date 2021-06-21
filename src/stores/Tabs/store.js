@@ -391,7 +391,6 @@ export const TabStore = types
 
         defaultView = self.views[self.views.length - 1];
 
-        console.log(self.views.map(({id}) => id));
         yield defaultView.save(defaultView);
 
         // at this point newly created tab does not exist
@@ -425,4 +424,25 @@ export const TabStore = types
         });
       }
     }),
+
+    fetchSingleTab: flow(function * (tabId, selectedItems) {
+      const tabData = yield getRoot(self).apiCall("tab", { tabId });
+      const columnIds = self.columns.map(c => c.id);
+      const { data, ...tabClean } = dataCleanup(tabData, columnIds);
+
+      self.views.push({
+        ...tabClean,
+        ...(data ?? {}),
+        selected: {
+          all: selectedItems?.all,
+          list: selectedItems.included ?? selectedItems.excluded ?? [],
+        },
+        saved: true,
+        hasData: !!data,
+      });
+
+      const tab = self.views[self.views.length - 1];
+
+      self.selected = tab;
+    })
   }));

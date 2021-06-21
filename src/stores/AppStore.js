@@ -374,7 +374,7 @@ export const AppStore = types
     fetchData: flow(function* ({isLabelStream} = {}) {
       self.setLoading(true);
 
-      const { tab, task, labeling } = History.getParams();
+      const { tab, task, labeling, query } = History.getParams();
 
       const [projectFetched] = yield Promise.all([
         yield self.fetchProject(),
@@ -383,10 +383,14 @@ export const AppStore = types
 
       if (projectFetched) {
 
+        self.viewsStore.fetchColumns();
+
         if (!isLabelStream) {
           yield self.fetchActions();
-          self.viewsStore.fetchColumns();
           yield self.viewsStore.fetchTabs(tab, task, labeling);
+        } else {
+          const selectedItems = JSON.parse(decodeURIComponent(query ?? "{}"));
+          yield self.viewsStore.fetchSingleTab(tab, selectedItems);
         }
 
         self.resolveURLParams();
