@@ -91,10 +91,12 @@ export class LSFWrapper {
         "annotations:view-all",
         "infobar",
         "predictions:tabs",
-        "ground-truth"
       );
     }
 
+    if (!this.labelStream && this.datamanager.hesInterface('groundTruth')) {
+      interfaces.push('ground-truth');
+    }
 
     const lsfProperties = {
       user: options.user,

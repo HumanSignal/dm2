@@ -150,6 +150,7 @@ export class DataManager {
       labelButton: true,
       backButton: true,
       labelingHeader: true,
+      groundTruth: false,
       ...config.interfaces,
     });
 
@@ -416,6 +417,10 @@ export class DataManager {
 
   getInstrument(name) {
     return instruments[name] ?? this.instruments.get(name) ?? null;
+  }
+
+  hesInterface(name) {
+    return this.interfaces.get(name) === true;
   }
 
   get toolbarInstruments() {
