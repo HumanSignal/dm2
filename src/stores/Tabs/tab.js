@@ -251,6 +251,7 @@ export const Tab = types
         }
 
         self.ordering[0] = ordering;
+        self.saved = false;
       }
 
       self.clearSelection();
