@@ -231,7 +231,7 @@ export const TabStore = types
 
         return newView;
       } else {
-
+        console.log('saved');
         applySnapshot(view, newViewSnapshot);
 
         if (reload !== false) {

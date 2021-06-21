@@ -179,7 +179,7 @@ export const Tab = types
 
       const data = {
         title: self.title,
-        ordering: self.ordering,
+        ordering: self.ordering.toJSON(),
         type: self.type,
         target: self.target,
         filters: self.filterSnposhot,
@@ -251,7 +251,6 @@ export const Tab = types
         }
 
         self.ordering[0] = ordering;
-        self.saved = false;
       }
 
       self.clearSelection();
@@ -353,6 +352,7 @@ export const Tab = types
 
     save: flow(function* ({ reload, interaction } = {}) {
       const serialized = self.serialize();
+
       if (!self.saved || !deepEqual(self.snapshot, serialized)) {
         self.snapshot = serialized;
         yield self.parent.saveView(self, { reload, interaction });
