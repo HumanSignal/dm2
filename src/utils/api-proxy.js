@@ -323,10 +323,12 @@ export class APIProxy {
   createUrl(endpoint, data = {}, parentPath, gateway) {
     const url = new URL(gateway ? this.resolveGateway(gateway) : this.gateway);
     const usedKeys = [];
-    const { path: resolvedPath, method: resolvedMethod } = this.resolveEndpoint(
-      endpoint,
-      data,
-    );
+
+    const {
+      path: resolvedPath,
+      method: resolvedMethod
+    } = this.resolveEndpoint(endpoint, data);
+
     const path = []
       .concat(...(parentPath ?? []), resolvedPath)
       .filter((p) => p !== undefined)
