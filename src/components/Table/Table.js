@@ -279,7 +279,8 @@ export const DataView = injector(
       if (document.activeElement !== document.body) return;
 
       const { highlighted } = dataStore;
-      if (highlighted) store.startLabeling(highlighted);
+      // don't close QuickView by Enter
+      if (highlighted && !highlighted.isSelected) store.startLabeling(highlighted);
     });
 
     // Render the UI for your table
