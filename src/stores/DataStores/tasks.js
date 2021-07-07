@@ -106,6 +106,12 @@ export const create = (columns) => {
         if (index >= 0) self.annotations.splice(index, 1);
       },
 
+      deleteDraft(id) {
+        if (!self.drafts) return;
+        const index = self.drafts.findIndex(d => d.id === id);
+        if (index >= 0) self.drafts.splice(index, 1);
+      },
+
       loadAnnotations: flow(function* () {
         const annotations = yield Promise.all([
           getRoot(self).apiCall("annotations", { taskID: self.id }),
@@ -214,11 +220,6 @@ export const create = (columns) => {
           self.totalPredictions = total_predictions;
       },
 
-      deleteDraft(id) {
-        if (!self.drafts) return;
-        const index = self.drafts.findIndex(d => d.id === id);
-        if (index >= 0) self.drafts.splice(index, 1);
-      }
     }))
     .preProcessSnapshot((snapshot) => {
       const { total_annotations, total_predictions, ...sn } = snapshot;
