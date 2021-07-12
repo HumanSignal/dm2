@@ -22,9 +22,7 @@ const DEFAULT_INTERFACES = [
   "predictions",
   "predictions:menu", // right menu with prediction items
   "annotations:menu", // right menu with annotation items
-  "annotations:delete",
   "annotations:current",
-  "annotations:tabs",
   "side-column", // entity
 ];
 
@@ -87,9 +85,11 @@ export class LSFWrapper {
       );
     } else {
       interfaces.push(
+        "infobar",
         "annotations:add-new",
         "annotations:view-all",
-        "infobar",
+        "annotations:delete",
+        "annotations:tabs",
         "predictions:tabs",
       );
     }
