@@ -116,7 +116,7 @@ export const Labeling = injector(
                 minWidth={200}
                 showResizerLine={false}
                 maxWidth={window.innerWidth * 0.35}
-                initialWidth={view.labelingTableWidth}
+                initialWidth={240} // hardcoded as in main-menu-trigger
                 onResizeFinished={onResize}
                 style={{ display: "flex", flex: 1 }}
               >
