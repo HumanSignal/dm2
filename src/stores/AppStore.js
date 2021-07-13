@@ -291,7 +291,13 @@ export const AppStore = types
       const { SDK } = self;
 
       self.unsetTask(options);
-      History.forceNavigate({ tab: self.currentView.id });
+
+      const viewId = self.currentView?.id ?? self.viewsStore.views[0]?.id;
+
+      if (isDefined(viewId)) {
+        History.forceNavigate({ tab: self.currentView.id });
+      }
+
       SDK.setMode("explorer");
       SDK.destroyLSF();
     },
