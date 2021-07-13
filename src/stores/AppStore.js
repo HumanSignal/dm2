@@ -107,15 +107,15 @@ export const AppStore = types
     },
 
     get showPreviews() {
-      return this.SDK.showPreviews;
+      return self.SDK.showPreviews;
     },
 
     get currentSelection() {
-      return this.currentView.selected.snapshot;
+      return self.currentView.selected.snapshot;
     },
 
     get currentFilter() {
-      return this.currentView.filterSnposhot;
+      return self.currentView.filterSnposhot;
     }
   }))
   .volatile(() => ({
