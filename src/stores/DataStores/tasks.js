@@ -156,7 +156,7 @@ export const create = (columns) => {
           reload: false,
         });
 
-        if (taskData && taskData.$meta.status === 404) {
+        if (taskData?.$meta?.status === 404) {
           getRoot(self).SDK.invoke("labelStreamFinished");
           return null;
         }

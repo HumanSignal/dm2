@@ -137,6 +137,7 @@ export const AppStore = types
 
     beforeDestroy() {
       clearTimeout(self._poll);
+      window.removeEventListener("popstate", self.handlePopState);
     },
 
     setMode(mode) {
@@ -302,32 +303,34 @@ export const AppStore = types
       SDK.destroyLSF();
     },
 
-    resolveURLParams() {
-      window.addEventListener("popstate", ({ state }) => {
-        const { tab, task, annotation, labeling } = state ?? {};
+    handlePopState: (({ state }) => {
+      const { tab, task, annotation, labeling } = state ?? {};
 
-        if (tab) {
-          self.viewsStore.setSelected(parseInt(tab), {
-            pushState: false,
-          });
-        }
+      if (tab) {
+        self.viewsStore.setSelected(parseInt(tab), {
+          pushState: false,
+        });
+      }
 
-        if (task) {
-          const params = {};
-          if (annotation) {
-            params.task_id = parseInt(task);
-            params.id = parseInt(annotation);
-          } else {
-            params.id = parseInt(task);
-          }
-
-          self.startLabeling(params, { pushState: false });
-        } else if (labeling) {
-          self.startLabelStream({ pushState: false });
+      if (task) {
+        const params = {};
+        if (annotation) {
+          params.task_id = parseInt(task);
+          params.id = parseInt(annotation);
         } else {
-          self.closeLabeling({ pushState: false });
+          params.id = parseInt(task);
         }
-      });
+
+        self.startLabeling(params, { pushState: false });
+      } else if (labeling) {
+        self.startLabelStream({ pushState: false });
+      } else {
+        self.closeLabeling({ pushState: false });
+      }
+    }).bind(self),
+
+    resolveURLParams() {
+      window.addEventListener("popstate", self.handlePopState);
     },
 
     setLoading(value) {

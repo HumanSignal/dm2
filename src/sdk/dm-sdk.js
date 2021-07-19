@@ -39,6 +39,7 @@
  */
 
 import { inject, observer } from "mobx-react";
+import { destroy } from "mobx-state-tree";
 import { unmountComponentAtNode } from "react-dom";
 import { toCamelCase } from "strman";
 import { instruments } from "../components/DataManager/Toolbar/instruments";
@@ -408,8 +409,11 @@ export class DataManager {
   }
 
   destroy(detachCallbacks = true) {
-    if (this.store) this.store.destroy?.();
     unmountComponentAtNode(this.root);
+
+    if (this.store) {
+      destroy(this.store);
+    }
 
     if (detachCallbacks) {
       this.callbacks.forEach((callbacks) => callbacks.clear());
