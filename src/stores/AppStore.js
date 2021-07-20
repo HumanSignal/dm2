@@ -293,10 +293,16 @@ export const AppStore = types
 
       self.unsetTask(options);
 
-      const viewId = self.currentView?.id ?? self.viewsStore.views[0]?.id;
+      let viewId;
+
+      if (isDefined(self.currentView)) {
+        viewId = self.currentView.id;
+      } else if (isDefined(self.viewsStore)) {
+        viewId = self.viewsStore.views[0]?.id;
+      }
 
       if (isDefined(viewId)) {
-        History.forceNavigate({ tab: self.currentView.id });
+        History.forceNavigate({ tab: viewId });
       }
 
       SDK.setMode("explorer");
