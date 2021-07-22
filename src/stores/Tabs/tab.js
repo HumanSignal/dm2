@@ -9,6 +9,7 @@ import {
   types
 } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
+import { normalizeFilterValue } from './filter_utils';
 import { TabFilter } from "./tab_filter";
 import { TabHiddenColumns } from "./tab_hidden_columns";
 import { TabSelectedItems } from "./tab_selected_items";
@@ -140,16 +141,13 @@ export const Tab = types
           type: el.filter.currentType,
         };
 
-        switch(filterItem.type) {
-          case "Number": {
-            filterItem.value = Number(filterItem.value);
-            break;
-          }
-          case "String": {
-            filterItem.value = String(filterItem.value);
-            break;
-          }
-        }
+        console.log({filterItem});
+
+        filterItem.value = normalizeFilterValue(
+          filterItem.type,
+          filterItem.operator,
+          filterItem.value
+        );
 
         return filterItem;
       });

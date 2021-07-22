@@ -41,6 +41,7 @@ export const FilterOperation = observer(
     }, 300), []);
 
     const onChange = useCallback((newValue) => {
+      console.log({newValue});
       filter.setValue(newValue);
       saveFilter();
     }, []);
