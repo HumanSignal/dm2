@@ -6,11 +6,22 @@ const Dotenv = require("dotenv-webpack");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
+const workingDirectory = process.env.WORK_DIR
+  ? path.resolve(__dirname, process.env.WORK_DIR)
+  : path.resolve(__dirname, "build");
+
+if (workingDirectory) {
+  console.log(`Working directory set as ${workingDirectory}`)
+}
+
+const customDistDir = !!process.env.WORK_DIR;
+
 const DEFAULT_NODE_ENV = process.env.BUILD_MODULE ? 'production' : (process.env.NODE_ENV || 'development')
 
 const isDevelopment = DEFAULT_NODE_ENV !== "production";
 
 const BUILD = {
+  NO_SERVER: !!process.env.BUILD_NO_SERVER,
   NO_MINIMIZE: isDevelopment || !!process.env.BUILD_NO_MINIMIZATION,
   NO_CHUNKS: isDevelopment || !!process.env.BUILD_NO_CHUNKS,
   NO_HASH: isDevelopment || process.env.BUILD_NO_HASH,
@@ -18,8 +29,8 @@ const BUILD = {
 };
 
 const dirPrefix = {
-  js: isDevelopment ? "" : "static/js/",
-  css: isDevelopment ? "" : "static/css/",
+  js: customDistDir ? "js/" : isDevelopment ? "" : "static/js/",
+  css: customDistDir ? "css/" : isDevelopment ? "" : "static/css/",
 };
 
 const LOCAL_ENV = {
@@ -161,7 +172,7 @@ const cssLoader = (withLocalIdent = true) => {
 };
 
 const devServer = () => {
-  return process.env.NODE_ENV === 'development' ? {
+  return (process.env.NODE_ENV === 'development' && !BUILD.NO_SERVER) ? {
     devServer: {
       compress: true,
       hot: true,
@@ -191,23 +202,24 @@ if (isDevelopment) {
   plugins.push(new webpack.ProgressPlugin());
 }
 
-if (isDevelopment) {
+if (isDevelopment && !BUILD.NO_SERVER) {
   plugins.push( new HtmlWebPackPlugin({
     title: "Heartex DataManager 2.0",
     template: "public/index.html",
   }));
+
   plugins.push(new webpack.ProgressPlugin());
 }
 
 const sourceMap = isDevelopment ? "cheap-module-source-map" : "source-map";
 
-module.exports = ({withDevServer = true} = {}) => ({
+module.exports = ({withDevServer = false} = {}) => ({
   mode: DEFAULT_NODE_ENV || "development",
   devtool: sourceMap,
   ...(withDevServer ? devServer() : {}),
   entry: path.resolve(__dirname, "src/index.js"),
   output: {
-    path: path.resolve(__dirname, "build"),
+    path: path.resolve(workingDirectory),
     filename: "main.js",
     ...output(),
   },
