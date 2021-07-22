@@ -67,7 +67,7 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
   return (
     <Tabs
       activeTab={selectedKey}
-      onAdd={() => views.addView()}
+      onAdd={() => views.addView({ reload: false })}
       onChange={(key) => views.setSelected(key)}
       tabBarExtraContent={<ProjectSummary />}
       addIcon={<FaPlus color="#595959" />}

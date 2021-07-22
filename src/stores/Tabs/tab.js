@@ -6,7 +6,7 @@ import {
   getParent,
   getRoot,
   getSnapshot,
-  types,
+  types
 } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 import { normalizeFilterValue } from './filter_utils';
@@ -328,7 +328,7 @@ export const Tab = types
 
     reload: flow(function* ({ interaction } = {}) {
       if (self.saved) {
-        yield self.dataStore.reload({ interaction });
+        yield self.dataStore.reload({ id: self.id, interaction });
       }
     }),
 

@@ -5,7 +5,7 @@ import {
   flow,
   getRoot,
   getSnapshot,
-  types,
+  types
 } from "mobx-state-tree";
 import { History } from "../../utils/history";
 import { guidGenerator } from "../../utils/random";
@@ -190,8 +190,10 @@ export const TabStore = types
       }
 
       if (autoselect) {
-        self.setSelected(newView);
-        newView.reload();
+        const selectedView = self.views[self.views.length - 1];
+        console.log('selecting and reloading', selectedView.id);
+        self.setSelected(selectedView);
+        selectedView.reload();
       }
 
       return newView;
@@ -257,7 +259,7 @@ export const TabStore = types
       const newView = self.views[self.views.length - 1];
 
       yield newView.save();
-      self.selected = newView;
+      self.selected = self.views[self.views.length - 1];
       self.selected.reload();
     }),
 
