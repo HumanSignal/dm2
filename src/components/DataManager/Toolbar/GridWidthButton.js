@@ -5,10 +5,10 @@ import { Button } from "../../Common/Button/Button";
 import { Icon } from "../../Common/Icon/Icon";
 import { Space } from "../../Common/Space/Space";
 
-const injector = inject(({store}) => {
+const injector = inject(({ store }) => {
   const view = store?.currentView;
   return {
-    view: view,
+    view,
     gridWidth: view?.gridWidth,
   };
 });
@@ -22,7 +22,7 @@ export const GridWidthButton = injector(({ view, gridWidth, size }) => {
       setWidth(newWidth);
       view.setGridWidth(newWidth);
     },
-    [view]
+    [view],
   );
 
   return view.type === "grid" ? (

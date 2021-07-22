@@ -125,7 +125,7 @@ export const Labeling = injector(
             </Elem>
           )}
 
-          <Elem name="lsf-wrapper" mod={{mode: isExplorerMode ? "explorer" : "labeling" }}>
+          <Elem name="lsf-wrapper" mod={{ mode: isExplorerMode ? "explorer" : "labeling" }}>
             <Elem
               ref={lsfRef}
               id="label-studio-dm"
@@ -136,5 +136,5 @@ export const Labeling = injector(
         </Elem>
       </Block>
     );
-  }
+  },
 );

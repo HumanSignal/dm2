@@ -326,7 +326,7 @@ export class APIProxy {
 
     const {
       path: resolvedPath,
-      method: resolvedMethod
+      method: resolvedMethod,
     } = this.resolveEndpoint(endpoint, data);
 
     const path = []

@@ -55,7 +55,7 @@ const DEFAULT_TOOLBAR = "actions columns filters ordering label-button loading-p
 const prepareInstruments = (instruments) => {
   const result = Object
     .entries(instruments)
-    .map(([name, builder]) => [name, builder({inject, observer})]);
+    .map(([name, builder]) => [name, builder({ inject, observer })]);
 
   return objectToMap(Object.fromEntries(result));
 };
@@ -162,7 +162,7 @@ export class DataManager {
         apiMockDisabled: config.apiMockDisabled,
         apiSharedParams: config.apiSharedParams,
         apiHeaders: config.apiHeaders,
-      })
+      }),
     );
 
     if (config.actions) {
@@ -170,7 +170,7 @@ export class DataManager {
         if (!isDefined(action.id)) {
           throw new Error("Every action must provide a unique ID");
         }
-        this.actions.set(action.id, {action, callback});
+        this.actions.set(action.id, { action, callback });
       });
     }
 
@@ -221,11 +221,11 @@ export class DataManager {
    * @param {impotr("../stores/Action.js").Action} action
    */
   addAction(action, callback) {
-    const {id} = action;
+    const { id } = action;
 
     if (!id) throw new Error("Action must provide a unique ID");
 
-    this.actions.set(id, {action, callback});
+    this.actions.set(id, { action, callback });
     this.store.addActions(action);
   }
 
@@ -239,7 +239,7 @@ export class DataManager {
   }
 
   installActions() {
-    this.actions.forEach(({action, callback}) => {
+    this.actions.forEach(({ action, callback }) => {
       this.addAction(action, callback);
     });
   }
@@ -251,8 +251,8 @@ export class DataManager {
 
     this.instruments.set(name, initializer({
       store: this.store,
-      observer: observer,
-      inject: inject
+      observer,
+      inject,
     }));
 
     this.store.updateInstruments();
@@ -343,7 +343,7 @@ export class DataManager {
     if (eventName.startsWith('lsf:')) return;
 
     this.getEventCallbacks(eventName).forEach((callback) =>
-      callback.apply(this, args)
+      callback.apply(this, args),
     );
   }
 

@@ -11,7 +11,7 @@ import { VariantSelect } from "../../../Filters/types/List";
 import "./Annotators.styl";
 
 export const Annotators = (cell) => {
-  const {value, column, original: task} = cell;
+  const { value, column, original: task } = cell;
   const sdk = useSDK();
   const userList = Array.from(value);
   const renderable = userList.slice(0, 10);
@@ -21,7 +21,7 @@ export const Annotators = (cell) => {
     <Block name="annotators">
       {renderable.map((item) => {
         const user = item.user ?? item;
-        const {annotated, reviewed, review} = item;
+        const { annotated, reviewed, review } = item;
 
         const userpicIsFaded = (isDefined(annotated) && annotated === false) || (isDefined(reviewed) && reviewed === false);
 
@@ -41,10 +41,10 @@ export const Annotators = (cell) => {
                 faded={userpicIsFaded}
                 badge={{
                   bottomRight: review && (
-                    <Block name="userpic-badge" mod={{[review]: true}}>
+                    <Block name="userpic-badge" mod={{ [review]: true }}>
                       {review === 'rejected' ? <LsCrossAlt/> : <LsCheckAlt/>}
                     </Block>
-                  )
+                  ),
                 }}
               />
             </Tooltip>
@@ -64,13 +64,13 @@ export const Annotators = (cell) => {
   );
 };
 
-const UsersInjector = inject(({store}) => {
+const UsersInjector = inject(({ store }) => {
   return {
-    users: store.users
+    users: store.users,
   };
 });
 
-Annotators.FilterItem = UsersInjector(({users, item}) => {
+Annotators.FilterItem = UsersInjector(({ users, item }) => {
   const user = users.find(u => u.id === item);
 
   return (

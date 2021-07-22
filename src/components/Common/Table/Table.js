@@ -113,7 +113,7 @@ export const Table = observer(
               onClick={() => {
                 modal({
                   title: "Source for task " + out?.id,
-                  style: {width: 800},
+                  style: { width: 800 },
                   body: <pre>{JSON.stringify(out, null, "  ")}</pre>,
                 });
               }}
@@ -160,7 +160,7 @@ export const Table = observer(
         view.selected.list,
         view.selected.all,
         tableHead,
-      ]
+      ],
     );
 
     const renderRow = useCallback(
@@ -205,14 +205,14 @@ export const Table = observer(
         view,
         view.selected.list,
         view.selected.all,
-      ]
+      ],
     );
 
     const isItemLoaded = useCallback(
       (index) => {
         return props.isItemLoaded(data, index);
       },
-      [props, data]
+      [props, data],
     );
 
     const cachedScrollOffset = useRef();
@@ -240,7 +240,7 @@ export const Table = observer(
         }
         return data[index]?.key ?? index;
       },
-      [data]
+      [data],
     );
 
     useEffect(() => {
@@ -273,7 +273,7 @@ export const Table = observer(
         </TableContext.Provider>
       </TableBlock>
     );
-  }
+  },
 );
 
 const StickyListContext = createContext();
@@ -348,7 +348,7 @@ const StickyList = observer(
         </TableElem>
       </StickyListContext.Provider>
     );
-  })
+  }),
 );
 
 StickyList.displayName = "StickyList";

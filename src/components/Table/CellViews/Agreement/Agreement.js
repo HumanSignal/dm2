@@ -22,7 +22,7 @@ const formatNumber = (num) => {
 export const Agreement = (column) => {
   return (
     <Block name="agreement">
-      <Elem name="score" mod={{[agreement(column.value)]: true}}>
+      <Elem name="score" mod={{ [agreement(column.value)]: true }}>
         {isDefined(column.value) ? `${formatNumber(column.value * 100)}%` : ""}
       </Elem>
     </Block>

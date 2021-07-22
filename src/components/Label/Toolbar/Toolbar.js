@@ -10,7 +10,7 @@ import {
   FaInfoCircle,
   FaRedo,
   FaTrashAlt,
-  FaUndo
+  FaUndo,
 } from "react-icons/fa";
 import { useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";
@@ -130,8 +130,8 @@ const SubmissionButtons = observer(
 
     const buttons = [];
 
-    const submitShortcut = useShortcut('lsf.save-annotation', saveAnnotation, {showShortcut: true}, [disabled]);
-    const rejectShortcut = useShortcut('lsf.reject-task', skipTask, {showShortcut: true}, [disabled]);
+    const submitShortcut = useShortcut('lsf.save-annotation', saveAnnotation, { showShortcut: true }, [disabled]);
+    const rejectShortcut = useShortcut('lsf.reject-task', skipTask, { showShortcut: true }, [disabled]);
 
     buttons.push(
       <Tooltip
@@ -147,7 +147,7 @@ const SubmissionButtons = observer(
         >
           Skip
         </Button>
-      </Tooltip>
+      </Tooltip>,
     );
 
     buttons.push(
@@ -164,11 +164,11 @@ const SubmissionButtons = observer(
         >
           {isNewTask || isLabelStream ? "Submit" : "Update"}
         </Button>
-      </Tooltip>
+      </Tooltip>,
     );
 
     return <Space>{buttons}</Space>;
-  }
+  },
 );
 
 const HistoryButton = ({ children, ...rest }) => (

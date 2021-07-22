@@ -25,7 +25,7 @@ const CellRenderer = observer(
     const value = getProperty(data, valuePath);
 
     const Renderer = cellViews[altType] ?? cellViews[col.original.currentType] ?? cellViews.String;
-    const renderProps = { column: col, original: data, value: value };
+    const renderProps = { column: col, original: data, value };
     const Decoration = decoration?.get?.(col);
     const style = getStyle(cellViews, col, Decoration);
 
@@ -43,7 +43,7 @@ const CellRenderer = observer(
         </div>
       </TableElem>
     );
-  }
+  },
 );
 
 export const TableRow = observer(({ data, style, decoration }) => {

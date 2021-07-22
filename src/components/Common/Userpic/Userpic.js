@@ -29,7 +29,7 @@ export const Userpic = forwardRef(({
 
   useEffect(() => {
     if (user) {
-      const {first_name, last_name, email, initials, username} = user;
+      const { first_name, last_name, email, initials, username } = user;
 
       if (initials) {
         setFinalUsername(initials);
@@ -54,17 +54,17 @@ export const Userpic = forwardRef(({
   }, [finalSrc]);
 
   const userpic = (
-    <Block ref={ref} name="userpic" mix={className} mod={{faded}} style={style} {...rest}>
+    <Block ref={ref} name="userpic" mix={className} mod={{ faded }} style={style} {...rest}>
       <Elem
         tag="img"
         name="avatar"
         ref={imgRef}
         src={finalSrc}
         alt={(finalUsername ?? "").toUpperCase()}
-        style={{opacity: imgVisible ? (faded ? 0.3 : 1) : 0}}
+        style={{ opacity: imgVisible ? (faded ? 0.3 : 1) : 0 }}
         onLoad={onImageLoaded}
         onError={() => setFinalSrc(FALLBACK_IMAGE) }
-        mod={{faded}}
+        mod={{ faded }}
       />
       {nameVisible && (
         <Elem tag="span" name="username">
@@ -74,7 +74,7 @@ export const Userpic = forwardRef(({
 
       {badge && Object.entries(badge).map(([align, content], i) => {
         return (
-          <Elem key={`badge-${i}`} name="badge" mod={{[align]: true}}>
+          <Elem key={`badge-${i}`} name="badge" mod={{ [align]: true }}>
             {content}
           </Elem>
         );

@@ -73,7 +73,7 @@ export const DatePicker = ({
           endDate: realEndDate,
         }
         : {},
-    [selectRange, realStartDate, realEndDate]
+    [selectRange, realStartDate, realEndDate],
   );
 
   useEffect(() => {
@@ -122,7 +122,7 @@ export const DatePicker = ({
           />
         }
       >
-        <Elem name="output" mod={{range: selectRange}}>
+        <Elem name="output" mod={{ range: selectRange }}>
           <Input
             size={size}
             value={startDate || ""}

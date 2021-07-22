@@ -34,7 +34,7 @@ const FieldsMenu = observer(
               title: resetTitle ?? "Default",
               wrap: false,
             },
-            onReset
+            onReset,
           )}
 
         {columns.map((col) => {
@@ -52,7 +52,7 @@ const FieldsMenu = observer(
         })}
       </Menu>
     );
-  }
+  },
 );
 
 export const FieldsButton = injector(
@@ -75,7 +75,7 @@ export const FieldsButton = injector(
 
     if (title)
       content.push(
-        <React.Fragment key="f-button-title">{title}</React.Fragment>
+        <React.Fragment key="f-button-title">{title}</React.Fragment>,
       );
 
     return (
@@ -106,7 +106,7 @@ export const FieldsButton = injector(
         </Button>
       </Dropdown.Trigger>
     );
-  }
+  },
 );
 
 FieldsButton.Checkbox = observer(({ column, children }) => {

@@ -19,7 +19,7 @@ export const DateTimeInput = observer(({ value, range, time, onChange }) => {
 
       onChange(value);
     },
-    [onChange]
+    [onChange],
   );
 
   const dateValue = React.useMemo(() => {

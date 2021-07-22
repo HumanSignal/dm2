@@ -18,7 +18,7 @@ export const Button = React.forwardRef(
       look,
       ...rest
     },
-    ref
+    ref,
   ) => {
     const finalTag = tag ?? href ? "a" : "button";
 
@@ -68,7 +68,7 @@ export const Button = React.forwardRef(
         </>
       </Block>
     );
-  }
+  },
 );
 Button.displayName = "Button";
 

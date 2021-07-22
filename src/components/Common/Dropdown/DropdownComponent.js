@@ -22,7 +22,7 @@ export const Dropdown = React.forwardRef(
     const [currentVisible, setVisible] = React.useState(visible);
     const [offset, setOffset] = React.useState({});
     const [visibility, setVisibility] = React.useState(
-      visible ? "visible" : null
+      visible ? "visible" : null,
     );
 
     const calculatePosition = React.useCallback(() => {
@@ -63,7 +63,7 @@ export const Dropdown = React.forwardRef(
           }
         });
       },
-      [animated]
+      [animated],
     );
 
     const close = React.useCallback(async () => {
@@ -164,7 +164,7 @@ export const Dropdown = React.forwardRef(
     return props.inline === true
       ? result
       : ReactDOM.createPortal(result, document.body);
-  }
+  },
 );
 
 Dropdown.displayName = "Dropdown";

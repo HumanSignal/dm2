@@ -16,7 +16,7 @@ const injector = inject(({ store }) => {
   };
 });
 
-export const LabelButton = injector(({store, allSelected, selectedCount, canLabel, size, target}) => {
+export const LabelButton = injector(({ store, allSelected, selectedCount, canLabel, size, target }) => {
   const all = selectedCount === 0 || allSelected;
 
   return canLabel ? (
@@ -24,7 +24,7 @@ export const LabelButton = injector(({store, allSelected, selectedCount, canLabe
       <Button
         look="primary"
         size={size}
-        style={{width: 160, padding: 0}}
+        style={{ width: 160, padding: 0 }}
         disabled={target === "annotations"}
         onClick={() => store.startLabelStream()}
       >

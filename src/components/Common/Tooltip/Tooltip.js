@@ -12,7 +12,7 @@ export const Tooltip = forwardRef(
     const tooltipElement = useRef();
     const [offset, setOffset] = useState({});
     const [visibility, setVisibility] = useState(
-      defaultVisible ? "visible" : null
+      defaultVisible ? "visible" : null,
     );
     const [injected, setInjected] = useState(false);
     const [align, setAlign] = useState('top-center');
@@ -22,7 +22,7 @@ export const Tooltip = forwardRef(
         triggerElement.current,
         tooltipElement.current,
         align,
-        10
+        10,
       );
 
       setOffset({ left, top });
@@ -47,7 +47,7 @@ export const Tooltip = forwardRef(
           });
         }
       },
-      [injected, calculatePosition, tooltipElement]
+      [injected, calculatePosition, tooltipElement],
     );
 
     const visibilityClasses = useMemo(() => {
@@ -73,14 +73,14 @@ export const Tooltip = forwardRef(
           <Block
             ref={tooltipElement}
             name="tooltip"
-            mod={{align}}
+            mod={{ align }}
             mix={visibilityClasses}
             style={{ ...offset, ...(style ?? {}) }}
           >
             <Elem name="body">{title}</Elem>
           </Block>
         ) : null,
-      [injected, offset, title, visibilityClasses, tooltipElement]
+      [injected, offset, title, visibilityClasses, tooltipElement],
     );
 
     const clone = cloneElement(child, {
@@ -106,6 +106,6 @@ export const Tooltip = forwardRef(
         {createPortal(tooltip, document.body)}
       </>
     );
-  }
+  },
 );
 Tooltip.displayName = "Tooltip";

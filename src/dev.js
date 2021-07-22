@@ -21,7 +21,7 @@ export const initDevApp = async (DataManager) => {
       Authorization: `Token ${LS_ACCESS_TOKEN}`,
     },
     interfaces: {
-      groundTruth: true
+      groundTruth: true,
     },
     labelStudio: {
       user: {
@@ -46,10 +46,10 @@ export const initDevApp = async (DataManager) => {
       },
     },
     instruments: {
-      'review-button': ({inject}) => {
-        return () => <Button style={{width: 105}}>Review</Button>;
-      }
-    }
+      'review-button': ({ inject }) => {
+        return () => <Button style={{ width: 105 }}>Review</Button>;
+      },
+    },
   });
 
   dm.on("lsf:groundTruth", () => {

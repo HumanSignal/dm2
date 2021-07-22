@@ -103,7 +103,7 @@ export class LSFWrapper {
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
       description: this.instruction,
-      interfaces: interfaces,
+      interfaces,
       users: dm.store.users.map(u => u.toJSON()),
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
@@ -210,7 +210,7 @@ export class LSFWrapper {
           const draftAnnotationPk = String(draft.annotation);
           c = cs.annotations.find(c => c.pk === draftAnnotationPk);
           if (c) {
-            c.addVersions({draft: draft.result});
+            c.addVersions({ draft: draft.result });
             c.deleteAllRegions({ deleteReadOnly: true });
           } else {
             // that shouldn't happen
@@ -223,7 +223,7 @@ export class LSFWrapper {
             draft: draft.result,
             userGenerate: true,
             createdBy: draft.created_username,
-            createdAgo: draft.created_ago
+            createdAgo: draft.created_ago,
           });
         }
         cs.selectAnnotation(c.id);
@@ -313,7 +313,7 @@ export class LSFWrapper {
         },
         {
           body: serializedAnnotation,
-        }
+        },
       );
     });
 
@@ -377,7 +377,7 @@ export class LSFWrapper {
         response = await this.datamanager.apiCall(
           "createDraftForAnnotation",
           { taskID: this.task.id, annotationID: annotation.pk },
-          data
+          data,
         );
       }
       response?.id && annotation.setDraftId(response?.id);
@@ -396,7 +396,7 @@ export class LSFWrapper {
 
         return this.datamanager.apiCall("skipTask", params, options);
       },
-      true
+      true,
     );
   };
 

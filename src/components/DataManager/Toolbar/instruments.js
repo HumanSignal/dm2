@@ -14,10 +14,10 @@ import { RefreshButton } from "./RefreshButton";
 import { ViewToggle } from "./ViewToggle";
 
 export const instruments = {
-  'view-toggle': ({size}) => {
+  'view-toggle': ({ size }) => {
     return <ViewToggle size={size} />;
   },
-  'columns': ({size}) => {
+  'columns': ({ size }) => {
     return (
       <FieldsButton
         wrapper={FieldsButton.Checkbox}
@@ -28,42 +28,42 @@ export const instruments = {
       />
     );
   },
-  'filters': ({size}) => {
+  'filters': ({ size }) => {
     return <FiltersPane size={size} />;
   },
-  'ordering': ({size}) => {
+  'ordering': ({ size }) => {
     return <OrderButton size={size} />;
   },
-  'grid-size': ({size}) => {
+  'grid-size': ({ size }) => {
     return <GridWidthButton size={size}/>;
   },
-  'refresh': ({size}) => {
+  'refresh': ({ size }) => {
     return <RefreshButton size={size}/>;
   },
   'loading-possum': () => {
     return <LoadingPossum/>;
   },
-  'label-button': ({size}) => {
+  'label-button': ({ size }) => {
     return <LabelButton size={size}/>;
   },
-  'actions': ({size}) => {
+  'actions': ({ size }) => {
     return <ActionsButton size={size}/>;
   },
   'error-box': () => {
     return <ErrorBox/>;
   },
-  'import-button': ({size}) => {
+  'import-button': ({ size }) => {
     return (
       <Interface name="import">
         <ImportButton size={size}>Import</ImportButton>
       </Interface>
     );
   },
-  'export-button': ({size}) => {
+  'export-button': ({ size }) => {
     return (
       <Interface name="export">
         <ExportButton size={size}>Import</ExportButton>
       </Interface>
     );
-  }
+  },
 };

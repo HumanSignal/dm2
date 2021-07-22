@@ -120,17 +120,17 @@ const MixinBase = types
 
 export const DataStore = (
   modelName,
-  { listItemType, apiMethod, properties }
+  { listItemType, apiMethod, properties },
 ) => {
   const model = types
     .model(modelName, {
       ...(properties ?? {}),
       list: types.optional(types.array(listItemType), []),
       selected: types.maybeNull(
-        types.late(() => types.reference(listItemType))
+        types.late(() => types.reference(listItemType)),
       ),
       highlighted: types.maybeNull(
-        types.late(() => types.reference(listItemType))
+        types.late(() => types.reference(listItemType)),
       ),
     })
     .actions((self) => ({
@@ -205,7 +205,7 @@ export const DataStore = (
       focusNext() {
         const index = Math.min(
           self.list.length - 1,
-          self.list.indexOf(self.highlighted) + 1
+          self.list.indexOf(self.highlighted) + 1,
         );
         self.highlighted = self.list[index];
         self.updated = guidGenerator();

@@ -6,7 +6,7 @@ import {
   getParent,
   getRoot,
   getSnapshot,
-  types
+  types,
 } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 import { normalizeFilterValue } from './filter_utils';
@@ -27,7 +27,7 @@ export const Tab = types
 
     target: types.optional(
       types.enumeration(["tasks", "annotations"]),
-      "tasks"
+      "tasks",
     ),
 
     filters: types.array(types.late(() => TabFilter)),
@@ -51,7 +51,7 @@ export const Tab = types
   .volatile(() => {
     const defaultWidth = window.innerWidth * 0.35;
     const labelingTableWidth = parseInt(
-      localStorage.getItem("labelingTableWidth") ?? defaultWidth
+      localStorage.getItem("labelingTableWidth") ?? defaultWidth,
     );
     return {
       labelingTableWidth,
@@ -141,12 +141,12 @@ export const Tab = types
           type: el.filter.currentType,
         };
 
-        console.log({filterItem});
+        console.log({ filterItem });
 
         filterItem.value = normalizeFilterValue(
           filterItem.type,
           filterItem.operator,
-          filterItem.value
+          filterItem.value,
         );
 
         return filterItem;

@@ -97,7 +97,7 @@ export const TabSelectedItems = types
 
     _invokeChangeEvent() {
       getRoot(self).SDK.invoke('taskSelectionChanged', self);
-    }
+    },
   }))
   .preProcessSnapshot((sn) => {
     const { included, excluded, all } = sn ?? {};

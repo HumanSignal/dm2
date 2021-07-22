@@ -7,13 +7,13 @@ import { isBlank, isDefined } from "../../utils/utils";
 import {
   FilterValueRange,
   FilterValueType,
-  TabFilterType
+  TabFilterType,
 } from "./tab_filter_type";
 
 const operatorNames = Array.from(
   new Set(
-    [].concat(...Object.values(Filters).map((f) => f.map((op) => op.key)))
-  )
+    [].concat(...Object.values(Filters).map((f) => f.map((op) => op.key))),
+  ),
 );
 
 const Operators = types.enumeration(operatorNames);
@@ -95,7 +95,7 @@ export const TabFilter = types
     get cellView() {
       const col = self.filter.field;
       return CellViews[col.type] ?? CellViews[toStudlyCaps(col.alias)];
-    }
+    },
   }))
   .volatile(() => ({
     wasValid: false,
@@ -177,7 +177,7 @@ export const TabFilter = types
 
     setDefaultValue() {
       self.setValue(
-        getOperatorDefaultValue(self.operator) ?? self.filter.defaultValue
+        getOperatorDefaultValue(self.operator) ?? self.filter.defaultValue,
       );
     },
 
@@ -198,5 +198,5 @@ export const TabFilter = types
       self.save();
     }, 300),
   })).preProcessSnapshot((sn) => {
-    return {...sn, value: sn.value ?? null};
+    return { ...sn, value: sn.value ?? null };
   });

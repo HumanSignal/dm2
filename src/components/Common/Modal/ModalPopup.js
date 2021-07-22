@@ -7,7 +7,7 @@ import { Button } from "../Button/Button";
 import { Icon } from "../Icon/Icon";
 import "./Modal.styl";
 
-const {Block, Elem} = BemWithSpecifiContext();
+const { Block, Elem } = BemWithSpecifiContext();
 
 export class Modal extends React.Component {
 
@@ -70,7 +70,7 @@ export class Modal extends React.Component {
 
     const mixes = [
       this.transitionClass,
-      this.props.className
+      this.props.className,
     ];
 
     const modalContent = (
@@ -85,7 +85,7 @@ export class Modal extends React.Component {
                 )}
               </Modal.Header>
             )}
-            <Elem name="body" mod={{bare}}>
+            <Elem name="body" mod={{ bare }}>
               {this.body}
             </Elem>
             {this.state.footer && (
@@ -102,7 +102,7 @@ export class Modal extends React.Component {
   }
 
   onClickOutside = (e) => {
-    const {closeOnClickOutside} = this.props;
+    const { closeOnClickOutside } = this.props;
     const isInModal = this.modalRef.current.contains(e.target);
     const content = cn('modal').elem('content').closest(e.target);
     const close = cn('modal').elem('close').closest(e.target);
@@ -129,7 +129,7 @@ export class Modal extends React.Component {
           onFinish?.();
           resolve();
         });
-      })
+      }),
     });
   }
 
@@ -155,7 +155,7 @@ export class Modal extends React.Component {
 }
 
 Modal.Header = ({ children, divided }) => (
-  <Elem name="header" mod={{divided}}>
+  <Elem name="header" mod={{ divided }}>
     {children}
   </Elem>
 );

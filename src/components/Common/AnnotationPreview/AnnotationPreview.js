@@ -153,5 +153,5 @@ export const AnnotationPreview = injector(
         />
       </Block>
     );
-  })
+  }),
 );

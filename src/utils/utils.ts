@@ -21,7 +21,7 @@ export const any = <T>(boolArray: T[], check: (item: T) => boolean) => {
 
 export const randomDate = (start: Date, end: Date) => {
   return new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+    start.getTime() + Math.random() * (end.getTime() - start.getTime()),
   );
 };
 

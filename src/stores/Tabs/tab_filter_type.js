@@ -6,7 +6,7 @@ import { TabColumn, ViewColumnType } from "./tab_column";
 export const FilterValue = types.union(
   types.string,
   types.number,
-  types.boolean
+  types.boolean,
 );
 
 export const FilterItemValue = types.model("FilterItemValue", {
@@ -61,7 +61,7 @@ export const FilterValueType = types.union({
     }
 
     return FilterValue;
-  }
+  },
 });
 
 export const FilterSchema = types.union({

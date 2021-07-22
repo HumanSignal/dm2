@@ -34,7 +34,7 @@ export const Select = ({
   onChange,
   style,
   multiple,
-  tabIndex=0
+  tabIndex=0,
 }) => {
   const dropdown = useRef();
   const rootRef = useRef();
@@ -79,7 +79,7 @@ export const Select = ({
 
     const foundChild = findSelectedChild(
       children,
-      defaultValue ?? currentValue
+      defaultValue ?? currentValue,
     );
 
     const result = foundChild?.props?.children;
@@ -136,7 +136,7 @@ export const Select = ({
       <Block ref={rootRef} name="select" mod={{ size }} style={style} tabIndex={tabIndex} onKeyDown={handleKeyboard}>
         <Dropdown.Trigger
           ref={dropdown}
-          style={{maxHeight: 280, overflow: 'auto'}}
+          style={{ maxHeight: 280, overflow: 'auto' }}
           content={<Elem name="list">{children}</Elem>}
           onToggle={(visible) => {
             if (!visible) setFocused(null);

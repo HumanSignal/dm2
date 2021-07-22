@@ -24,7 +24,7 @@ const getColor = (colorString) => {
 export const Tag = ({ className, style, size, color, children }) => {
   const finalColor = Object.entries(prepareColor(getColor(color))).reduce(
     (res, [key, color]) => ({ ...res, [`--${key}`]: color }),
-    {}
+    {},
   );
 
   const styles = { ...(style ?? {}), ...finalColor };

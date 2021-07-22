@@ -36,7 +36,7 @@ export const FilterLine = observer(({
   index,
   view,
   sidebar,
-  dropdownClassName
+  dropdownClassName,
 }) => {
   return (
     <Block name="filter-line" tag={Fragment}>
@@ -57,7 +57,7 @@ export const FilterLine = observer(({
             dropdownWidth={120}
             dropdownClassName={dropdownClassName}
             onChange={(value) => filter.setFilterDelayed(value)}
-            optionRender={({ item: { original: filter }}) => (
+            optionRender={({ item: { original: filter } }) => (
               <Elem name="selector">
                 {filter.field.title}
                 {filter.field.parent && (
@@ -65,7 +65,7 @@ export const FilterLine = observer(({
                     size="small"
                     className="filters-data-tag"
                     color="#1d91e4"
-                    style={{marginLeft: 7}}
+                    style={{ marginLeft: 7 }}
                   >
                     {filter.field.parent.title}
                   </Tag>
@@ -95,5 +95,5 @@ export const FilterLine = observer(({
       </Elem>
     </Block>
   );
-}
+},
 );

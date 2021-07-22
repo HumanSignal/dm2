@@ -30,7 +30,15 @@ module.exports = {
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
-    semi: [2, "always"],
-    "@typescript-eslint/indent": ["error", 2],
+    "semi": [2, "always"],
+    '@typescript-eslint/indent': ["error", 2],
+    "comma-dangle": ["error", "always-multiline"],
+    "object-curly-spacing": ["error", "always"],
+    "array-bracket-spacing": ["error", "never"],
+    "object-shorthand": ["error", "always"],
+    "eqeqeq": ["error", "always"],
+    "indent": ["error", 2, {
+      "SwitchCase": 1,
+    }],
   },
 };

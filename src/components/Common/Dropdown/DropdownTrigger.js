@@ -15,11 +15,11 @@ export const DropdownTrigger = React.forwardRef(
       disabled = false,
       ...props
     },
-    ref
+    ref,
   ) => {
     if (children.length > 2)
       throw new Error(
-        "Trigger can't contain more that one child and a dropdown"
+        "Trigger can't contain more that one child and a dropdown",
       );
     const dropdownRef = ref ?? dropdown ?? React.useRef();
     const triggerEL = React.Children.only(children);
@@ -33,18 +33,18 @@ export const DropdownTrigger = React.forwardRef(
       (target) => {
         const triggerClicked = triggerRef.current?.contains?.(target);
         const dropdownClicked = dropdownRef.current?.dropdown?.contains?.(
-          target
+          target,
         );
         const childDropdownClicked = Array.from(childset).reduce(
           (res, child) => {
             return res || child.hasTarget(target);
           },
-          false
+          false,
         );
 
         return triggerClicked || dropdownClicked || childDropdownClicked;
       },
-      [triggerRef, dropdownRef]
+      [triggerRef, dropdownRef],
     );
 
     const handleClick = React.useCallback(
@@ -54,7 +54,7 @@ export const DropdownTrigger = React.forwardRef(
 
         dropdownRef.current?.close?.();
       },
-      [closeOnClickOutside, targetIsInsideDropdown]
+      [closeOnClickOutside, targetIsInsideDropdown],
     );
 
     const handleToggle = React.useCallback(
@@ -69,7 +69,7 @@ export const DropdownTrigger = React.forwardRef(
 
         dropdownRef?.current?.toggle();
       },
-      [dropdownRef, disabled]
+      [dropdownRef, disabled],
     );
 
     const cloneProps = {
@@ -105,7 +105,7 @@ export const DropdownTrigger = React.forwardRef(
         open: () => dropdownRef?.current?.open?.(),
         close: () => dropdownRef?.current?.close?.(),
       }),
-      [triggerRef, dropdownRef]
+      [triggerRef, dropdownRef],
     );
 
     React.useEffect(() => {
@@ -121,7 +121,7 @@ export const DropdownTrigger = React.forwardRef(
         {dropdownClone}
       </DropdownContext.Provider>
     );
-  }
+  },
 );
 
 export const useDropdown = () => {

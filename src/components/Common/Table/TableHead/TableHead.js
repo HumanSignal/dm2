@@ -3,7 +3,7 @@ import React from "react";
 import {
   ViewColumnType,
   ViewColumnTypeName,
-  ViewColumnTypeShort
+  ViewColumnTypeShort,
 } from "../../../../stores/Tabs/tab_column";
 import { BemWithSpecifiContext } from "../../../../utils/bem";
 import { Button } from "../../Button/Button";
@@ -72,7 +72,7 @@ const DropdownWrapper = observer(
         </Button>
       </Dropdown.Trigger>
     );
-  }
+  },
 );
 
 const ColumnRenderer = observer(
@@ -154,7 +154,7 @@ const ColumnRenderer = observer(
         </Resizer>
       </TableCell>
     );
-  }
+  },
 );
 
 export const TableHead = observer(
@@ -171,10 +171,10 @@ export const TableHead = observer(
         onReset,
         extra,
       },
-      ref
+      ref,
     ) => {
       const { columns, headerRenderers, cellViews } = React.useContext(
-        TableContext
+        TableContext,
       );
 
       return (
@@ -204,6 +204,6 @@ export const TableHead = observer(
           <Elem name="extra">{extra}</Elem>
         </Block>
       );
-    }
-  )
+    },
+  ),
 );

@@ -140,7 +140,7 @@ export class SharedAudio extends Component {
           current: audio.currentTime,
           paused: audio.paused,
         },
-        callback
+        callback,
       );
     };
 

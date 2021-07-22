@@ -8,7 +8,7 @@ export const create = (columns) => {
   const AnnotationModel = types.compose(
     "AnnotationModel",
     AnnotationModelBase,
-    DataStoreItem
+    DataStoreItem,
   );
 
   return DataStore("AnnotationStore", {

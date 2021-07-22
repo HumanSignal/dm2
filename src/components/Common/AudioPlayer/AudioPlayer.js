@@ -121,7 +121,7 @@ export const AudioPlayer = ({ src }) => {
         onPause={() => dispatch({ type: 'pause' })}
         onTimeUpdate={() => dispatch({ type: "current", payload: audio.current.currentTime })}
         onDurationChange={() => dispatch({ type: "duration", payload: audio.current.duration })}
-        onCanPlay={() => dispatch({ type: "loaded"})}
+        onCanPlay={() => dispatch({ type: "loaded" })}
         onProgress={() => dispatch({ type: "buffer", payload: audio.current.buffered })}
         onError={() => dispatch({ type: "error" })}
       >

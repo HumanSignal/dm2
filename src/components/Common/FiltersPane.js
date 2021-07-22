@@ -6,7 +6,7 @@ import { Badge } from "./Badge/Badge";
 import { Button } from "./Button/Button";
 import { Dropdown } from "./Dropdown/Dropdown";
 
-const buttonInjector = inject(({store}) => {
+const buttonInjector = inject(({ store }) => {
   const { viewsStore, currentView } = store;
 
   return {
@@ -28,12 +28,12 @@ export const FiltersButton = buttonInjector(observer(
         {...rest}
       >
         Filters {hasFilters && (
-          <Badge size="small" style={{marginLeft: 5}}>{activeFiltersNumber}</Badge>
+          <Badge size="small" style={{ marginLeft: 5 }}>{activeFiltersNumber}</Badge>
         )}
         <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
       </Button>
     );
-  })
+  }),
 ));
 
 const injector = inject(({ store }) => {
@@ -61,5 +61,5 @@ export const FiltersPane = injector(
         <FiltersButton {...rest} size={size}/>
       </Dropdown.Trigger>
     );
-  })
+  }),
 );

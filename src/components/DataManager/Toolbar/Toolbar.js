@@ -4,13 +4,13 @@ import { Block } from "../../../utils/bem";
 import { Space } from "../../Common/Space/Space";
 import "./TabPanel.styl";
 
-const injector = inject(({store}) => {
+const injector = inject(({ store }) => {
   return {
     store,
   };
 });
 
-export const Toolbar = injector(observer(({store}) => {
+export const Toolbar = injector(observer(({ store }) => {
   return (
     <Block name="tab-panel">
       {store.SDK.toolbarInstruments.map((section, i) => {

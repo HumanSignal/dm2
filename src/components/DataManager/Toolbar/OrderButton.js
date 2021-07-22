@@ -4,10 +4,10 @@ import { Button } from "../../Common/Button/Button";
 import { FieldsButton } from "../../Common/FieldsButton";
 import { Space } from "../../Common/Space/Space";
 
-const injector = inject(({store}) => {
+const injector = inject(({ store }) => {
   const view = store?.currentView;
   return {
-    view: view,
+    view,
     ordering: view?.currentOrder,
   };
 });

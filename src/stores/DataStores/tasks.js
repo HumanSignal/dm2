@@ -22,7 +22,7 @@ const Assignee = types
     get lastActivity() { return self.user.lastActivity; },
     get avatar() { return self.user.avatar; },
     get initials() { return self.user.initials; },
-    get fullName() { return self.user.fullName; }
+    get fullName() { return self.user.fullName; },
   }))
   .preProcessSnapshot((sn) => {
     let result = sn;
@@ -35,7 +35,7 @@ const Assignee = types
         reviewed: false,
       };
     } else {
-      const {user_id, user, ...rest} = sn;
+      const { user_id, user, ...rest } = sn;
       result = {
         ...rest,
         id: user_id ?? user,
@@ -67,7 +67,7 @@ export const create = (columns) => {
         // skip drafts, they'll be added later
         self.annotations = annotations.filter(a => a.pk).map((c) => {
           const existingAnnotation = self.annotations.find(
-            (ec) => ec.id === Number(c.pk)
+            (ec) => ec.id === Number(c.pk),
           );
 
           if (existingAnnotation) {
@@ -194,8 +194,8 @@ export const create = (columns) => {
       },
 
       mergeSnapshot(taskID, taskData){
-        const task = self.list.find(({id}) => id === taskID);
-        const snapshot = task ? {...getSnapshot(task)} : {};
+        const task = self.list.find(({ id }) => id === taskID);
+        const snapshot = task ? { ...getSnapshot(task) } : {};
         Object.assign(snapshot, taskData);
 
         if (snapshot.predictions) {

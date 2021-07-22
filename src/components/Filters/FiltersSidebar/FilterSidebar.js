@@ -33,6 +33,6 @@ export const FiltersSidebar = sidebarInjector(
         <Filters sidebar={true} />
       </Block>
     ) : null;
-  }
+  },
 );
 FiltersSidebar.displayName = "FiltersSidebar";

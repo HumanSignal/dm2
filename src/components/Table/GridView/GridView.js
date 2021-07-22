@@ -68,7 +68,7 @@ const GridCell = observer(
         </Elem>
       </Elem>
     );
-  }
+  },
 );
 
 export const GridView = observer(
@@ -122,7 +122,7 @@ export const GridView = observer(
         view.selected.list,
         view.selected.all,
         columnCount,
-      ]
+      ],
     );
 
     const onItemsRenderedWrap = (cb) => ({
@@ -148,7 +148,7 @@ export const GridView = observer(
           data.slice(rowIndex, columnCount).length === columnCount;
         return !view.dataStore.hasNextPage || rowFullfilled;
       },
-      [columnCount, data, view.dataStore.hasNextPage]
+      [columnCount, data, view.dataStore.hasNextPage],
     );
 
     return (
@@ -186,5 +186,5 @@ export const GridView = observer(
         </Elem>
       </Block>
     );
-  }
+  },
 );

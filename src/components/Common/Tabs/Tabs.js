@@ -8,7 +8,7 @@ import Input from "../Input/Input";
 import "./Tabs.styl";
 import { TabsMenu } from "./TabsMenu";
 
-const {Block, Elem} = BemWithSpecifiContext();
+const { Block, Elem } = BemWithSpecifiContext();
 
 const TabsContext = createContext();
 
@@ -35,7 +35,7 @@ export const Tabs = ({
     <TabsContext.Provider value={{
       switchTab,
       selectedTab,
-      lastTab: children.length === 1
+      lastTab: children.length === 1,
     }}>
       <Block name="tabs">
         <Elem name="list">
@@ -68,7 +68,7 @@ export const TabsItem = ({
   deletable = true,
   managable = true,
 }) => {
-  const {switchTab, selectedTab, lastTab} = useContext(TabsContext);
+  const { switchTab, selectedTab, lastTab } = useContext(TabsContext);
   const [currentTitle, setCurrentTitle] = useState(title);
   const [renameMode, setRenameMode] = useState(false);
 
@@ -93,7 +93,7 @@ export const TabsItem = ({
   return (
     <Elem
       name="item"
-      mod={{active}}
+      mod={{ active }}
       onClick={() => switchTab?.(tab)}
     >
       {renameMode ? (

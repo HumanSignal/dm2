@@ -2,7 +2,7 @@ import { inject } from "mobx-react";
 import React from "react";
 import Running from "../../assets/running";
 
-const injector = inject(({store}) => {
+const injector = inject(({ store }) => {
   return {
     SDK: store.SDK,
   };

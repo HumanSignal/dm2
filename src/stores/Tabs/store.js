@@ -5,7 +5,7 @@ import {
   flow,
   getRoot,
   getSnapshot,
-  types
+  types,
 } from "mobx-state-tree";
 import { History } from "../../utils/history";
 import { guidGenerator } from "../../utils/random";
@@ -28,10 +28,10 @@ const restoreValue = (name) => {
 };
 
 const dataCleanup = (tab, columnIds) => {
-  const {data} = tab;
+  const { data } = tab;
 
   if (data.filters) {
-    data.filters.items = data.filters.items.filter(({filter}) => {
+    data.filters.items = data.filters.items.filter(({ filter }) => {
       return columnIds.includes(filter.replace(/^filter:/, ''));
     });
   }
@@ -294,8 +294,8 @@ export const TabStore = types
               columns,
               columns.find((c) => {
                 return !c.parent && c.id === column.parent && c.target === column.target;
-              })
-            ).columnPath
+              }),
+            ).columnPath,
           );
         }
 
@@ -414,13 +414,13 @@ export const TabStore = types
 
       if (labeling) {
         getRoot(self).startLabelStream({
-          pushState: false
+          pushState: false,
         });
       } else if (isDefined(taskID)) {
         const task = { id: parseInt(taskID) };
 
         getRoot(self).startLabeling(task, {
-          pushState: false
+          pushState: false,
         });
       }
     }),
@@ -444,5 +444,5 @@ export const TabStore = types
       const tab = self.views[self.views.length - 1];
 
       self.selected = tab;
-    })
+    }),
   }));

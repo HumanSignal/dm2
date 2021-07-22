@@ -2,7 +2,7 @@ import { inject } from "mobx-react";
 import { Button } from "../../Common/Button/Button";
 import { Space } from "../../Common/Space/Space";
 
-const injector = inject(({store}) => {
+const injector = inject(({ store }) => {
   return {
     store,
     needsDataFetch: store.needsDataFetch,
@@ -10,7 +10,7 @@ const injector = inject(({store}) => {
   };
 });
 
-export const RefreshButton = injector(({store, needsDataFetch, projectFetch, size}) => {
+export const RefreshButton = injector(({ store, needsDataFetch, projectFetch, size }) => {
   return (
     <Space size={size}>
       <Button
@@ -18,7 +18,7 @@ export const RefreshButton = injector(({store, needsDataFetch, projectFetch, siz
         look={needsDataFetch && 'primary'}
         waiting={projectFetch}
         onClick={async () => {
-          await store.fetchProject({force: true, interaction: 'refresh'});
+          await store.fetchProject({ force: true, interaction: 'refresh' });
           await store.currentView?.reload();
         }}
       >Refresh</Button>

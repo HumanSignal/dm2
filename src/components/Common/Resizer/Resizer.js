@@ -39,7 +39,7 @@ export const Resizer = ({
           minWidth,
           maxWidth,
           initialX,
-          evt.pageX
+          evt.pageX,
         );
 
         setWidth(newWidth);
@@ -56,7 +56,7 @@ export const Resizer = ({
           minWidth,
           maxWidth,
           initialX,
-          evt.pageX
+          evt.pageX,
         );
 
         setIsResizing(false);
@@ -72,7 +72,7 @@ export const Resizer = ({
       document.body.style.userSelect = "none";
       setIsResizing(true);
     },
-    [maxWidth, minWidth, onResizeCallback, onResizeFinished, width]
+    [maxWidth, minWidth, onResizeCallback, onResizeFinished, width],
   );
 
   return (

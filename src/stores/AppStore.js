@@ -13,7 +13,7 @@ export const AppStore = types
   .model("AppStore", {
     mode: types.optional(
       types.enumeration(["explorer", "labelstream", "labeling"]),
-      "explorer"
+      "explorer",
     ),
 
     viewsStore: types.optional(TabStore, {
@@ -30,14 +30,14 @@ export const AppStore = types
       types.late(() => {
         return DynamicModel.get("tasksStore");
       }),
-      {}
+      {},
     ),
 
     annotationStore: types.optional(
       types.late(() => {
         return DynamicModel.get("annotationsStore");
       }),
-      {}
+      {},
     ),
 
     availableActions: types.optional(types.array(Action), []),
@@ -116,7 +116,7 @@ export const AppStore = types
 
     get currentFilter() {
       return self.currentView.filterSnposhot;
-    }
+    },
   }))
   .volatile(() => ({
     needsDataFetch: false,
@@ -386,7 +386,7 @@ export const AppStore = types
       self.users.push(...list);
     }),
 
-    fetchData: flow(function* ({isLabelStream} = {}) {
+    fetchData: flow(function* ({ isLabelStream } = {}) {
       self.setLoading(true);
 
       const { tab, task, labeling, query } = History.getParams();
@@ -486,7 +486,7 @@ export const AppStore = types
         requestParams,
         {
           body: actionParams,
-        }
+        },
       );
 
       if (result.reload) {

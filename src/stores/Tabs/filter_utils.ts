@@ -24,7 +24,7 @@ const filterFormatters: Formatter = {
     }
 
     return String(value);
-  }
+  },
 };
 
 export const normalizeFilterValue = (type: string, op: string, value: any) => {
