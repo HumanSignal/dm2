@@ -50,18 +50,6 @@ export const DateTimeInput = observer(({ value, range, time, onChange }) => {
 export const DateFields = (extraProps) => {
   return [
     {
-      key: "equal",
-      label: "is at",
-      valueType: "single",
-      input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
-    },
-    {
-      key: "not_equal",
-      label: "not at",
-      valueType: "single",
-      input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
-    },
-    {
       key: "less",
       label: "is before",
       valueType: "single",
