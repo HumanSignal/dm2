@@ -38,18 +38,20 @@ export const Spinner = injector(({ SDK, visible = true, ...props }) => {
     <div
       {...props}
       style={{ width: size, height: size }}
-      children={
+      children={(
         <div style={{ width: "100%", height: "100%" }}>
           {ExternalSpinner ? (
             <ExternalSpinner size={size}/>
-          ) : (<img
-            src={source.x1}
-            srcSet={[`${source.x1} 1x`, `${source.x2} 2x`].join(",")}
-            style={videoStyles}
-            alt="opossum loader"
-          />)}
+          ) : (
+            <img
+              src={source.x1}
+              srcSet={[`${source.x1} 1x`, `${source.x2} 2x`].join(",")}
+              style={videoStyles}
+              alt="opossum loader"
+            />
+          )}
         </div>
-      }
+      )}
     />
   ) : null;
 });

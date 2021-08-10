@@ -18,6 +18,7 @@ const createDynamicModels = (columns) => {
 
   grouppedColumns.forEach((columns, target) => {
     const dataStore = DataStores[target].create?.(columns);
+
     if (dataStore) registerModel(`${target}Store`, dataStore);
   });
 
@@ -35,7 +36,7 @@ const createDynamicModels = (columns) => {
  * @param {import("./dm-sdk").DataManager} datamanager
  * @returns {Promise<AppStore>}
  */
-export const createApp = async (rootNode, datamanager) => {
+export const createApp = async(rootNode, datamanager) => {
   const isLabelStream = datamanager.mode === 'labelstream';
 
   const response = await datamanager.api.columns();
@@ -46,6 +47,7 @@ export const createApp = async (rootNode, datamanager) => {
       LS API not available; check \`API_GATEWAY\` and \`LS_ACCESS_TOKEN\` env vars;
       also check \`data-project-id\` in \`public/index.html\`
     `;
+
     throw new Error(message);
   }
 

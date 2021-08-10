@@ -13,8 +13,6 @@ import "./DatePicker.styl";
 
 const { Block, Elem } = BemWithSpecifiContext();
 
-const DATE_REGEXP = /([\d]{2})/;
-
 export const DatePicker = ({
   size,
   value,
@@ -97,7 +95,7 @@ export const DatePicker = ({
       <Dropdown.Trigger
         ref={dropdownRef}
         toggle={false}
-        content={
+        content={(
           <DP
             {...dateRange}
             ref={datepickerRef}
@@ -120,7 +118,7 @@ export const DatePicker = ({
             showTimeSelect={showTime}
             inline
           />
-        }
+        )}
       >
         <Elem name="output" mod={{ range: selectRange }}>
           <Input

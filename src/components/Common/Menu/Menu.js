@@ -56,6 +56,7 @@ Menu.Builder = (url, menuItems) => {
 
 Menu.Group = ({ children, title, className, style }) => {
   const rootClass = cn("menu-group");
+
   return (
     <li className={rootClass.mix(className)} style={style}>
       <div className={rootClass.elem("title")}>{title}</div>

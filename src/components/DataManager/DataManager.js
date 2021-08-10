@@ -13,6 +13,7 @@ import { Toolbar } from "./Toolbar/Toolbar";
 
 const injector = inject(({ store }) => {
   const { sidebarEnabled, sidebarVisible } = store.viewsStore ?? {};
+
   return {
     shrinkWidth: sidebarEnabled && sidebarVisible,
   };

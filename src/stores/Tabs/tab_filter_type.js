@@ -93,9 +93,10 @@ export const TabFilterType = types
       }
     },
 
-    get currentType () {
+    get currentType() {
       const view = getRoot(self).currentView;
       const viewColumnDisplayType = view?.columnsDisplayType?.get?.(self.field.id);
+
       return viewColumnDisplayType ?? self.field.type;
     },
   }));

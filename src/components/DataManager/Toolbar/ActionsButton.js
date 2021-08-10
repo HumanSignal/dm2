@@ -36,6 +36,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected }) =>
 
   const actionButtons = actions.map((action) => {
     const isDeleteAction = action.id.includes("delete");
+
     return (
       <Menu.Item
         size={size}

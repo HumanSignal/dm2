@@ -26,6 +26,7 @@ const Assignee = types
   }))
   .preProcessSnapshot((sn) => {
     let result = sn;
+
     if (typeof sn === 'number') {
       result = {
         id: sn,
@@ -36,6 +37,7 @@ const Assignee = types
       };
     } else {
       const { user_id, user, ...rest } = sn;
+
       result = {
         ...rest,
         id: user_id ?? user,
@@ -109,6 +111,7 @@ export const create = (columns) => {
       deleteDraft(id) {
         if (!self.drafts) return;
         const index = self.drafts.findIndex(d => d.id === id);
+
         if (index >= 0) self.drafts.splice(index, 1);
       },
 
@@ -196,6 +199,7 @@ export const create = (columns) => {
       mergeSnapshot(taskID, taskData){
         const task = self.list.find(({ id }) => id === taskID);
         const snapshot = task ? { ...getSnapshot(task) } : {};
+
         Object.assign(snapshot, taskData);
 
         if (snapshot.predictions) {

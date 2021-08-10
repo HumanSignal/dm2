@@ -10,7 +10,7 @@ import {
   FaInfoCircle,
   FaRedo,
   FaTrashAlt,
-  FaUndo,
+  FaUndo
 } from "react-icons/fa";
 import { useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";

@@ -80,7 +80,7 @@ export const FieldsButton = injector(
 
     return (
       <Dropdown.Trigger
-        content={
+        content={(
           <FieldsMenu
             columns={filter ? columns.filter(filter) : columns}
             WrapperComponent={wrapper}
@@ -89,7 +89,7 @@ export const FieldsButton = injector(
             selected={selected}
             resetTitle={resetTitle}
           />
-        }
+        )}
         style={{
           maxHeight: 280,
           overflow: 'auto',

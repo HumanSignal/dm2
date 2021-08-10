@@ -3,7 +3,7 @@ import React from "react";
 import {
   ViewColumnType,
   ViewColumnTypeName,
-  ViewColumnTypeShort,
+  ViewColumnTypeShort
 } from "../../../../stores/Tabs/tab_column";
 import { BemWithSpecifiContext } from "../../../../utils/bem";
 import { Button } from "../../Button/Button";
@@ -27,7 +27,7 @@ const DropdownWrapper = observer(
 
     return (
       <Dropdown.Trigger
-        content={
+        content={(
           <Menu
             title="Display as"
             size="compact"
@@ -54,7 +54,7 @@ const DropdownWrapper = observer(
               );
             })}
           </Menu>
-        }
+        )}
       >
         <Button
           type="text"
@@ -87,7 +87,7 @@ const ColumnRenderer = observer(
     onResize,
     onReset,
   }) => {
-    const { Header, Cell, id, ...column } = columnInput;
+    const { Header, Cell: _Cell, id, ...column } = columnInput;
 
     if (Header instanceof Function) {
       const { cellClassName: _, headerClassName, ...rest } = column;

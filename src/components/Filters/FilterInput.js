@@ -12,6 +12,7 @@ export const FilterInput = ({
   const inputRef = React.useRef();
   const onChangeHandler = () => {
     const value = inputRef.current?.value ?? inputRef.current?.input?.value;
+
     onChange(value);
   };
 

@@ -127,7 +127,7 @@ export const AppStore = types
       if (self._poll) return;
       if (self.SDK.polling === false) return;
 
-      const poll = async (self) => {
+      const poll = async(self) => {
         await self.fetchProject({ interaction: "timer" });
         self._poll = setTimeout(() => poll(self), 10000);
       };
@@ -150,6 +150,7 @@ export const AppStore = types
 
     removeAction(id) {
       const action = self.availableActions.find((action) => action.id === id);
+
       if (action) destroy(action);
     },
 
@@ -224,6 +225,7 @@ export const AppStore = types
 
       grouppedColumns.forEach((columns, target) => {
         const dataStore = DataStores[target].create?.(columns);
+
         if (dataStore) registerModel(`${target}Store`, dataStore);
       });
     },
@@ -320,6 +322,7 @@ export const AppStore = types
 
       if (task) {
         const params = {};
+
         if (annotation) {
           params.task_id = parseInt(task);
           params.id = parseInt(annotation);
@@ -377,6 +380,7 @@ export const AppStore = types
 
     fetchActions: flow(function* () {
       const serverActions = yield self.apiCall("actions");
+
       self.addActions(...(serverActions ?? []));
     }),
 
@@ -405,6 +409,7 @@ export const AppStore = types
           yield self.viewsStore.fetchTabs(tab, task, labeling);
         } else if (isLabelStream && !!tab) {
           const { selectedItems } = JSON.parse(decodeURIComponent(query ?? "{}"));
+
           yield self.viewsStore.fetchSingleTab(tab, selectedItems ?? {});
         }
 

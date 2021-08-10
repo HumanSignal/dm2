@@ -38,7 +38,7 @@ export const Dropdown = React.forwardRef(
     }, []);
 
     const performAnimation = React.useCallback(
-      async (visible = false) => {
+      async(visible = false) => {
         if (props.enabled === false && visible === true) return;
 
         return new Promise((resolve) => {
@@ -66,7 +66,7 @@ export const Dropdown = React.forwardRef(
       [animated],
     );
 
-    const close = React.useCallback(async () => {
+    const close = React.useCallback(async() => {
       if (currentVisible === false) return;
 
       props.onToggle?.(false);
@@ -74,7 +74,7 @@ export const Dropdown = React.forwardRef(
       setVisible(false);
     }, [currentVisible, performAnimation, props]);
 
-    const open = React.useCallback(async () => {
+    const open = React.useCallback(async() => {
       if (currentVisible === true) return;
 
       props.onToggle?.(true);
@@ -82,7 +82,7 @@ export const Dropdown = React.forwardRef(
       setVisible(true);
     }, [currentVisible, performAnimation, props]);
 
-    const toggle = React.useCallback(async () => {
+    const toggle = React.useCallback(async() => {
       const newState = !currentVisible;
 
       if (newState) {

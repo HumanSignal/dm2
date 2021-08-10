@@ -59,6 +59,7 @@ export class LSFHistory {
 
     if (index >= 0 && index < this.length) {
       const { taskID, annotationID } = this.history[index];
+
       await this.lsf.loadTask(taskID, annotationID);
       this.current = index;
     } else {

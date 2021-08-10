@@ -7,6 +7,7 @@ export const DateTimeInput = observer(({ value, range, time, onChange }) => {
   const onValueChange = React.useCallback(
     (selectedDate) => {
       let value;
+
       if (Array.isArray(selectedDate)) {
         const [min, max] = selectedDate
           .map((d) => d ? new Date(d) : null)
@@ -32,6 +33,7 @@ export const DateTimeInput = observer(({ value, range, time, onChange }) => {
         .map((d) => (isValid(d) ? d : undefined));
     } else {
       const date = new Date(value === null ? undefined : value);
+
       return isValid(date) ? date : undefined;
     }
   }, [range, value]);

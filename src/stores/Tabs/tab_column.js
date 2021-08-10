@@ -112,11 +112,13 @@ export const TabColumn = types
       return (data) => {
         if (!self.parent) {
           const value = data[self.alias];
+
           return typeof value === "object" ? null : value;
         }
 
         try {
           const value = data?.[self.parent.alias]?.[self.alias];
+
           return value ?? null;
         } catch {
           console.log("Error generating accessor", {
@@ -146,6 +148,7 @@ export const TabColumn = types
 
     get currentType() {
       const displayType = self.parentView?.columnsDisplayType?.get(self.id);
+
       return displayType ?? self.type;
     },
 
@@ -156,6 +159,7 @@ export const TabColumn = types
         const childColumns = [].concat(
           ...self.children.map((subColumn) => subColumn.asField),
         );
+
         result.push(...childColumns);
       } else {
         result.push({

@@ -266,10 +266,12 @@ export class DataManager {
   on(eventName, callback) {
     if (this.lsf && eventName.startsWith('lsf:')) {
       const evt = toCamelCase(eventName.replace(/^lsf:/, ''));
+
       this.lsf?.lsfInstance?.on(evt, callback);
     }
 
     const events = this.getEventCallbacks(eventName);
+
     events.add(callback);
     this.callbacks.set(eventName, events);
   }
@@ -283,10 +285,12 @@ export class DataManager {
   off(eventName, callback) {
     if (this.lsf && eventName.startsWith('lsf:')) {
       const evt = toCamelCase(eventName.replace(/^lsf:/, ''));
+
       this.lsf?.lsfInstance?.off(evt, callback);
     }
 
     const events = this.getEventCallbacks(eventName);
+
     if (callback) {
       events.delete(callback);
     } else {
@@ -300,6 +304,7 @@ export class DataManager {
     lsfEvents.forEach(evt => {
       const callbacks = Array.from(this.getEventCallbacks(evt));
       const eventName = toCamelCase(evt.replace(/^lsf:/, ''));
+
       callbacks.forEach(clb => this.lsf?.lsfInstance?.off(eventName, clb));
     });
 
@@ -328,6 +333,7 @@ export class DataManager {
    */
   setMode(mode) {
     const modeChanged = mode !== this.mode;
+
     this.mode = mode;
     this.store.setMode(mode);
 

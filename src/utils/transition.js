@@ -11,14 +11,14 @@
  * }} param2
  */
 export const aroundTransition = (element, { init, transition, onStart, beforeTransition, afterTransition } = {}) => {
-  return new Promise(async (resolve) => {
+  return new Promise(async(resolve) => {
     init?.(element);
 
     const onTransitionStarted = () => {
       onStart?.(element);
     };
 
-    const onTransitionEnded = async () => {
+    const onTransitionEnded = async() => {
       await afterTransition?.(element);
 
       element.removeEventListener('transitionstart', onTransitionStarted);

@@ -7,6 +7,7 @@ import { Space } from "../../Common/Space/Space";
 
 const injector = inject(({ store }) => {
   const view = store?.currentView;
+
   return {
     view,
     gridWidth: view?.gridWidth,
@@ -19,6 +20,7 @@ export const GridWidthButton = injector(({ view, gridWidth, size }) => {
   const setGridWidth = useCallback(
     (width) => {
       const newWidth = Math.max(3, Math.min(width, 10));
+
       setWidth(newWidth);
       view.setGridWidth(newWidth);
     },

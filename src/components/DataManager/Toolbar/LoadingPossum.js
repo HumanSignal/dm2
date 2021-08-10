@@ -3,6 +3,7 @@ import { Spinner } from "../../Common/Spinner";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
+
   return {
     loading: dataStore?.loading || currentView?.locked,
   };

@@ -107,6 +107,7 @@ export const cn = (block: string, options: CNOptions = {}): CN => {
 
     mod(newMod = {}) {
       const stateOverride = Object.assign({}, mod ?? {}, newMod);
+
       return cn(block ?? blockName, { elem, mix, mod: stateOverride });
     },
 
@@ -175,6 +176,7 @@ export const BemWithSpecifiContext = (context: React.Context<CN | null>) => {
       </Context.Provider>
     );
   });
+
   Block.displayName = 'Block';
 
   const Elem: BemComponent = React.forwardRef(({ tag = 'div', block, name, mod, mix, ...rest }, ref) => {
@@ -198,6 +200,7 @@ export const BemWithSpecifiContext = (context: React.Context<CN | null>) => {
 
     return React.createElement(tag, finalProps);
   });
+
   Elem.displayName = 'Elem';
 
   return { Block, Elem, Context };

@@ -7,7 +7,7 @@ import { isBlank, isDefined } from "../../utils/utils";
 import {
   FilterValueRange,
   FilterValueType,
-  TabFilterType,
+  TabFilterType
 } from "./tab_filter_type";
 
 const operatorNames = Array.from(
@@ -83,6 +83,7 @@ export const TabFilter = types
 
     get currentValue() {
       let resultValue;
+
       if (self.filter.schema === null) {
         resultValue = self.value;
       } else {
@@ -94,6 +95,7 @@ export const TabFilter = types
 
     get cellView() {
       const col = self.filter.field;
+
       return CellViews[col.type] ?? CellViews[toStudlyCaps(col.alias)];
     },
   }))
@@ -116,6 +118,7 @@ export const TabFilter = types
       if (!isDefined(value)) return;
 
       const previousFilterType = self.filter.currentType;
+
       self.filter = value;
 
       if (previousFilterType !== self.filter.currentType) {

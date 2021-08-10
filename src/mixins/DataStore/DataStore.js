@@ -6,6 +6,7 @@ const listIncludes = (list, id) => {
     id !== undefined
       ? Array.from(list).findIndex((item) => item.id === id)
       : -1;
+
   return index >= 0;
 };
 
@@ -82,6 +83,7 @@ const MixinBase = types
 
       newEntity.forEach((n) => {
         const index = self.list.findIndex((i) => i.id === n.id);
+
         if (index >= 0) {
           self.list.splice(index, 1);
         }
@@ -198,6 +200,7 @@ export const DataStore = (
 
       focusPrev() {
         const index = Math.max(0, self.list.indexOf(self.highlighted) - 1);
+
         self.highlighted = self.list[index];
         self.updated = guidGenerator();
       },
@@ -207,6 +210,7 @@ export const DataStore = (
           self.list.length - 1,
           self.list.indexOf(self.highlighted) + 1,
         );
+
         self.highlighted = self.list[index];
         self.updated = guidGenerator();
       },

@@ -16,6 +16,7 @@ export const DynamicModel = (name, columns, properties) => {
     if (col.parent || col.id === "id") return;
 
     let propertyType;
+
     switch (col.type) {
       case "Number":
         propertyType = typeWrapper(types.number);
@@ -39,6 +40,7 @@ export const DynamicModel = (name, columns, properties) => {
   });
 
   const model = types.model(name, modelProperties);
+
   registerModel(name, types.model(name, modelProperties));
 
   return model;

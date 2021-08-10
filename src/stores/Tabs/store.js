@@ -118,6 +118,7 @@ export const TabStore = types
   .actions((self) => ({
     setSelected: flow(function* (view, options = {}) {
       let selected;
+
       if (typeof view === "string") {
         selected = self.views.find((v) => v.key === view);
       } else if (typeof view === "number") {
@@ -137,6 +138,7 @@ export const TabStore = types
         yield selected.reload();
 
         const root = getRoot(self);
+
         root.SDK.invoke('tabChanged', selected);
         selected.selected._invokeChangeEvent();
       }
@@ -150,6 +152,7 @@ export const TabStore = types
           newView = self.opener.referrer;
         } else {
           const index = self.views.indexOf(view);
+
           newView = index === 0 ? self.views[index + 1] : self.views[index - 1];
         }
 
@@ -191,6 +194,7 @@ export const TabStore = types
 
       if (autoselect) {
         const selectedView = self.views[self.views.length - 1];
+
         console.log('selecting and reloading', selectedView.id);
         self.setSelected(selectedView);
         selectedView.reload();
@@ -340,6 +344,7 @@ export const TabStore = types
         });
 
         const column = colsList[colsList.length - 1];
+
         addedColumns.add(column.id);
 
         if (!col.children && column.filterable) {

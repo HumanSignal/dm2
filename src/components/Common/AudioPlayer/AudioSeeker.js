@@ -23,6 +23,7 @@ export const AudioSeeker = ({ currentTime, duration, buffer, onSeekStart, onSeek
       const seekProgress = (e) => {
         const newX = e.pageX - (left + 5);
         const newProgress = duration * Math.max(0, Math.min(newX / width, 1));
+
         onChange(newProgress);
       };
 
@@ -48,6 +49,7 @@ export const AudioSeeker = ({ currentTime, duration, buffer, onSeekStart, onSeek
       for (var i = 0; i < buffer.length; i++) {
         if (buffer.start(buffer.length - 1 - i) < currentTime) {
           const size = (buffer.end(buffer.length - 1 - i) / duration) * 100;
+
           setBuffered(size);
           break;
         }

@@ -21,6 +21,7 @@ const Decorator = (decoration) => {
     get(col) {
       return decoration.find((d) => {
         let found = false;
+
         if (isDefined(d.alias)) {
           found = d.alias === col.alias;
         } else if (d.resolver instanceof Function) {
@@ -98,6 +99,7 @@ export const Table = observer(
       },
       Cell({ data }) {
         let out = JSON.parse(data.source ?? "{}");
+
         out = {
           id: out?.id,
           data: out?.data,
@@ -227,6 +229,7 @@ export const Table = observer(
 
       if (index >= 0) {
         const scrollOffset = index * h - height / 2 + h / 2; // + headerHeight
+
         return cachedScrollOffset.current = scrollOffset;
       } else {
         return 0;
@@ -245,6 +248,7 @@ export const Table = observer(
 
     useEffect(() => {
       const listComponent = listRef.current?._listRef;
+
       if (listComponent) {
         listComponent.scrollToItem(data.indexOf(focusedItem), "center");
       }
@@ -277,6 +281,7 @@ export const Table = observer(
 );
 
 const StickyListContext = createContext();
+
 StickyListContext.displayName = "StickyListProvider";
 
 const ItemWrapper = ({ data, index, style }) => {

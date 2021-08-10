@@ -37,7 +37,7 @@ export class Modal extends React.Component {
 
   show(onShow) {
     return new Promise((resolve) => {
-      this.setState({ visible: true }, async () => {
+      this.setState({ visible: true }, async() => {
         onShow?.();
         this.props.onShow?.();
         await this.transition("appear", resolve);
@@ -57,7 +57,7 @@ export class Modal extends React.Component {
     });
   }
 
-  render () {
+  render() {
     if (!this.state.visible) return null;
 
     const bare = this.props.bare;
@@ -114,17 +114,17 @@ export class Modal extends React.Component {
 
   transition(type, onFinish) {
     return aroundTransition(this.modalRef.current, {
-      transition: async () => new Promise(resolve => {
+      transition: async() => new Promise(resolve => {
         this.setState({ transition: type }, () => {
           resolve();
         });
       }),
-      beforeTransition: async () => new Promise(resolve => {
+      beforeTransition: async() => new Promise(resolve => {
         this.setState({ transition: `before-${type}` }, () => {
           resolve();
         });
       }),
-      afterTransition: async () => new Promise(resolve => {
+      afterTransition: async() => new Promise(resolve => {
         this.setState({ transition: type === 'appear' ? "visible" : null }, () => {
           onFinish?.();
           resolve();
@@ -147,6 +147,7 @@ export class Modal extends React.Component {
   get body() {
     if (this.state.body) {
       const Content = this.state.body;
+
       return Content instanceof Function ? <Content/> : Content;
     } else {
       return this.props.children;

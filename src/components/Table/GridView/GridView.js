@@ -23,6 +23,7 @@ const GridHeader = observer(({ row, selected }) => {
 
 const GridBody = observer(({ row, fields }) => {
   const dataFields = fields.filter((f) => f.parent?.alias === "data");
+
   return dataFields.map((field, index) => {
     const valuePath = field.id.split(":")[1] ?? field.id;
     const value = getProperty(row, valuePath);
@@ -41,6 +42,7 @@ const GridBody = observer(({ row, fields }) => {
 
 const GridDataGroup = observer(({ type, value, field, row }) => {
   const DataTypeComponent = DataGroups[type];
+
   return DataTypeComponent ? (
     <DataTypeComponent value={value} field={field} original={row} />
   ) : (
@@ -86,6 +88,7 @@ export const GridView = observer(
       .reduce((res, f) => {
         const height = (DataGroups[f.currentType] ?? DataGroups.TextDataGroup)
           .height;
+
         return res + height;
       }, 16);
 
@@ -146,6 +149,7 @@ export const GridView = observer(
         const rowIndex = index * columnCount;
         const rowFullfilled =
           data.slice(rowIndex, columnCount).length === columnCount;
+
         return !view.dataStore.hasNextPage || rowFullfilled;
       },
       [columnCount, data, view.dataStore.hasNextPage],

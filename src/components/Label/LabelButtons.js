@@ -11,6 +11,7 @@ export class LabelButtons extends Component {
 
   componentDidMount() {
     const target = this.target;
+
     if (target) {
       this.updateElement(target);
     }
@@ -65,6 +66,7 @@ export class LabelButtons extends Component {
     const className = child.getAttribute("class");
 
     const wrapper = document.createElement("div");
+
     wrapper.setAttribute("class", className);
 
     child.after(wrapper);

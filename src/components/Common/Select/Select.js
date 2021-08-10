@@ -64,6 +64,7 @@ export const Select = ({
     multiple,
     setCurrentValue(value) {
       const newValue = setValue(value);
+
       onChange?.(newValue);
 
       if (multiple !== true) {

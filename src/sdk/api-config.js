@@ -57,6 +57,7 @@ export const APIConfig = {
       path: (params) => {
         const pathBase = "/../annotations";
         const isNewAnnotation = !isDefined(params.annotationID);
+
         return isNewAnnotation ? pathBase : `${pathBase}/:annotationID`;
       },
       method: "post",

@@ -6,6 +6,7 @@ import "./Tag.styl";
 
 const prepareColor = (colorString) => {
   const baseColor = color(colorString);
+
   return {
     color: baseColor,
     background: baseColor.desaturate(2).brighten(2.2),

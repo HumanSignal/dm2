@@ -19,6 +19,7 @@ const buttonInjector = inject(({ store }) => {
 export const FiltersButton = buttonInjector(observer(
   React.forwardRef(({ activeFiltersNumber, size, sidebarEnabled, viewsStore, ...rest }, ref) => {
     const hasFilters = activeFiltersNumber > 0;
+
     return (
       <Button
         ref={ref}

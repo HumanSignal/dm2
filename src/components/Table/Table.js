@@ -280,6 +280,7 @@ export const DataView = injector(
 
       const { highlighted } = dataStore;
       // don't close QuickView by Enter
+
       if (highlighted && !highlighted.isSelected) store.startLabeling(highlighted);
     });
 

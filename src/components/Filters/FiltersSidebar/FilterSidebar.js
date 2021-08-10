@@ -9,6 +9,7 @@ import "./FilterSidebar.styl";
 
 const sidebarInjector = inject(({ store }) => {
   const viewsStore = store.viewsStore;
+
   return {
     viewsStore,
     sidebarEnabled: viewsStore?.sidebarEnabled,

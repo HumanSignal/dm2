@@ -53,6 +53,7 @@ export const Tab = types
     const labelingTableWidth = parseInt(
       localStorage.getItem("labelingTableWidth") ?? defaultWidth,
     );
+
     return {
       labelingTableWidth,
     };
@@ -334,6 +335,7 @@ export const Tab = types
 
     deleteFilter(filter) {
       const index = self.filters.findIndex((f) => f === filter);
+
       self.filters.splice(index, 1);
       destroy(filter);
       self.save();

@@ -8,10 +8,11 @@ import "./TableRow.styl";
 
 const CellRenderer = observer(
   ({ col: colInput, data, decoration, cellViews }) => {
-    const { Header, Cell, id, ...col } = colInput;
+    const { Header: _Header, Cell, id, ...col } = colInput;
 
     if (Cell instanceof Function) {
       const { headerClassName: _, cellClassName, ...rest } = col;
+
       return (
         <TableElem {...rest} name="cell" key={id} mix={cellClassName}>
           <Cell data={data} />

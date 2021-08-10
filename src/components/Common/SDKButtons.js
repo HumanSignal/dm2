@@ -4,6 +4,7 @@ import { Button } from "./Button/Button";
 
 const SDKButton = ({ eventName, ...props }) => {
   const sdk = useSDK();
+
   return sdk.hasHandler(eventName) ? (
     <Button
       {...props}

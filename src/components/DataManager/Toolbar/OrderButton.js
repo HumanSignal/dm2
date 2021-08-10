@@ -6,6 +6,7 @@ import { Space } from "../../Common/Space/Space";
 
 const injector = inject(({ store }) => {
   const view = store?.currentView;
+
   return {
     view,
     ordering: view?.currentOrder,
