@@ -54,20 +54,28 @@ const babelOptimizeOptions = () => {
 };
 
 const optimizer = () => {
-  const result = {};
-
-  result.minimize = BUILD.NO_MINIMIZE ? false : true;
-
-  result.minimizer = BUILD.NO_MINIMIZE
-    ? undefined
-    : [new TerserPlugin(), new CssMinimizerPlugin()];
-
-  result.runtimeChunk = BUILD.NO_CHUNKS ? false : true;
-  result.splitChunks = {
-    cacheGroups: {
-      default: BUILD.NO_CHUNKS ? false : true,
-    },
+  const result = {
+    minimize: true,
+    minimizer: [],
+    runtimeChunk: true,
   };
+
+  if (process.env.NODE_ENV === 'production' && !BUILD.NO_MINIMIZE) {
+    result.minimizer.push(
+      new TerserPlugin(),
+      new CssMinimizerPlugin(),
+    )
+  }
+
+  if (BUILD.NO_MINIMIZE) {
+    result.minimize = false;
+    result.minimizer = undefined;
+  }
+
+  if (BUILD.NO_CHUNKS) {
+    result.runtimeChunk = false;
+    result.splitChunks = {cacheGroups: { default: false }}
+  }
 
   return result;
 };

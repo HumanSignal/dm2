@@ -186,7 +186,7 @@ export class DataManager {
   }
 
   get projectId() {
-    return (this._projectId = this._projectId ?? this.root.dataset?.projectId);
+    return (this._projectId = this._projectId ?? this.root?.dataset?.projectId);
   }
 
   set projectId(value) {

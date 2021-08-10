@@ -52,18 +52,6 @@ export const DateTimeInput = observer(({ value, range, time, onChange }) => {
 export const DateFields = (extraProps) => {
   return [
     {
-      key: "equal",
-      label: "is at",
-      valueType: "single",
-      input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
-    },
-    {
-      key: "not_equal",
-      label: "not at",
-      valueType: "single",
-      input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
-    },
-    {
       key: "less",
       label: "is before",
       valueType: "single",
@@ -76,7 +64,7 @@ export const DateFields = (extraProps) => {
       input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
     },
     {
-      key: "contains",
+      key: "in",
       label: "is between",
       valueType: "range",
       input: (props) => (
@@ -84,7 +72,7 @@ export const DateFields = (extraProps) => {
       ),
     },
     {
-      key: "not_contains",
+      key: "not_in",
       label: "not between",
       valueType: "range",
       input: (props) => (
