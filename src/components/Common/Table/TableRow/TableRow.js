@@ -8,7 +8,7 @@ import "./TableRow.styl";
 
 const CellRenderer = observer(
   ({ col: colInput, data, decoration, cellViews }) => {
-    const { Header: _Header, Cell, id, ...col } = colInput;
+    const { Header: _, Cell, id, ...col } = colInput;
 
     if (Cell instanceof Function) {
       const { headerClassName: _, cellClassName, ...rest } = col;
