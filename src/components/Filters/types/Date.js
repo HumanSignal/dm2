@@ -74,7 +74,7 @@ export const DateFields = (extraProps) => {
       input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
     },
     {
-      key: "contains",
+      key: "in",
       label: "is between",
       valueType: "range",
       input: (props) => (
@@ -82,7 +82,7 @@ export const DateFields = (extraProps) => {
       ),
     },
     {
-      key: "not_contains",
+      key: "not_in",
       label: "not between",
       valueType: "range",
       input: (props) => (
