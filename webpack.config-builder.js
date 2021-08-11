@@ -36,6 +36,7 @@ const dirPrefix = {
 
 const LOCAL_ENV = {
   NODE_ENV: DEFAULT_NODE_ENV,
+  BUILD_NO_SERVER: BUILD.NO_SERVER,
   CSS_PREFIX: "dm-",
   API_GATEWAY: "http://localhost:8081/api/dm",
   LS_ACCESS_TOKEN: "",
