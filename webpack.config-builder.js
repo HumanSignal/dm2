@@ -210,13 +210,14 @@ const plugins = [
     ...cssOutput(),
   }),
   new webpack.EnvironmentPlugin(LOCAL_ENV),
-  new ESLintPlugin({
-    fix: isDevelopment,
-    failOnError: isDevelopment,
-  }),
 ];
 
 if (isDevelopment) {
+  plugins.push(new ESLintPlugin({
+    fix: true,
+    failOnError: true,
+  }));
+
   plugins.push(new webpack.ProgressPlugin());
 }
 
