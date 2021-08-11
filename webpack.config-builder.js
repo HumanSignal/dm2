@@ -63,8 +63,12 @@ const optimizer = () => {
 
   if (process.env.NODE_ENV === 'production' && !BUILD.NO_MINIMIZE) {
     result.minimizer.push(
-      new TerserPlugin(),
-      new CssMinimizerPlugin(),
+      new TerserPlugin({
+        parallel: true,
+      }),
+      new CssMinimizerPlugin({
+        parallel: true,
+      }),
     )
   }
 
