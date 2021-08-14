@@ -6,6 +6,7 @@ const Dotenv = require("dotenv-webpack");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const ESLintPlugin = require('eslint-webpack-plugin');
+const { EnvironmentPlugin } = require("webpack");
 
 const workingDirectory = process.env.WORK_DIR
   ? path.resolve(__dirname, process.env.WORK_DIR)
@@ -36,6 +37,7 @@ const dirPrefix = {
 
 const LOCAL_ENV = {
   NODE_ENV: DEFAULT_NODE_ENV,
+  BUILD_NO_SERVER: BUILD.NO_SERVER,
   CSS_PREFIX: "dm-",
   API_GATEWAY: "http://localhost:8081/api/dm",
   LS_ACCESS_TOKEN: "",
@@ -62,8 +64,12 @@ const optimizer = () => {
 
   if (process.env.NODE_ENV === 'production' && !BUILD.NO_MINIMIZE) {
     result.minimizer.push(
-      new TerserPlugin(),
-      new CssMinimizerPlugin(),
+      new TerserPlugin({
+        parallel: true,
+      }),
+      new CssMinimizerPlugin({
+        parallel: true,
+      }),
     )
   }
 
@@ -201,17 +207,19 @@ const plugins = [
     allowEmptyValues: true,
     defaults: "./.env.defaults",
   }),
+  new EnvironmentPlugin(LOCAL_ENV),
   new MiniCssExtractPlugin({
     ...cssOutput(),
   }),
   new webpack.EnvironmentPlugin(LOCAL_ENV),
-  new ESLintPlugin({
-    fix: isDevelopment,
-    failOnError: isDevelopment,
-  }),
 ];
 
 if (isDevelopment) {
+  plugins.push(new ESLintPlugin({
+    fix: true,
+    failOnError: true,
+  }));
+
   plugins.push(new webpack.ProgressPlugin());
 }
 
@@ -244,6 +252,13 @@ module.exports = ({withDevServer = false} = {}) => ({
   performance: {
     maxEntrypointSize: Infinity,
     maxAssetSize: 1000000,
+  },
+  stats: {
+    errorDetails: true,
+    logging: 'error',
+    chunks: false,
+    cachedAssets: false,
+    orphanModules: false,
   },
   module: {
     rules: [
