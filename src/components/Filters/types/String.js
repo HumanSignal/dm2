@@ -28,6 +28,12 @@ export const StringFilter = [
     input: (props) => <BaseInput {...props} />,
   },
   {
+    key: "regex",
+    label: "regex",
+    valueType: "single",
+    input: (props) => <BaseInput {...props} />,
+  },
+  {
     key: "equal",
     label: "equal",
     valueType: "single",
