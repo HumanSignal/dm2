@@ -94,6 +94,10 @@ export class LSFWrapper {
       );
     }
 
+    if (this.datamanager.hesInterface('instruction')) {
+      interfaces.push('instruction');
+    }
+
     if (!this.labelStream && this.datamanager.hesInterface('groundTruth')) {
       interfaces.push('ground-truth');
     }

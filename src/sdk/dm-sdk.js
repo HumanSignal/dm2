@@ -152,6 +152,7 @@ export class DataManager {
       backButton: true,
       labelingHeader: true,
       groundTruth: false,
+      instruction: false,
       ...config.interfaces,
     });
 
