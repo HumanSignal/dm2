@@ -192,7 +192,9 @@ const devServer = () => {
       compress: true,
       hot: true,
       port: 9000,
-      contentBase: path.join(__dirname, "public"),
+      static: {
+        directory: path.join(__dirname, "public")
+      },
       historyApiFallback: {
         index: "./public/index.html",
       },
@@ -238,7 +240,11 @@ module.exports = ({withDevServer = false} = {}) => ({
   mode: DEFAULT_NODE_ENV || "development",
   devtool: sourceMap,
   ...(withDevServer ? devServer() : {}),
-  entry: path.resolve(__dirname, "src/index.js"),
+  entry: {
+    app: [
+      path.resolve(__dirname, "src/index.js")
+    ],
+  },
   output: {
     path: path.resolve(workingDirectory),
     filename: "main.js",
@@ -247,7 +253,10 @@ module.exports = ({withDevServer = false} = {}) => ({
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
-  plugins: plugins,
+  plugins: withDevServer ? [
+    ...plugins,
+    new webpack.HotModuleReplacementPlugin(),
+  ] : plugins,
   optimization: optimizer(),
   performance: {
     maxEntrypointSize: Infinity,

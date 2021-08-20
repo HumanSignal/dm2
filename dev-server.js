@@ -1,9 +1,9 @@
-const webpackDevServer = require('webpack-dev-server');
+const WebpackDevServer = require('webpack-dev-server');
 const webpack = require('webpack');
 const path = require('path');
 
 const config = require('./webpack.config-builder')({
-  withDevServer: false
+  withDevServer: true
 });
 
 const port = 5000;
@@ -21,9 +21,13 @@ const options = {
   },
 };
 
-webpackDevServer.addDevServerEntrypoints(config, options);
+config.entry.app.unshift(
+  `webpack-dev-server/client?http://localhost:${port}/`,
+  `webpack/hot/dev-server`
+);
+
 const compiler = webpack(config);
-const server = new webpackDevServer(compiler, options);
+const server = new WebpackDevServer(compiler, config.devServer);
 
 server.listen(port, 'localhost', () => {
   console.log(`dev server listening on port ${port}`);
