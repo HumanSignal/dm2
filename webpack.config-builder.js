@@ -241,7 +241,7 @@ module.exports = ({withDevServer = false} = {}) => ({
   devtool: sourceMap,
   ...(withDevServer ? devServer() : {}),
   entry: {
-    app: [
+    main: [
       path.resolve(__dirname, "src/index.js")
     ],
   },
