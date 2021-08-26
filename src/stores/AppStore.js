@@ -441,6 +441,8 @@ export const AppStore = types
           description: result?.response?.detail ?? result.error,
         });
 
+        self.SDK.invoke("error", result);
+
         // notification.error({
         //   message: "Error occurred when loading data",
         //   description: result?.response?.detail ?? result.error,
