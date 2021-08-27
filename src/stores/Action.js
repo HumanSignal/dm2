@@ -9,7 +9,6 @@ export const Action = types.model("Action", {
   id: types.identifier,
   dialog: types.maybeNull(ActionDialog),
   order: types.integer,
-  permissions: types.string,
   title: types.string,
 }).volatile(() => ({
   caller: null,
