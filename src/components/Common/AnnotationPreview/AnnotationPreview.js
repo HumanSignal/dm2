@@ -110,7 +110,7 @@ export const AnnotationPreview = injector(
     React.useEffect(() => {
       if (preview !== null) return;
 
-      const start = async() => {
+      const start = async () => {
         if (generator && task && annotation) {
           const preview = await generator.generatePreview(task, annotation);
 

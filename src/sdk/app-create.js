@@ -36,7 +36,7 @@ const createDynamicModels = (columns) => {
  * @param {import("./dm-sdk").DataManager} datamanager
  * @returns {Promise<AppStore>}
  */
-export const createApp = async(rootNode, datamanager) => {
+export const createApp = async (rootNode, datamanager) => {
   const isLabelStream = datamanager.mode === 'labelstream';
 
   const response = await datamanager.api.columns();
