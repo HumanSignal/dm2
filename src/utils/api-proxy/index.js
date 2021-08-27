@@ -9,7 +9,8 @@
  * }} EndpointConfig
  */
 
-import { formDataToJPO } from "./helpers";
+import { formDataToJPO } from "../helpers";
+import statusCodes from "./status-codes.json";
 
 /**
  * @typedef {Dict<string, EndpointConfig>} Endpoints
@@ -435,7 +436,7 @@ export class APIProxy {
 
     return {
       status: fetchResponse.status,
-      error: exception?.message ?? fetchResponse.statusText,
+      error: exception?.message ?? statusCodes[fetchResponse.status.toString()],
       response: await result,
     };
   }
