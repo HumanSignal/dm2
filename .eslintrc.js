@@ -70,6 +70,13 @@ module.exports = {
       "objects": "always-multiline",
       "arrays": "always-multiline",
     }],
+    "sort-imports": ["error", {
+      "ignoreCase": true,
+      "ignoreDeclarationSort": true,
+      "ignoreMemberSort": false,
+      "allowSeparatedGroups": false,
+      "memberSyntaxSortOrder": ["all", "single", "multiple", "none"],
+    }],
     "object-curly-spacing": ["error", "always"],
     "array-bracket-spacing": ["error", "never"],
     "object-shorthand": ["error", "always"],
