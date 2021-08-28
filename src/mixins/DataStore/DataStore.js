@@ -135,6 +135,9 @@ export const DataStore = (
         types.late(() => types.reference(listItemType)),
       ),
     })
+    .volatile(() => ({
+      requestId: null,
+    }))
     .actions((self) => ({
       updateItem(itemID, patch) {
         let item = self.list.find((t) => t.id === itemID);
@@ -151,8 +154,8 @@ export const DataStore = (
 
       fetch: flow(function* ({ id, reload = false, interaction } = {}) {
         const currentViewId = id ?? getRoot(self).viewsStore.selected?.id;
+        const requestId = self.requestId = guidGenerator();
 
-        if (self.loading) return;
         if (!currentViewId) return;
 
         self.loading = true;
@@ -169,6 +172,14 @@ export const DataStore = (
         if (interaction) Object.assign(params, { interaction });
 
         const data = yield getRoot(self).apiCall(apiMethod, params);
+
+        // We cancel current request processing if request id
+        // cnhaged during the request. It indicates that something
+        // triggered another request while current one is not yet finished
+        if (requestId !== self.requestId) {
+          console.log(`Request ${requestId} was cancelled by another request`);
+          return;
+        }
 
         const [selectedID, highlightedID] = [
           self.selected?.id,
