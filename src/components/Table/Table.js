@@ -12,6 +12,7 @@ import { Tag } from "../Common/Tag/Tag";
 import { Tooltip } from "../Common/Tooltip/Tooltip";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView/GridView";
+import { GroupedView } from "./GridView/GroupedView";
 import "./Table.styl";
 
 const injector = inject(({ store }) => {
@@ -246,8 +247,18 @@ export const DataView = injector(
             col.original.resetWidth();
           }}
         />
-      ) : (
+      ) : viewType === "grid" ? (
         <GridView
+          view={view}
+          data={data}
+          fields={columns}
+          loadMore={loadMore}
+          onChange={(id) => view.toggleSelected(id)}
+          hiddenFields={hiddenColumns}
+          stopInteractions={isLocked}
+        />
+      ) : (
+        <GroupedView
           view={view}
           data={data}
           fields={columns}

@@ -24,6 +24,11 @@ export const ViewToggle = viewInjector(observer(({ view, size }) => {
             <span>Grid</span>
           </Tooltip>
         </RadioGroup.Button>
+        <RadioGroup.Button value="grouped">
+          <Tooltip title="Grouped view">
+            <span>Grouped</span>
+          </Tooltip>
+        </RadioGroup.Button>
       </RadioGroup>
     </>
   );

@@ -50,7 +50,7 @@ const GridDataGroup = observer(({ type, value, field, row }) => {
   );
 });
 
-const GridCell = observer(
+export const GridCell = observer(
   ({ view, selected, row, fields, onClick, ...props }) => {
     return (
       <Elem

@@ -244,6 +244,7 @@ module.exports = ({withDevServer = false} = {}) => ({
     main: [
       path.resolve(__dirname, "src/index.js")
     ],
+    entry: [],
   },
   output: {
     path: path.resolve(workingDirectory),
