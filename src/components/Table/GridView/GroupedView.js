@@ -1,12 +1,17 @@
-import { observer } from "mobx-react";
-import React, { Fragment, memo } from "react";
+import { observer, inject } from "mobx-react";
+import React, { Fragment, memo, useState } from "react";
 import { FixedSizeList as List } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { GridCell } from "./GridView";
 import { prepareColumns } from "../../Common/Table/utils";
+import { Space } from "../../Common/Space/Space";
+import { FieldsButton } from "../../Common/FieldsButton";
 import * as DataGroups from "../DataGroups";
 import "./GroupedView.styl";
+
+
+const STORAGE_KEY = "groupByField";
 
 const Rows = memo(
   ({ data, index, style, view, fields, hiddenFields, onChange, loadMore }) => {
@@ -18,8 +23,6 @@ const Rows = memo(
     const fieldsData = React.useMemo(() => {
       return prepareColumns(fields, hiddenFields);
     }, [fields, hiddenFields]);
-
-    console.log(group, ' ', itemCount);
 
     const rowHeight = fieldsData
       .filter((f) => f.parent?.alias === "data")
@@ -66,7 +69,7 @@ const Rows = memo(
     return (
       <div style={style}>
         <div>
-          <h5 style={{ textAlign: "center" }}>{group}</h5>
+          <h4 style={{ textAlign: "center", margin: "16px 0 0 0" }}>{group}</h4>
         </div>
         <AutoSizer>
           {({ width, height }) => (
@@ -78,7 +81,7 @@ const Rows = memo(
               {({ onItemsRendered, ref }) => (
                 <List
                   className="list-rows"
-                  height={height}
+                  height={height - 50}
                   itemCount={itemCount}
                   itemSize={rowHeight + 42}
                   itemData={data[group]}
@@ -98,7 +101,7 @@ const Rows = memo(
 
 const groupBy = (data, key) => {
   return data.reduce((grouped, row) => {
-    const group = row['data'][key];
+    const group = key.parent ? row[key.parent.alias][key.title] : row[key.title];
 
     if (!grouped[group]) {
       grouped[group] = [];
@@ -109,14 +112,61 @@ const groupBy = (data, key) => {
   }, []);
 };
 
+const injector = inject(({ store }) => {
+  const view = store?.currentView;
+
+  return {
+    view,
+    ordering: view?.currentOrder,
+  };
+});
+
+export const GroupByButton = injector(({ size, updateGrouping, currentValue }) => {
+
+  window.localStorage.setItem(STORAGE_KEY, currentValue.title);
+
+  return (
+    <Space style={{ fontSize: 12, margin: "16px 0 0 16px", paddingLeft: "5px" }}>
+      Group by
+      <FieldsButton
+        size={size}
+        style={{ minWidth: 85, textAlign: "left" }}
+        title={currentValue ? currentValue.title : "not set"}
+        onClick={updateGrouping}
+        onReset={updateGrouping}
+        selected={currentValue}
+        wrapper={({ children }) => (
+          <Space style={{ width: "100%", justifyContent: "space-between" }}>
+            {children}
+          </Space>
+        )}
+      />
+    </Space>
+  );
+});
+
+const isDataField = (field) => field.parent?.alias === "data";
+
+const getDataFields = (fields) => {
+  return fields.filter(isDataField);
+};
+
 export const GroupedView = observer(
   ({ data, view, loadMore, fields, onChange, hiddenFields }) => {
 
-    const itemData = groupBy(data, 'source');
+    const choices = getDataFields(fields);
+
+    const storedValue = window.localStorage.getItem(STORAGE_KEY);
+
+    const storedChoice = storedValue ?
+      choices.filter((x) => x.title === storedValue)[0] :
+      choices[0];
+
+    const [grouping, setGrouping] = useState(storedChoice);
+
+    const itemData = groupBy(data, grouping);
 
     const itemCount = Object.keys(itemData).length;
-
-    console.log(itemData);
 
     const renderRows = ({ data, index, style }) => {
       return (
@@ -136,6 +186,12 @@ export const GroupedView = observer(
 
     return (
       <Fragment>
+        <GroupByButton
+          size="small"
+          updateGrouping={setGrouping}
+          currentValue={grouping}
+        >
+        </GroupByButton>
         <AutoSizer>
           {({ width, height }) => (
             <List
@@ -144,7 +200,7 @@ export const GroupedView = observer(
               height={height}
               itemCount={itemCount}
               itemData={itemData}
-              itemSize={500}
+              itemSize={Math.min(width / Math.min(itemCount, 3), 750)}
               width={width}
             >
               {renderRows}
