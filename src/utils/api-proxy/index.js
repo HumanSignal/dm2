@@ -9,7 +9,8 @@
  * }} EndpointConfig
  */
 
-import { formDataToJPO } from "./helpers";
+import { formDataToJPO } from "../helpers";
+import statusCodes from "./status-codes.json";
 
 /**
  * @typedef {Dict<string, EndpointConfig>} Endpoints
@@ -147,7 +148,7 @@ export class APIProxy {
    * @private
    */
   createApiCallExecutor(methodSettings, parentPath, raw = false) {
-    return async(urlParams, { headers, body } = {}) => {
+    return async (urlParams, { headers, body } = {}) => {
       let responseResult, responseMeta;
 
       try {
@@ -246,18 +247,17 @@ export class APIProxy {
 
           try {
             const responseData =
-              rawResponse.status !== 204
-                ? JSON.parse(
-                  this.alwaysExpectJSON ? responseText : responseText || "{}",
-                )
-                : { ok: true };
+               rawResponse.status !== 204
+                 ? JSON.parse(
+                   this.alwaysExpectJSON ? responseText : responseText || "{}",
+                 )
+                 : { ok: true };
 
             if (methodSettings.convert instanceof Function) {
-              responseResult = await methodSettings.convert(responseData);
-            } else {
-              responseResult = responseData;
+              return await methodSettings.convert(responseData);
             }
 
+            responseResult = responseData;
           } catch (err) {
             responseResult = this.generateException(err, responseText);
           }
@@ -423,7 +423,7 @@ export class APIProxy {
    * @private
    */
   async generateError(fetchResponse, exception) {
-    const result = (async() => {
+    const result = (async () => {
       const text = await fetchResponse.text();
 
       try {
@@ -435,7 +435,7 @@ export class APIProxy {
 
     return {
       status: fetchResponse.status,
-      error: exception?.message ?? fetchResponse.statusText,
+      error: exception?.message ?? statusCodes[fetchResponse.status.toString()],
       response: await result,
     };
   }
@@ -468,7 +468,7 @@ export class APIProxy {
    * @param {EndpointConfig} settings
    */
   mockRequest(url, params, request, settings) {
-    return new Promise(async(resolve) => {
+    return new Promise(async (resolve) => {
       let response = null;
       let ok = true;
 

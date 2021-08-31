@@ -6,7 +6,7 @@ const LS_ACCESS_TOKEN = process.env.LS_ACCESS_TOKEN;
 /**
  * @param {import("../src/sdk/dm-sdk").DataManager} DataManager
  */
-export const initDevApp = async(DataManager) => {
+export const initDevApp = async (DataManager) => {
   const gatewayAPI = API_GATEWAY ?? "http://localhost:8081/api/dm";
   const useExternalSource = !!gatewayAPI;
 

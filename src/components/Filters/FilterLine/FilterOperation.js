@@ -36,19 +36,19 @@ export const FilterOperation = observer(
     }, [operator, types, filter]);
 
     const saveFilter = useCallback(debounce(() => {
-      console.log('changed');
+      console.log('changed', filter.id);
       filter.save(true);
-    }, 300), []);
+    }, 300), [filter]);
 
-    const onChange = useCallback((newValue) => {
+    const onChange = (newValue) => {
       console.log({ newValue });
       filter.setValue(newValue);
       saveFilter();
-    }, []);
+    };
 
-    const onOperatorSelected = useCallback((selectedKey) => {
+    const onOperatorSelected = (selectedKey) => {
       filter.setOperator(selectedKey);
-    }, []);
+    };
 
     const Input = selected?.input;
 

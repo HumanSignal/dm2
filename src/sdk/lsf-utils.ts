@@ -1,4 +1,4 @@
-import { APITask, APIAnnotation, APIPrediction, LSFAnnotation, LSFTaskData } from "../types/Task";
+import { APIAnnotation, APIPrediction, APITask, LSFAnnotation, LSFTaskData } from "../types/Task";
 
 /**
  * Converts the task from the server format to the

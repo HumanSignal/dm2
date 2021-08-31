@@ -127,7 +127,7 @@ export const AppStore = types
       if (self._poll) return;
       if (self.SDK.polling === false) return;
 
-      const poll = async(self) => {
+      const poll = async (self) => {
         await self.fetchProject({ interaction: "timer" });
         self._poll = setTimeout(() => poll(self), 10000);
       };
@@ -440,6 +440,8 @@ export const AppStore = types
           message: "Error occurred when loading data",
           description: result?.response?.detail ?? result.error,
         });
+
+        self.SDK.invoke("error", result);
 
         // notification.error({
         //   message: "Error occurred when loading data",

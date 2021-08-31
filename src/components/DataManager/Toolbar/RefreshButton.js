@@ -17,7 +17,7 @@ export const RefreshButton = injector(({ store, needsDataFetch, projectFetch, si
         size={size}
         look={needsDataFetch && 'primary'}
         waiting={projectFetch}
-        onClick={async() => {
+        onClick={async () => {
           await store.fetchProject({ force: true, interaction: 'refresh' });
           await store.currentView?.reload();
         }}

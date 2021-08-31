@@ -58,6 +58,7 @@ export const create = (columns) => {
     source: types.maybeNull(types.string),
     was_cancelled: false,
     assigned_task: false,
+    queue: types.optional(types.maybeNull(types.string), null),
   })
     .views((self) => ({
       get lastAnnotation() {
