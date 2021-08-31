@@ -1,4 +1,4 @@
-import { observer, inject } from "mobx-react";
+import { inject, observer } from "mobx-react";
 import React, { Fragment, memo, useState } from "react";
 import { FixedSizeList as List } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
@@ -70,10 +70,19 @@ const Rows = memo(
       );
     };
 
+    const columnStyle = {
+      ...style,
+      borderRightStyle: "solid",
+      borderRightColor: "#fff",
+      borderRightWidth: "1px",
+      paddingRight: "0.5em",
+      // marginRight: "1em",
+    };
+
     return (
-      <div style={style}>
+      <div style={columnStyle}>
         <div>
-          <h4 style={{ textAlign: "center", margin: "16px 0 0 0" }}>{group}</h4>
+          <h4 style={{ textAlign: "center", margin: "16px 0 0 0" }}>{group} ({itemCount})</h4>
         </div>
         <AutoSizer>
           {({ width, height }) => (

@@ -247,7 +247,7 @@ npm ci && npm run build:module
 Next replace the bundle in Label Studio with a new one:
 
 ```
-cp -r ./build/**/* [your-label-studio-path]/label-studio/static/dm/
+cp -r ./build/**/* [your-label-studio-path]/label_studio/frontend/dist/dm/
 ```
 
 Now you can start Label Studio if it's not running, or refresh the page in the browser.
