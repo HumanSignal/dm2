@@ -1,5 +1,6 @@
 import { inject, observer } from "mobx-react";
-import React, { Fragment, memo, useState } from "react";
+import React, { memo, useState } from "react";
+import { Block } from "../../../utils/bem";
 import { FixedSizeList as List } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import AutoSizer from "react-virtualized-auto-sizer";
@@ -11,7 +12,7 @@ import { Button } from "../../Common/Button/Button";
 import { Icon } from "../../Common/Icon/Icon";
 import { FaCaretDown } from "react-icons/fa";
 import * as DataGroups from "../DataGroups";
-import "./GroupedView.styl";
+import "./GridView.styl";
 
 
 const STORAGE_KEY = "groupByField";
@@ -76,7 +77,6 @@ const Rows = memo(
       borderRightColor: "#fff",
       borderRightWidth: "1px",
       paddingRight: "0.5em",
-      // marginRight: "1em",
     };
 
     return (
@@ -93,7 +93,7 @@ const Rows = memo(
             >
               {({ onItemsRendered, ref }) => (
                 <List
-                  className="list-rows"
+                  className="grouped-rows"
                   height={height - 50}
                   itemCount={itemCount}
                   itemSize={rowHeight + 42}
@@ -246,7 +246,10 @@ export const GroupedView = observer(
     };
 
     return (
-      <Fragment>
+      <Block
+        name="grid-view"
+        style={{ flex: 1 }}
+      >
         <GroupByButton
           size="small"
           updateGrouping={setGrouping}
@@ -258,7 +261,7 @@ export const GroupedView = observer(
         <AutoSizer>
           {({ width, height }) => (
             <List
-              className="list-cols"
+              className="grouped-cols"
               layout="horizontal"
               height={height}
               itemCount={itemCount}
@@ -270,7 +273,7 @@ export const GroupedView = observer(
             </List>
           )}
         </AutoSizer>
-      </Fragment>
+      </Block>
     );
   },
 );
