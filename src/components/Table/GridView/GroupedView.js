@@ -7,11 +7,15 @@ import { GridCell } from "./GridView";
 import { prepareColumns } from "../../Common/Table/utils";
 import { Space } from "../../Common/Space/Space";
 import { FieldsButton } from "../../Common/FieldsButton";
+import { Button } from "../../Common/Button/Button";
+import { Icon } from "../../Common/Icon/Icon";
+import { FaCaretDown } from "react-icons/fa";
 import * as DataGroups from "../DataGroups";
 import "./GroupedView.styl";
 
 
 const STORAGE_KEY = "groupByField";
+const COLWIDTH_KEY = "columnWidth";
 
 const Rows = memo(
   ({ data, index, style, view, fields, hiddenFields, onChange, loadMore }) => {
@@ -50,7 +54,7 @@ const Rows = memo(
       const props = {
         style: {
           ...style,
-          marginLeft: "1em",
+          // marginLeft: "1em",
         },
       };
 
@@ -88,6 +92,7 @@ const Rows = memo(
                   width={width}
                   onItemsRendered={onItemsRendered}
                   ref={ref}
+                  style={{ marginLeft: "1em" }}
                 >
                   {renderRowItems}
                 </List>
@@ -112,6 +117,14 @@ const groupBy = (data, key) => {
   }, []);
 };
 
+function isDataField(field) {
+  return field.parent?.alias === "data";
+}
+
+const getDataFields = (fields) => {
+  return fields.filter(isDataField);
+};
+
 const injector = inject(({ store }) => {
   const view = store?.currentView;
 
@@ -121,10 +134,12 @@ const injector = inject(({ store }) => {
   };
 });
 
-export const GroupByButton = injector(({ size, updateGrouping, currentValue }) => {
+export const GroupByButton = injector(({ size, updateGrouping, currentValue, colWidth, updateColWidth }) => {
 
   window.localStorage.setItem(STORAGE_KEY, currentValue.title);
 
+  window.localStorage.setItem(COLWIDTH_KEY, colWidth);
+  
   return (
     <Space style={{ fontSize: 12, margin: "16px 0 0 16px", paddingLeft: "5px" }}>
       Group by
@@ -135,20 +150,35 @@ export const GroupByButton = injector(({ size, updateGrouping, currentValue }) =
         onClick={updateGrouping}
         onReset={updateGrouping}
         selected={currentValue}
+        trailingIcon={<Icon icon={FaCaretDown} />}
         wrapper={({ children }) => (
           <Space style={{ width: "100%", justifyContent: "space-between" }}>
             {children}
           </Space>
         )}
       />
+      Column width
+      <Button
+        size={size}
+        onClick={updateColWidth}
+      >
+        {colWidth}
+      </Button>
     </Space>
   );
 });
 
-const isDataField = (field) => field.parent?.alias === "data";
-
-const getDataFields = (fields) => {
-  return fields.filter(isDataField);
+const convertColumnWidth = (columnWidth) => {
+  switch (columnWidth) {
+    case "small":
+      return 8;
+    case "medium":
+      return 4;
+    case "large":
+      return 2;
+    default:
+      return 3;
+  }
 };
 
 export const GroupedView = observer(
@@ -159,7 +189,7 @@ export const GroupedView = observer(
     const storedValue = window.localStorage.getItem(STORAGE_KEY);
 
     const storedChoice = storedValue ?
-      choices.filter((x) => x.title === storedValue)[0] :
+      choices.find((x) => x.title === storedValue) :
       choices[0];
 
     const [grouping, setGrouping] = useState(storedChoice);
@@ -167,6 +197,28 @@ export const GroupedView = observer(
     const itemData = groupBy(data, grouping);
 
     const itemCount = Object.keys(itemData).length;
+
+    const storedColWidth = window.localStorage.getItem(COLWIDTH_KEY) ?? "medium";
+
+    const [colWidth, setColWidth] = useState(storedColWidth);
+
+    const updateColWidth = () => {
+      switch (colWidth) {
+        case "small":
+          setColWidth("medium");
+          break;
+        case "medium":
+          setColWidth("large");
+          break;
+        case "large":
+          setColWidth("small");
+          break;
+        default:
+          setColWidth("medium");
+      }
+    };
+
+    const numColumns = convertColumnWidth(colWidth);
 
     const renderRows = ({ data, index, style }) => {
       return (
@@ -190,6 +242,8 @@ export const GroupedView = observer(
           size="small"
           updateGrouping={setGrouping}
           currentValue={grouping}
+          colWidth={colWidth}
+          updateColWidth={updateColWidth}
         >
         </GroupByButton>
         <AutoSizer>
@@ -200,7 +254,7 @@ export const GroupedView = observer(
               height={height}
               itemCount={itemCount}
               itemData={itemData}
-              itemSize={Math.min(width / Math.min(itemCount, 3), 750)}
+              itemSize={Math.max(250, Math.min(width / Math.min(itemCount, numColumns), 750))}
               width={width}
             >
               {renderRows}
