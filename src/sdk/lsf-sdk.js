@@ -79,10 +79,10 @@ export class LSFWrapper {
     }
 
     if (this.labelStream) {
-      interfaces.push(
-        "infobar",
-        "skip",
-      );
+      interfaces.push("infobar");
+      if (this.project.show_skip_button) {
+        interfaces.push("skip");
+      }
     } else {
       interfaces.push(
         "infobar",
