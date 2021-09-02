@@ -71,6 +71,7 @@ export const TabsItem = ({
   const { switchTab, selectedTab, lastTab } = useContext(TabsContext);
   const [currentTitle, setCurrentTitle] = useState(title);
   const [renameMode, setRenameMode] = useState(false);
+  const [hover, setHover] = useState(false);
 
   const active = tab === selectedTab;
 
@@ -93,50 +94,72 @@ export const TabsItem = ({
   return (
     <Elem
       name="item"
-      mod={{ active }}
-      onClick={() => switchTab?.(tab)}
-    >
-      {renameMode ? (
-        <Input
-          size="small"
-          autoFocus={true}
-          style={{ width: 100 }}
-          value={currentTitle}
-          onKeyDownCapture={saveTabTitle}
-          onBlur={saveTabTitle}
-          onChange={(ev) => {
-            setCurrentTitle(ev.target.value);
-          }}
-        />
-      ) : (
-        currentTitle
-      )}
-
-      {(active && managable) && (
-        <Dropdown.Trigger
-          align="bottom-left"
-          content={(
-            <TabsMenu
-              editable={editable}
-              closable={!lastTab && deletable}
-              onClick={(action) => {
-                switch(action) {
-                  case "edit": return setRenameMode(true);
-                  case "duplicate": return onDuplicate?.();
-                  case "close": return onClose?.();
-                }
-              }}
-            />
-          )}
-        >
-          <Button
-            type="link"
+      mod={{ active, hover }}
+      onMouseEnter={()=>setHover(true)}
+      onMouseLeave={()=>setHover(false)}
+    > 
+      <Elem
+        name="item-left"
+        onClick={() => switchTab?.(tab)}
+        mod={{
+          'edit': renameMode,
+        }}
+        title={currentTitle}
+      >
+        {renameMode ? (
+          <Input
             size="small"
-            style={{ padding: 5, marginLeft: 10 }}
-            icon={<Icon icon={FaEllipsisV} />}
+            autoFocus={true}
+            style={{ width: 100 }}
+            value={currentTitle}
+            onKeyDownCapture={saveTabTitle}
+            onBlur={saveTabTitle}
+            onChange={(ev) => {
+              setCurrentTitle(ev.target.value);
+            }}
           />
-        </Dropdown.Trigger>
-      )}
+        ) : (
+          <span style={{  
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}>
+            {currentTitle}
+          </span>
+        )}
+      </Elem>
+      <Elem
+        name='item-right'
+      >
+        {(managable) && (
+          <Dropdown.Trigger
+            align="bottom-left"
+            content={(
+              <TabsMenu
+                editable={editable}
+                closable={!lastTab && deletable}
+                onClick={(action) => {
+                  switch(action) {
+                    case "edit": return setRenameMode(true);
+                    case "duplicate": return onDuplicate?.();
+                    case "close": return onClose?.();
+                  }
+                }}
+              />
+            )}
+          >
+            <Elem
+              name="item-right-button"
+            >
+              <Button
+                type="link"
+                size="small"
+                style={{ padding: '6px', margin: 'auto', color: '#999' }}
+                icon={<Icon icon={FaEllipsisV} />} />
+            </Elem>
+          </Dropdown.Trigger>
+        )}
+      </Elem>
     </Elem>
   );
 };
