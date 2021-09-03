@@ -1,4 +1,4 @@
-import { FaCaretDown, FaColumns } from "react-icons/fa";
+import { FaCaretDown } from "react-icons/fa";
 import { ErrorBox } from "../../Common/ErrorBox";
 import { FieldsButton } from "../../Common/FieldsButton";
 import { FiltersPane } from "../../Common/FiltersPane";
@@ -13,32 +13,34 @@ import { OrderButton } from "./OrderButton";
 import { RefreshButton } from "./RefreshButton";
 import { ViewToggle } from "./ViewToggle";
 
+const style = { minWidth: '110px', justifyContent: 'space-between' };
+
 export const instruments = {
   'view-toggle': ({ size }) => {
-    return <ViewToggle size={size} />;
+    return <ViewToggle size={size} style={style} />;
   },
   'columns': ({ size }) => {
     return (
       <FieldsButton
         wrapper={FieldsButton.Checkbox}
-        icon={<Icon icon={FaColumns} />}
         trailingIcon={<Icon icon={FaCaretDown} />}
-        title={"Fields"}
+        title={"Columns"}
         size={size}
+        style={style}
       />
     );
   },
   'filters': ({ size }) => {
-    return <FiltersPane size={size} />;
+    return <FiltersPane size={size} style={style} />;
   },
   'ordering': ({ size }) => {
-    return <OrderButton size={size} />;
+    return <OrderButton size={size} style={style} />;
   },
   'grid-size': ({ size }) => {
     return <GridWidthButton size={size}/>;
   },
   'refresh': ({ size }) => {
-    return <RefreshButton size={size}/>;
+    return <RefreshButton size={size} style={style}/>;
   },
   'loading-possum': () => {
     return <LoadingPossum/>;
@@ -47,7 +49,7 @@ export const instruments = {
     return <LabelButton size={size}/>;
   },
   'actions': ({ size }) => {
-    return <ActionsButton size={size}/>;
+    return <ActionsButton size={size} style={style} />;
   },
   'error-box': () => {
     return <ErrorBox/>;

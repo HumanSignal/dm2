@@ -10,7 +10,7 @@ const injector = inject(({ store }) => {
   };
 });
 
-export const RefreshButton = injector(({ store, needsDataFetch, projectFetch, size }) => {
+export const RefreshButton = injector(({ store, needsDataFetch, projectFetch, size, ...rest }) => {
   return (
     <Space size={size}>
       <Button
@@ -21,7 +21,12 @@ export const RefreshButton = injector(({ store, needsDataFetch, projectFetch, si
           await store.fetchProject({ force: true, interaction: 'refresh' });
           await store.currentView?.reload();
         }}
-      >Refresh</Button>
+        {...rest}
+      >
+        <span style={{ textAlign: 'center', width: '100%' }}>
+          Refresh
+        </span>
+      </Button>
       {needsDataFetch && "Update available"}
     </Space>
   );
