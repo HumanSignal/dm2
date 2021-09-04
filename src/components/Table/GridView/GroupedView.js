@@ -70,7 +70,7 @@ const Rows = observer(
             onClick={() => onChange?.(row.id)}
           />
         );
-      });
+      }, [data, fieldsData, view.selected, view, view.selected.list, view.selected.all]);
 
     const columnStyle = {
       ...style,
@@ -235,7 +235,7 @@ export const GroupedView = observer(
           >
           </Rows>
         );
-      });
+      }, [data, grouping, fields]);
 
     return (
       <Block
