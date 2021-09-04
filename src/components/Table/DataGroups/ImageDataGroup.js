@@ -16,7 +16,7 @@ export const ImageDataGroup = (column) => {
         src={value}
         width="100%"
         height={ImageDataGroup.height}
-        style={{ objectFit: "cover" }}
+        style={{ objectFit: "contain", backgroundColor: "#dedede" }}
         alt=""
       />
     </div>
@@ -35,4 +35,4 @@ export const ImageDataGroup = (column) => {
   );
 };
 
-ImageDataGroup.height = 150;
+ImageDataGroup.height = 250;

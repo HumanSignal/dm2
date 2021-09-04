@@ -13,11 +13,11 @@ const valueToString = (value) => {
 export const TextDataGroup = ({ value }) => {
   return (
     <div
-      style={{ padding: 5, height: TextDataGroup.height, overflow: "hidden" }}
+      style={{ padding: 5, height: TextDataGroup.height, overflow: "auto" }}
     >
       {value ? valueToString(value) : ""}
     </div>
   );
 };
 
-TextDataGroup.height = 77;
+TextDataGroup.height = 37;
