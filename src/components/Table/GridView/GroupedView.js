@@ -192,9 +192,9 @@ export const GroupedView = observer(
 
     const [grouping, setGrouping] = useState(storedChoice);
 
-    const itemData = React.useMemo(() => {
-      return groupBy(data, grouping);
-    }, [data, grouping]);
+    const itemData = React.useMemo(
+      () => groupBy(data, grouping),
+      [data, data.length, grouping]);
 
     const itemCount = Object.keys(itemData).length;
 
