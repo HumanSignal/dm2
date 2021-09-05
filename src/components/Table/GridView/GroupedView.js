@@ -68,6 +68,7 @@ const Rows = observer(
             fields={fieldsData}
             selected={view.selected}
             onClick={() => onChange?.(row.id)}
+            // style={{ padding: "0 16px 16px 0" }}
           />
         );
       }, [data, fieldsData, view.selected, view, view.selected.list, view.selected.all]);
@@ -77,13 +78,13 @@ const Rows = observer(
       borderRightStyle: "solid",
       borderRightColor: "#fff",
       borderRightWidth: "1px",
-      paddingRight: "0.5em",
+      paddingRight: "7px",
     };
 
     return (
       <div style={columnStyle}>
         <div>
-          <h4 style={{ textAlign: "center", margin: "16px 0 0 0", overflow: "auto", maxHeight: "1rem" }}>{group} ({itemCount})</h4>
+          <h4 style={{ textAlign: "center", margin: "0 0 16px 0", overflow: "auto", maxHeight: "1rem" }}>{group} ({itemCount})</h4>
         </div>
         <AutoSizer>
           {({ width, height }) => (
@@ -95,7 +96,6 @@ const Rows = observer(
               {({ onItemsRendered, ref }) => (
                 <List
                   className="grouped-rows"
-                  itemKey={(index) => group + '-' + index.toString()}
                   height={height - 50}
                   itemCount={itemCount}
                   itemSize={rowHeight + 42}
@@ -103,7 +103,7 @@ const Rows = observer(
                   width={width}
                   onItemsRendered={onItemsRendered}
                   ref={ref}
-                  style={{ marginLeft: "1em" }}
+                  style={{ marginLeft: "1em", paddingBottom: "16px" }}
                 >
                   {renderRowItems}
                 </List>
@@ -140,7 +140,7 @@ const GroupByButton = observer(
     window.localStorage.setItem(COLWIDTH_KEY, colWidth);
   
     return (
-      <Space style={{ fontSize: 12, margin: "16px 0 0 16px", paddingLeft: "5px" }}>
+      <Space style={{ fontSize: 12, margin: "16px 0 16px 16px", paddingLeft: "5px" }}>
       Group by
         <FieldsButton
           size={size}
@@ -235,11 +235,11 @@ export const GroupedView = observer(
           >
           </Rows>
         );
-      }, [data, grouping, fields]);
+      }, [data, grouping, fields, numColumns]);
 
     return (
       <Block
-        name="grid-view"
+        name="grouped-view"
         style={{ flex: 1 }}
       >
         <GroupByButton
@@ -255,10 +255,10 @@ export const GroupedView = observer(
             <List
               className="grouped-cols"
               layout="horizontal"
-              height={height}
+              height={height - 50}
               itemCount={itemCount}
               itemData={itemData}
-              itemSize={Math.max(250, Math.min(width / numColumns, 1000))}
+              itemSize={Math.max(250, Math.min(width / numColumns, 1000)) - 9.5}
               width={width}
             >
               {renderRows}
