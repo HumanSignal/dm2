@@ -13,7 +13,7 @@ const listIncludes = (list, id) => {
 const MixinBase = types
   .model("InfiniteListMixin", {
     page: types.optional(types.integer, 0),
-    pageSize: types.optional(types.integer, 30),
+    pageSize: types.optional(types.integer, 15),
     total: types.optional(types.integer, 0),
     loading: false,
     loadingItem: false,
