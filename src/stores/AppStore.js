@@ -465,16 +465,23 @@ export const AppStore = types
 
       if (view && needsLock && !actionCallback) view.lock();
 
-      const actionParams = {
-        ordering: view.ordering,
-        selectedItems: selected?.hasSelected
-          ? selected.snapshot
-          : { all: true, excluded: [] },
-        filters: {
-          conjunction: view.conjunction ?? 'and',
-          items: view.serializedFilters ?? [],
-        },
-      };
+      let actionParams = {};
+      const all = localStorage.getItem("dm:labelstream:mode") === "all";
+
+      // @todo this is dirty way to sync across nested apps
+      // don't apply filters for "all" on "next_task"
+      if (actionId !== "next_task" || !all) {
+        actionParams = {
+          ordering: view.ordering,
+          selectedItems: selected?.hasSelected
+            ? selected.snapshot
+            : { all: true, excluded: [] },
+          filters: {
+            conjunction: view.conjunction ?? 'and',
+            items: view.serializedFilters ?? [],
+          },
+        };
+      }
 
       if (actionCallback instanceof Function) {
         return actionCallback(actionParams, view);
