@@ -296,9 +296,12 @@ export const AppStore = types
       self.unsetTask(options);
 
       let viewId;
+      const tabFromURL = History.getParams().tab;
 
       if (isDefined(self.currentView)) {
         viewId = self.currentView.id;
+      } else if (isDefined(tabFromURL)) {
+        viewId = +tabFromURL;
       } else if (isDefined(self.viewsStore)) {
         viewId = self.viewsStore.views[0]?.id;
       }
