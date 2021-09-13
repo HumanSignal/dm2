@@ -94,12 +94,16 @@ export class LSFWrapper {
       );
     }
 
-    if (this.datamanager.hesInterface('instruction')) {
+    if (this.datamanager.hasInterface('instruction')) {
       interfaces.push('instruction');
     }
 
-    if (!this.labelStream && this.datamanager.hesInterface('groundTruth')) {
+    if (!this.labelStream && this.datamanager.hasInterface('groundTruth')) {
       interfaces.push('ground-truth');
+    }
+
+    if (this.datamanager.hasInterface("autoAnnotation")) {
+      interfaces.push("auto-annotation");
     }
 
     const lsfProperties = {
@@ -234,7 +238,7 @@ export class LSFWrapper {
           });
         }
         cs.selectAnnotation(c.id);
-        c.deserializeAnnotation(draft.result);
+        c.deserializeResults(draft.result);
         c.setDraftId(draft.id);
       }
     }

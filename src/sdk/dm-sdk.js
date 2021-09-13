@@ -153,6 +153,7 @@ export class DataManager {
       labelingHeader: true,
       groundTruth: false,
       instruction: false,
+      autoAnnotation: false,
       ...config.interfaces,
     });
 
@@ -442,7 +443,7 @@ export class DataManager {
     return instruments[name] ?? this.instruments.get(name) ?? null;
   }
 
-  hesInterface(name) {
+  hasInterface(name) {
     return this.interfaces.get(name) === true;
   }
 
