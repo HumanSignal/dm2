@@ -72,9 +72,9 @@ export const Button = React.forwardRef(
 );
 Button.displayName = "Button";
 
-Button.Group = ({ className, children, collapsed }) => {
+Button.Group = ({ className, children, collapsed, ...rest }) => {
   return (
-    <Block name="button-group" mod={{ collapsed }} mix={className}>
+    <Block name="button-group" mod={{ collapsed }} mix={className} {...rest}>
       {children}
     </Block>
   );

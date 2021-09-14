@@ -6,35 +6,35 @@ const viewInjector = inject(({ store }) => ({
   view: store.currentView,
 }));
 
-export const ViewToggle = viewInjector(observer(({ view, size }) => {
+export const ViewToggle = viewInjector(observer(({ view, size, ...rest }) => {
   return (
-    <>
-      <RadioGroup
-        size={size}
-        value={view.type}
-        onChange={(e) => view.setType(e.target.value)}
-      >
-        <RadioGroup.Button value="list">
-          <Tooltip title="List view">
-            <span>List</span>
-          </Tooltip>
-        </RadioGroup.Button>
-        <RadioGroup.Button value="grid">
-          <Tooltip title="Grid view">
-            <span>Grid</span>
-          </Tooltip>
-        </RadioGroup.Button>
-      </RadioGroup>
-    </>
+    <RadioGroup
+      size={size}
+      value={view.type}
+      onChange={(e) => view.setType(e.target.value)}
+      {...rest}
+    >
+      <RadioGroup.Button value="list">
+        <Tooltip title="List view">
+          <span>List</span>
+        </Tooltip>
+      </RadioGroup.Button>
+      <RadioGroup.Button value="grid">
+        <Tooltip title="Grid view">
+          <span>Grid</span>
+        </Tooltip>
+      </RadioGroup.Button>
+    </RadioGroup>
   );
 }));
 
-export const DataStoreToggle = viewInjector(({ view, size }) => {
+export const DataStoreToggle = viewInjector(({ view, size, ...rest }) => {
   return (
     <RadioGroup
       value={view.target}
       size={size}
       onChange={(e) => view.setTarget(e.target.value)}
+      {...rest}
     >
       <RadioGroup.Button value="tasks">
         Tasks

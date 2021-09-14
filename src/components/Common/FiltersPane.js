@@ -1,6 +1,6 @@
 import { inject, observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
-import { FaAngleDown, FaFilter } from "react-icons/fa";
+import { FaAngleDown } from "react-icons/fa";
 import { Filters } from "../Filters/Filters";
 import { Badge } from "./Badge/Badge";
 import { Button } from "./Button/Button";
@@ -24,7 +24,6 @@ export const FiltersButton = buttonInjector(observer(
       <Button
         ref={ref}
         size={size}
-        icon={<FaFilter />}
         onClick={() => sidebarEnabled && viewsStore.toggleSidebar()}
         {...rest}
       >

@@ -10,7 +10,7 @@ const injector = inject(({ store }) => ({
   hasSelected: store.currentView?.selected?.hasSelected ?? false,
 }));
 
-export const ActionsButton = injector(observer(({ store, size, hasSelected }) => {
+export const ActionsButton = injector(observer(({ store, size, hasSelected, ...rest }) => {
   const selectedCount = store.currentView.selectedCount;
   const actions = store.availableActions
     .filter((a) => !a.hidden)
@@ -54,7 +54,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected }) =>
 
   return (
     <Dropdown.Trigger content={<Menu size="compact">{actionButtons}</Menu>} disabled={!hasSelected}>
-      <Button size={size} disabled={!hasSelected}>
+      <Button size={size} disabled={!hasSelected} {...rest} >
         {selectedCount > 0 && selectedCount} Tasks
         <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
       </Button>

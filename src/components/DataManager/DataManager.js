@@ -1,6 +1,6 @@
 import { inject } from "mobx-react";
 import React from "react";
-import { FaPlus } from "react-icons/fa";
+import { LSPlus } from "../../assets/icons";
 import { Block, Elem } from "../../utils/bem";
 import { Interface } from "../Common/Interface";
 import { Space } from "../Common/Space/Space";
@@ -41,7 +41,7 @@ const switchInjector = inject(({ store }) => {
 
 const ProjectSummary = summaryInjector((props) => {
   return (
-    <Space size="large" style={{ paddingRight: "1em" }}>
+    <Space size="large" style={{ paddingRight: "1em", color: "rgba(0,0,0,0.3)" }}>
       {props.cloudSync && (
         <Space
           size="small"
@@ -71,7 +71,7 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
       onAdd={() => views.addView({ reload: false })}
       onChange={(key) => views.setSelected(key)}
       tabBarExtraContent={<ProjectSummary />}
-      addIcon={<FaPlus color="#595959" />}
+      addIcon={<LSPlus />}
     >
       {tabs.map((tab) => (
         <TabsItem
