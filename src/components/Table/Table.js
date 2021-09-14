@@ -72,7 +72,7 @@ export const DataView = injector(
 
         return !hasNextPage || rowExists;
       },
-      [dataStore.hasNextPage]
+      [dataStore.hasNextPage],
     );
 
     const columnHeaderExtra = useCallback(
@@ -87,7 +87,7 @@ export const DataView = injector(
               style={{ fontWeight: "500", fontSize: 14, cursor: "pointer", width: 45, padding: 0 }}
             >
               {original?.readableType ?? parent.title}
-            </Tag>
+            </Tag>,
           );
         }
 
@@ -95,13 +95,13 @@ export const DataView = injector(
           children.push(
             <Tooltip key="help-tooltip" title={help}>
               <Icon icon={FaQuestionCircle} style={{ opacity: 0.5 }} />
-            </Tooltip>
+            </Tooltip>,
           );
         }
 
         return children.length ? <>{children}</> : null;
       },
-      []
+      [],
     );
 
     const onSelectAll = useCallback(() => view.selectAll(), [view]);
@@ -118,7 +118,7 @@ export const DataView = injector(
           getRoot(view).startLabeling(item);
         }
       },
-      [view]
+      [view],
     );
 
     const renderContent = useCallback(
@@ -155,7 +155,7 @@ export const DataView = injector(
 
         return content;
       },
-      [hasData, isLabeling, isLoading, total]
+      [hasData, isLabeling, isLoading, total],
     );
 
     const decorationContent = (col) => {
@@ -176,7 +176,7 @@ export const DataView = injector(
       alias,
       size,
       align = "flex-start",
-      help = false
+      help = false,
     ) => ({
       alias,
       content: decorationContent,
@@ -192,6 +192,7 @@ export const DataView = injector(
         commonDecoration("completed_at", 180, "space-between", true),
         commonDecoration("reviews_accepted", 60, "center"),
         commonDecoration("reviews_rejected", 60, "center"),
+        commonDecoration("ground_truth", 60, "center"),
         {
           resolver: (col) => col.type === "Number",
           style(col) {
@@ -211,7 +212,7 @@ export const DataView = injector(
           style: { width: 150 },
         },
       ],
-      [commonDecoration]
+      [commonDecoration],
     );
 
     const content =
@@ -278,7 +279,9 @@ export const DataView = injector(
       if (document.activeElement !== document.body) return;
 
       const { highlighted } = dataStore;
-      if (highlighted) store.startLabeling(highlighted);
+      // don't close QuickView by Enter
+
+      if (highlighted && !highlighted.isSelected) store.startLabeling(highlighted);
     });
 
     // Render the UI for your table
@@ -291,5 +294,5 @@ export const DataView = injector(
         {renderContent(content)}
       </Block>
     );
-  }
+  },
 );

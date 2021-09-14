@@ -1,72 +1,66 @@
 import { inject, observer } from "mobx-react";
-import React, { useCallback, useEffect, useRef } from "react";
-import { FaFilter } from "react-icons/fa";
+import React, { useEffect, useRef } from "react";
+import { FaAngleDown, FaFilter } from "react-icons/fa";
 import { Filters } from "../Filters/Filters";
+import { Badge } from "./Badge/Badge";
 import { Button } from "./Button/Button";
 import { Dropdown } from "./Dropdown/Dropdown";
 
-export const FiltersButton = observer(
-  React.forwardRef(({ active, size, ...rest }, ref) => {
-    return (
-      <Button
-        ref={ref}
-        look={active && "primary"}
-        size={size}
-        icon={<FaFilter />}
-        {...rest}
-      >
-        Filters
-      </Button>
-    );
-  })
-);
-
-const injector = inject(({ store }) => {
+const buttonInjector = inject(({ store }) => {
   const { viewsStore, currentView } = store;
 
   return {
     viewsStore,
-    view: currentView ?? null,
     sidebarEnabled: viewsStore?.sidebarEnabled ?? false,
-    filtersApplied: currentView?.filtersApplied ?? false,
+    activeFiltersNumber: currentView?.filtersApplied ?? false,
+  };
+});
+
+export const FiltersButton = buttonInjector(observer(
+  React.forwardRef(({ activeFiltersNumber, size, sidebarEnabled, viewsStore, ...rest }, ref) => {
+    const hasFilters = activeFiltersNumber > 0;
+
+    return (
+      <Button
+        ref={ref}
+        size={size}
+        icon={<FaFilter />}
+        onClick={() => sidebarEnabled && viewsStore.toggleSidebar()}
+        {...rest}
+      >
+        Filters {hasFilters && (
+          <Badge size="small" style={{ marginLeft: 5 }}>{activeFiltersNumber}</Badge>
+        )}
+        <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
+      </Button>
+    );
+  }),
+));
+
+const injector = inject(({ store }) => {
+  return {
+    sidebarEnabled: store?.viewsStore?.sidebarEnabled ?? false,
   };
 });
 
 export const FiltersPane = injector(
-  ({ viewsStore, sidebarEnabled, size, filtersApplied, ...rest }) => {
-    const dropdownProps = {};
+  observer(({ sidebarEnabled, size, ...rest }) => {
     const dropdown = useRef();
 
-    if (sidebarEnabled) {
-      Object.assign(dropdownProps, {
-        visible: false,
-        disabled: true,
-      });
-    }
-
     useEffect(() => {
-      if (sidebarEnabled) {
+      if (sidebarEnabled === true) {
         dropdown?.current?.close();
       }
-    }, [sidebarEnabled]);
-
-    const toggleCallback = useCallback(() => {
-      if (sidebarEnabled) viewsStore.toggleSidebar();
     }, [sidebarEnabled]);
 
     return (
       <Dropdown.Trigger
         ref={dropdown}
         disabled={sidebarEnabled}
-        content={<Filters />}
+        content={<Filters/>}
       >
-        <FiltersButton
-          size={size}
-          active={filtersApplied}
-          onClick={toggleCallback}
-          {...rest}
-        />
+        <FiltersButton {...rest} size={size}/>
       </Dropdown.Trigger>
     );
-  }
+  }),
 );

@@ -28,7 +28,7 @@ export const Filters = injector(({ views, currentView, filters }) => {
             s
               .split("")
               .map((c, i) => (i === 0 ? c.toUpperCase() : c))
-              .join("")
+              .join(""),
           )
           .join(" ");
 
@@ -46,12 +46,12 @@ export const Filters = injector(({ views, currentView, filters }) => {
 
         return { ...res, [target]: group };
       }, {}),
-    [currentView.availableFilters]
+    [currentView.availableFilters],
   );
 
   return (
     <Block name="filters" mod={{ sidebar: sidebarEnabled }}>
-      <Elem name="list" mod={{withFilters: !!filters.length}}>
+      <Elem name="list" mod={{ withFilters: !!filters.length }}>
         {filters.length ? (
           filters.map((filter, i) => (
             <FilterLine

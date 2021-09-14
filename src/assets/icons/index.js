@@ -5,3 +5,4 @@ export { default as LsCrossAlt } from "./cross_alt.svg";
 export { default as LsSparkSquare } from './spark.svg';
 export { default as LsThumbsDown } from './thumbs_down.svg';
 export { default as LsThumbsUp } from './thumbs_up.svg';
+export { default as LsStarSquare } from  './star_square.svg';

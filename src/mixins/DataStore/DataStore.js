@@ -6,6 +6,7 @@ const listIncludes = (list, id) => {
     id !== undefined
       ? Array.from(list).findIndex((item) => item.id === id)
       : -1;
+
   return index >= 0;
 };
 
@@ -82,6 +83,7 @@ const MixinBase = types
 
       newEntity.forEach((n) => {
         const index = self.list.findIndex((i) => i.id === n.id);
+
         if (index >= 0) {
           self.list.splice(index, 1);
         }
@@ -120,25 +122,28 @@ const MixinBase = types
 
 export const DataStore = (
   modelName,
-  { listItemType, apiMethod, properties }
+  { listItemType, apiMethod, properties },
 ) => {
   const model = types
     .model(modelName, {
       ...(properties ?? {}),
       list: types.optional(types.array(listItemType), []),
       selected: types.maybeNull(
-        types.late(() => types.reference(listItemType))
+        types.late(() => types.reference(listItemType)),
       ),
       highlighted: types.maybeNull(
-        types.late(() => types.reference(listItemType))
+        types.late(() => types.reference(listItemType)),
       ),
     })
+    .volatile(() => ({
+      requestId: null,
+    }))
     .actions((self) => ({
       updateItem(itemID, patch) {
         let item = self.list.find((t) => t.id === itemID);
 
         if (item) {
-          console.log({patch, item});
+          console.log({ patch, item });
           item.update(patch);
         } else {
           item = listItemType.create(patch);
@@ -148,11 +153,11 @@ export const DataStore = (
         return item;
       },
 
-      fetch: flow(function* ({ reload = false, interaction } = {}) {
-        const currentView = getRoot(self).viewsStore.selected;
+      fetch: flow(function* ({ id, reload = false, interaction } = {}) {
+        const currentViewId = id ?? getRoot(self).viewsStore.selected?.id;
+        const requestId = self.requestId = guidGenerator();
 
-        if (self.loading) return;
-        if (!currentView) return;
+        if (!currentViewId) return;
 
         self.loading = true;
 
@@ -162,12 +167,20 @@ export const DataStore = (
         const params = {
           page: self.page,
           page_size: self.pageSize,
-          tabID: currentView.id,
+          tabID: currentViewId,
         };
 
         if (interaction) Object.assign(params, { interaction });
 
         const data = yield getRoot(self).apiCall(apiMethod, params);
+
+        // We cancel current request processing if request id
+        // cnhaged during the request. It indicates that something
+        // triggered another request while current one is not yet finished
+        if (requestId !== self.requestId) {
+          console.log(`Request ${requestId} was cancelled by another request`);
+          return;
+        }
 
         const [selectedID, highlightedID] = [
           self.selected?.id,
@@ -190,15 +203,16 @@ export const DataStore = (
 
         self.loading = false;
 
-        getRoot(self).SDK.invoke('dataFetched', [self]);
+        getRoot(self).SDK.invoke('dataFetched', self);
       }),
 
-      reload: flow(function* ({ interaction } = {}) {
-        yield self.fetch({ reload: true, interaction });
+      reload: flow(function* ({ id, interaction } = {}) {
+        yield self.fetch({ id, reload: true, interaction });
       }),
 
       focusPrev() {
         const index = Math.max(0, self.list.indexOf(self.highlighted) - 1);
+
         self.highlighted = self.list[index];
         self.updated = guidGenerator();
       },
@@ -206,8 +220,9 @@ export const DataStore = (
       focusNext() {
         const index = Math.min(
           self.list.length - 1,
-          self.list.indexOf(self.highlighted) + 1
+          self.list.indexOf(self.highlighted) + 1,
         );
+
         self.highlighted = self.list[index];
         self.updated = guidGenerator();
       },

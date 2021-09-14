@@ -4,6 +4,7 @@ import React from "react";
 export const DateTimeCell = (column) => {
   const date = new Date(column.value);
   const dateFormat = "MMM dd yyyy, HH:mm:ss";
+
   return column.value ? (
     <div style={{ whiteSpace: "nowrap" }}>
       {isValid(date) ? format(date, dateFormat) : ""}

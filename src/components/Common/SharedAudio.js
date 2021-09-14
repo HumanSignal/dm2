@@ -116,6 +116,7 @@ export class SharedAudio extends Component {
     currentPlayer = this;
 
     const audio = new Audio(this.props.src);
+
     document.body.appendChild(audio);
     audio.classList.add("dm-audio");
     audio.currentTime = 0;
@@ -140,7 +141,7 @@ export class SharedAudio extends Component {
           current: audio.currentTime,
           paused: audio.paused,
         },
-        callback
+        callback,
       );
     };
 

@@ -36,6 +36,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected }) =>
 
   const actionButtons = actions.map((action) => {
     const isDeleteAction = action.id.includes("delete");
+
     return (
       <Menu.Item
         size={size}
@@ -51,12 +52,12 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected }) =>
     );
   });
 
-  return hasSelected ? (
-    <Dropdown.Trigger content={<Menu size="compact">{actionButtons}</Menu>}>
-      <Button size={size}>
-        {selectedCount} tasks
+  return (
+    <Dropdown.Trigger content={<Menu size="compact">{actionButtons}</Menu>} disabled={!hasSelected}>
+      <Button size={size} disabled={!hasSelected}>
+        {selectedCount > 0 && selectedCount} Tasks
         <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
       </Button>
     </Dropdown.Trigger>
-  ) : null;
+  );
 }));

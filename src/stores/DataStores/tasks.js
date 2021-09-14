@@ -6,12 +6,13 @@ import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 import { User } from "../Users";
 
-const Annotator = types
+const Assignee = types
   .model("Assignee", {
     id: types.identifierNumber,
     user: types.late(() => types.reference(User)),
     review: types.maybeNull(types.enumeration(["accepted", "rejected", "fixed"])),
-    annotated: false,
+    reviewed: types.maybeNull(types.boolean),
+    annotated: types.maybeNull(types.boolean),
   })
   .views((self) => ({
     get firstName() { return self.user.firstName; },
@@ -21,19 +22,22 @@ const Annotator = types
     get lastActivity() { return self.user.lastActivity; },
     get avatar() { return self.user.avatar; },
     get initials() { return self.user.initials; },
-    get fullName() { return self.user.fullName; }
+    get fullName() { return self.user.fullName; },
   }))
   .preProcessSnapshot((sn) => {
     let result = sn;
+
     if (typeof sn === 'number') {
       result = {
         id: sn,
         user: sn,
         annotated: true,
         review: null,
+        reviewed: false,
       };
     } else {
-      const {user_id, user, ...rest} = sn;
+      const { user_id, user, ...rest } = sn;
+
       result = {
         ...rest,
         id: user_id ?? user,
@@ -46,13 +50,15 @@ const Annotator = types
 
 export const create = (columns) => {
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
-    annotators: types.optional(types.array(Annotator), []),
-    reviewers: types.optional(types.array(types.late(() => types.reference(User))), []),
+    annotators: types.optional(types.array(Assignee), []),
+    reviewers: types.optional(types.array(Assignee), []),
     annotations: types.optional(types.array(CustomJSON), []),
     predictions: types.optional(types.array(CustomJSON), []),
     drafts: types.frozen(),
     source: types.maybeNull(types.string),
     was_cancelled: false,
+    assigned_task: false,
+    queue: types.optional(types.maybeNull(types.string), null),
   })
     .views((self) => ({
       get lastAnnotation() {
@@ -61,9 +67,10 @@ export const create = (columns) => {
     }))
     .actions((self) => ({
       mergeAnnotations(annotations) {
-        self.annotations = annotations.map((c) => {
+        // skip drafts, they'll be added later
+        self.annotations = annotations.filter(a => a.pk).map((c) => {
           const existingAnnotation = self.annotations.find(
-            (ec) => ec.id === Number(c.pk)
+            (ec) => ec.id === Number(c.pk),
           );
 
           if (existingAnnotation) {
@@ -72,6 +79,7 @@ export const create = (columns) => {
             return {
               id: c.id,
               pk: c.pk,
+              draftId: c.draftId,
               result: c.serializeAnnotation(),
               leadTime: c.leadTime,
               userGenerate: !!c.userGenerate,
@@ -99,6 +107,13 @@ export const create = (columns) => {
         });
 
         if (index >= 0) self.annotations.splice(index, 1);
+      },
+
+      deleteDraft(id) {
+        if (!self.drafts) return;
+        const index = self.drafts.findIndex(d => d.id === id);
+
+        if (index >= 0) self.drafts.splice(index, 1);
       },
 
       loadAnnotations: flow(function* () {
@@ -145,9 +160,23 @@ export const create = (columns) => {
           reload: false,
         });
 
+        if (taskData?.$meta?.status === 404) {
+          getRoot(self).SDK.invoke("labelStreamFinished");
+          return null;
+        }
+
+        const labelStreamModeChanged = self.selected && (
+          self.selected.assigned_task !== taskData.assigned_task
+          && taskData.assigned_task === false
+        );
+
         const task = self.applyTaskSnapshot(taskData);
 
         if (select !== false) self.setSelected(task);
+
+        if (labelStreamModeChanged) {
+          getRoot(self).SDK.invoke("assignedStreamFinished");
+        }
 
         return task;
       }),
@@ -169,8 +198,9 @@ export const create = (columns) => {
       },
 
       mergeSnapshot(taskID, taskData){
-        const task = self.list.find(({id}) => id === taskID);
-        const snapshot = task ? {...getSnapshot(task)} : {};
+        const task = self.list.find(({ id }) => id === taskID);
+        const snapshot = task ? { ...getSnapshot(task) } : {};
+
         Object.assign(snapshot, taskData);
 
         if (snapshot.predictions) {
@@ -194,12 +224,6 @@ export const create = (columns) => {
         if (total_predictions !== null)
           self.totalPredictions = total_predictions;
       },
-
-      deleteDraft(id) {
-        if (!self.drafts) return;
-        const index = self.drafts.findIndex(d => d.id === id);
-        if (index >= 0) self.drafts.splice(index, 1);
-      }
     }))
     .preProcessSnapshot((snapshot) => {
       const { total_annotations, total_predictions, ...sn } = snapshot;

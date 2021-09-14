@@ -16,13 +16,14 @@ export const AudioSeeker = ({ currentTime, duration, buffer, onSeekStart, onSeek
       e.stopPropagation();
       e.preventDefault();
 
-      const {left, width} = seekerRef.current.getBoundingClientRect();
+      const { left, width } = seekerRef.current.getBoundingClientRect();
       const initialX = e.pageX - (left + 5);
       const clickedProgress = duration * Math.max(0, Math.min(initialX / width, 1));
 
       const seekProgress = (e) => {
         const newX = e.pageX - (left + 5);
         const newProgress = duration * Math.max(0, Math.min(newX / width, 1));
+
         onChange(newProgress);
       };
 
@@ -48,6 +49,7 @@ export const AudioSeeker = ({ currentTime, duration, buffer, onSeekStart, onSeek
       for (var i = 0; i < buffer.length; i++) {
         if (buffer.start(buffer.length - 1 - i) < currentTime) {
           const size = (buffer.end(buffer.length - 1 - i) / duration) * 100;
+
           setBuffered(size);
           break;
         }
@@ -58,7 +60,7 @@ export const AudioSeeker = ({ currentTime, duration, buffer, onSeekStart, onSeek
   return (
     <Block name="audio-seeker" ref={seekerRef} onMouseDownCapture={handleMouseDown}>
       <Elem name="wrapper">
-        <Elem name="progress" style={{width: `${progress}%`}}/>
+        <Elem name="progress" style={{ width: `${progress}%` }}/>
         <Elem name="buffer" style={{ width: `${buffered}%` }}/>
       </Elem>
     </Block>

@@ -27,7 +27,7 @@ const DropdownWrapper = observer(
 
     return (
       <Dropdown.Trigger
-        content={
+        content={(
           <Menu
             title="Display as"
             size="compact"
@@ -54,7 +54,7 @@ const DropdownWrapper = observer(
               );
             })}
           </Menu>
-        }
+        )}
       >
         <Button
           type="text"
@@ -72,7 +72,7 @@ const DropdownWrapper = observer(
         </Button>
       </Dropdown.Trigger>
     );
-  }
+  },
 );
 
 const ColumnRenderer = observer(
@@ -87,7 +87,7 @@ const ColumnRenderer = observer(
     onResize,
     onReset,
   }) => {
-    const { Header, Cell, id, ...column } = columnInput;
+    const { Header, Cell: _, id, ...column } = columnInput;
 
     if (Header instanceof Function) {
       const { cellClassName: _, headerClassName, ...rest } = column;
@@ -154,7 +154,7 @@ const ColumnRenderer = observer(
         </Resizer>
       </TableCell>
     );
-  }
+  },
 );
 
 export const TableHead = observer(
@@ -171,10 +171,10 @@ export const TableHead = observer(
         onReset,
         extra,
       },
-      ref
+      ref,
     ) => {
       const { columns, headerRenderers, cellViews } = React.useContext(
-        TableContext
+        TableContext,
       );
 
       return (
@@ -204,6 +204,6 @@ export const TableHead = observer(
           <Elem name="extra">{extra}</Elem>
         </Block>
       );
-    }
-  )
+    },
+  ),
 );

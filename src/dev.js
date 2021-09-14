@@ -11,6 +11,7 @@ export const initDevApp = async (DataManager) => {
   const useExternalSource = !!gatewayAPI;
 
   const dm = new DataManager({
+    mode: "labelstream",
     root: document.getElementById("app"),
     toolbar: "actions columns filters ordering review-button label-button loading-possum error-box | refresh view-toggle",
     apiGateway: gatewayAPI,
@@ -18,6 +19,9 @@ export const initDevApp = async (DataManager) => {
     apiMockDisabled: useExternalSource,
     apiHeaders: {
       Authorization: `Token ${LS_ACCESS_TOKEN}`,
+    },
+    interfaces: {
+      groundTruth: true,
     },
     labelStudio: {
       user: {
@@ -42,9 +46,17 @@ export const initDevApp = async (DataManager) => {
       },
     },
     instruments: {
-      'review-button': ({inject}) => {
-        return () => <Button style={{width: 105}}>Review</Button>;
-      }
-    }
+      'review-button': () => {
+        return () => <Button style={{ width: 105 }}>Review</Button>;
+      },
+    },
+  });
+
+  dm.on("lsf:groundTruth", () => {
+    console.log('lsf ground truth set');
+  });
+
+  dm.on("taskSelected", () => {
+    console.log('task selected');
   });
 };

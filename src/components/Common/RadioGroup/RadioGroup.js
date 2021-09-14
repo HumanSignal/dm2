@@ -12,7 +12,7 @@ export const RadioGroup = ({ size, value, onChange, children }) => {
   return (
     <RadioContext.Provider
       value={{
-        value: value,
+        value,
         onChange: onRadioChange,
       }}
     >

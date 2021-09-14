@@ -6,13 +6,15 @@ import './Userpic.styl';
 const FALLBACK_IMAGE = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=';
 
 export const Userpic = forwardRef(({
-  username,
-  src,
-  user,
-  className,
-  showUsername,
-  faded = false,
   badge = null,
+  className,
+  faded = false,
+  showUsername,
+  size,
+  src,
+  style,
+  user,
+  username,
   ...rest
 }, ref) => {
   const imgRef = useRef();
@@ -21,16 +23,20 @@ export const Userpic = forwardRef(({
   const [imgVisible, setImgVisible] = useState(false);
   const [nameVisible, setNameVisible] = useState(true);
 
+  if (size) {
+    style = Object.assign({ width: size, height: size, fontSize: size * 0.4 }, style);
+  }
+
   useEffect(() => {
     if (user) {
-      const {first_name, last_name, email, initials, username} = user;
+      const { first_name, last_name, email, initials, username } = user;
 
       if (initials) {
         setFinalUsername(initials);
       } else if (username) {
         setFinalUsername(username);
-      } else if (first_name && last_name) {
-        setFinalUsername(`${first_name[0]}${last_name[0]}`);
+      } else if (first_name || last_name) {
+        setFinalUsername((first_name?.[0] ?? "") + (last_name?.[0] ?? ""));
       } else if (email) {
         setFinalUsername(email.substring(0, 2));
       }
@@ -48,17 +54,17 @@ export const Userpic = forwardRef(({
   }, [finalSrc]);
 
   const userpic = (
-    <Block ref={ref} name="userpic" mix={className} mod={{faded}} {...rest}>
+    <Block ref={ref} name="userpic" mix={className} mod={{ faded }} style={style} {...rest}>
       <Elem
         tag="img"
         name="avatar"
         ref={imgRef}
         src={finalSrc}
         alt={(finalUsername ?? "").toUpperCase()}
-        style={{opacity: imgVisible ? (faded ? 0.3 : 1) : 0}}
+        style={{ opacity: imgVisible ? (faded ? 0.3 : 1) : 0 }}
         onLoad={onImageLoaded}
         onError={() => setFinalSrc(FALLBACK_IMAGE) }
-        mod={{faded}}
+        mod={{ faded }}
       />
       {nameVisible && (
         <Elem tag="span" name="username">
@@ -68,7 +74,7 @@ export const Userpic = forwardRef(({
 
       {badge && Object.entries(badge).map(([align, content], i) => {
         return (
-          <Elem key={`badge-${i}`} name="badge" mod={{[align]: true}}>
+          <Elem key={`badge-${i}`} name="badge" mod={{ [align]: true }}>
             {content}
           </Elem>
         );
@@ -92,3 +98,5 @@ export const Userpic = forwardRef(({
     </Tooltip>
   ) : userpic;
 });
+
+Userpic.displayName = 'Userpic';

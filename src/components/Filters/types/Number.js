@@ -1,31 +1,47 @@
 import { observer } from "mobx-react";
 import React from "react";
+import { isDefined } from "../../../utils/utils";
 import { FilterInput } from "../FilterInput";
 
-const NumberInput = ({ onChange, ...rest }) => {
-  return (
-    <FilterInput
-      type="number"
-      {...rest}
-      onChange={(value) => onChange(value ? Number(value) : null)}
-    />
-  );
+const valueFilter = (value) => {
+  if (isDefined(value)) {
+    if (typeof value === 'number') {
+      return value;
+    } else if (typeof value === 'string') {
+      return value.replace(/([^\d.,]+)/, '');
+    } else {
+      return value || null;
+    }
+  }
+
+  return null;
 };
 
+const NumberInput = observer(({ onChange, ...rest }) => {
+  return (
+    <FilterInput
+      {...rest}
+      type="number"
+      onChange={(value) => onChange(valueFilter(value))}
+    />
+  );
+});
+
 const RangeInput = observer(({ schema, value, onChange }) => {
-  const min = value?.min;
-  const max = value?.max;
+  const min = value?.min ?? null;
+  const max = value?.max ?? null;
 
-  const onValueChange = (value) => {
-    onChange(value);
+  const onValueChange = (newValue) => {
+    console.log({ newValue });
+    onChange(newValue);
   };
 
-  const onChangeMin = (value) => {
-    onValueChange({ min: value, max });
+  const onChangeMin = (newValue) => {
+    onValueChange({ min: Number(newValue), max });
   };
 
-  const onChangeMax = (value) => {
-    onValueChange({ min, max: value });
+  const onChangeMax = (newValue) => {
+    onValueChange({ min, max: Number(newValue) });
   };
 
   return (

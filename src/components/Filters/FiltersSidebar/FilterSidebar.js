@@ -9,6 +9,7 @@ import "./FilterSidebar.styl";
 
 const sidebarInjector = inject(({ store }) => {
   const viewsStore = store.viewsStore;
+
   return {
     viewsStore,
     sidebarEnabled: viewsStore?.sidebarEnabled,
@@ -33,6 +34,6 @@ export const FiltersSidebar = sidebarInjector(
         <Filters sidebar={true} />
       </Block>
     ) : null;
-  }
+  },
 );
 FiltersSidebar.displayName = "FiltersSidebar";

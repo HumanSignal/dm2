@@ -1,3 +1,4 @@
+import deepEqual from "deep-equal";
 import {
   clone,
   destroy,
@@ -8,6 +9,7 @@ import {
   types
 } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
+import { normalizeFilterValue } from './filter_utils';
 import { TabFilter } from "./tab_filter";
 import { TabHiddenColumns } from "./tab_hidden_columns";
 import { TabSelectedItems } from "./tab_selected_items";
@@ -25,7 +27,7 @@ export const Tab = types
 
     target: types.optional(
       types.enumeration(["tasks", "annotations"]),
-      "tasks"
+      "tasks",
     ),
 
     filters: types.array(types.late(() => TabFilter)),
@@ -49,8 +51,9 @@ export const Tab = types
   .volatile(() => {
     const defaultWidth = window.innerWidth * 0.35;
     const labelingTableWidth = parseInt(
-      localStorage.getItem("labelingTableWidth") ?? defaultWidth
+      localStorage.getItem("labelingTableWidth") ?? defaultWidth,
     );
+
     return {
       labelingTableWidth,
     };
@@ -125,7 +128,7 @@ export const Tab = types
     },
 
     get filtersApplied() {
-      return self.validFilters.length > 0;
+      return self.validFilters.length;
     },
 
     get validFilters() {
@@ -133,10 +136,22 @@ export const Tab = types
     },
 
     get serializedFilters() {
-      return self.validFilters.map((el) => ({
-        ...getSnapshot(el),
-        type: el.filter.currentType,
-      }));
+      return self.validFilters.map((el) => {
+        const filterItem = {
+          ...getSnapshot(el),
+          type: el.filter.currentType,
+        };
+
+        console.log({ filterItem });
+
+        filterItem.value = normalizeFilterValue(
+          filterItem.type,
+          filterItem.operator,
+          filterItem.value,
+        );
+
+        return filterItem;
+      });
     },
 
     get selectedCount() {
@@ -150,19 +165,23 @@ export const Tab = types
       return self.selectedCount === self.dataStore.total;
     },
 
+    get filterSnposhot() {
+      return {
+        conjunction: self.conjunction,
+        items: self.serializedFilters,
+      };
+    },
+
     serialize() {
       const tab = {};
       const { apiVersion } = self.root;
 
       const data = {
         title: self.title,
-        ordering: self.ordering,
+        ordering: self.ordering.toJSON(),
         type: self.type,
         target: self.target,
-        filters: {
-          conjunction: self.conjunction,
-          items: self.serializedFilters,
-        },
+        filters: self.filterSnposhot,
         hiddenColumns: getSnapshot(self.hiddenColumns),
         columnsWidth: self.columnsWidth.toPOJO(),
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
@@ -182,6 +201,9 @@ export const Tab = types
 
       return tab;
     },
+  }))
+  .volatile(() => ({
+    snapshot: {},
   }))
   .actions((self) => ({
     lock() {
@@ -270,6 +292,14 @@ export const Tab = types
 
     setColumnDisplayType(columnID, type) {
       if (type !== null) {
+        const filters = self.filters.filter(({ filter }) => {
+          return columnID === filter.field.id;
+        });
+
+        filters.forEach(f => {
+          if (f.type !== type) f.delete();
+        });
+
         self.columnsDisplayType.set(columnID, type);
       } else {
         self.columnsDisplayType.delete(columnID);
@@ -299,12 +329,13 @@ export const Tab = types
 
     reload: flow(function* ({ interaction } = {}) {
       if (self.saved) {
-        yield self.dataStore.reload({ interaction });
+        yield self.dataStore.reload({ id: self.id, interaction });
       }
     }),
 
     deleteFilter(filter) {
       const index = self.filters.findIndex((f) => f === filter);
+
       self.filters.splice(index, 1);
       destroy(filter);
       self.save();
@@ -315,8 +346,17 @@ export const Tab = types
         self.hiddenColumns ?? clone(self.parent.defaultHidden);
     },
 
+    afterCreate() {
+      self.snapshot = self.serialize();
+    },
+
     save: flow(function* ({ reload, interaction } = {}) {
-      yield self.parent.saveView(self, { reload, interaction });
+      const serialized = self.serialize();
+
+      if (!self.saved || !deepEqual(self.snapshot, serialized)) {
+        self.snapshot = serialized;
+        yield self.parent.saveView(self, { reload, interaction });
+      }
     }),
 
     delete: flow(function* () {

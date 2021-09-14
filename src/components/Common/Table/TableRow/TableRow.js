@@ -8,10 +8,11 @@ import "./TableRow.styl";
 
 const CellRenderer = observer(
   ({ col: colInput, data, decoration, cellViews }) => {
-    const { Header, Cell, id, ...col } = colInput;
+    const { Header: _, Cell, id, ...col } = colInput;
 
     if (Cell instanceof Function) {
       const { headerClassName: _, cellClassName, ...rest } = col;
+
       return (
         <TableElem {...rest} name="cell" key={id} mix={cellClassName}>
           <Cell data={data} />
@@ -24,8 +25,8 @@ const CellRenderer = observer(
     const altType = toStudlyCaps(valuePath);
     const value = getProperty(data, valuePath);
 
-    const Renderer = cellViews[col.original.currentType] ?? cellViews[altType] ?? cellViews.String;
-    const renderProps = { column: col, original: data, value: value };
+    const Renderer = cellViews[altType] ?? cellViews[col.original.currentType] ?? cellViews.String;
+    const renderProps = { column: col, original: data, value };
     const Decoration = decoration?.get?.(col);
     const style = getStyle(cellViews, col, Decoration);
 
@@ -43,7 +44,7 @@ const CellRenderer = observer(
         </div>
       </TableElem>
     );
-  }
+  },
 );
 
 export const TableRow = observer(({ data, style, decoration }) => {

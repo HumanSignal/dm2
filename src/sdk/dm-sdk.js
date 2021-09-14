@@ -32,13 +32,16 @@
  * interfaces: Dict<boolean>,
  * instruments: Dict<any>,
  * toolbar?: string,
- * panels?: Object[]
+ * panels?: Record<string, any>[]
  * spinner?: import("react").ReactNode
+ * apiTransform?: Record<string, Record<string, Function>
  * }} DMConfig
  */
 
 import { inject, observer } from "mobx-react";
+import { destroy } from "mobx-state-tree";
 import { unmountComponentAtNode } from "react-dom";
+import { toCamelCase } from "strman";
 import { instruments } from "../components/DataManager/Toolbar/instruments";
 import { APIProxy } from "../utils/api-proxy";
 import { objectToMap } from "../utils/helpers";
@@ -52,7 +55,7 @@ const DEFAULT_TOOLBAR = "actions columns filters ordering label-button loading-p
 const prepareInstruments = (instruments) => {
   const result = Object
     .entries(instruments)
-    .map(([name, builder]) => [name, builder({inject, observer})]);
+    .map(([name, builder]) => [name, builder({ inject, observer })]);
 
   return objectToMap(Object.fromEntries(result));
 };
@@ -139,6 +142,7 @@ export class DataManager {
     this.spinner = config.spinner;
     this.spinnerSize = config.spinnerSize;
     this.instruments = prepareInstruments(config.instruments ?? {}),
+    this.apiTransform = config.apiTransform ?? {};
     this.interfaces = objectToMap({
       tabs: true,
       toolbar: true,
@@ -147,6 +151,9 @@ export class DataManager {
       labelButton: true,
       backButton: true,
       labelingHeader: true,
+      groundTruth: false,
+      instruction: false,
+      autoAnnotation: false,
       ...config.interfaces,
     });
 
@@ -157,7 +164,7 @@ export class DataManager {
         apiMockDisabled: config.apiMockDisabled,
         apiSharedParams: config.apiSharedParams,
         apiHeaders: config.apiHeaders,
-      })
+      }),
     );
 
     if (config.actions) {
@@ -165,7 +172,7 @@ export class DataManager {
         if (!isDefined(action.id)) {
           throw new Error("Every action must provide a unique ID");
         }
-        this.actions.set(action.id, {action, callback});
+        this.actions.set(action.id, { action, callback });
       });
     }
 
@@ -181,7 +188,7 @@ export class DataManager {
   }
 
   get projectId() {
-    return (this._projectId = this._projectId ?? this.root.dataset?.projectId);
+    return (this._projectId = this._projectId ?? this.root?.dataset?.projectId);
   }
 
   set projectId(value) {
@@ -216,11 +223,11 @@ export class DataManager {
    * @param {impotr("../stores/Action.js").Action} action
    */
   addAction(action, callback) {
-    const {id} = action;
+    const { id } = action;
 
     if (!id) throw new Error("Action must provide a unique ID");
 
-    this.actions.set(id, {action, callback});
+    this.actions.set(id, { action, callback });
     this.store.addActions(action);
   }
 
@@ -234,7 +241,7 @@ export class DataManager {
   }
 
   installActions() {
-    this.actions.forEach(({action, callback}) => {
+    this.actions.forEach(({ action, callback }) => {
       this.addAction(action, callback);
     });
   }
@@ -246,8 +253,8 @@ export class DataManager {
 
     this.instruments.set(name, initializer({
       store: this.store,
-      observer: observer,
-      inject: inject
+      observer,
+      inject,
     }));
 
     this.store.updateInstruments();
@@ -259,7 +266,14 @@ export class DataManager {
    * @param {Function} callback
    */
   on(eventName, callback) {
+    if (this.lsf && eventName.startsWith('lsf:')) {
+      const evt = toCamelCase(eventName.replace(/^lsf:/, ''));
+
+      this.lsf?.lsfInstance?.on(evt, callback);
+    }
+
     const events = this.getEventCallbacks(eventName);
+
     events.add(callback);
     this.callbacks.set(eventName, events);
   }
@@ -271,12 +285,32 @@ export class DataManager {
    * @param {Function?} callback
    */
   off(eventName, callback) {
+    if (this.lsf && eventName.startsWith('lsf:')) {
+      const evt = toCamelCase(eventName.replace(/^lsf:/, ''));
+
+      this.lsf?.lsfInstance?.off(evt, callback);
+    }
+
     const events = this.getEventCallbacks(eventName);
+
     if (callback) {
       events.delete(callback);
     } else {
       events.clear();
     }
+  }
+
+  removeAllListeners() {
+    const lsfEvents = Array.from(this.callbacks.keys()).filter(evt => evt.startsWith('lsf:'));
+
+    lsfEvents.forEach(evt => {
+      const callbacks = Array.from(this.getEventCallbacks(evt));
+      const eventName = toCamelCase(evt.replace(/^lsf:/, ''));
+
+      callbacks.forEach(clb => this.lsf?.lsfInstance?.off(eventName, clb));
+    });
+
+    this.callbacks.clear();
   }
 
   /**
@@ -301,10 +335,11 @@ export class DataManager {
    */
   setMode(mode) {
     const modeChanged = mode !== this.mode;
+
     this.mode = mode;
     this.store.setMode(mode);
 
-    if (modeChanged) this.invoke('modeChanged', [this.mode]);
+    if (modeChanged) this.invoke('modeChanged', this.mode);
   }
 
   /**
@@ -312,9 +347,11 @@ export class DataManager {
    * @param {string} eventName
    * @param {any[]} args
    */
-  async invoke(eventName, args) {
+  async invoke(eventName, ...args) {
+    if (eventName.startsWith('lsf:')) return;
+
     this.getEventCallbacks(eventName).forEach((callback) =>
-      callback.apply(this, args)
+      callback.apply(this, args),
     );
   }
 
@@ -380,8 +417,11 @@ export class DataManager {
   }
 
   destroy(detachCallbacks = true) {
-    if (this.store) this.store.destroy?.();
     unmountComponentAtNode(this.root);
+
+    if (this.store) {
+      destroy(this.store);
+    }
 
     if (detachCallbacks) {
       this.callbacks.forEach((callbacks) => callbacks.clear());
@@ -401,6 +441,10 @@ export class DataManager {
 
   getInstrument(name) {
     return instruments[name] ?? this.instruments.get(name) ?? null;
+  }
+
+  hasInterface(name) {
+    return this.interfaces.get(name) === true;
   }
 
   get toolbarInstruments() {

@@ -6,6 +6,7 @@ import "./Tag.styl";
 
 const prepareColor = (colorString) => {
   const baseColor = color(colorString);
+
   return {
     color: baseColor,
     background: baseColor.desaturate(2).brighten(2.2),
@@ -24,7 +25,7 @@ const getColor = (colorString) => {
 export const Tag = ({ className, style, size, color, children }) => {
   const finalColor = Object.entries(prepareColor(getColor(color))).reduce(
     (res, [key, color]) => ({ ...res, [`--${key}`]: color }),
-    {}
+    {},
   );
 
   const styles = { ...(style ?? {}), ...finalColor };

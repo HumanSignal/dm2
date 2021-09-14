@@ -1,10 +1,12 @@
-import { getRoot, isPrimitiveType, types } from "mobx-state-tree";
+import { getRoot, types } from "mobx-state-tree";
+import { hasProperties } from "../../utils/helpers";
+import { isDefined } from "../../utils/utils";
 import { TabColumn, ViewColumnType } from "./tab_column";
 
 export const FilterValue = types.union(
   types.string,
   types.number,
-  types.boolean
+  types.boolean,
 );
 
 export const FilterItemValue = types.model("FilterItemValue", {
@@ -15,10 +17,11 @@ export const FilterItemValue = types.model("FilterItemValue", {
 
 export const FilterItemType = types.union({
   dispatcher(s) {
-    if (isPrimitiveType(s)) {
-      return FilterValue;
-    } else {
+
+    if (isDefined(s.value)) {
       return FilterItemValue;
+    } else {
+      return FilterValue;
     }
   },
 });
@@ -29,7 +32,7 @@ export const FilterValueList = types
   })
   .views((self) => ({
     get value() {
-      return Array.from(self.items);
+      return self.items.toJSON();
     },
   }));
 
@@ -44,11 +47,28 @@ export const FilterValueRange = types
     },
   }));
 
+export const FilterValueType = types.union({
+  dispatcher(sn) {
+    if (!isDefined(sn)) return FilterValue;
+    if (sn.$treenode) return sn.$treenode.type;
+
+    if (hasProperties(sn, ['items'])) {
+      return FilterValueList;
+    } else if (hasProperties(sn, ['min', 'max'])) {
+      return FilterValueRange;
+    } else if (Array.isArray(sn)) {
+      return types.array(FilterValueType);
+    }
+
+    return FilterValue;
+  },
+});
+
 export const FilterSchema = types.union({
   dispatcher(s) {
     if (!s) return types.null;
 
-    if (s.items) {
+    if (isDefined(s.items)) {
       return FilterValueList;
     } else {
       return FilterValueRange;
@@ -73,9 +93,10 @@ export const TabFilterType = types
       }
     },
 
-    get currentType () {
+    get currentType() {
       const view = getRoot(self).currentView;
-      const viewColumnDisplayType = view.columnsDisplayType?.get?.(self.field.id);
+      const viewColumnDisplayType = view?.columnsDisplayType?.get?.(self.field.id);
+
       return viewColumnDisplayType ?? self.field.type;
     },
   }));

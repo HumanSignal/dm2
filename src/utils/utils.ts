@@ -21,7 +21,7 @@ export const any = <T>(boolArray: T[], check: (item: T) => boolean) => {
 
 export const randomDate = (start: Date, end: Date) => {
   return new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+    start.getTime() + Math.random() * (end.getTime() - start.getTime()),
   );
 };
 
@@ -47,6 +47,16 @@ export const cleanArray = <T>(array: T[]): T[] => {
   return array.filter((el) => !!el);
 };
 
-export const isDefined = (value: any) => {
+export const isDefined = <T>(value?: T): value is T => {
   return value !== null && value !== undefined;
+};
+
+export const isBlank = (value?: string) => {
+  if (!isDefined(value)) return true;
+
+  if (typeof value === 'string') {
+    return value.trim().length === 0;
+  }
+
+  return false;
 };

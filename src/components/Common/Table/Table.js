@@ -21,6 +21,7 @@ const Decorator = (decoration) => {
     get(col) {
       return decoration.find((d) => {
         let found = false;
+
         if (isDefined(d.alias)) {
           found = d.alias === col.alias;
         } else if (d.resolver instanceof Function) {
@@ -98,6 +99,7 @@ export const Table = observer(
       },
       Cell({ data }) {
         let out = JSON.parse(data.source ?? "{}");
+
         out = {
           id: out?.id,
           data: out?.data,
@@ -113,7 +115,7 @@ export const Table = observer(
               onClick={() => {
                 modal({
                   title: "Source for task " + out?.id,
-                  style: {width: 800},
+                  style: { width: 800 },
                   body: <pre>{JSON.stringify(out, null, "  ")}</pre>,
                 });
               }}
@@ -160,7 +162,7 @@ export const Table = observer(
         view.selected.list,
         view.selected.all,
         tableHead,
-      ]
+      ],
     );
 
     const renderRow = useCallback(
@@ -205,14 +207,14 @@ export const Table = observer(
         view,
         view.selected.list,
         view.selected.all,
-      ]
+      ],
     );
 
     const isItemLoaded = useCallback(
       (index) => {
         return props.isItemLoaded(data, index);
       },
-      [props, data]
+      [props, data],
     );
 
     const cachedScrollOffset = useRef();
@@ -227,6 +229,7 @@ export const Table = observer(
 
       if (index >= 0) {
         const scrollOffset = index * h - height / 2 + h / 2; // + headerHeight
+
         return cachedScrollOffset.current = scrollOffset;
       } else {
         return 0;
@@ -235,13 +238,17 @@ export const Table = observer(
 
     const itemKey = useCallback(
       (index) => {
+        if (index > (data.length - 1)) {
+          return index;
+        }
         return data[index]?.key ?? index;
       },
-      [data]
+      [data],
     );
 
     useEffect(() => {
       const listComponent = listRef.current?._listRef;
+
       if (listComponent) {
         listComponent.scrollToItem(data.indexOf(focusedItem), "center");
       }
@@ -270,12 +277,12 @@ export const Table = observer(
         </TableContext.Provider>
       </TableBlock>
     );
-  }
+  },
 );
 
 const StickyListContext = createContext();
-StickyListContext.Provider.displayName = "StickyListProvider";
-StickyListContext.Consumer.displayName = "StickyListConsumer";
+
+StickyListContext.displayName = "StickyListProvider";
 
 const ItemWrapper = ({ data, index, style }) => {
   const { Renderer, stickyItems } = data;
@@ -346,7 +353,7 @@ const StickyList = observer(
         </TableElem>
       </StickyListContext.Provider>
     );
-  })
+  }),
 );
 
 StickyList.displayName = "StickyList";

@@ -1,11 +1,13 @@
 import { isValid } from "date-fns";
+import { observer } from "mobx-react";
 import React from "react";
 import { DatePicker } from "../../Common/DatePicker/DatePicker";
 
-export const DateTimeInput = ({ value, range, time, onChange }) => {
+export const DateTimeInput = observer(({ value, range, time, onChange }) => {
   const onValueChange = React.useCallback(
     (selectedDate) => {
       let value;
+
       if (Array.isArray(selectedDate)) {
         const [min, max] = selectedDate
           .map((d) => d ? new Date(d) : null)
@@ -18,7 +20,7 @@ export const DateTimeInput = ({ value, range, time, onChange }) => {
 
       onChange(value);
     },
-    [onChange]
+    [onChange],
   );
 
   const dateValue = React.useMemo(() => {
@@ -31,6 +33,7 @@ export const DateTimeInput = ({ value, range, time, onChange }) => {
         .map((d) => (isValid(d) ? d : undefined));
     } else {
       const date = new Date(value === null ? undefined : value);
+
       return isValid(date) ? date : undefined;
     }
   }, [range, value]);
@@ -44,22 +47,10 @@ export const DateTimeInput = ({ value, range, time, onChange }) => {
       onChange={onValueChange}
     />
   );
-};
+});
 
 export const DateFields = (extraProps) => {
   return [
-    {
-      key: "equal",
-      label: "is at",
-      valueType: "single",
-      input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
-    },
-    {
-      key: "not_equal",
-      label: "not at",
-      valueType: "single",
-      input: (props) => <DateTimeInput {...props} {...(extraProps ?? {})} />,
-    },
     {
       key: "less",
       label: "is before",

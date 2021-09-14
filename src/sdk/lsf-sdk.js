@@ -16,16 +16,13 @@ import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
 const DEFAULT_INTERFACES = [
   "basic",
-  "skip",
   "controls",
   "submit",
   "update",
   "predictions",
   "predictions:menu", // right menu with prediction items
   "annotations:menu", // right menu with annotation items
-  "annotations:delete",
   "annotations:current",
-  "annotations:tabs",
   "side-column", // entity
 ];
 
@@ -77,15 +74,36 @@ export class LSFWrapper {
 
     const interfaces = [...DEFAULT_INTERFACES];
 
+    if (this.project.enable_empty_annotation === false) {
+      interfaces.push("annotations:deny-empty");
+    }
+
     if (this.labelStream) {
       interfaces.push("infobar");
+      if (this.project.show_skip_button) {
+        interfaces.push("skip");
+      }
     } else {
       interfaces.push(
+        "infobar",
         "annotations:add-new",
         "annotations:view-all",
-        "infobar",
+        "annotations:delete",
+        "annotations:tabs",
         "predictions:tabs",
       );
+    }
+
+    if (this.datamanager.hasInterface('instruction')) {
+      interfaces.push('instruction');
+    }
+
+    if (!this.labelStream && this.datamanager.hasInterface('groundTruth')) {
+      interfaces.push('ground-truth');
+    }
+
+    if (this.datamanager.hasInterface("autoAnnotation")) {
+      interfaces.push("auto-annotation");
     }
 
     const lsfProperties = {
@@ -93,7 +111,8 @@ export class LSFWrapper {
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
       description: this.instruction,
-      interfaces: interfaces,
+      interfaces,
+      users: dm.store.users.map(u => u.toJSON()),
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
@@ -117,8 +136,18 @@ export class LSFWrapper {
   async initLabelStudio(settings) {
     try {
       const LSF = await resolveLabelStudio();
+
       this.globalLSF = window.LabelStudio === LSF;
       this.lsfInstance = new LSF(this.root, settings);
+
+      const names = Array.from(this.datamanager.callbacks.keys())
+        .filter(k => k.startsWith('lsf:'));
+
+      names.forEach(name => {
+        this.datamanager.getEventCallbacks(name).forEach(clb => {
+          this.lsfInstance.on(name.replace(/^lsf:/, ''), clb);
+        });
+      });
     } catch (err) {
       console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
@@ -185,12 +214,14 @@ export class LSFWrapper {
       for (const draft of this.task.drafts) {
         if (activeDrafts.includes(draft.id)) continue;
         let c;
+
         if (draft.annotation) {
           // Annotation existed - add draft to existed annotation
           const draftAnnotationPk = String(draft.annotation);
+
           c = cs.annotations.find(c => c.pk === draftAnnotationPk);
           if (c) {
-            c.addVersions({draft: draft.result});
+            c.addVersions({ draft: draft.result });
             c.deleteAllRegions({ deleteReadOnly: true });
           } else {
             // that shouldn't happen
@@ -203,11 +234,11 @@ export class LSFWrapper {
             draft: draft.result,
             userGenerate: true,
             createdBy: draft.created_username,
-            createdAgo: draft.created_ago
+            createdAgo: draft.created_ago,
           });
         }
         cs.selectAnnotation(c.id);
-        c.deserializeAnnotation(draft.result);
+        c.deserializeResults(draft.result);
         c.setDraftId(draft.id);
       }
     }
@@ -229,11 +260,11 @@ export class LSFWrapper {
         annotation = cs.addAnnotation({ userGenerate: true });
       }
     } else {
-      if (showPredictions && this.annotations.length === 0 && this.predictions.length > 0) {
+      if (this.annotations.length === 0 && this.predictions.length > 0) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else if (this.annotations.length > 0 && (id === "auto" || hasAutoAnnotations)) {
         annotation = first;
-      } else if (this.annotations.length > 0 && id) {
+      } else if (this.annotations.length > 0 && id && id !== "auto") {
         annotation = this.annotations.find((c) => c.pk === id || c.id === id);
       } else {
         annotation = cs.addAnnotation({ userGenerate: true });
@@ -243,12 +274,12 @@ export class LSFWrapper {
 
     if (annotation) {
       cs.selectAnnotation(annotation.id);
-      this.datamanager.invoke("annotationSet", [annotation]);
+      this.datamanager.invoke("annotationSet", annotation);
     }
   }
 
   onLabelStudioLoad = async (ls) => {
-    this.datamanager.invoke("labelStudioLoad", [ls]);
+    this.datamanager.invoke("labelStudioLoad", ls);
     this.lsf = ls;
 
     if (this.labelStream) {
@@ -258,11 +289,11 @@ export class LSFWrapper {
 
   /** @private */
   onTaskLoad = async (...args) => {
-    this.datamanager.invoke("onSelectAnnotation", args);
+    this.datamanager.invoke("onSelectAnnotation", ...args);
   };
 
   onStorageInitialized = async (ls) => {
-    this.datamanager.invoke("onStorageInitialized", [ls]);
+    this.datamanager.invoke("onStorageInitialized", ls);
 
     if (this.task && this.labelStream === false) {
       const annotationID =
@@ -293,11 +324,11 @@ export class LSFWrapper {
         },
         {
           body: serializedAnnotation,
-        }
+        },
       );
     });
 
-    this.datamanager.invoke("updateAnnotation", [ls, annotation, result]);
+    this.datamanager.invoke("updateAnnotation", ls, annotation, result);
 
     await this.loadTask(this.task.id, annotation.pk);
   };
@@ -306,6 +337,7 @@ export class LSFWrapper {
     const response = await this.datamanager.apiCall("deleteDraft", {
       draftID: id,
     });
+
     this.task.deleteDraft(id);
     return response;
   }
@@ -330,7 +362,7 @@ export class LSFWrapper {
       });
 
       // this.task.deleteAnnotation(annotation);
-      this.datamanager.invoke("deleteAnnotation", [ls, annotation]);
+      this.datamanager.invoke("deleteAnnotation", ls, annotation);
     }
 
     if (response.ok) {
@@ -351,13 +383,14 @@ export class LSFWrapper {
       return this.datamanager.apiCall("updateDraft", { draftID: annotation.draftId }, data);
     } else {
       let response;
+
       if (annotationDoesntExist) {
         response = await this.datamanager.apiCall("createDraftForTask", { taskID: this.task.id }, data);
       } else {
         response = await this.datamanager.apiCall(
           "createDraftForAnnotation",
           { taskID: this.task.id, annotationID: annotation.pk },
-          data
+          data,
         );
       }
       response?.id && annotation.setDraftId(response?.id);
@@ -376,15 +409,15 @@ export class LSFWrapper {
 
         return this.datamanager.apiCall("skipTask", params, options);
       },
-      true
+      true,
     );
   };
 
   // Proxy events that are unused by DM integration
-  onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", args);
-  onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", args);
+  onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
+  onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
   onSelectAnnotation = (...args) =>
-    this.datamanager.invoke("onSelectAnnotation", args);
+    this.datamanager.invoke("onSelectAnnotation", ...args);
 
   async submitCurrentAnnotation(eventName, submit, includeID = false) {
     const { taskID, currentAnnotation } = this;
@@ -393,6 +426,7 @@ export class LSFWrapper {
     this.setLoading(true);
     const result = await this.withinLoadingState(async () => {
       const result = await submit(taskID, serializedAnnotation);
+
       return result;
     });
 
@@ -400,7 +434,8 @@ export class LSFWrapper {
       currentAnnotation.updatePersonalKey(result.id.toString());
 
       const eventData = annotationToServer(currentAnnotation);
-      this.datamanager.invoke(eventName, [this.lsf, eventData, result]);
+
+      this.datamanager.invoke(eventName, this.lsf, eventData, result);
 
       this.history?.add(taskID, currentAnnotation.pk);
     }

@@ -13,7 +13,7 @@ export const AppStore = types
   .model("AppStore", {
     mode: types.optional(
       types.enumeration(["explorer", "labelstream", "labeling"]),
-      "explorer"
+      "explorer",
     ),
 
     viewsStore: types.optional(TabStore, {
@@ -30,14 +30,14 @@ export const AppStore = types
       types.late(() => {
         return DynamicModel.get("tasksStore");
       }),
-      {}
+      {},
     ),
 
     annotationStore: types.optional(
       types.late(() => {
         return DynamicModel.get("annotationsStore");
       }),
-      {}
+      {},
     ),
 
     availableActions: types.optional(types.array(Action), []),
@@ -107,7 +107,15 @@ export const AppStore = types
     },
 
     get showPreviews() {
-      return this.SDK.showPreviews;
+      return self.SDK.showPreviews;
+    },
+
+    get currentSelection() {
+      return self.currentView.selected.snapshot;
+    },
+
+    get currentFilter() {
+      return self.currentView.filterSnposhot;
     },
   }))
   .volatile(() => ({
@@ -129,6 +137,7 @@ export const AppStore = types
 
     beforeDestroy() {
       clearTimeout(self._poll);
+      window.removeEventListener("popstate", self.handlePopState);
     },
 
     setMode(mode) {
@@ -141,6 +150,7 @@ export const AppStore = types
 
     removeAction(id) {
       const action = self.availableActions.find((action) => action.id === id);
+
       if (action) destroy(action);
     },
 
@@ -215,6 +225,7 @@ export const AppStore = types
 
       grouppedColumns.forEach((columns, target) => {
         const dataStore = DataStores[target].create?.(columns);
+
         if (dataStore) registerModel(`${target}Store`, dataStore);
       });
     },
@@ -283,37 +294,55 @@ export const AppStore = types
       const { SDK } = self;
 
       self.unsetTask(options);
-      History.forceNavigate({ tab: self.currentView.id });
+
+      let viewId;
+      const tabFromURL = History.getParams().tab;
+
+      if (isDefined(self.currentView)) {
+        viewId = self.currentView.id;
+      } else if (isDefined(tabFromURL)) {
+        viewId = +tabFromURL;
+      } else if (isDefined(self.viewsStore)) {
+        viewId = self.viewsStore.views[0]?.id;
+      }
+
+      if (isDefined(viewId)) {
+        History.forceNavigate({ tab: viewId });
+      }
+
       SDK.setMode("explorer");
       SDK.destroyLSF();
     },
 
-    resolveURLParams() {
-      window.addEventListener("popstate", ({ state }) => {
-        const { tab, task, annotation, labeling } = state ?? {};
+    handlePopState: (({ state }) => {
+      const { tab, task, annotation, labeling } = state ?? {};
 
-        if (tab) {
-          self.viewsStore.setSelected(parseInt(tab), {
-            pushState: false,
-          });
-        }
+      if (tab) {
+        self.viewsStore.setSelected(parseInt(tab), {
+          pushState: false,
+        });
+      }
 
-        if (task) {
-          const params = {};
-          if (annotation) {
-            params.task_id = parseInt(task);
-            params.id = parseInt(annotation);
-          } else {
-            params.id = parseInt(task);
-          }
+      if (task) {
+        const params = {};
 
-          self.startLabeling(params, { pushState: false });
-        } else if (labeling) {
-          self.startLabelStream({ pushState: false });
+        if (annotation) {
+          params.task_id = parseInt(task);
+          params.id = parseInt(annotation);
         } else {
-          self.closeLabeling({ pushState: false });
+          params.id = parseInt(task);
         }
-      });
+
+        self.startLabeling(params, { pushState: false });
+      } else if (labeling) {
+        self.startLabelStream({ pushState: false });
+      } else {
+        self.closeLabeling({ pushState: false });
+      }
+    }).bind(self),
+
+    resolveURLParams() {
+      window.addEventListener("popstate", self.handlePopState);
     },
 
     setLoading(value) {
@@ -354,6 +383,7 @@ export const AppStore = types
 
     fetchActions: flow(function* () {
       const serverActions = yield self.apiCall("actions");
+
       self.addActions(...(serverActions ?? []));
     }),
 
@@ -363,35 +393,43 @@ export const AppStore = types
       self.users.push(...list);
     }),
 
-    fetchData: flow(function* () {
+    fetchData: flow(function* ({ isLabelStream } = {}) {
       self.setLoading(true);
 
-      const { tab, task, labeling } = History.getParams();
+      const { tab, task, labeling, query } = History.getParams();
 
-      try {
-        const [projectFetched] = yield Promise.all([
-          yield self.fetchProject(),
-          yield self.fetchUsers(),
-        ]);
+      const [projectFetched] = yield Promise.all([
+        yield self.fetchProject(),
+        yield self.fetchUsers(),
+      ]);
 
-        if (projectFetched) {
+      if (projectFetched) {
+
+        self.viewsStore.fetchColumns();
+
+        if (!isLabelStream) {
           yield self.fetchActions();
-          self.viewsStore.fetchColumns();
           yield self.viewsStore.fetchTabs(tab, task, labeling);
+        } else if (isLabelStream && !!tab) {
+          const { selectedItems } = JSON.parse(decodeURIComponent(query ?? "{}"));
 
-          self.resolveURLParams();
-
-          self.setLoading(false);
-
-          self.startPolling();
+          yield self.viewsStore.fetchSingleTab(tab, selectedItems ?? {});
         }
-      } catch (err) {
-        console.error(err);
+
+        self.resolveURLParams();
+
+        self.setLoading(false);
+
+        self.startPolling();
       }
     }),
 
     apiCall: flow(function* (methodName, params, body) {
-      let result = yield self.API[methodName](params, body);
+      const apiTransform = self.SDK.apiTransform?.[methodName];
+      const requestParams = apiTransform?.params?.(params) ?? params ?? {};
+      const requestBody = apiTransform?.body?.(body) ?? body ?? undefined;
+
+      let result = yield self.API[methodName](requestParams, requestBody);
 
       if (result.error && result.status !== 404) {
         if (result.response) {
@@ -406,6 +444,8 @@ export const AppStore = types
           description: result?.response?.detail ?? result.error,
         });
 
+        self.SDK.invoke("error", result);
+
         // notification.error({
         //   message: "Error occurred when loading data",
         //   description: result?.response?.detail ?? result.error,
@@ -418,38 +458,52 @@ export const AppStore = types
     }),
 
     invokeAction: flow(function* (actionId, options = {}) {
-      const view = self.currentView;
+      const view = self.currentView ?? {};
+
       const needsLock =
         self.availableActions.findIndex((a) => a.id === actionId) >= 0;
+
       const { selected } = view;
       const actionCallback = self.SDK.getAction(actionId);
 
-      if (needsLock && !actionCallback) view.lock();
+      if (view && needsLock && !actionCallback) view.lock();
 
-      const actionParams = {
-        ordering: view.ordering,
-        selectedItems: selected.hasSelected
-          ? selected.snapshot
-          : { all: true, excluded: [] },
-        filters: {
-          conjunction: view.conjunction,
-          items: view.serializedFilters,
-        },
-      };
+      let actionParams = {};
+      const all = localStorage.getItem("dm:labelstream:mode") === "all";
+
+      // @todo this is dirty way to sync across nested apps
+      // don't apply filters for "all" on "next_task"
+      if (actionId !== "next_task" || !all) {
+        actionParams = {
+          ordering: view.ordering,
+          selectedItems: selected?.hasSelected
+            ? selected.snapshot
+            : { all: true, excluded: [] },
+          filters: {
+            conjunction: view.conjunction ?? 'and',
+            items: view.serializedFilters ?? [],
+          },
+        };
+      }
 
       if (actionCallback instanceof Function) {
         return actionCallback(actionParams, view);
       }
 
+      const requestParams = {
+        id: actionId,
+      };
+
+      if (isDefined(view.id)) {
+        requestParams.tabID = view.id;
+      }
+
       const result = yield self.apiCall(
         "invokeAction",
-        {
-          id: actionId,
-          tabID: view.id,
-        },
+        requestParams,
         {
           body: actionParams,
-        }
+        },
       );
 
       if (result.reload) {
@@ -463,7 +517,7 @@ export const AppStore = types
         view.clearSelection();
       }
 
-      view.unlock();
+      view?.unlock?.();
 
       return result;
     }),

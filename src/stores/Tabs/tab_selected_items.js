@@ -36,6 +36,7 @@ export const TabSelectedItems = types
     get total() {
       if (self.all) {
         const totalCount = getRoot(self).dataStore.total ?? 0;
+
         return totalCount - self.length;
       } else {
         return self.length;
@@ -96,11 +97,12 @@ export const TabSelectedItems = types
     },
 
     _invokeChangeEvent() {
-      getRoot(self).SDK.invoke('taskSelectionChanged', [self]);
-    }
+      getRoot(self).SDK.invoke('taskSelectionChanged', self);
+    },
   }))
   .preProcessSnapshot((sn) => {
     const { included, excluded, all } = sn ?? {};
     const result = { all, list: sn.list ?? (all ? excluded : included) };
+
     return result;
   });

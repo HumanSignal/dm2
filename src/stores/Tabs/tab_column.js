@@ -1,7 +1,7 @@
 import { getRoot, getSnapshot, types } from "mobx-state-tree";
 import React from "react";
 import { toStudlyCaps } from "strman";
-import { LsAnnotation, LsBanSquare, LsSparkSquare, LsThumbsDown, LsThumbsUp } from "../../assets/icons";
+import { LsAnnotation, LsBanSquare, LsSparkSquare, LsStarSquare, LsThumbsDown, LsThumbsUp } from "../../assets/icons";
 import * as CellViews from "../../components/Table/CellViews";
 import { all } from "../../utils/utils";
 
@@ -82,7 +82,7 @@ export const TabColumn = types
     defaultHidden: types.optional(types.boolean, false),
     parent: types.maybeNull(types.late(() => types.reference(TabColumn))),
     children: types.maybeNull(
-      types.array(types.late(() => types.reference(TabColumn)))
+      types.array(types.late(() => types.reference(TabColumn))),
     ),
     target: types.enumeration(["tasks", "annotations"]),
     orderable: types.optional(types.boolean, true),
@@ -112,11 +112,13 @@ export const TabColumn = types
       return (data) => {
         if (!self.parent) {
           const value = data[self.alias];
+
           return typeof value === "object" ? null : value;
         }
 
         try {
           const value = data?.[self.parent.alias]?.[self.alias];
+
           return value ?? null;
         } catch {
           console.log("Error generating accessor", {
@@ -146,6 +148,7 @@ export const TabColumn = types
 
     get currentType() {
       const displayType = self.parentView?.columnsDisplayType?.get(self.id);
+
       return displayType ?? self.type;
     },
 
@@ -154,8 +157,9 @@ export const TabColumn = types
 
       if (self.children) {
         const childColumns = [].concat(
-          ...self.children.map((subColumn) => subColumn.asField)
+          ...self.children.map((subColumn) => subColumn.asField),
         );
+
         result.push(...childColumns);
       } else {
         result.push({
@@ -177,15 +181,17 @@ export const TabColumn = types
         default:
           return null;
         case "total_annotations":
-          return <LsAnnotation width="20" height="20" style={{color: '#0099FF'}}/>;
+          return <LsAnnotation width="20" height="20" style={{ color: '#0099FF' }}/>;
         case "cancelled_annotations":
-          return <LsBanSquare width="20" height="20" style={{color: '#DD0000'}}/>;
+          return <LsBanSquare width="20" height="20" style={{ color: '#DD0000' }}/>;
         case "total_predictions":
-          return <LsSparkSquare width="20" height="20" style={{color: '#944BFF'}}/>;
+          return <LsSparkSquare width="20" height="20" style={{ color: '#944BFF' }}/>;
         case "reviews_accepted":
-          return <LsThumbsUp width="20" height="20" style={{color: '#2AA000'}}/>;
+          return <LsThumbsUp width="20" height="20" style={{ color: '#2AA000' }}/>;
         case "reviews_rejected":
-          return <LsThumbsDown width="20" height="20" style={{color: '#DD0000'}}/>;
+          return <LsThumbsDown width="20" height="20" style={{ color: '#DD0000' }}/>;
+        case "ground_truth":
+          return <LsStarSquare width="20" height="20" style={{ color: '#FFB700' }}/>;
       }
     },
 
@@ -199,7 +205,7 @@ export const TabColumn = types
 
     get filterable() {
       return ((CellViews[self.type] ?? CellViews[toStudlyCaps(self.alias)])?.filterable) !== false;
-    }
+    },
   }))
   .actions((self) => ({
     toggleVisibility() {

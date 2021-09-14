@@ -11,7 +11,7 @@
 export const debounce = (func, wait, immediate) => {
   let timeout;
 
-  return function (...args) {
+  return function(...args) {
     const later = () => {
       timeout = null;
       if (!immediate) {
@@ -19,6 +19,7 @@ export const debounce = (func, wait, immediate) => {
       }
     };
     const callNow = immediate && !timeout;
+
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
     if (callNow) func.apply(this, args);

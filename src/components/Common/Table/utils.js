@@ -13,6 +13,7 @@ export const getProperty = (object, path) => {
 
     // eslint-disable-next-line no-new-func
     const fn = new Function("object", `return object${normalizedPath}`);
+
     return fn(object);
   } catch {
     return undefined;

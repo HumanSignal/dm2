@@ -3,6 +3,10 @@
  * This script automatically takes the latest build from given repo and branch
  * and places it to label_studio/static/<REPO>
  */
+
+/**
+ * global _dirname
+ */
 const fetch = require("node-fetch");
 
 const fs = require("fs");
@@ -13,7 +17,6 @@ const dir = path.resolve(__dirname, "build-tmp");
 const TOKEN = process.env.GITHUB_TOKEN;
 
 // coloring for console output
-const GREEN = "\033[0;32m";
 const RED = "\033[0;31m";
 const NC = "\033[0m"; // NO COLOR to reset coloring
 
@@ -22,7 +25,6 @@ const PROJECTS = {
   dm: "heartexlabs/dm2",
 };
 
-const TARGET_DIR = "/.download";
 const DIST_DIR = "/public/static";
 
 /**
@@ -40,8 +42,9 @@ async function get(projectName, ref = "master") {
     const repos = Object.entries(PROJECTS)
       .map((a) => "\t" + a.join("\t"))
       .join("\n");
+
     console.error(
-      `\n${RED}Cannot fetch from repo ${REPO}.${NC}\nOnly available:\n${repos}`
+      `\n${RED}Cannot fetch from repo ${REPO}.${NC}\nOnly available:\n${repos}`,
     );
     return;
   }
@@ -52,6 +55,7 @@ async function get(projectName, ref = "master") {
 
   if (ref.length < 30) {
     const commitUrl = `https://api.github.com/repos/${REPO}/git/ref/heads/${ref}`;
+
     console.info(`Fetching ${commitUrl}`);
     res = await fetch(commitUrl, {
       headers: { Authorization: `token ${TOKEN}` },
@@ -60,7 +64,7 @@ async function get(projectName, ref = "master") {
 
     if (!json || !json.object) {
       console.log(
-        `\n${RED}Wrong response from GitHub. Check that you use correct GITHUB_TOKEN.${NC}`
+        `\n${RED}Wrong response from GitHub. Check that you use correct GITHUB_TOKEN.${NC}`,
       );
       console.log(json);
       return;
@@ -74,33 +78,40 @@ async function get(projectName, ref = "master") {
   }
 
   const artifactsUrl = `https://api.github.com/repos/${REPO}/actions/artifacts`;
+
   res = await fetch(artifactsUrl, {
     headers: { Authorization: `token ${TOKEN}` },
   });
   json = await res.json();
   const artifact = json.artifacts.find((art) => art.name === `build ${sha}`);
+
   if (!artifact)
     throw new Error(`Artifact for commit ${sha} was not found. Build failed?`);
   const buildUrl = artifact.archive_download_url;
+
   console.info("Found an artifact:", buildUrl);
 
   res = await fetch(buildUrl, { headers: { Authorization: `token ${TOKEN}` } });
 
   const filename = `${dir}/${sha}.zip`;
+
   console.info("Create write stream:", filename);
   const fileStream = fs.createWriteStream(filename);
+
   await new Promise((resolve, reject) => {
     res.body.pipe(fileStream);
     fileStream.on("error", reject);
     fileStream.on("finish", () => {
       console.info("Downloaded:", filename);
       const unzip = spawn("unzip", ["-d", dir, "-o", filename]);
+
       unzip.stderr.on("data", reject);
       unzip.on("close", resolve);
     });
   }).then(() => console.log("Build unpacked"));
 
   const commitInfoUrl = `https://api.github.com/repos/${REPO}/git/commits/${sha}`;
+
   res = await fetch(commitInfoUrl, {
     headers: { Authorization: `token ${TOKEN}` },
   });
@@ -113,6 +124,7 @@ async function get(projectName, ref = "master") {
       (json.author && json.author.date) ||
       (json.committer && json.committer.date),
   };
+
   fs.writeFileSync(`${dir}/static/version.json`, JSON.stringify(info, null, 2));
   console.info("Version info written to static/version.json");
 
@@ -126,7 +138,7 @@ async function get(projectName, ref = "master") {
   fs.rmdirSync(newPath, { recursive: true });
   fs.mkdirSync(newPath, { recursive: true });
 
-  fs.rename(oldPath, newPath, function (err) {
+  fs.rename(oldPath, newPath, function(err) {
     if (err) throw err;
     console.log(`Successfully renamed - AKA moved into ${newPath}`);
     fs.rmdirSync(dir, { recursive: true });

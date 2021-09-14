@@ -17,7 +17,7 @@ export const useShortcut = (
   actionName: keyof typeof keymap,
   callback: () => void,
   options = { showShortcut: true },
-  dependencies = undefined
+  dependencies = undefined,
 ) => {
   const action = keymap[actionName] as Hotkey;
   const isMacos = /mac/i.test(navigator.platform);

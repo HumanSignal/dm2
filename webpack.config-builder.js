@@ -5,12 +5,25 @@ const webpack = require("webpack");
 const Dotenv = require("dotenv-webpack");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const ESLintPlugin = require('eslint-webpack-plugin');
+const { EnvironmentPlugin } = require("webpack");
+
+const workingDirectory = process.env.WORK_DIR
+  ? path.resolve(__dirname, process.env.WORK_DIR)
+  : path.resolve(__dirname, "build");
+
+if (workingDirectory) {
+  console.log(`Working directory set as ${workingDirectory}`)
+}
+
+const customDistDir = !!process.env.WORK_DIR;
 
 const DEFAULT_NODE_ENV = process.env.BUILD_MODULE ? 'production' : (process.env.NODE_ENV || 'development')
 
 const isDevelopment = DEFAULT_NODE_ENV !== "production";
 
 const BUILD = {
+  NO_SERVER: !!process.env.BUILD_NO_SERVER,
   NO_MINIMIZE: isDevelopment || !!process.env.BUILD_NO_MINIMIZATION,
   NO_CHUNKS: isDevelopment || !!process.env.BUILD_NO_CHUNKS,
   NO_HASH: isDevelopment || process.env.BUILD_NO_HASH,
@@ -18,12 +31,13 @@ const BUILD = {
 };
 
 const dirPrefix = {
-  js: isDevelopment ? "" : "static/js/",
-  css: isDevelopment ? "" : "static/css/",
+  js: customDistDir ? "js/" : isDevelopment ? "" : "static/js/",
+  css: customDistDir ? "css/" : isDevelopment ? "" : "static/css/",
 };
 
 const LOCAL_ENV = {
   NODE_ENV: DEFAULT_NODE_ENV,
+  BUILD_NO_SERVER: BUILD.NO_SERVER,
   CSS_PREFIX: "dm-",
   API_GATEWAY: "http://localhost:8081/api/dm",
   LS_ACCESS_TOKEN: "",
@@ -42,20 +56,32 @@ const babelOptimizeOptions = () => {
 };
 
 const optimizer = () => {
-  const result = {};
-
-  result.minimize = BUILD.NO_MINIMIZE ? false : true;
-
-  result.minimizer = BUILD.NO_MINIMIZE
-    ? undefined
-    : [new TerserPlugin(), new CssMinimizerPlugin()];
-
-  result.runtimeChunk = BUILD.NO_CHUNKS ? false : true;
-  result.splitChunks = {
-    cacheGroups: {
-      default: BUILD.NO_CHUNKS ? false : true,
-    },
+  const result = {
+    minimize: true,
+    minimizer: [],
+    runtimeChunk: true,
   };
+
+  if (process.env.NODE_ENV === 'production' && !BUILD.NO_MINIMIZE) {
+    result.minimizer.push(
+      new TerserPlugin({
+        parallel: true,
+      }),
+      new CssMinimizerPlugin({
+        parallel: true,
+      }),
+    )
+  }
+
+  if (BUILD.NO_MINIMIZE) {
+    result.minimize = false;
+    result.minimizer = undefined;
+  }
+
+  if (BUILD.NO_CHUNKS) {
+    result.runtimeChunk = false;
+    result.splitChunks = {cacheGroups: { default: false }}
+  }
 
   return result;
 };
@@ -161,12 +187,14 @@ const cssLoader = (withLocalIdent = true) => {
 };
 
 const devServer = () => {
-  return process.env.NODE_ENV === 'development' ? {
+  return (process.env.NODE_ENV === 'development' && !BUILD.NO_SERVER) ? {
     devServer: {
       compress: true,
       hot: true,
       port: 9000,
-      contentBase: path.join(__dirname, "public"),
+      static: {
+        directory: path.join(__dirname, "public")
+      },
       historyApiFallback: {
         index: "./public/index.html",
       },
@@ -181,6 +209,7 @@ const plugins = [
     allowEmptyValues: true,
     defaults: "./.env.defaults",
   }),
+  new EnvironmentPlugin(LOCAL_ENV),
   new MiniCssExtractPlugin({
     ...cssOutput(),
   }),
@@ -188,10 +217,15 @@ const plugins = [
 ];
 
 if (isDevelopment) {
+  plugins.push(new ESLintPlugin({
+    fix: true,
+    failOnError: true,
+  }));
+
   plugins.push(new webpack.ProgressPlugin());
 }
 
-if (isDevelopment) {
+if (isDevelopment && !BUILD.NO_SERVER) {
   plugins.push( new HtmlWebPackPlugin({
     title: "Heartex DataManager 2.0",
     template: "public/index.html",
@@ -201,24 +235,38 @@ if (isDevelopment) {
 
 const sourceMap = isDevelopment ? "cheap-module-source-map" : "source-map";
 
-module.exports = ({withDevServer = true} = {}) => ({
+module.exports = ({withDevServer = false} = {}) => ({
   mode: DEFAULT_NODE_ENV || "development",
   devtool: sourceMap,
   ...(withDevServer ? devServer() : {}),
-  entry: path.resolve(__dirname, "src/index.js"),
+  entry: {
+    main: [
+      path.resolve(__dirname, "src/index.js")
+    ],
+  },
   output: {
-    path: path.resolve(__dirname, "build"),
+    path: path.resolve(workingDirectory),
     filename: "main.js",
     ...output(),
   },
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
-  plugins: plugins,
+  plugins: withDevServer ? [
+    ...plugins,
+    new webpack.HotModuleReplacementPlugin(),
+  ] : plugins,
   optimization: optimizer(),
   performance: {
     maxEntrypointSize: Infinity,
     maxAssetSize: 1000000,
+  },
+  stats: {
+    errorDetails: true,
+    logging: 'error',
+    chunks: false,
+    cachedAssets: false,
+    orphanModules: false,
   },
   module: {
     rules: [

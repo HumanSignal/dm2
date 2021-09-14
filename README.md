@@ -258,7 +258,7 @@ Now you can start Label Studio if it's not running, or refresh the page in the b
 |-|-|
 | [label-studio][ls] | Server part, distributed as a pip package |
 | [label-studio-frontend][lsf] | Frontend part, written in JavaScript and React, can be embedded into your application |
-| [label-studio-converter][lsf] | Encode labels into the format of your favorite machine learning library |
+| [label-studio-converter][lsc] | Encode labels into the format of your favorite machine learning library |
 | [label-studio-transformers][lst] | Transformers library connected and configured for use with label studio |
 | datamanager | Data exploration tool for Label Studio |
 

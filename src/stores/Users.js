@@ -10,12 +10,16 @@ export const User = types
     email: types.string,
     lastActivity: types.string,
     avatar: types.maybeNull(types.string),
-    initials: types.string
+    initials: types.string,
   })
   .views((self) => ({
     get fullName() {
       return [self.firstName, self.lastName].filter(n => !!n).join(" ").trim();
-    }
+    },
+
+    get displayName() {
+      return self.fullName || ((self.username) ? self.username : self.email);
+    },
   }))
   .preProcessSnapshot((sn) => {
     return camelizeKeys(sn);

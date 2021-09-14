@@ -10,10 +10,13 @@ export const ImageCell = (column) => {
   } = column;
   const root = getRoot(original);
 
-  return original.total_annotations === 0 || !root.showPreviews ? (
+  const renderImagePreview = original.total_annotations === 0 || !root.showPreviews;
+  const imgSrc = Array.isArray(value) ? value[0] : value;
+
+  return renderImagePreview ? (
     <img
-      key={value}
-      src={value}
+      key={imgSrc}
+      src={imgSrc}
       alt="Data"
       style={{
         maxHeight: "100%",

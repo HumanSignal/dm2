@@ -16,6 +16,9 @@ export const APIConfig = {
     /** Tabs (materialized views) */
     tabs: "/views",
 
+    /** Single tab */
+    tab: "/views/:tabId",
+
     /** Creates a new tab */
     createTab: {
       path: "/views",
@@ -52,8 +55,9 @@ export const APIConfig = {
     /** Mark sample as skipped */
     skipTask: {
       path: (params) => {
-        const pathBase = "/../tasks/:taskID/annotations";
+        const pathBase = "/../annotations";
         const isNewAnnotation = !isDefined(params.annotationID);
+
         return isNewAnnotation ? pathBase : `${pathBase}/:annotationID`;
       },
       method: "post",

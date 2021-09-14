@@ -113,6 +113,7 @@ export const AnnotationPreview = injector(
       const start = async () => {
         if (generator && task && annotation) {
           const preview = await generator.generatePreview(task, annotation);
+
           setPreview(preview);
         }
       };
@@ -153,5 +154,5 @@ export const AnnotationPreview = injector(
         />
       </Block>
     );
-  })
+  }),
 );

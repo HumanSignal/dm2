@@ -1,17 +1,19 @@
-import { getParent, getRoot, types } from "mobx-state-tree";
+import { flow, getParent, getRoot, types } from "mobx-state-tree";
+import { toStudlyCaps } from "strman";
 import * as Filters from "../../components/Filters/types";
+import * as CellViews from "../../components/Table/CellViews";
 import { debounce } from "../../utils/debounce";
-import { isDefined } from "../../utils/utils";
+import { isBlank, isDefined } from "../../utils/utils";
 import {
-  FilterValue,
   FilterValueRange,
+  FilterValueType,
   TabFilterType
 } from "./tab_filter_type";
 
 const operatorNames = Array.from(
   new Set(
-    [].concat(...Object.values(Filters).map((f) => f.map((op) => op.key)))
-  )
+    [].concat(...Object.values(Filters).map((f) => f.map((op) => op.key))),
+  ),
 );
 
 const Operators = types.enumeration(operatorNames);
@@ -34,9 +36,7 @@ export const TabFilter = types
   .model("TabFilter", {
     filter: types.reference(TabFilterType),
     operator: types.maybeNull(Operators),
-    value: types.maybeNull(
-      types.union(FilterValue, FilterValueRange, types.array(FilterValue))
-    ),
+    value: types.maybeNull(FilterValueType),
   })
   .views((self) => ({
     get field() {
@@ -65,10 +65,14 @@ export const TabFilter = types
       return self.filter.field.target;
     },
 
-    get isValidFilter() {
-      const { value } = self;
+    get type() {
+      return self.field.currentType;
+    },
 
-      if (!isDefined(value)) {
+    get isValidFilter() {
+      const { currentValue: value } = self;
+
+      if (!isDefined(value) || isBlank(value)) {
         return false;
       } else if (FilterValueRange.is(value)) {
         return isDefined(value.min) && isDefined(value.max);
@@ -78,12 +82,27 @@ export const TabFilter = types
     },
 
     get currentValue() {
+      let resultValue;
+
       if (self.filter.schema === null) {
-        return self.value;
+        resultValue = self.value;
       } else {
-        return self.value?.value ?? null;
+        resultValue = self.value?.value ?? self.value ?? null;
       }
+
+      return resultValue;
     },
+
+    get cellView() {
+      const col = self.filter.field;
+
+      return CellViews[col.type] ?? CellViews[toStudlyCaps(col.alias)];
+    },
+  }))
+  .volatile(() => ({
+    wasValid: false,
+    saved: false,
+    saving: false,
   }))
   .actions((self) => ({
     afterAttach() {
@@ -95,21 +114,34 @@ export const TabFilter = types
       }
     },
 
-    setFilter(value) {
+    setFilter(value, save = true) {
+      if (!isDefined(value)) return;
+
       const previousFilterType = self.filter.currentType;
+
       self.filter = value;
 
-      if (previousFilterType !== value.currentType) {
+      if (previousFilterType !== self.filter.currentType) {
+        self.markUnsaved();
         self.setDefaultValue();
       }
 
       self.setOperator(self.component[0].key);
-      self.save();
+      if (save) self.saved();
+    },
+
+    setFilterDelayed(value) {
+      self.setFilter(value, false);
+      self.saveDelayed();
     },
 
     setOperator(operator) {
       const previousValueType = self.componentValueType;
-      self.operator = operator;
+
+      if (self.operator !== operator) {
+        self.markUnsaved();
+        self.operator = operator;
+      }
 
       if (previousValueType !== self.componentValueType) {
         self.setDefaultValue();
@@ -118,34 +150,56 @@ export const TabFilter = types
       self.save();
     },
 
-    setValue(value) {
-      self.value = value;
+    setValue(newValue) {
+      self.value = newValue;
     },
 
     delete() {
       self.view.deleteFilter(self);
     },
 
-    save() {
-      if (self.isValidFilter) {
-        getRoot(self)?.unsetSelection();
-        self.view?.clearSelection();
-        self.view?.save({ interaction: "filter" });
+    save: flow(function * (force = false) {
+      const isValid = self.isValidFilter;
+
+      if (force !== true) {
+        if (self.saved === true) return;
+        if (isValid === false) return;
+        if (self.wasValid === false && isValid === false) return;
       }
-    },
+
+      if (self.saving) return;
+
+      self.saving = true;
+      self.wasValid = isValid;
+      self.markSaved();
+      getRoot(self)?.unsetSelection();
+      self.view?.clearSelection();
+      yield self.view?.save({ interaction: "filter" });
+      self.saving = false;
+    }),
 
     setDefaultValue() {
       self.setValue(
-        getOperatorDefaultValue(self.operator) ?? self.filter.defaultValue
+        getOperatorDefaultValue(self.operator) ?? self.filter.defaultValue,
       );
     },
 
     setValueDelayed(value) {
-      self.value = value;
+      self.setValue(value);
       setTimeout(self.saveDelayed);
+    },
+
+    markSaved() {
+      self.saved = true;
+    },
+
+    markUnsaved() {
+      self.saved = false;
     },
 
     saveDelayed: debounce(() => {
       self.save();
     }, 300),
-  }));
+  })).preProcessSnapshot((sn) => {
+    return { ...sn, value: sn.value ?? null };
+  });

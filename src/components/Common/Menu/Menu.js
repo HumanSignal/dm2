@@ -27,12 +27,12 @@ export const Menu = React.forwardRef(
 
     return (
       <MenuContext.Provider value={{ selected }}>
-        <Block ref={ref} tag="ul" name="menu" mod={{size, collapsed}} mix={className} style={style} onClick={clickHandler}>
+        <Block ref={ref} tag="ul" name="menu" mod={{ size, collapsed }} mix={className} style={style} onClick={clickHandler}>
           {children}
         </Block>
       </MenuContext.Provider>
     );
-  }
+  },
 );
 
 Menu.Item = MenuItem;
@@ -56,6 +56,7 @@ Menu.Builder = (url, menuItems) => {
 
 Menu.Group = ({ children, title, className, style }) => {
   const rootClass = cn("menu-group");
+
   return (
     <li className={rootClass.mix(className)} style={style}>
       <div className={rootClass.elem("title")}>{title}</div>
