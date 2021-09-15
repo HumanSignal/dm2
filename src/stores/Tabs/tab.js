@@ -324,7 +324,7 @@ export const Tab = types
       } else {
         self.hiddenColumns.add(column);
       }
-      self.save({ reload: false });
+      self.save();
     },
 
     reload: flow(function* ({ interaction } = {}) {
