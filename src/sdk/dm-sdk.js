@@ -50,7 +50,7 @@ import { APIConfig } from "./api-config";
 import { createApp } from "./app-create";
 import { LSFWrapper } from "./lsf-sdk";
 
-const DEFAULT_TOOLBAR = "actions columns filters ordering label-button loading-possum error-box | refresh view-toggle";
+const DEFAULT_TOOLBAR = "actions columns filters ordering label-button loading-possum error-box | refresh import-button export-button view-toggle";
 
 const prepareInstruments = (instruments) => {
   const result = Object
