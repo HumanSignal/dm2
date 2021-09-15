@@ -64,7 +64,7 @@ export const instruments = {
   'export-button': ({ size }) => {
     return (
       <Interface name="export">
-        <ExportButton size={size}>Import</ExportButton>
+        <ExportButton size={size}>Export</ExportButton>
       </Interface>
     );
   },
