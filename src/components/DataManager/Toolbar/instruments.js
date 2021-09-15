@@ -40,7 +40,7 @@ export const instruments = {
     return <GridWidthButton size={size}/>;
   },
   'refresh': ({ size }) => {
-    return <RefreshButton size={size} style={style}/>;
+    return <RefreshButton size={size}/>;
   },
   'loading-possum': () => {
     return <LoadingPossum/>;

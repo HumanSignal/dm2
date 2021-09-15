@@ -7,3 +7,4 @@ export { default as LsThumbsDown } from './thumbs_down.svg';
 export { default as LsThumbsUp } from './thumbs_up.svg';
 export { default as LsStarSquare } from  './star_square.svg';
 export { default as LSPlus } from './plus.svg';
+export { default as LsRefresh } from './refresh.svg';

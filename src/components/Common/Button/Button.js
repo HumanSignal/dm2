@@ -1,9 +1,9 @@
-import React from "react";
+import React, { cloneElement, forwardRef, useMemo } from "react";
 import { Block, Elem } from "../../../utils/bem";
 import { isDefined } from "../../../utils/utils";
 import "./Button.styl";
 
-export const Button = React.forwardRef(
+export const Button = forwardRef(
   (
     {
       children,
@@ -32,14 +32,14 @@ export const Button = React.forwardRef(
       disabled: !!rest.disabled,
     };
 
-    const iconElem = React.useMemo(() => {
+    const iconElem = useMemo(() => {
       if (!icon) return null;
 
       switch (size) {
         case "small":
-          return React.cloneElement(icon, { ...icon.props, size: 12 });
+          return cloneElement(icon, { ...icon.props, size: 12 });
         case "compact":
-          return React.cloneElement(icon, { ...icon.props, size: 14 });
+          return cloneElement(icon, { ...icon.props, size: 14 });
         default:
           return icon;
       }
