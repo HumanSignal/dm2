@@ -474,9 +474,7 @@ export const AppStore = types
       // don't apply filters for "all" on "next_task"
       const actionParams = {
         ordering: view.ordering,
-        selectedItems: selected?.hasSelected
-          ? selected.snapshot
-          : { all: true, excluded: [] },
+        selectedItems: selected?.snapshot ?? { all: true, excluded: [] },
         filters: {
           conjunction: view.conjunction ?? 'and',
           items: view.serializedFilters ?? [],
@@ -486,6 +484,11 @@ export const AppStore = types
       if (actionId === "next_task" && labelStreamMode === 'all') {
         delete actionParams.ordering;
         delete actionParams.filters;
+
+        console.log(actionParams.selectedItems);
+        if (actionParams.selectedItems.all === false && actionParams.selectedItems.included.length === 0) {
+          delete actionParams.selectedItems;
+        }
       } else if (actionId === 'next_task' && labelStreamMode === 'filtered') {
         delete actionParams.selectedItems;
       }
