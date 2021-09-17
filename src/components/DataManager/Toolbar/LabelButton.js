@@ -23,7 +23,7 @@ const injector = inject(({ store }) => {
   };
 });
 
-export const LabelButton = injector(({ store, canLabel, size, target }) => {
+export const LabelButton = injector(({ store, canLabel, size, target, selectedCount }) => {
   // const all = selectedCount === 0 || allSelected;
   const disabled = target === "annotations";
   const triggerRef = useRef();
@@ -65,6 +65,7 @@ export const LabelButton = injector(({ store, canLabel, size, target }) => {
     borderBottomRightRadius: isOpen ? 0 : undefined,
     boxShadow: "none",
   };
+
   const primaryStyle = {
     width: 160,
     padding: 0,
@@ -72,6 +73,7 @@ export const LabelButton = injector(({ store, canLabel, size, target }) => {
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: isOpen ? 0 : undefined,
   };
+
   const secondStyle = {
     width: 180,
     padding: 0,
@@ -81,6 +83,8 @@ export const LabelButton = injector(({ store, canLabel, size, target }) => {
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
   };
+
+  selectedCount;
 
   return canLabel ? (
     <Interface name="labelButton">
@@ -93,7 +97,7 @@ export const LabelButton = injector(({ store, canLabel, size, target }) => {
             style={primaryStyle}
             onClick={onLabelAll}
           >
-            Label All
+            Label {selectedCount ? selectedCount : "All"} Task{!selectedCount || selectedCount > 1 ? "s" : ''}
           </Button>
           <Button
             ref={triggerRef}
@@ -111,7 +115,7 @@ export const LabelButton = injector(({ store, canLabel, size, target }) => {
           mod={{ size: "medium", disabled }}
           onClick={onLabelVisible}
         >
-          Label tasks as displayed
+          Label Tasks As Displayed
         </Button>
       </div>
     </Interface>
