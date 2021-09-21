@@ -203,8 +203,12 @@ export const AppStore = types
     }),
 
     unsetTask(options) {
-      self.annotationStore.unset();
-      self.taskStore.unset();
+      try {
+        self.annotationStore.unset();
+        self.taskStore.unset();
+      } catch (e) {
+        /* Something weird */
+      }
 
       if (options?.pushState !== false) {
         History.navigate({ task: null, annotation: null });
@@ -481,16 +485,16 @@ export const AppStore = types
         },
       };
 
-      if (actionId === "next_task" && labelStreamMode === 'all') {
-        delete actionParams.ordering;
-        delete actionParams.filters;
+      if (actionId === "next_task") {
+        if (labelStreamMode === 'all') {
+          delete actionParams.filters;
 
-        console.log(actionParams.selectedItems);
-        if (actionParams.selectedItems.all === false && actionParams.selectedItems.included.length === 0) {
+          if (actionParams.selectedItems.all === false && actionParams.selectedItems.included.length === 0) {
+            delete actionParams.selectedItems;
+          }
+        } else if (labelStreamMode === 'filtered') {
           delete actionParams.selectedItems;
         }
-      } else if (actionId === 'next_task' && labelStreamMode === 'filtered') {
-        delete actionParams.selectedItems;
       }
 
       if (actionCallback instanceof Function) {

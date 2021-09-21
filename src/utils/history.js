@@ -41,12 +41,17 @@ export const History = {
 
   forceNavigate(params = {}, replace = false) {
     const resultParams = params ?? {};
+    const currentParams = this.getParams();
 
-    Object.entries(this.getParams()).forEach(([key]) => {
+    Object.entries(currentParams).forEach(([key]) => {
       if (!isDefined(resultParams[key])) {
         resultParams[key] = null;
       }
     });
+
+    if (currentParams.query) {
+      resultParams.query = currentParams.query;
+    }
 
     this.navigate(resultParams, replace);
   },
