@@ -23,7 +23,7 @@ export const Agreement = (column) => {
   return (
     <Block name="agreement">
       <Elem name="score" mod={{ [agreement(column.value)]: true }}>
-        {isDefined(column.value) ? `${formatNumber(column.value * 100)}%` : ""}
+        {isDefined(column.value) ? `${formatNumber(column.value)}%` : ""}
       </Elem>
     </Block>
   );
