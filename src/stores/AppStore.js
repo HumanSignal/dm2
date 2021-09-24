@@ -478,7 +478,7 @@ export const AppStore = types
       // don't apply filters for "all" on "next_task"
       const actionParams = {
         ordering: view.ordering,
-        selectedItems: selected?.snapshot ?? { all: true, excluded: [] },
+        selectedItems: selected?.snapshot ?? { all: false, included: [] },
         filters: {
           conjunction: view.conjunction ?? 'and',
           items: view.serializedFilters ?? [],
