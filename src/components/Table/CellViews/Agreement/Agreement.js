@@ -4,8 +4,8 @@ import "./Agreement.styl";
 
 const agreement = (p) => {
   if (!isDefined(p)) return "zero";
-  if (p < 0.33) return "low";
-  if (p < 0.66) return "medium";
+  if (p < 33) return "low";
+  if (p < 66) return "medium";
   return "high";
 };
 
