@@ -13,6 +13,7 @@ import { normalizeFilterValue } from './filter_utils';
 import { TabFilter } from "./tab_filter";
 import { TabHiddenColumns } from "./tab_hidden_columns";
 import { TabSelectedItems } from "./tab_selected_items";
+import { History } from '../../utils/history';
 
 export const Tab = types
   .model("View", {
@@ -173,6 +174,13 @@ export const Tab = types
     },
 
     serialize() {
+      if (self.virtual) {
+        return {
+          title: self.title,
+          filters: self.filterSnposhot,
+        };
+      }
+
       const tab = {};
       const { apiVersion } = self.root;
 
@@ -355,8 +363,20 @@ export const Tab = types
 
       if (!self.saved || !deepEqual(self.snapshot, serialized)) {
         self.snapshot = serialized;
-        yield self.parent.saveView(self, { reload, interaction });
+        if (self.virtual === true) {
+          const snapshot = self.serialize();
+
+          self.key = self.parent.snapshotToUrl(snapshot);
+          History.navigate({ tab: self.key }, true);
+        } else {
+          yield self.parent.saveView(self, { reload, interaction });
+        }
       }
+    }),
+
+    saveVirtual: flow(function* (options) {
+      self.virtual = false;
+      yield self.save(options);
     }),
 
     delete: flow(function* () {

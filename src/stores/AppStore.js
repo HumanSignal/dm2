@@ -322,7 +322,9 @@ export const AppStore = types
       const { tab, task, annotation, labeling } = state ?? {};
 
       if (tab) {
-        self.viewsStore.setSelected(parseInt(tab), {
+        const tabId = parseInt(tab);
+
+        self.viewsStore.setSelected(Number.isNaN(tabId) ? tab : tabId, {
           pushState: false,
         });
       }

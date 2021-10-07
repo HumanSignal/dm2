@@ -64,9 +64,11 @@ export const TabsItem = ({
   onCancelEditing,
   onClose,
   onDuplicate,
+  onSave,
   editable = true,
   deletable = true,
   managable = true,
+  virtual = false,
 }) => {
   const { switchTab, selectedTab, lastTab } = useContext(TabsContext);
   const [currentTitle, setCurrentTitle] = useState(title);
@@ -94,7 +96,7 @@ export const TabsItem = ({
   return (
     <Elem
       name="item"
-      mod={{ active, hover }}
+      mod={{ active, hover, virtual }}
       onMouseEnter={()=>setHover(true)}
       onMouseLeave={()=>setHover(false)}
     > 
@@ -138,11 +140,13 @@ export const TabsItem = ({
               <TabsMenu
                 editable={editable}
                 closable={!lastTab && deletable}
+                virtual={virtual}
                 onClick={(action) => {
                   switch(action) {
                     case "edit": return setRenameMode(true);
                     case "duplicate": return onDuplicate?.();
                     case "close": return onClose?.();
+                    case "save": return onSave?.();
                   }
                 }}
               />
