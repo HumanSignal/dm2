@@ -4,7 +4,7 @@ import { FieldsButton } from "../../Common/FieldsButton";
 import { FiltersPane } from "../../Common/FiltersPane";
 import { Icon } from "../../Common/Icon/Icon";
 import { Interface } from "../../Common/Interface";
-import { ExportButton, ImportButton } from "../../Common/SDKButtons";
+import { CommitButton, ExportButton, ImportButton } from "../../Common/SDKButtons";
 import { ActionsButton } from "./ActionsButton";
 import { GridWidthButton } from "./GridWidthButton";
 import { LabelButton } from "./LabelButton";
@@ -65,6 +65,13 @@ export const instruments = {
     return (
       <Interface name="export">
         <ExportButton size={size}>Export</ExportButton>
+      </Interface>
+    );
+  },
+  'commit-button': ({ size }) => {
+    return (
+      <Interface name="commit">
+        <CommitButton size={size}>Commit</CommitButton>
       </Interface>
     );
   },
