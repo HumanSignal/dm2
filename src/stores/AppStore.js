@@ -388,26 +388,6 @@ export const AppStore = types
     fetchActions: flow(function* () {
       const serverActions = yield self.apiCall("actions");
 
-      serverActions.push(    {
-        'id': 'predictions_to_annotations',
-        'permission': 'all_permissions.tasks_change',
-        'title': 'Create Annotations From Predictions',
-        'order': 90,
-        'dialog': {
-          'text': 'This action will create a new annotation from predictions with the current project model version for each selected task.',
-          'type': 'confirm',
-          'form': [{
-            columnCount: 1,
-            fields: [{
-              'type': 'select',
-              'name': 'model_version',
-              'label': 'Choose a model',
-              'options': ['version 1', 'version 2'],
-            }],
-          }],
-        },
-      });
-
       self.addActions(...(serverActions ?? []));
     }),
 
