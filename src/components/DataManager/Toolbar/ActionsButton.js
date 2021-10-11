@@ -14,7 +14,6 @@ const injector = inject(({ store }) => ({
 }));
 
 const buildDialogContent = (text, form, formRef) => {
-  console.log(form.toJSON());
   return (
     <Block name="dialog-content">
       <Elem name="text">{text}</Elem>
