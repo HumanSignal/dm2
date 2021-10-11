@@ -458,6 +458,8 @@ export class LSFWrapper {
       lead_time: (new Date() - annotation.loadedDate) / 1000, // task execution time
       result: annotation.serializeAnnotation(),
       draft_id: annotation.draftId,
+      parent_prediction: annotation.parent_prediction,
+      parent_annotation: annotation.parent_annotation,
     };
 
     if (includeId && userGenerate) {
