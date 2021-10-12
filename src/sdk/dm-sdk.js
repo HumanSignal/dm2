@@ -45,6 +45,7 @@ import { toCamelCase } from "strman";
 import { instruments } from "../components/DataManager/Toolbar/instruments";
 import { APIProxy } from "../utils/api-proxy";
 import { objectToMap } from "../utils/helpers";
+import { packJSON } from "../utils/packJSON";
 import { isDefined } from "../utils/utils";
 import { APIConfig } from "./api-config";
 import { createApp } from "./app-create";
@@ -465,4 +466,5 @@ export class DataManager {
 
     return instrumentsList;
   }
+  static packJSON = packJSON;
 }
