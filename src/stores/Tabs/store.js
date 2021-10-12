@@ -129,8 +129,10 @@ export const TabStore = types
         }
       } else if (typeof view === "number") {
         selected = self.views.find((v) => v.id === view);
-      } else {
+      }  else if (view && view.id) {
         selected = self.views.find((v) => v.id === view.id);
+      } else {
+        selected = self.views[0];
       }
 
       if (self.views.length === 0) {
