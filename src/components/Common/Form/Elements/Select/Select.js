@@ -16,7 +16,7 @@ const Select = ({
   defaultValue,
   ...props
 }) => {
-  const rootClass = cn('select');
+  const rootClass = cn('form-select');
   const [value, setValue] = useValueTracker(props.value, defaultValue);
 
   const classList = rootClass.mod({ ghost }).mix(className);

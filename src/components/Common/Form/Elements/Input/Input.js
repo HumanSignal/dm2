@@ -5,7 +5,7 @@ import './Input.styl';
 
 const Input = ({ label, className, validate, required, skip, labelProps, ghost, ...props }) => {
   const classList = [
-    cn('input').mod({ ghost }),
+    cn('form-input').mod({ ghost }),
     className,
   ].join(" ").trim();
 
