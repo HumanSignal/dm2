@@ -173,11 +173,19 @@ export const Tab = types
       };
     },
 
+    get query() {
+      return JSON.stringify({
+        filters: self.filterSnposhot,
+        ordering: self.ordering.toJSON(),
+      });
+    },
+
     serialize() {
       if (self.virtual) {
         return {
           title: self.title,
           filters: self.filterSnposhot,
+          ordering: self.ordering.toJSON(),
         };
       }
 
@@ -339,6 +347,9 @@ export const Tab = types
       if (self.saved) {
         yield self.dataStore.reload({ id: self.id, interaction });
       }
+      if (self.virtual) {
+        yield self.dataStore.reload({ query: self.query, interaction });
+      }
     }),
 
     deleteFilter(filter) {
@@ -368,6 +379,7 @@ export const Tab = types
 
           self.key = self.parent.snapshotToUrl(snapshot);
           History.navigate({ tab: self.key }, true);
+          self.reload({ interaction });
         } else {
           yield self.parent.saveView(self, { reload, interaction });
         }
@@ -377,6 +389,7 @@ export const Tab = types
     saveVirtual: flow(function* (options) {
       self.virtual = false;
       yield self.save(options);
+      History.navigate({ tab: self.id }, true);
     }),
 
     delete: flow(function* () {

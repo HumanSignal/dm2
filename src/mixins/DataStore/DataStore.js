@@ -152,7 +152,7 @@ export const DataStore = (
         return item;
       },
 
-      fetch: flow(function* ({ id, reload = false, interaction } = {}) {
+      fetch: flow(function* ({ id, query, reload = false, interaction } = {}) {
         const currentViewId = id ?? getRoot(self).viewsStore.selected?.id;
         const requestId = self.requestId = guidGenerator();
 
@@ -166,8 +166,13 @@ export const DataStore = (
         const params = {
           page: self.page,
           page_size: self.pageSize,
-          tabID: currentViewId,
         };
+
+        if (query) {
+          params.query = query;
+        } else {
+          params.view = currentViewId;
+        }
 
         if (interaction) Object.assign(params, { interaction });
 
@@ -205,8 +210,8 @@ export const DataStore = (
         getRoot(self).SDK.invoke('dataFetched', self);
       }),
 
-      reload: flow(function* ({ id, interaction } = {}) {
-        yield self.fetch({ id, reload: true, interaction });
+      reload: flow(function* ({ id, query, interaction } = {}) {
+        yield self.fetch({ id, query, reload: true, interaction });
       }),
 
       focusPrev() {
