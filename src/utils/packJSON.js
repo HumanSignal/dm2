@@ -151,14 +151,14 @@ PackJSON.prototype.makeDictionaries = function(json) {
 PackJSON.prototype.collectObjectWords = function(value) {
   switch (typeof value) {
     case 'number': {
-      if (this.tmpSharedValuesSet.has(value)) {
+      if (this.tmpSharedValuesSet.has(value) && this.sharedStringsDict[value] === undefined) {
         this.sharedNumbersDict[value] = this.sharedValuesCount++;
       }
       this.tmpSharedValuesSet.add(value);
       break;
     }
     case 'string': {
-      if (this.tmpSharedValuesSet.has(value)) {
+      if (this.tmpSharedValuesSet.has(value) && this.sharedStringsDict[value] === undefined) {
         this.sharedStringsDict[value] = this.sharedValuesCount++;
       }
       this.tmpSharedValuesSet.add(value);
