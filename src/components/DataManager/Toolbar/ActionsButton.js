@@ -1,7 +1,10 @@
 import { inject, observer } from "mobx-react";
+import { useRef } from "react";
 import { FaAngleDown, FaTrash } from "react-icons/fa";
+import { Block, Elem } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
 import { Dropdown } from "../../Common/Dropdown/DropdownComponent";
+import Form from "../../Common/Form/Form";
 import { Menu } from "../../Common/Menu/Menu";
 import { Modal } from "../../Common/Modal/ModalPopup";
 
@@ -10,7 +13,26 @@ const injector = inject(({ store }) => ({
   hasSelected: store.currentView?.selected?.hasSelected ?? false,
 }));
 
+const buildDialogContent = (text, form, formRef) => {
+  return (
+    <Block name="dialog-content">
+      <Elem name="text">{text}</Elem>
+      {form && (
+        <Elem name="form" style={{ paddingTop: 16 }}>
+          <Form.Builder
+            ref={formRef}
+            fields={form.toJSON()}
+            autosubmit={false}
+            withActions={false}
+          />
+        </Elem>
+      )}
+    </Block>
+  );
+};
+
 export const ActionsButton = injector(observer(({ store, size, hasSelected, ...rest }) => {
+  const formRef = useRef();
   const selectedCount = store.currentView.selectedCount;
   const actions = store.availableActions
     .filter((a) => !a.hidden)
@@ -18,15 +40,17 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
 
   const invokeAction = (action, destructive) => {
     if (action.dialog) {
-      const { type: dialogType, text } = action.dialog;
+      const { type: dialogType, text, form } = action.dialog;
       const dialog = Modal[dialogType] ?? Modal.confirm;
 
       dialog({
         title: destructive ? "Destructive action." : "Confirm action.",
-        body: text,
+        body: buildDialogContent(text, form, formRef),
         buttonLook: destructive ? "destructive" : "primary",
         onOk() {
-          store.invokeAction(action.id);
+          const body = formRef.current?.assembleFormData({ asJSON: true });
+
+          store.invokeAction(action.id, { body });
         },
       });
     } else {

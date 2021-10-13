@@ -459,6 +459,8 @@ export class LSFWrapper {
       // don't serialize annotations twice for drafts
       result: draft ? annotation.versions.draft : annotation.serializeAnnotation(),
       draft_id: annotation.draftId,
+      parent_prediction: annotation.parent_prediction,
+      parent_annotation: annotation.parent_annotation,
     };
 
     if (includeId && userGenerate) {
