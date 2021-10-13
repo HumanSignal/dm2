@@ -177,6 +177,7 @@ export const Tab = types
       return JSON.stringify({
         filters: self.filterSnposhot,
         ordering: self.ordering.toJSON(),
+        hiddenColumns: getSnapshot(self.hiddenColumns),
       });
     },
 
