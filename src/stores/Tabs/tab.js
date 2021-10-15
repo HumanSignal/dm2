@@ -173,11 +173,20 @@ export const Tab = types
       };
     },
 
+    // key used in urls
+    get tabKey() {
+      return self.virtual ? self.key : self.id;
+    },
+
+    get hiddenColumnsSnapshot() {
+      return getSnapshot(self.hiddenColumns);
+    },
+
     get query() {
       return JSON.stringify({
         filters: self.filterSnposhot,
         ordering: self.ordering.toJSON(),
-        hiddenColumns: getSnapshot(self.hiddenColumns),
+        hiddenColumns: self.hiddenColumnsSnapshot,
       });
     },
 

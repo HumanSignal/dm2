@@ -121,12 +121,7 @@ export const TabStore = types
       let selected;
 
       if (typeof view === "string") {
-        selected = self.views.find((v) => v.key === view);
-        if (!selected) {
-          const viewSnapshot = self.snapshotFromUrl(view);
-
-          selected = yield self.addVirtualView(viewSnapshot);
-        }
+        selected = yield self.getViewByKey(view);
       } else if (typeof view === "number") {
         selected = self.views.find((v) => v.id === view);
       }  else if (view && view.id) {
@@ -142,7 +137,7 @@ export const TabStore = types
 
       if (selected && self.selected !== selected) {
         if (options.pushState !== false || !view) {
-          History.navigate({ tab: !selected.virtual ? selected.id : selected.key }, true);
+          History.navigate({ tab: selected.tabKey }, true);
         }
 
         self.dataStore.clear();
@@ -214,6 +209,16 @@ export const TabStore = types
       }
 
       return newView;
+    }),
+
+    getViewByKey: flow(function*(key){
+      let view = self.views.find((v) => v.key === key);
+
+      if (view) return view;
+      const viewSnapshot = self.snapshotFromUrl(key);
+
+      if (!viewSnapshot) return null;
+      return yield self.addVirtualView(viewSnapshot);
     }),
 
     addVirtualView: flow(function*(viewSnapshot) {
@@ -460,23 +465,28 @@ export const TabStore = types
       }
     }),
 
-    fetchSingleTab: flow(function * (tabId, selectedItems) {
-      const tabData = yield getRoot(self).apiCall("tab", { tabId });
-      const columnIds = self.columns.map(c => c.id);
-      const { data, ...tabClean } = dataCleanup(tabData, columnIds);
+    fetchSingleTab: flow(function * (tabKey, selectedItems) {
+      let tab;
 
-      self.views.push({
-        ...tabClean,
-        ...(data ?? {}),
-        selected: {
-          all: selectedItems?.all,
-          list: selectedItems.included ?? selectedItems.excluded ?? [],
-        },
-        saved: true,
-        hasData: !!data,
-      });
+      if (Number.isInteger(tabKey)) {
+        const tabData = yield getRoot(self).apiCall("tab", { tabId: tabKey });
+        const columnIds = self.columns.map(c => c.id);
+        const { data, ...tabClean } = dataCleanup(tabData, columnIds);
 
-      const tab = self.views[self.views.length - 1];
+        self.views.push({
+          ...tabClean,
+          ...(data ?? {}),
+          selected: {
+            all: selectedItems?.all,
+            list: selectedItems.included ?? selectedItems.excluded ?? [],
+          },
+          saved: true,
+          hasData: !!data,
+        });
+        tab = self.views[self.views.length - 1];
+      } else {
+        tab = yield self.getViewByKey(tabKey);
+      }
 
       self.selected = tab;
     }),
