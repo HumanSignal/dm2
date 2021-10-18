@@ -1,4 +1,4 @@
-import { inject } from "mobx-react";
+import { inject, observer } from "mobx-react";
 import React from "react";
 import { LSPlus } from "../../assets/icons";
 import { Block, Elem } from "../../utils/bem";
@@ -64,7 +64,7 @@ const ProjectSummary = summaryInjector((props) => {
   );
 });
 
-const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
+const TabsSwitch = switchInjector(observer(({ views, tabs, selectedKey }) => {
   return (
     <Tabs
       activeTab={selectedKey}
@@ -93,7 +93,7 @@ const TabsSwitch = switchInjector(({ views, tabs, selectedKey }) => {
       ))}
     </Tabs>
   );
-});
+}));
 
 export const DataManager = injector(({ shrinkWidth }) => {
   return (
