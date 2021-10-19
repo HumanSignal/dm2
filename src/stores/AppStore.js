@@ -326,6 +326,7 @@ export const AppStore = types
 
         self.viewsStore.setSelected(Number.isNaN(tabId) ? tab : tabId, {
           pushState: false,
+          createDefault: false,
         });
       }
 

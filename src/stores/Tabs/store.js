@@ -130,7 +130,7 @@ export const TabStore = types
         selected = self.views[0];
       }
 
-      if (self.views.length === 0) {
+      if (self.views.length === 0 && options.createDefault !== false) {
         view = null;
         yield self.createDefaultView();
       }
