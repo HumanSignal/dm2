@@ -130,7 +130,7 @@ export const TabStore = types
         selected = self.views[0];
       }
 
-      if (self.views.length === 0) {
+      if (self.views.length === 0 && options.createDefault !== false) {
         view = null;
         yield self.createDefaultView();
       }
@@ -466,10 +466,10 @@ export const TabStore = types
     }),
 
     fetchSingleTab: flow(function * (tabKey, selectedItems) {
-      let tab;
+      let tab, tabId = parseInt(tabKey);
 
-      if (Number.isInteger(tabKey)) {
-        const tabData = yield getRoot(self).apiCall("tab", { tabId: tabKey });
+      if (!Number.isNaN(tabId)) {
+        const tabData = yield getRoot(self).apiCall("tab", { tabId });
         const columnIds = self.columns.map(c => c.id);
         const { data, ...tabClean } = dataCleanup(tabData, columnIds);
 
