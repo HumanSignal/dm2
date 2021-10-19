@@ -377,7 +377,7 @@ export class LSFWrapper {
 
   onSubmitDraft = async (studio, annotation) => {
     const annotationDoesntExist = !annotation.pk;
-    const data = { body: this.prepareData(annotation) }; // serializedAnnotation
+    const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
 
     if (annotation.draftId > 0) {
       // draft has been already created
@@ -422,7 +422,7 @@ export class LSFWrapper {
 
   async submitCurrentAnnotation(eventName, submit, includeID = false) {
     const { taskID, currentAnnotation } = this;
-    const serializedAnnotation = this.prepareData(currentAnnotation, includeID);
+    const serializedAnnotation = this.prepareData(currentAnnotation, { includeID });
 
     this.setLoading(true);
     const result = await this.withinLoadingState(async () => {
@@ -451,13 +451,14 @@ export class LSFWrapper {
   }
 
   /** @private */
-  prepareData(annotation, includeId) {
+  prepareData(annotation, { includeId, draft } = {}) {
     const userGenerate =
       !annotation.userGenerate || annotation.sentUserGenerate;
 
     const result = {
       lead_time: (new Date() - annotation.loadedDate) / 1000, // task execution time
-      result: annotation.serializeAnnotation(),
+      // don't serialize annotations twice for drafts
+      result: draft ? annotation.versions.draft : annotation.serializeAnnotation(),
       draft_id: annotation.draftId,
       parent_prediction: annotation.parent_prediction,
       parent_annotation: annotation.parent_annotation,
