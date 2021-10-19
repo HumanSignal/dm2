@@ -303,11 +303,11 @@ export const AppStore = types
       const tabFromURL = History.getParams().tab;
 
       if (isDefined(self.currentView)) {
-        viewId = self.currentView.id;
+        viewId = self.currentView.tabKey;
       } else if (isDefined(tabFromURL)) {
-        viewId = +tabFromURL;
+        viewId = tabFromURL;
       } else if (isDefined(self.viewsStore)) {
-        viewId = self.viewsStore.views[0]?.id;
+        viewId = self.viewsStore.views[0]?.tabKey;
       }
 
       if (isDefined(viewId)) {
@@ -322,8 +322,11 @@ export const AppStore = types
       const { tab, task, annotation, labeling } = state ?? {};
 
       if (tab) {
-        self.viewsStore.setSelected(parseInt(tab), {
+        const tabId = parseInt(tab);
+
+        self.viewsStore.setSelected(Number.isNaN(tabId) ? tab : tabId, {
           pushState: false,
+          createDefault: false,
         });
       }
 
@@ -506,7 +509,7 @@ export const AppStore = types
         id: actionId,
       };
 
-      if (isDefined(view.id)) {
+      if (isDefined(view.id) && !view?.virtual) {
         requestParams.tabID = view.id;
       }
 

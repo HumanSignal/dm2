@@ -38,7 +38,7 @@ export const APIConfig = {
     },
 
     /** List of tasks (samples) in the dataset */
-    tasks: "/views/:tabID/tasks",
+    tasks: "/tasks",
 
     /** Per-task annotations (annotations, predictions) */
     annotations: "/views/:tabID/annotations",

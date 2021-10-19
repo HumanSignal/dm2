@@ -13,6 +13,7 @@ import { normalizeFilterValue } from './filter_utils';
 import { TabFilter } from "./tab_filter";
 import { TabHiddenColumns } from "./tab_hidden_columns";
 import { TabSelectedItems } from "./tab_selected_items";
+import { History } from '../../utils/history';
 
 export const Tab = types
   .model("View", {
@@ -172,7 +173,32 @@ export const Tab = types
       };
     },
 
+    // key used in urls
+    get tabKey() {
+      return self.virtual ? self.key : self.id;
+    },
+
+    get hiddenColumnsSnapshot() {
+      return getSnapshot(self.hiddenColumns);
+    },
+
+    get query() {
+      return JSON.stringify({
+        filters: self.filterSnposhot,
+        ordering: self.ordering.toJSON(),
+        hiddenColumns: self.hiddenColumnsSnapshot,
+      });
+    },
+
     serialize() {
+      if (self.virtual) {
+        return {
+          title: self.title,
+          filters: self.filterSnposhot,
+          ordering: self.ordering.toJSON(),
+        };
+      }
+
       const tab = {};
       const { apiVersion } = self.root;
 
@@ -331,6 +357,9 @@ export const Tab = types
       if (self.saved) {
         yield self.dataStore.reload({ id: self.id, interaction });
       }
+      if (self.virtual) {
+        yield self.dataStore.reload({ query: self.query, interaction });
+      }
     }),
 
     deleteFilter(filter) {
@@ -355,8 +384,22 @@ export const Tab = types
 
       if (!self.saved || !deepEqual(self.snapshot, serialized)) {
         self.snapshot = serialized;
-        yield self.parent.saveView(self, { reload, interaction });
+        if (self.virtual === true) {
+          const snapshot = self.serialize();
+
+          self.key = self.parent.snapshotToUrl(snapshot);
+          History.navigate({ tab: self.key }, true);
+          self.reload({ interaction });
+        } else {
+          yield self.parent.saveView(self, { reload, interaction });
+        }
       }
+    }),
+
+    saveVirtual: flow(function* (options) {
+      self.virtual = false;
+      yield self.save(options);
+      History.navigate({ tab: self.id }, true);
     }),
 
     delete: flow(function* () {

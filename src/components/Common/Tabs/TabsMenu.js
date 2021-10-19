@@ -4,22 +4,31 @@ export const TabsMenu = ({
   onClick,
   editable = true,
   closable = true,
+  virtual = false,
 }) => {
   return (
     <Menu size="medium" onClick={(e) => e.domEvent.stopPropagation()}>
-      {editable && (
+      {editable && !virtual && (
         <Menu.Item onClick={() => onClick("edit")}>
           Rename
         </Menu.Item>
       )}
 
-      <Menu.Item onClick={() => onClick("duplicate")}>
+      {!virtual && (
+        <Menu.Item onClick={() => onClick("duplicate")}>
         Duplicate
-      </Menu.Item>
+        </Menu.Item>
+      )}
+
+      {virtual && (
+        <Menu.Item onClick={() => onClick("save")}>
+            Save
+        </Menu.Item>
+      )}
 
       {closable ? (
         <>
-          <Menu.Divider />
+          {!virtual && <Menu.Divider />}
           <Menu.Item onClick={() => onClick("close")}>
             Close
           </Menu.Item>
