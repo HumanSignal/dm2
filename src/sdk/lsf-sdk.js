@@ -113,6 +113,7 @@ export class LSFWrapper {
       description: this.instruction,
       interfaces,
       users: dm.store.users.map(u => u.toJSON()),
+      keymap: options.keymap,
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
