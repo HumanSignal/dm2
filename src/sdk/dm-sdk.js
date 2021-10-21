@@ -148,6 +148,7 @@ export class DataManager {
       toolbar: true,
       import: true,
       export: true,
+      commit: true,
       labelButton: true,
       backButton: true,
       labelingHeader: true,
