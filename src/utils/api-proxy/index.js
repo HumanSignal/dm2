@@ -66,6 +66,18 @@ export class APIProxy {
     this.resolveMethods(options.endpoints);
   }
 
+  call(method, {
+    params,
+    body,
+    headers,
+  }) {
+    if (this.isValidMethod(method)) {
+      return this[method](params ?? {}, { body, headers });
+    } else {
+      console.warn(`Unknown API method "${method}"`);
+    }
+  }
+
   /**
    * Check if method exists
    * @param {String} method
