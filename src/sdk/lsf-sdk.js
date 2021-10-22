@@ -210,38 +210,50 @@ export class LSFWrapper {
     let { annotationStore: cs } = this.lsf;
     let annotation;
     const activeDrafts = cs.annotations.map(a => a.draftId).filter(Boolean);
+    const applyDraft = (c, draft) => {
+      cs.selectAnnotation(c.id);
+      c.deserializeResults(draft.result);
+      c.setDraftId(draft.id);
+    };
 
     if (this.task.drafts) {
+      const draftsByAnnotationId = {};
+      const separatedDrafts = [];
+
       for (const draft of this.task.drafts) {
         if (activeDrafts.includes(draft.id)) continue;
-        let c;
-
         if (draft.annotation) {
-          // Annotation existed - add draft to existed annotation
-          const draftAnnotationPk = String(draft.annotation);
-
-          c = cs.annotations.find(c => c.pk === draftAnnotationPk);
-          if (c) {
-            c.addVersions({ draft: draft.result });
-            c.deleteAllRegions({ deleteReadOnly: true });
-          } else {
-            // that shouldn't happen
-            console.error(`No annotation found for pk=${draftAnnotationPk}`);
-            continue;
-          }
+          draftsByAnnotationId[String(draft.annotation)] = draft;
         } else {
-          // Annotation not found - create new annotation from draft
-          c = cs.addAnnotation({
-            draft: draft.result,
-            userGenerate: true,
-            createdBy: draft.created_username,
-            createdAgo: draft.created_ago,
-          });
+          separatedDrafts.push(draft);
         }
-        cs.selectAnnotation(c.id);
-        c.deserializeResults(draft.result);
-        c.setDraftId(draft.id);
       }
+
+      for (const [draftAnnotationPk, draft] of Object.entries(draftsByAnnotationId)) {
+        let c = cs.annotations.find(c => c.pk === draftAnnotationPk);
+
+        if (c) {
+          c.addVersions({ draft: draft.result });
+          c.deleteAllRegions({ deleteReadOnly: true });
+          applyDraft(c, draft);
+        } else {
+          // that shouldn't happen
+          console.error(`No annotation found for pk=${draftAnnotationPk}`);
+          continue;
+        }
+      }
+      for (const draft of separatedDrafts) {
+        // Annotation not found - create new annotation from draft
+        const c = cs.addAnnotation({
+          draft: draft.result,
+          userGenerate: true,
+          createdBy: draft.created_username,
+          createdAgo: draft.created_ago,
+        });
+
+        applyDraft(c, draft);
+      }
+
     }
 
     const first = this.annotations[0];
