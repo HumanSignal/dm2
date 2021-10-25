@@ -13,3 +13,5 @@ export const DateTimeCell = (column) => {
     ""
   );
 };
+
+DateTimeCell.displayType = false;
