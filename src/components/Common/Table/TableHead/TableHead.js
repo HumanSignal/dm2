@@ -24,10 +24,12 @@ const DropdownWrapper = observer(
     const types = ViewColumnType._types
       .map((t) => t.value)
       .filter((t) => {
-        const selectable = cellViews[t].userSelectable !== false;
-        const displayType = cellViews[t].displayType !== false;
+        const cellView = cellViews[t];
 
-        return t in cellViews && (selectable && displayType);
+        const selectable = cellView?.userSelectable !== false;
+        const displayType = cellView?.displayType !== false;
+
+        return cellView && (selectable && displayType);
       });
 
     return (
