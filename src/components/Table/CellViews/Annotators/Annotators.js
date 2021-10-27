@@ -73,12 +73,12 @@ const UsersInjector = inject(({ store }) => {
 Annotators.FilterItem = UsersInjector(({ users, item }) => {
   const user = users.find(u => u.id === item);
 
-  return (
+  return user ? (
     <Space size="small">
       <Userpic user={user} size={16} key={`user-${item}`}/>
       {user.displayName}
     </Space>
-  );
+  ) : null;
 });
 
 Annotators.filterable = true;
