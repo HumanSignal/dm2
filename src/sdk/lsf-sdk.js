@@ -80,6 +80,7 @@ export class LSFWrapper {
 
     if (this.labelStream) {
       interfaces.push("infobar");
+      interfaces.push("topbar:prevnext");
       if (this.project.show_skip_button) {
         interfaces.push("skip");
       }
