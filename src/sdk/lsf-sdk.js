@@ -159,7 +159,7 @@ export class LSFWrapper {
   }
 
   /** @private */
-  async loadTask(taskID, annotationID) {
+  async loadTask(taskID, annotationID, fromHistory = false) {
     if (!this.lsf) {
       return console.error("Make sure that LSF was properly initialized");
     }
@@ -184,10 +184,10 @@ export class LSFWrapper {
     }
 
     // Add new data from received task
-    if (newTask) this.selectTask(newTask, annotationID);
+    if (newTask) this.selectTask(newTask, annotationID, fromHistory);
   }
 
-  selectTask(task, annotationID) {
+  selectTask(task, annotationID, fromHistory = false) {
     const needsAnnotationsMerge = task && this.task?.id === task.id;
     const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
 
@@ -204,11 +204,11 @@ export class LSFWrapper {
     this.lsf.resetState();
     this.lsf.assignTask(task);
     this.lsf.initializeStore(lsfTask);
-    this.setAnnotation(annotationID);
+    this.setAnnotation(annotationID, fromHistory);
   }
 
   /** @private */
-  setAnnotation(annotationID) {
+  setAnnotation(annotationID, fromHistory = false) {
     const id = annotationID ? annotationID.toString() : null;
     let { annotationStore: cs } = this.lsf;
     let annotation;
@@ -258,6 +258,8 @@ export class LSFWrapper {
       if (first?.draftId) {
         // not submitted draft, most likely from previous labeling session
         annotation = first;
+      } else if (isDefined(annotationID) && fromHistory) {
+        annotation = this.annotations.find(({ pk }) => pk === annotationID);
       } else if (showPredictions && this.predictions.length > 0) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else {
@@ -427,12 +429,12 @@ export class LSFWrapper {
   onNextTask = (nextTaskId, nextAnnotationId) => {
     console.log(nextTaskId, nextAnnotationId);
 
-    this.loadTask(nextTaskId, nextAnnotationId);
+    this.loadTask(nextTaskId, nextAnnotationId, true);
   }
   onPrevTask = (prevTaskId, prevAnnotationId) => {
     console.log(prevTaskId, prevAnnotationId);
 
-    this.loadTask(prevTaskId, prevAnnotationId);
+    this.loadTask(prevTaskId, prevAnnotationId, true);
   }
   async submitCurrentAnnotation(eventName, submit, includeID = false) {
     const { taskID, currentAnnotation } = this;
@@ -446,7 +448,9 @@ export class LSFWrapper {
     });
 
     if (result && result.id !== undefined) {
-      currentAnnotation.updatePersonalKey(result.id.toString());
+      const annotationId = result.id.toString();
+
+      currentAnnotation.updatePersonalKey(annotationId);
 
       const eventData = annotationToServer(currentAnnotation);
 
