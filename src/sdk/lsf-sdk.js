@@ -20,10 +20,12 @@ const DEFAULT_INTERFACES = [
   "submit",
   "update",
   "predictions",
+  "topbar",
   "predictions:menu", // right menu with prediction items
   "annotations:menu", // right menu with annotation items
   "annotations:current",
   "side-column", // entity
+  "edit-history", // undo/redo
 ];
 
 let LabelStudioDM;
