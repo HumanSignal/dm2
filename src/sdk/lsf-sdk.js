@@ -11,7 +11,7 @@
  * }} LSFOptions */
 
 import { isDefined } from "../utils/utils";
-import { LSFHistory } from "./lsf-history";
+// import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
 const DEFAULT_INTERFACES = [
@@ -53,7 +53,7 @@ export class LSFWrapper {
   lsf = null;
 
   /** @type {LSFHistory} */
-  history = null;
+  // history = null;
 
   /** @type {boolean} */
   labelStream = false;
@@ -70,7 +70,7 @@ export class LSFWrapper {
     this.task = options.task;
     this.labelStream = options.isLabelStream ?? false;
     this.initialAnnotation = options.annotation;
-    this.history = this.labelStream ? new LSFHistory(this) : null;
+    // this.history = this.labelStream ? new LSFHistory(this) : null;
 
     const interfaces = [...DEFAULT_INTERFACES];
 
@@ -80,6 +80,7 @@ export class LSFWrapper {
 
     if (this.labelStream) {
       interfaces.push("infobar");
+      interfaces.push("topbar:prevnext");
       if (this.project.show_skip_button) {
         interfaces.push("skip");
       }
@@ -127,6 +128,8 @@ export class LSFWrapper {
       onEntityCreate: this.onEntityCreate,
       onEntityDelete: this.onEntityDelete,
       onSelectAnnotation: this.onSelectAnnotation,
+      onNextTask: this.onNextTask,
+      onPrevTask: this.onPrevTask,
       panels: this.datamanager.panels,
     };
 
@@ -156,7 +159,7 @@ export class LSFWrapper {
   }
 
   /** @private */
-  async loadTask(taskID, annotationID) {
+  async loadTask(taskID, annotationID, fromHistory = false) {
     if (!this.lsf) {
       return console.error("Make sure that LSF was properly initialized");
     }
@@ -181,10 +184,10 @@ export class LSFWrapper {
     }
 
     // Add new data from received task
-    if (newTask) this.selectTask(newTask, annotationID);
+    if (newTask) this.selectTask(newTask, annotationID, fromHistory);
   }
 
-  selectTask(task, annotationID) {
+  selectTask(task, annotationID, fromHistory = false) {
     const needsAnnotationsMerge = task && this.task?.id === task.id;
     const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
 
@@ -201,11 +204,11 @@ export class LSFWrapper {
     this.lsf.resetState();
     this.lsf.assignTask(task);
     this.lsf.initializeStore(lsfTask);
-    this.setAnnotation(annotationID);
+    this.setAnnotation(annotationID, fromHistory);
   }
 
   /** @private */
-  setAnnotation(annotationID) {
+  setAnnotation(annotationID, fromHistory = false) {
     const id = annotationID ? annotationID.toString() : null;
     let { annotationStore: cs } = this.lsf;
     let annotation;
@@ -255,6 +258,8 @@ export class LSFWrapper {
       if (first?.draftId) {
         // not submitted draft, most likely from previous labeling session
         annotation = first;
+      } else if (isDefined(annotationID) && fromHistory) {
+        annotation = this.annotations.find(({ pk }) => pk === annotationID);
       } else if (showPredictions && this.predictions.length > 0) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else {
@@ -420,6 +425,17 @@ export class LSFWrapper {
   onSelectAnnotation = (...args) =>
     this.datamanager.invoke("onSelectAnnotation", ...args);
 
+
+  onNextTask = (nextTaskId, nextAnnotationId) => {
+    console.log(nextTaskId, nextAnnotationId);
+
+    this.loadTask(nextTaskId, nextAnnotationId, true);
+  }
+  onPrevTask = (prevTaskId, prevAnnotationId) => {
+    console.log(prevTaskId, prevAnnotationId);
+
+    this.loadTask(prevTaskId, prevAnnotationId, true);
+  }
   async submitCurrentAnnotation(eventName, submit, includeID = false) {
     const { taskID, currentAnnotation } = this;
     const serializedAnnotation = this.prepareData(currentAnnotation, { includeID });
@@ -432,13 +448,15 @@ export class LSFWrapper {
     });
 
     if (result && result.id !== undefined) {
-      currentAnnotation.updatePersonalKey(result.id.toString());
+      const annotationId = result.id.toString();
+
+      currentAnnotation.updatePersonalKey(annotationId);
 
       const eventData = annotationToServer(currentAnnotation);
 
       this.datamanager.invoke(eventName, this.lsf, eventData, result);
 
-      this.history?.add(taskID, currentAnnotation.pk);
+      // this.history?.add(taskID, currentAnnotation.pk);
     }
 
     this.setLoading(false);
@@ -494,6 +512,10 @@ export class LSFWrapper {
 
   get taskID() {
     return this.task.id;
+  }
+
+  get taskHistory() {
+    return this.lsf.annotationStore.taskHistory;
   }
 
   get currentAnnotation() {
