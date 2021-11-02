@@ -362,15 +362,12 @@ export const TabStore = types
       const createColumnPath = (columns, column) => {
         const result = [];
 
-        if (column.parent) {
-          result.push(
-            createColumnPath(
-              columns,
-              columns.find((c) => {
-                return !c.parent && c.id === column.parent && c.target === column.target;
-              }),
-            ).columnPath,
-          );
+        if (column && column.parent) {
+          const parentColums = columns.find((c) => {
+            return !c.parent && c.id === column.parent && c.target === column.target;
+          });
+
+          result.push(createColumnPath(columns, parentColums).columnPath);
         }
 
         const parentPath = result.join(".");
@@ -387,9 +384,10 @@ export const TabStore = types
       });
 
       columns.forEach((col) => {
-        const { target, visibility_defaults: visibility } = col;
-
+        if (!isDefined(col)) return;
         const { columnPath, parentPath } = createColumnPath(columns, col);
+
+        const { target, visibility_defaults: visibility } = col;
 
         const columnID = `${target}:${columnPath}`;
 
