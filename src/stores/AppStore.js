@@ -412,8 +412,9 @@ export const AppStore = types
       ]);
 
       if (projectFetched) {
+        self.viewsStore.fetchColumns();
+
         if (!isLabelStream) {
-          self.viewsStore.fetchColumns();
           yield self.fetchActions();
           yield self.viewsStore.fetchTabs(tab, task, labeling);
         } else if (isLabelStream && !!tab) {

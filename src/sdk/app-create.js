@@ -41,7 +41,7 @@ export const createApp = async (rootNode, datamanager) => {
 
   console.log({ isLabelStream, datamanager, mode: datamanager.mode });
 
-  const response = !isLabelStream ? await datamanager.api.columns() : [];
+  const response = await datamanager.api.columns();
 
   if ((!response || response.error)) {
     const message = `

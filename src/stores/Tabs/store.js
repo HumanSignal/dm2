@@ -81,7 +81,7 @@ export const TabStore = types
     sidebarEnabled: restoreValue("sidebarEnabled"),
   })
   .volatile(() => ({
-    defaultHidden: types.optional(TabHiddenColumns, {}),
+    defaultHidden: null,
   }))
   .views((self) => ({
     get all() {
@@ -187,12 +187,18 @@ export const TabStore = types
       const lastView = self.views[self.views.length - 1];
       const newTitle = snapshot.title ?? `New Tab ${self.views.length + 1}`;
       const newID = snapshot.id ?? (lastView?.id ? lastView.id + 1 : 0);
+
+      const defaultHiddenColumns = self.defaultHidden ? clone(self.defaultHidden) : {
+        explore: [],
+        labeling: [],
+      };
+
       const newSnapshot = {
         ...viewSnapshot,
         id: newID,
         title: newTitle,
         key: snapshot.key ?? guidGenerator(),
-        hiddenColumns: snapshot.hiddenColumns ?? clone(self.defaultHidden),
+        hiddenColumns: snapshot.hiddenColumns ?? defaultHiddenColumns,
       };
 
       self.views.push(newSnapshot);

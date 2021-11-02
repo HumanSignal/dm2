@@ -46,4 +46,10 @@ export const TabHiddenColumns = types
       set.delete(column);
       self.activeList = Array.from(set);
     },
-  }));
+  }))
+  .preProcessSnapshot((sn) => {
+    return {
+      explore: sn?.explore ?? [],
+      labeling: sn?.labeling ?? [],
+    };
+  });
