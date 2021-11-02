@@ -93,7 +93,9 @@ export const TabStore = types
     },
 
     get columns() {
-      return self.columnsTargetMap.get(self.selected?.target ?? "tasks");
+      const cols = self.columnsTargetMap ?? new Map();
+
+      return cols.get(self.selected?.target ?? "tasks") ?? [];
     },
 
     get dataStore() {
@@ -470,7 +472,7 @@ export const TabStore = types
 
       if (!Number.isNaN(tabId)) {
         const tabData = yield getRoot(self).apiCall("tab", { tabId });
-        const columnIds = self.columns.map(c => c.id);
+        const columnIds = (self.columns ?? []).map(c => c.id);
         const { data, ...tabClean } = dataCleanup(tabData, columnIds);
 
         self.views.push({

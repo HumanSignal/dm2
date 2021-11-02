@@ -39,7 +39,9 @@ const createDynamicModels = (columns) => {
 export const createApp = async (rootNode, datamanager) => {
   const isLabelStream = datamanager.mode === 'labelstream';
 
-  const response = await datamanager.api.columns();
+  console.log({ isLabelStream, datamanager, mode: datamanager.mode });
+
+  const response = !isLabelStream ? await datamanager.api.columns() : [];
 
   if ((!response || response.error)) {
     const message = `

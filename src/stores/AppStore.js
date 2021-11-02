@@ -141,6 +141,7 @@ export const AppStore = types
     },
 
     setMode(mode) {
+      console.trace('setting mode', { mode });
       self.mode = mode;
     },
 
@@ -411,10 +412,8 @@ export const AppStore = types
       ]);
 
       if (projectFetched) {
-
-        self.viewsStore.fetchColumns();
-
         if (!isLabelStream) {
+          self.viewsStore.fetchColumns();
           yield self.fetchActions();
           yield self.viewsStore.fetchTabs(tab, task, labeling);
         } else if (isLabelStream && !!tab) {
