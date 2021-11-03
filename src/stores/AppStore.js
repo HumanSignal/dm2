@@ -141,7 +141,6 @@ export const AppStore = types
     },
 
     setMode(mode) {
-      console.trace('setting mode', { mode });
       self.mode = mode;
     },
 
