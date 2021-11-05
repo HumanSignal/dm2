@@ -338,7 +338,7 @@ export class LSFWrapper {
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
 
-    await this.loadTask(this.task.id, annotation.pk);
+    await this.loadTask(this.task.id, annotation.pk, true);
   };
 
   deleteDraft = async (id) => {
