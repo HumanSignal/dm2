@@ -164,7 +164,7 @@ export const DataStore = (
           const currentView = getRoot(self).viewsStore.selected;
 
           currentViewId = currentView?.id;
-          currentViewQuery = currentView.virtual ? currentView?.query : null;
+          currentViewQuery = currentView?.virtual ? currentView?.query : null;
         }
 
         if (!isDefined(currentViewId)) return;
