@@ -1,5 +1,6 @@
 import { flow, getRoot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
+import { isDefined } from "../../utils/utils";
 
 const listIncludes = (list, id) => {
   const index =
@@ -166,7 +167,7 @@ export const DataStore = (
           currentViewQuery = currentView.virtual ? currentView?.query : null;
         }
 
-        if (!currentViewId) return;
+        if (!isDefined(currentViewId)) return;
 
         self.loading = true;
 
