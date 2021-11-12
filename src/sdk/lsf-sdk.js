@@ -241,6 +241,7 @@ export class LSFWrapper {
             userGenerate: true,
             createdBy: draft.created_username,
             createdAgo: draft.created_ago,
+            createdDate: draft.created_at,
           });
         }
         cs.selectAnnotation(c.id);
