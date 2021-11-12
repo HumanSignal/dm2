@@ -415,7 +415,7 @@ export const AppStore = types
 
         if (!isLabelStream) {
           yield self.fetchActions();
-          if (!self.SDK.settings.onlyVirtualTabs) {
+          if (!self.SDK.settings?.onlyVirtualTabs) {
             yield self.viewsStore.fetchTabs(tab, task, labeling);
           } else {
             yield self.viewsStore.addView({ virtual: true }, { autosave: false });
