@@ -8,6 +8,7 @@
  * interfaces: string[],
  * task: Task
  * labelStream: boolean,
+ * interfacesModifier: function,
  * }} LSFOptions */
 
 import { isDefined } from "../utils/utils";
@@ -60,6 +61,9 @@ export class LSFWrapper {
   /** @type {boolean} */
   labelStream = false;
 
+  /** @type {function} */
+  interfacesModifier = (interfaces) => interfaces;
+
   /**
    *
    * @param {DataManager} dm
@@ -72,9 +76,10 @@ export class LSFWrapper {
     this.task = options.task;
     this.labelStream = options.isLabelStream ?? false;
     this.initialAnnotation = options.annotation;
+    this.interfacesModifier = options.interfacesModifier;
     // this.history = this.labelStream ? new LSFHistory(this) : null;
 
-    const interfaces = [...DEFAULT_INTERFACES];
+    let interfaces = [...DEFAULT_INTERFACES];
 
     if (this.project.enable_empty_annotation === false) {
       interfaces.push("annotations:deny-empty");
@@ -107,6 +112,9 @@ export class LSFWrapper {
 
     if (this.datamanager.hasInterface("autoAnnotation")) {
       interfaces.push("auto-annotation");
+    }
+    if (this.interfacesModifier) {
+      interfaces = this.interfacesModifier(interfaces, this.labelStream);
     }
 
     const lsfProperties = {
