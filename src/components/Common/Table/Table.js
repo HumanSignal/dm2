@@ -1,9 +1,10 @@
 import { observer } from "mobx-react";
-import React, { createContext, forwardRef, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { createContext, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FaCode } from "react-icons/fa";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
+import { useSDK } from "../../../providers/SDKProvider";
 import { isDefined } from "../../../utils/utils";
 import { Button } from "../Button/Button";
 import { Icon } from "../Icon/Icon";
@@ -52,6 +53,7 @@ export const Table = observer(
     const listRef = useRef();
     const columns = prepareColumns(props.columns, props.hiddenColumns);
     const Decoration = useMemo(() => Decorator(decoration), [decoration]);
+    const { api } = useSDK();
 
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
@@ -107,6 +109,12 @@ export const Table = observer(
           predictions: out?.predictions,
         };
 
+        const onTaskLoad = async () => {
+          const response = await api.task({ taskID: out.id });
+
+          return response ?? {};
+        };
+
         return (
           <Tooltip title="Show task source">
             <Button
@@ -116,7 +124,7 @@ export const Table = observer(
                 modal({
                   title: "Source for task " + out?.id,
                   style: { width: 800 },
-                  body: <pre>{JSON.stringify(out, null, "  ")}</pre>,
+                  body: <TaskSourceView content={out} onTaskLoad={onTaskLoad} />,
                 });
               }}
               icon={<Icon icon={FaCode}/>}
@@ -382,3 +390,24 @@ const innerElementType = forwardRef(({ children, ...rest }, ref) => {
     </StickyListContext.Consumer>
   );
 });
+
+const TaskSourceView = ({ content, onTaskLoad }) => {
+  const [source, setSource] = useState(content);
+
+  useEffect(() => {
+    onTaskLoad().then((response) => {
+      const formatted = {
+        id: response.id,
+        data: response.data,
+        annotations: response.annotations ?? [],
+        predictions: response.predictions ?? [],
+      };
+
+      setSource(formatted);
+    });
+  }, []);
+
+  return (
+    <pre>{source ? JSON.stringify(source, null, "  ") : null}</pre>
+  );
+};
