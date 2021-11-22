@@ -165,6 +165,7 @@ export class APIProxy {
 
       try {
         const finalParams = {
+          ...(methodSettings.params ?? {}),
           ...(urlParams ?? {}),
           ...(this.sharedParams ?? {}),
         };

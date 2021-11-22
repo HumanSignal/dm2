@@ -88,3 +88,14 @@ export const objectClean = <T extends AnyObject>(source: T) => {
 export const clamp = (value: number, min: number, max: number) => {
   return Math.max(min, Math.min(value, max));
 };
+
+export const absoluteURL = (path = "") => {
+  if (path.match(/^https?/) || path.match(/^\/\//)) {
+    return path;
+  } else {
+    return [
+      APP_SETTINGS.hostname.replace(/([/]+)$/, ''),
+      path.replace(/^([/]+)/, ''),
+    ].join("/");
+  }
+};

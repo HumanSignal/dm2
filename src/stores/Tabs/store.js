@@ -81,7 +81,7 @@ export const TabStore = types
     sidebarEnabled: restoreValue("sidebarEnabled"),
   })
   .volatile(() => ({
-    defaultHidden: types.optional(TabHiddenColumns, {}),
+    defaultHidden: null,
   }))
   .views((self) => ({
     get all() {
@@ -93,7 +93,9 @@ export const TabStore = types
     },
 
     get columns() {
-      return self.columnsTargetMap.get(self.selected?.target ?? "tasks");
+      const cols = self.columnsTargetMap ?? new Map();
+
+      return cols.get(self.selected?.target ?? "tasks") ?? [];
     },
 
     get dataStore() {
@@ -185,12 +187,18 @@ export const TabStore = types
       const lastView = self.views[self.views.length - 1];
       const newTitle = snapshot.title ?? `New Tab ${self.views.length + 1}`;
       const newID = snapshot.id ?? (lastView?.id ? lastView.id + 1 : 0);
+
+      const defaultHiddenColumns = self.defaultHidden ? clone(self.defaultHidden) : {
+        explore: [],
+        labeling: [],
+      };
+
       const newSnapshot = {
         ...viewSnapshot,
         id: newID,
         title: newTitle,
         key: snapshot.key ?? guidGenerator(),
-        hiddenColumns: snapshot.hiddenColumns ?? clone(self.defaultHidden),
+        hiddenColumns: snapshot.hiddenColumns ?? defaultHiddenColumns,
       };
 
       self.views.push(newSnapshot);
@@ -354,15 +362,12 @@ export const TabStore = types
       const createColumnPath = (columns, column) => {
         const result = [];
 
-        if (column.parent) {
-          result.push(
-            createColumnPath(
-              columns,
-              columns.find((c) => {
-                return !c.parent && c.id === column.parent && c.target === column.target;
-              }),
-            ).columnPath,
-          );
+        if (column && column.parent) {
+          const parentColums = columns.find((c) => {
+            return !c.parent && c.id === column.parent && c.target === column.target;
+          });
+
+          result.push(createColumnPath(columns, parentColums).columnPath);
         }
 
         const parentPath = result.join(".");
@@ -379,9 +384,10 @@ export const TabStore = types
       });
 
       columns.forEach((col) => {
-        const { target, visibility_defaults: visibility } = col;
-
+        if (!isDefined(col)) return;
         const { columnPath, parentPath } = createColumnPath(columns, col);
+
+        const { target, visibility_defaults: visibility } = col;
 
         const columnID = `${target}:${columnPath}`;
 
@@ -470,7 +476,7 @@ export const TabStore = types
 
       if (!Number.isNaN(tabId)) {
         const tabData = yield getRoot(self).apiCall("tab", { tabId });
-        const columnIds = self.columns.map(c => c.id);
+        const columnIds = (self.columns ?? []).map(c => c.id);
         const { data, ...tabClean } = dataCleanup(tabData, columnIds);
 
         self.views.push({

@@ -23,7 +23,14 @@ const DropdownWrapper = observer(
   ({ column, cellViews, children, onChange }) => {
     const types = ViewColumnType._types
       .map((t) => t.value)
-      .filter((t) => t in cellViews && cellViews[t].userSelectable !== false);
+      .filter((t) => {
+        const cellView = cellViews[t];
+
+        const selectable = cellView?.userSelectable !== false;
+        const displayType = cellView?.displayType !== false;
+
+        return cellView && (selectable && displayType);
+      });
 
     return (
       <Dropdown.Trigger

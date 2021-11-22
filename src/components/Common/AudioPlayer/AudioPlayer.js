@@ -1,4 +1,4 @@
-import { createRef, useCallback, useMemo, useReducer, useRef } from "react";
+import { createRef, useCallback, useMemo, useReducer, useRef, useState } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { Block, Elem } from "../../../utils/bem";
 import { filename } from "../../../utils/helpers";
@@ -24,6 +24,7 @@ export const AudioPlayer = ({ src }) => {
   /** @type {import("react").RefObject<HTMLAudioElement>} */
   const audio = useRef();
   const wasPlaying = useRef(false);
+  const [enabled, setEnabled] = useState(false);
 
   const [state, dispatch] = useReducer((state, action) => {
     switch(action.type) {
@@ -57,7 +58,7 @@ export const AudioPlayer = ({ src }) => {
     globalAudioRef.current?.pause();
     state.playing ? pause() : play();
     globalAudioRef.current = audio.current;
-  }, [audio, state]);
+  }, [audio, state, play, pause]);
 
   const onSeekStart = useCallback(() => {
     wasPlaying.current = state.playing;
@@ -74,7 +75,17 @@ export const AudioPlayer = ({ src }) => {
     audio.current.currentTime = time;
   }, [audio]);
 
-  return (
+  const waitForPlayer = useCallback(() => {
+    if (state?.error) {
+      return;
+    } else if (state?.loaded) {
+      play();
+    } else {
+      setTimeout(() => waitForPlayer(), 10);
+    }
+  }, [state]);
+
+  return enabled ? (
     <Block name="player" onClick={e => e.stopPropagation()}>
       {state.error ? (
         <Elem name="loading">
@@ -127,6 +138,25 @@ export const AudioPlayer = ({ src }) => {
       >
         <source src={src} type="audio/wav"/>
       </audio>
+    </Block>
+  ) : (
+    <Block name="player" onClick={(e) => {
+      e.stopPropagation();
+      setEnabled(true);
+      waitForPlayer();
+    }}>
+      <Elem name="controls" tag={Space} spread>
+        <Space size="small">
+          <Elem name="play">
+            <FaPlay/>
+          </Elem>
+          <Elem name="track">
+            Click to load
+          </Elem>
+        </Space>
+        <Elem tag={Space} size="small" name="time">
+        </Elem>
+      </Elem>
     </Block>
   );
 

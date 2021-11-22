@@ -394,7 +394,7 @@ export const AppStore = types
       self.addActions(...(serverActions ?? []));
     }),
 
-    fetchUsers: flow(function * () {
+    fetchUsers: flow(function* () {
       const list = yield self.apiCall("users");
 
       self.users.push(...list);
@@ -411,12 +411,15 @@ export const AppStore = types
       ]);
 
       if (projectFetched) {
-
         self.viewsStore.fetchColumns();
 
         if (!isLabelStream) {
           yield self.fetchActions();
-          yield self.viewsStore.fetchTabs(tab, task, labeling);
+          if (!self.SDK.settings?.onlyVirtualTabs) {
+            yield self.viewsStore.fetchTabs(tab, task, labeling);
+          } else {
+            yield self.viewsStore.addView({ virtual: true }, { autosave: false });
+          }
         } else if (isLabelStream && !!tab) {
           const { selectedItems } = JSON.parse(decodeURIComponent(query ?? "{}"));
 
