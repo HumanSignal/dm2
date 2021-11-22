@@ -10,7 +10,7 @@ import { GridWidthButton } from "./GridWidthButton";
 import { LabelButton } from "./LabelButton";
 import { LoadingPossum } from "./LoadingPossum";
 import { OrderButton } from "./OrderButton";
-import { RefreshButton } from "./RefreshButton";
+// import { RefreshButton } from "./RefreshButton";
 import { ViewToggle } from "./ViewToggle";
 
 const style = { minWidth: '110px', justifyContent: 'space-between' };
@@ -39,9 +39,11 @@ export const instruments = {
   'grid-size': ({ size }) => {
     return <GridWidthButton size={size}/>;
   },
-  'refresh': ({ size }) => {
-    return <RefreshButton size={size}/>;
-  },
+  // 'refresh': ({ size }) => {
+  //   return <RefreshButton size={size}/>;
+  // },
+  // TODO: Show refresh button when sync is implemented.
+  // TODO: Maybe change icon to a pull arrow.
   'loading-possum': () => {
     return <LoadingPossum/>;
   },
