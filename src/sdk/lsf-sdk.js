@@ -235,6 +235,8 @@ export class LSFWrapper {
 
           c = cs.annotations.find(c => c.pk === draftAnnotationPk);
           if (c) {
+            c.history.freeze();
+            console.log("Applying draft");
             c.addVersions({ draft: draft.result });
             c.deleteAllRegions({ deleteReadOnly: true });
           } else {
@@ -254,6 +256,7 @@ export class LSFWrapper {
         cs.selectAnnotation(c.id);
         c.deserializeResults(draft.result);
         c.setDraftId(draft.id);
+        c.history.safeUnfreeze();
       }
     }
 
