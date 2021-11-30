@@ -125,6 +125,8 @@ export class LSFWrapper {
       interfaces,
       users: dm.store.users.map(u => u.toJSON()),
       keymap: options.keymap,
+      forceAutoAnnotation: options.forceAutoAnnotation ?? false,
+      forceAutoAcceptSuggestions: options.forceAutoAcceptSuggestions ?? false,
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
