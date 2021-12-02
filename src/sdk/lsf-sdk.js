@@ -61,6 +61,9 @@ export class LSFWrapper {
   /** @type {boolean} */
   labelStream = false;
 
+  /** @type {boolean} */
+  isInteractivePreannotations = false;
+
   /** @type {function} */
   interfacesModifier = (interfaces) => interfaces;
 
@@ -77,6 +80,7 @@ export class LSFWrapper {
     this.labelStream = options.isLabelStream ?? false;
     this.initialAnnotation = options.annotation;
     this.interfacesModifier = options.interfacesModifier;
+    this.isInteractivePreannotations = options.isInteractivePreannotations ?? false;
     // this.history = this.labelStream ? new LSFHistory(this) : null;
 
     let interfaces = [...DEFAULT_INTERFACES];
@@ -125,6 +129,8 @@ export class LSFWrapper {
       interfaces,
       users: dm.store.users.map(u => u.toJSON()),
       keymap: options.keymap,
+      forceAutoAnnotation: this.isInteractivePreannotations,
+      forceAutoAcceptSuggestions: this.isInteractivePreannotations,
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
@@ -273,13 +279,13 @@ export class LSFWrapper {
         annotation = first;
       } else if (isDefined(annotationID) && fromHistory) {
         annotation = this.annotations.find(({ pk }) => pk === annotationID);
-      } else if (showPredictions && this.predictions.length > 0) {
+      } else if (showPredictions && this.predictions.length > 0 && !this.isInteractivePreannotations) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else {
         annotation = cs.addAnnotation({ userGenerate: true });
       }
     } else {
-      if (this.annotations.length === 0 && this.predictions.length > 0) {
+      if (this.annotations.length === 0 && this.predictions.length > 0 && !this.isInteractivePreannotations) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else if (this.annotations.length > 0 && id && id !== "auto") {
         annotation = this.annotations.find((c) => c.pk === id || c.id === id);
