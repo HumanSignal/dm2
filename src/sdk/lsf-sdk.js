@@ -457,7 +457,7 @@ export class LSFWrapper {
         await this.datamanager.apiCall("updateDraft", {
           draftID: currentAnnotation.draftId,
         }, {
-          annotation_id: null,
+          body: { annotation: null },
         });
       } else {
         const annotationData = { body: this.prepareData(currentAnnotation) };
