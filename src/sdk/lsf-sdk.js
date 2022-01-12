@@ -453,6 +453,7 @@ export class LSFWrapper {
     }
 
     await this.withinLoadingState(async () => {
+      currentAnnotation.pauseAutosave();
       if (currentAnnotation.draftId > 0) {
         await this.datamanager.apiCall("updateDraft", {
           draftID: currentAnnotation.draftId,
