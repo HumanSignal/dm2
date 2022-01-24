@@ -140,6 +140,7 @@ export class LSFWrapper {
       onUpdateAnnotation: this.onUpdateAnnotation,
       onDeleteAnnotation: this.onDeleteAnnotation,
       onSkipTask: this.onSkipTask,
+      onCancelSkippingTask: this.onCancelSkippingTask,
       onGroundTruth: this.onGroundTruth,
       onEntityCreate: this.onEntityCreate,
       onEntityDelete: this.onEntityDelete,
@@ -392,8 +393,7 @@ export class LSFWrapper {
     }
 
     if (response.ok) {
-      const lastAnnotation =
-        this.annotations[this.annotations.length - 1] ?? {};
+      const lastAnnotation = this.annotations[this.annotations.length - 1] ?? {};
       const annotationID = lastAnnotation.pk ?? undefined;
 
       this.setAnnotation(annotationID);
@@ -428,15 +428,53 @@ export class LSFWrapper {
       "skipTask",
       (taskID, body) => {
         const { id, ...annotation } = body;
-        const params = { taskID, was_cancelled: 1 };
+        const params = { taskID, annotationID: id };
         const options = { body: annotation };
 
-        if (id !== undefined) params.annotationID = id;
+        options.body.was_cancelled = true;
 
-        return this.datamanager.apiCall("skipTask", params, options);
+        if (id === undefined) {
+          return this.datamanager.apiCall("submitAnnotation", params, options);
+        } else {
+          params.annotationID = id;
+          return this.datamanager.apiCall("updateAnnotation", params, options);
+        }
       },
       true,
     );
+  };
+
+  onCancelSkippingTask = async () => {
+    const { task, currentAnnotation } = this;
+
+    if (!isDefined(currentAnnotation) && !isDefined(currentAnnotation.pk)) {
+      console.error('Annotation must be on unskip');
+      return;
+    }
+
+    await this.withinLoadingState(async () => {
+      currentAnnotation.pauseAutosave();
+      if (currentAnnotation.draftId > 0) {
+        await this.datamanager.apiCall("updateDraft", {
+          draftID: currentAnnotation.draftId,
+        }, {
+          body: { annotation: null },
+        });
+      } else {
+        const annotationData = { body: this.prepareData(currentAnnotation) };
+
+        await this.datamanager.apiCall("createDraftForTask", {
+          taskID: this.task.id,
+        }, annotationData);
+      }
+      await this.datamanager.apiCall("deleteAnnotation", {
+        taskID: task.id,
+        annotationID: currentAnnotation.pk,
+      });
+    });
+    await this.loadTask(task.id);
+    this.datamanager.invoke("cancelSkippingTask");
+
   };
 
   // Proxy events that are unused by DM integration
@@ -456,9 +494,9 @@ export class LSFWrapper {
 
     this.loadTask(prevTaskId, prevAnnotationId, true);
   }
-  async submitCurrentAnnotation(eventName, submit, includeID = false) {
+  async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
     const { taskID, currentAnnotation } = this;
-    const serializedAnnotation = this.prepareData(currentAnnotation, { includeID });
+    const serializedAnnotation = this.prepareData(currentAnnotation, { includeId });
 
     this.setLoading(true);
     const result = await this.withinLoadingState(async () => {
@@ -481,8 +519,8 @@ export class LSFWrapper {
 
     this.setLoading(false);
 
-    if (this.datamanager.isExplorer) {
-      await this.loadTask(taskID, currentAnnotation.pk);
+    if (!loadNext || this.datamanager.isExplorer) {
+      await this.loadTask(taskID, currentAnnotation.pk, true);
     } else {
       await this.loadTask();
     }
