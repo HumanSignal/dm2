@@ -516,6 +516,10 @@ export const AppStore = types
         requestParams.tabID = view.id;
       }
 
+      if (options.params) {
+        Object.assign(requestParams, options.params);
+      }
+
       if (options.body) {
         Object.assign(actionParams, options.body);
       }

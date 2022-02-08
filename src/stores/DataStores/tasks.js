@@ -59,6 +59,7 @@ export const create = (columns) => {
     was_cancelled: false,
     assigned_task: false,
     queue: types.optional(types.maybeNull(types.string), null),
+    default_selected_annotation: types.optional(types.maybeNull(types.integer), null),
   })
     .views((self) => ({
       get lastAnnotation() {
@@ -156,9 +157,19 @@ export const create = (columns) => {
       }),
 
       loadNextTask: flow(function* ({ select = true } = {}) {
-        const taskData = yield self.root.invokeAction("next_task", {
+        const options = {
           reload: false,
-        });
+        };
+
+        const queueType = self.root.SDK.settings?.queueType;
+
+        if (isDefined(queueType)) {
+          options.params = {
+            queue_type: queueType,
+          };
+        }
+
+        const taskData = yield self.root.invokeAction("next_task", options);
 
         if (taskData?.$meta?.status === 404) {
           getRoot(self).SDK.invoke("labelStreamFinished");
@@ -197,7 +208,7 @@ export const create = (columns) => {
         return task;
       },
 
-      mergeSnapshot(taskID, taskData){
+      mergeSnapshot(taskID, taskData) {
         const task = self.list.find(({ id }) => id === taskID);
         const snapshot = task ? { ...getSnapshot(task) } : {};
 

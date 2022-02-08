@@ -202,6 +202,10 @@ export class LSFWrapper {
     }
 
     // Add new data from received task
+    if (isDefined(newTask.default_selected_annotation)) {
+      annotationID = newTask.default_selected_annotation;
+      fromHistory = true;
+    }
     if (newTask) this.selectTask(newTask, annotationID, fromHistory);
   }
 
@@ -410,8 +414,12 @@ export class LSFWrapper {
     });
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
-
-    await this.loadTask(this.task.id, annotation.pk, true);
+    if (this.labelStream && this.datamanager.settings?.queueType === "rejected_tasks") {
+      console.log('LOLOL');
+      await this.loadTask();
+    } else {
+      await this.loadTask(this.task.id, annotation.pk, true);
+    }
   };
 
   deleteDraft = async (id) => {
