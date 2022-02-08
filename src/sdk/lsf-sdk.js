@@ -415,7 +415,6 @@ export class LSFWrapper {
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
     if (this.labelStream && this.datamanager.settings?.queueType === "rejected_tasks") {
-      console.log('LOLOL');
       await this.loadTask();
     } else {
       await this.loadTask(this.task.id, annotation.pk, true);
