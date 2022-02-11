@@ -169,10 +169,34 @@ export class LSFWrapper {
           this.lsfInstance.on(name.replace(/^lsf:/, ''), clb);
         });
       });
+
+      if (settings.task) {
+        this.loadUserLabels();
+      }
     } catch (err) {
       console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
     }
+  }
+
+  async loadUserLabels() {
+    const userLabels = await this.datamanager.apiCall(
+      "userLabelsForProject",
+      { project: this.project.id, expand: "label" },
+    );
+
+    if (!userLabels) return;
+
+    const controls = {};
+
+    for (const result of (userLabels.results ?? [])) {
+      const control = result.from_name;
+
+      if (!controls[control]) controls[control] = [];
+      controls[control].push(result.label.value);
+    }
+
+    this.lsf.userLabels.init(controls);
   }
 
   /** @private */
@@ -213,6 +237,8 @@ export class LSFWrapper {
     if (needsAnnotationsMerge) {
       this.task.mergeAnnotations(annotations);
     }
+
+    this.loadUserLabels();
 
     this.setLoading(false);
 
@@ -305,6 +331,26 @@ export class LSFWrapper {
     }
   }
 
+  saveUserLabels = async () => {
+    const body = [];
+    const userLabels = this.lsf.userLabels.controls;
+
+    for (const from_name in userLabels) {
+      for (const label of userLabels[from_name]) {
+        body.push({
+          value: label,
+          title: [from_name, JSON.stringify(label)].join(":"),
+          from_name,
+          project: this.project.id,
+        });
+      }
+    }
+
+    if (!body.length) return;
+
+    await this.datamanager.apiCall("saveUserLabels", {}, { body });
+  }
+
   onLabelStudioLoad = async (ls) => {
     this.datamanager.invoke("labelStudioLoad", ls);
     this.lsf = ls;
@@ -341,6 +387,8 @@ export class LSFWrapper {
   onUpdateAnnotation = async (ls, annotation) => {
     const { task } = this;
     const serializedAnnotation = this.prepareData(annotation);
+
+    await this.saveUserLabels();
 
     const result = await this.withinLoadingState(async () => {
       return this.datamanager.apiCall(
@@ -403,6 +451,8 @@ export class LSFWrapper {
   onSubmitDraft = async (studio, annotation) => {
     const annotationDoesntExist = !annotation.pk;
     const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
+
+    await this.saveUserLabels();
 
     if (annotation.draftId > 0) {
       // draft has been already created
@@ -499,6 +549,9 @@ export class LSFWrapper {
     const serializedAnnotation = this.prepareData(currentAnnotation, { includeId });
 
     this.setLoading(true);
+
+    await this.saveUserLabels();
+
     const result = await this.withinLoadingState(async () => {
       const result = await submit(taskID, serializedAnnotation);
 
