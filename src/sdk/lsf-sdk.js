@@ -180,6 +180,8 @@ export class LSFWrapper {
   }
 
   async loadUserLabels() {
+    if (!this.lsf?.userLabels) return;
+
     const userLabels = await this.datamanager.apiCall(
       "userLabelsForProject",
       { project: this.project.id, expand: "label" },
@@ -190,6 +192,9 @@ export class LSFWrapper {
     const controls = {};
 
     for (const result of (userLabels.results ?? [])) {
+      // don't trust server's response!
+      if (!result?.label?.value?.length) continue;
+
       const control = result.from_name;
 
       if (!controls[control]) controls[control] = [];
@@ -333,13 +338,15 @@ export class LSFWrapper {
 
   saveUserLabels = async () => {
     const body = [];
-    const userLabels = this.lsf.userLabels.controls;
+    const userLabels = this.lsf?.userLabels?.controls;
+
+    if (!userLabels) return;
 
     for (const from_name in userLabels) {
       for (const label of userLabels[from_name]) {
         body.push({
-          value: label,
-          title: [from_name, JSON.stringify(label)].join(":"),
+          value: label.path,
+          title: [from_name, JSON.stringify(label.path)].join(":"),
           from_name,
           project: this.project.id,
         });
