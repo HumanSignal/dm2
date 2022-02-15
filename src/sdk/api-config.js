@@ -35,6 +35,12 @@ export const APIConfig = {
       method: "delete",
     },
 
+    userLabelsForProject: "/../label_links",
+    saveUserLabels: {
+      path: "/../labels",
+      method: "post",
+    },
+
     /** List of tasks (samples) in the dataset */
     tasks: "/tasks",
 
