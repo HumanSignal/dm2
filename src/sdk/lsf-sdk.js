@@ -169,39 +169,10 @@ export class LSFWrapper {
           this.lsfInstance.on(name.replace(/^lsf:/, ''), clb);
         });
       });
-
-      if (settings.task) {
-        this.loadUserLabels();
-      }
     } catch (err) {
       console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
     }
-  }
-
-  async loadUserLabels() {
-    if (!this.lsf?.userLabels) return;
-
-    const userLabels = await this.datamanager.apiCall(
-      "userLabelsForProject",
-      { project: this.project.id, expand: "label" },
-    );
-
-    if (!userLabels) return;
-
-    const controls = {};
-
-    for (const result of (userLabels.results ?? [])) {
-      // don't trust server's response!
-      if (!result?.label?.value?.length) continue;
-
-      const control = result.from_name;
-
-      if (!controls[control]) controls[control] = [];
-      controls[control].push(result.label.value);
-    }
-
-    this.lsf.userLabels.init(controls);
   }
 
   /** @private */
@@ -358,9 +329,36 @@ export class LSFWrapper {
     await this.datamanager.apiCall("saveUserLabels", {}, { body });
   }
 
+  async loadUserLabels() {
+    if (!this.lsf?.userLabels) return;
+
+    const userLabels = await this.datamanager.apiCall(
+      "userLabelsForProject",
+      { project: this.project.id, expand: "label" },
+    );
+
+    if (!userLabels) return;
+
+    const controls = {};
+
+    for (const result of (userLabels.results ?? [])) {
+      // don't trust server's response!
+      if (!result?.label?.value?.length) continue;
+
+      const control = result.from_name;
+
+      if (!controls[control]) controls[control] = [];
+      controls[control].push(result.label.value);
+    }
+
+    this.lsf.userLabels.init(controls);
+  }
+
   onLabelStudioLoad = async (ls) => {
     this.datamanager.invoke("labelStudioLoad", ls);
     this.lsf = ls;
+
+    this.loadUserLabels();
 
     if (this.labelStream) {
       await this.loadTask();
