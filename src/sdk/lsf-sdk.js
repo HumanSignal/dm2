@@ -358,7 +358,7 @@ export class LSFWrapper {
     this.datamanager.invoke("labelStudioLoad", ls);
     this.lsf = ls;
 
-    this.loadUserLabels();
+    await this.loadUserLabels();
 
     if (this.labelStream) {
       await this.loadTask();
