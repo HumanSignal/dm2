@@ -1,4 +1,7 @@
 export const Duration = ({ value, format }) => {
+  if (value === Infinity) {
+    return 'Unknown';
+  }
   const formatted = new Date(value * 1000).toISOString().substr(11, 8);
 
   const parsed = formatted.split(':');

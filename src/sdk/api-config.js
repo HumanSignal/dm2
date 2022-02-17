@@ -1,5 +1,3 @@
-import { isDefined } from "../utils/utils";
-
 /** @type {import("../utils/api-proxy").APIProxyOptions} */
 export const APIConfig = {
   gateway: "/api/dm",
@@ -37,6 +35,12 @@ export const APIConfig = {
       method: "delete",
     },
 
+    userLabelsForProject: "/../label_links",
+    saveUserLabels: {
+      path: "/../labels",
+      method: "post",
+    },
+
     /** List of tasks (samples) in the dataset */
     tasks: "/tasks",
 
@@ -51,17 +55,6 @@ export const APIConfig = {
 
     /** Single annotation */
     annotation: "/tasks/:taskID/annotations/:id",
-
-    /** Mark sample as skipped */
-    skipTask: {
-      path: (params) => {
-        const pathBase = "/../annotations";
-        const isNewAnnotation = !isDefined(params.annotationID);
-
-        return isNewAnnotation ? pathBase : `${pathBase}/:annotationID`;
-      },
-      method: "post",
-    },
 
     /** Submit annotation */
     submitAnnotation: {

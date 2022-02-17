@@ -1,5 +1,6 @@
 import { flow, getRoot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
+import { isDefined } from "../../utils/utils";
 
 const listIncludes = (list, id) => {
   const index =
@@ -153,10 +154,20 @@ export const DataStore = (
       },
 
       fetch: flow(function* ({ id, query, reload = false, interaction } = {}) {
-        const currentViewId = id ?? getRoot(self).viewsStore.selected?.id;
+        let currentViewId, currentViewQuery;
         const requestId = self.requestId = guidGenerator();
 
-        if (!currentViewId) return;
+        if (id) {
+          currentViewId = id;
+          currentViewQuery = query;
+        } else {
+          const currentView = getRoot(self).viewsStore.selected;
+
+          currentViewId = currentView?.id;
+          currentViewQuery = currentView?.virtual ? currentView?.query : null;
+        }
+
+        if (!isDefined(currentViewId)) return;
 
         self.loading = true;
 
@@ -168,8 +179,8 @@ export const DataStore = (
           page_size: self.pageSize,
         };
 
-        if (query) {
-          params.query = query;
+        if (currentViewQuery) {
+          params.query = currentViewQuery;
         } else {
           params.view = currentViewId;
         }

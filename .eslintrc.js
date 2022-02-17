@@ -6,6 +6,7 @@ module.exports = {
   globals: {
     process: true,
     module: true,
+    APP_SETTINGS: true,
   },
   env: {
     es6: true,
