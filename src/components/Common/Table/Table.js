@@ -259,6 +259,7 @@ export const Table = observer(
         <TableContext.Provider value={contextValue}>
           <StickyList
             ref={listRef}
+            focusedIndex={data.indexOf(focusedItem)}
             overscanCount={10}
             itemHeight={props.rowHeight}
             totalCount={props.total}
@@ -304,6 +305,7 @@ const StickyList = observer(
       totalCount,
       isItemLoaded,
       loadMore,
+      focusedIndex,
       initialScrollOffset,
       ...rest
     } = props;
@@ -321,6 +323,14 @@ const StickyList = observer(
       }
       return rest.itemHeight;
     };
+
+    useEffect(() => {    
+      const listComponent = listRef.current?._listRef;
+
+      if (listComponent && focusedIndex !== -1) {
+        listComponent.scrollToItem(focusedIndex, "center");
+      }
+    }, [focusedIndex]);
 
     return (
       <StickyListContext.Provider value={itemData}>
@@ -342,7 +352,9 @@ const StickyList = observer(
                   height={height}
                   itemData={itemData}
                   itemSize={itemSize}
-                  onItemsRendered={onItemsRendered}
+                  onItemsRendered={()=>{
+                    onItemsRendered(ref);
+                  }}
                   initialScrollOffset={initialScrollOffset?.(height) ?? 0}
                 >
                   {ItemWrapper}
