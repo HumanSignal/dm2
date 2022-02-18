@@ -157,19 +157,9 @@ export const create = (columns) => {
       }),
 
       loadNextTask: flow(function* ({ select = true } = {}) {
-        const options = {
+        const taskData = yield self.root.invokeAction("next_task", {
           reload: false,
-        };
-
-        const queueType = self.root.SDK.settings?.queueType;
-
-        if (isDefined(queueType)) {
-          options.params = {
-            queue_type: queueType,
-          };
-        }
-
-        const taskData = yield self.root.invokeAction("next_task", options);
+        });
 
         if (taskData?.$meta?.status === 404) {
           getRoot(self).SDK.invoke("labelStreamFinished");

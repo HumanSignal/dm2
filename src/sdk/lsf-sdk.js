@@ -396,6 +396,9 @@ export class LSFWrapper {
   /** @private */
   onUpdateAnnotation = async (ls, annotation) => {
     const { task } = this;
+    const tasks = this.datamanager.store.taskStore;
+    const taskIsTheLast = tasks.list[tasks.length - 1].id === task.id;
+
     const serializedAnnotation = this.prepareData(annotation);
 
     await this.saveUserLabels();
@@ -414,7 +417,7 @@ export class LSFWrapper {
     });
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
-    if (this.labelStream && this.datamanager.settings?.queueType === "rejected_tasks") {
+    if (this.labelStream && taskIsTheLast) {
       await this.loadTask();
     } else {
       await this.loadTask(this.task.id, annotation.pk, true);
@@ -548,12 +551,10 @@ export class LSFWrapper {
 
 
   onNextTask = (nextTaskId, nextAnnotationId) => {
-    console.log(nextTaskId, nextAnnotationId);
 
     this.loadTask(nextTaskId, nextAnnotationId, true);
   }
   onPrevTask = (prevTaskId, prevAnnotationId) => {
-    console.log(prevTaskId, prevAnnotationId);
 
     this.loadTask(prevTaskId, prevAnnotationId, true);
   }
