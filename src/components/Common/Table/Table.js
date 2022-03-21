@@ -15,7 +15,10 @@ import { TableCheckboxCell } from "./TableCheckbox";
 import { TableBlock, TableContext, TableElem } from "./TableContext";
 import { TableHead } from "./TableHead/TableHead";
 import { TableRow } from "./TableRow/TableRow";
-import { prepareColumns } from "./utils";
+import { getScrollbarWidth, prepareColumns } from "./utils";
+import { Block } from "../../../utils/bem";
+import { FieldsButton } from "../FieldsButton";
+import { LsGear } from "../../../assets/icons";
 
 const Decorator = (decoration) => {
   return {
@@ -144,20 +147,22 @@ export const Table = observer(
 
     const renderTableHeader = useCallback(
       ({ style }) => (
-        <TableHead
-          ref={tableHead}
-          style={style}
-          order={props.order}
-          columnHeaderExtra={props.columnHeaderExtra}
-          sortingEnabled={props.sortingEnabled}
-          onSetOrder={props.onSetOrder}
-          stopInteractions={stopInteractions}
-          onTypeChange={props.onTypeChange}
-          decoration={Decoration}
-          onResize={onColumnResize}
-          onReset={onColumnReset}
-          extra={headerExtra}
-        />
+        <>
+          <TableHead
+            ref={tableHead}
+            style={style}
+            order={props.order}
+            columnHeaderExtra={props.columnHeaderExtra}
+            sortingEnabled={props.sortingEnabled}
+            onSetOrder={props.onSetOrder}
+            stopInteractions={stopInteractions}
+            onTypeChange={props.onTypeChange}
+            decoration={Decoration}
+            onResize={onColumnResize}
+            onReset={onColumnReset}
+            extra={headerExtra}
+          />
+        </>
       ),
       [
         props.order,
@@ -263,27 +268,43 @@ export const Table = observer(
     }, [data]);
 
     return (
-      <TableBlock name="table" mod={{ fit: props.fitToContent }}>
-        <TableContext.Provider value={contextValue}>
-          <StickyList
-            ref={listRef}
-            overscanCount={10}
-            itemHeight={props.rowHeight}
-            totalCount={props.total}
-            itemCount={data.length + 1}
-            itemKey={itemKey}
-            innerElementType={innerElementType}
-            stickyItems={[0]}
-            stickyItemsHeight={[headerHeight]}
-            stickyComponent={renderTableHeader}
-            initialScrollOffset={initialScrollOffset}
-            isItemLoaded={isItemLoaded}
-            loadMore={props.loadMore}
-          >
-            {renderRow}
-          </StickyList>
-        </TableContext.Provider>
-      </TableBlock>
+      <>
+        <Block name="columns__selector" style={{ right: getScrollbarWidth() }}>
+          <FieldsButton
+            wrapper={FieldsButton.Checkbox}
+            icon={<LsGear />}
+            style={{
+              padding: 0,
+              zIndex: 1000,
+              borderRadius: 0,
+              height: "45px",
+              width: "45px",
+              margin: "-1px",
+            }}
+          />
+        </Block>
+        <TableBlock name="table" mod={{ fit: props.fitToContent }}>
+          <TableContext.Provider value={contextValue}>
+            <StickyList
+              ref={listRef}
+              overscanCount={10}
+              itemHeight={props.rowHeight}
+              totalCount={props.total}
+              itemCount={data.length + 1}
+              itemKey={itemKey}
+              innerElementType={innerElementType}
+              stickyItems={[0]}
+              stickyItemsHeight={[headerHeight]}
+              stickyComponent={renderTableHeader}
+              initialScrollOffset={initialScrollOffset}
+              isItemLoaded={isItemLoaded}
+              loadMore={props.loadMore}
+            >
+              {renderRow}
+            </StickyList>
+          </TableContext.Provider>
+        </TableBlock>
+      </>
     );
   },
 );
