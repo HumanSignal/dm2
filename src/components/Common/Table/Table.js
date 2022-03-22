@@ -1,5 +1,13 @@
 import { observer } from "mobx-react";
-import React, { createContext, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  createContext,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { FaCode } from "react-icons/fa";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
@@ -15,7 +23,7 @@ import { TableCheckboxCell } from "./TableCheckbox";
 import { TableBlock, TableContext, TableElem } from "./TableContext";
 import { TableHead } from "./TableHead/TableHead";
 import { TableRow } from "./TableRow/TableRow";
-import { getScrollbarWidth, prepareColumns } from "./utils";
+import { prepareColumns } from "./utils";
 import { Block } from "../../../utils/bem";
 import { FieldsButton } from "../FieldsButton";
 import { LsGear } from "../../../assets/icons";
@@ -147,22 +155,20 @@ export const Table = observer(
 
     const renderTableHeader = useCallback(
       ({ style }) => (
-        <>
-          <TableHead
-            ref={tableHead}
-            style={style}
-            order={props.order}
-            columnHeaderExtra={props.columnHeaderExtra}
-            sortingEnabled={props.sortingEnabled}
-            onSetOrder={props.onSetOrder}
-            stopInteractions={stopInteractions}
-            onTypeChange={props.onTypeChange}
-            decoration={Decoration}
-            onResize={onColumnResize}
-            onReset={onColumnReset}
-            extra={headerExtra}
-          />
-        </>
+        <TableHead
+          ref={tableHead}
+          style={style}
+          order={props.order}
+          columnHeaderExtra={props.columnHeaderExtra}
+          sortingEnabled={props.sortingEnabled}
+          onSetOrder={props.onSetOrder}
+          stopInteractions={stopInteractions}
+          onTypeChange={props.onTypeChange}
+          decoration={Decoration}
+          onResize={onColumnResize}
+          onReset={onColumnReset}
+          extra={headerExtra}
+        />
       ),
       [
         props.order,
@@ -266,10 +272,19 @@ export const Table = observer(
         listComponent.scrollToItem(data.indexOf(focusedItem), "center");
       }
     }, [data]);
+    const tableWrapper = useRef();
+
+    const right = tableWrapper.current?.firstChild?.firstChild.offsetWidth -
+      tableWrapper.current?.firstChild?.firstChild?.firstChild.offsetWidth || 0;
 
     return (
       <>
-        <Block name="columns__selector" style={{ right: getScrollbarWidth() }}>
+        <Block
+          name="columns__selector"
+          style={{
+            right,
+          }}
+        >
           <FieldsButton
             wrapper={FieldsButton.Checkbox}
             icon={<LsGear />}
@@ -283,7 +298,11 @@ export const Table = observer(
             }}
           />
         </Block>
-        <TableBlock name="table" mod={{ fit: props.fitToContent }}>
+        <TableBlock
+          ref={tableWrapper}
+          name="table"
+          mod={{ fit: props.fitToContent }}
+        >
           <TableContext.Provider value={contextValue}>
             <StickyList
               ref={listRef}
