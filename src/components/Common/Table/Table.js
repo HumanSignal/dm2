@@ -276,28 +276,30 @@ export const Table = observer(
 
     const right = tableWrapper.current?.firstChild?.firstChild.offsetWidth -
       tableWrapper.current?.firstChild?.firstChild?.firstChild.offsetWidth || 0;
-
+    
     return (
       <>
-        <Block
-          name="columns__selector"
-          style={{
-            right,
-          }}
-        >
-          <FieldsButton
-            wrapper={FieldsButton.Checkbox}
-            icon={<LsGear />}
+        {view.root.isLabeling && (
+          <Block
+            name="columns__selector"
             style={{
-              padding: 0,
-              zIndex: 1000,
-              borderRadius: 0,
-              height: "45px",
-              width: "45px",
-              margin: "-1px",
+              right,
             }}
-          />
-        </Block>
+          >
+            <FieldsButton
+              wrapper={FieldsButton.Checkbox}
+              icon={<LsGear />}
+              style={{
+                padding: 0,
+                zIndex: 1000,
+                borderRadius: 0,
+                height: "45px",
+                width: "45px",
+                margin: "-1px",
+              }}
+            />
+          </Block>
+        )}
         <TableBlock
           ref={tableWrapper}
           name="table"
