@@ -378,7 +378,7 @@ export class DataManager {
       ...this.labelStudioOptions,
       task: this.store.taskStore.selected,
       // annotation: this.store.annotationStore.selected,
-      isLabelStream: this.mode === 'labelstream',
+      isLabelStream: this.isLabelStream,
     });
   }
 
@@ -396,7 +396,6 @@ export class DataManager {
       this.store.annotationStore.selected,
     ];
 
-    const isLabelStream = this.mode === 'labelstream';
     const taskExists = isDefined(this.lsf.task) && isDefined(task);
     const taskSelected = this.lsf.task?.id === task?.id;
 
@@ -405,7 +404,7 @@ export class DataManager {
       return;
     }
 
-    if (!isLabelStream && (!taskSelected || isDefined(annotation))) {
+    if (!this.isLabelStream && (!taskSelected || isDefined(annotation))) {
       const annotationID = annotation?.id ?? task.lastAnnotation?.id;
 
       // this.lsf.loadTask(task.id, annotationID);
