@@ -190,9 +190,13 @@ export const AppStore = types
           select: !!taskID && !!annotationID,
         });
       } else {
-        yield self.taskStore.loadTask(taskID, {
-          select: !!taskID && !!annotationID,
-        });
+        const task = self.taskStore.list.find(({ id }) => id === taskID);
+
+        if (!task?.full_data_loaded_at) {
+          yield self.taskStore.loadTask(taskID, {
+            select: !!taskID && !!annotationID,
+          });
+        }
       }
 
       if (annotationID !== undefined) {
@@ -201,6 +205,12 @@ export const AppStore = types
         self.taskStore.setSelected(taskID);
       }
     }),
+
+    prefetchTasks() {
+      const ids = self.taskStore.list.filter(t => !t.full_data_loaded_at).map(t => t.id);
+
+      ids.forEach(id => self.taskStore.loadTask(id, { select: false }));
+    },
 
     unsetTask(options) {
       try {
@@ -272,6 +282,8 @@ export const AppStore = types
         }
 
         self.setTask(labelingParams);
+
+        self.prefetchTasks();
       } else {
         self.closeLabeling();
       }

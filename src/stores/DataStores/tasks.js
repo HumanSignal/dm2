@@ -60,6 +60,7 @@ export const create = (columns) => {
     assigned_task: false,
     queue: types.optional(types.maybeNull(types.string), null),
     updated_by: types.optional(types.array(Assignee), []),
+    full_data_loaded_at: types.maybeNull(types.string),
   })
     .views((self) => ({
       get lastAnnotation() {
@@ -192,6 +193,7 @@ export const create = (columns) => {
           task = self.updateItem(taskID ?? taskData.id, {
             ...snapshot,
             source: JSON.stringify(taskData),
+            full_data_loaded_at: (new Date()).toISOString(),
           });
         }
 
