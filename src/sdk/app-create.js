@@ -60,6 +60,7 @@ export const createApp = async (rootNode, datamanager) => {
       views: [],
       columnsRaw: columns,
     },
+    project: datamanager.project ?? {},
     mode: datamanager.mode,
     showPreviews: datamanager.showPreviews,
     interfaces: Object.fromEntries(datamanager.interfaces),
