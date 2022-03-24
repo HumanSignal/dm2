@@ -205,7 +205,8 @@ export const TabStore = types
       let newView = self.views[self.views.length - 1];
 
       if (autosave) {
-        yield newView.save({ reload });
+        // with autosave it will be reloaded anyway
+        yield newView.save({ reload: !autosave && reload });
       }
 
       if (autoselect) {
@@ -213,7 +214,6 @@ export const TabStore = types
 
         console.log('selecting and reloading', selectedView.id);
         self.setSelected(selectedView);
-        selectedView.reload();
       }
 
       return newView;
