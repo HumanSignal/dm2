@@ -65,37 +65,24 @@ export const Labeling = injector(
     const initLabeling = useCallback(() => {
       if (!SDK.lsf) SDK.initLSF(lsfRef.current);
       SDK.startLabeling();
-    }, [lsfRef]);
+    }, []);
 
     useEffect(() => {
       if (!isLabelStream) SDK.on("taskSelected", initLabeling);
 
       return () => {
-        if (!isLabelStream) {
-          SDK.off("taskSelected", initLabeling);
-          SDK.destroyLSF();
-        }
+        if (!isLabelStream) SDK.off("taskSelected", initLabeling);
       };
     }, []);
 
     useEffect(() => {
-      if (isLabelStream) {
-        SDK.initLSF(lsfRef.current);
-        SDK.startLabeling();
+      if (!SDK.lsf && store.dataStore.selected || isLabelStream) {
+        initLabeling();
       }
-
-      return () => {
-        if (isLabelStream) {
-          SDK.destroyLSF();
-        }
-      };
     }, []);
 
     useEffect(() => {
-      if (!SDK.lsf && store.dataStore.selected) {
-        SDK.initLSF(lsfRef.current);
-        SDK.startLabeling();
-      }
+      return () => SDK.destroyLSF();
     }, []);
 
     const onResize = useCallback((width) => {
