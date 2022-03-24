@@ -189,16 +189,16 @@ export const AppStore = types
         yield self.taskStore.loadNextTask({
           select: !!taskID && !!annotationID,
         });
-      } else {
-        yield self.taskStore.loadTask(taskID, {
-          select: !!taskID && !!annotationID,
-        });
       }
 
       if (annotationID !== undefined) {
         self.annotationStore.setSelected(annotationID);
       } else {
         self.taskStore.setSelected(taskID);
+
+        yield self.taskStore.loadTask(taskID, {
+          select: !!taskID && !!annotationID,
+        });
       }
     }),
 
@@ -405,27 +405,30 @@ export const AppStore = types
 
       const { tab, task, labeling, query } = History.getParams();
 
-      const [projectFetched] = yield Promise.all([
-        yield self.fetchProject(),
-        yield self.fetchUsers(),
-      ]);
+      self.viewsStore.fetchColumns();
+
+      const requests = [
+        self.fetchProject(),
+        self.fetchUsers(),
+      ];
+
+      if (!isLabelStream) {
+        requests.push(self.fetchActions());
+
+        if (!self.SDK.settings?.onlyVirtualTabs) {
+          requests.push(self.viewsStore.fetchTabs(tab, task, labeling));
+        } else {
+          requests.push(self.viewsStore.addView({ virtual: true }, { autosave: false }));
+        }
+      } else if (isLabelStream && !!tab) {
+        const { selectedItems } = JSON.parse(decodeURIComponent(query ?? "{}"));
+
+        requests.push(self.viewsStore.fetchSingleTab(tab, selectedItems ?? {}));
+      }
+
+      const [projectFetched] = yield Promise.all(requests);
 
       if (projectFetched) {
-        self.viewsStore.fetchColumns();
-
-        if (!isLabelStream) {
-          yield self.fetchActions();
-          if (!self.SDK.settings?.onlyVirtualTabs) {
-            yield self.viewsStore.fetchTabs(tab, task, labeling);
-          } else {
-            yield self.viewsStore.addView({ virtual: true }, { autosave: false });
-          }
-        } else if (isLabelStream && !!tab) {
-          const { selectedItems } = JSON.parse(decodeURIComponent(query ?? "{}"));
-
-          yield self.viewsStore.fetchSingleTab(tab, selectedItems ?? {});
-        }
-
         self.resolveURLParams();
 
         self.setLoading(false);

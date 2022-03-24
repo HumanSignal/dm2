@@ -91,6 +91,13 @@ export const Labeling = injector(
       };
     }, []);
 
+    useEffect(() => {
+      if (!SDK.lsf && store.dataStore.selected) {
+        SDK.initLSF(lsfRef.current);
+        SDK.startLabeling();
+      }
+    }, []);
+
     const onResize = useCallback((width) => {
       view.setLabelingTableWidth(width);
       // trigger resize events inside LSF
