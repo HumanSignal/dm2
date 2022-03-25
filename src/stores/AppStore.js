@@ -202,6 +202,12 @@ export const AppStore = types
       }
     }),
 
+    prefetchTasks() {
+      const ids = self.taskStore.list.filter(t => !t.full_data_loaded_at).map(t => t.id);
+
+      ids.forEach(id => self.taskStore.loadTask(id, { select: false }));
+    },
+
     unsetTask(options) {
       try {
         self.annotationStore.unset();
@@ -272,6 +278,8 @@ export const AppStore = types
         }
 
         self.setTask(labelingParams);
+
+        self.prefetchTasks();
       } else {
         self.closeLabeling();
       }

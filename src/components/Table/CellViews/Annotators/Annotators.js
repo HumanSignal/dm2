@@ -19,7 +19,7 @@ export const Annotators = (cell) => {
 
   return (
     <Block name="annotators">
-      {renderable.map((item) => {
+      {renderable.map((item, i) => {
         const user = item.user ?? item;
         const { annotated, reviewed, review } = item;
 
@@ -27,7 +27,7 @@ export const Annotators = (cell) => {
 
         return (
           <Elem
-            key={`user-${user.id}`}
+            key={`user-${user.id}-${i}`}
             name="item"
             onClick={(e) => {
               e.preventDefault();
