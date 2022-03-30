@@ -56,11 +56,9 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
-    const [currentPage, setCurrentPage] = useState(1);
     const [currentPageSize, setPageSize] = useState(getStoredPageSize("tasks", 30));
 
     const setPage = useCallback((page, pageSize) => {
-      setCurrentPage(page);
       setPageSize(pageSize);
       setStoredPageSize("tasks", pageSize);
     }, []);
@@ -308,7 +306,7 @@ export const DataView = injector(
             alwaysVisible
             label="Tasks"
             urlParamName="page"
-            page={currentPage}
+            page={dataStore.page ?? 1}
             totalItems={total}
             size="small"
             waiting={dataStore.loading}
@@ -317,7 +315,9 @@ export const DataView = injector(
             onInit={setPage}
             onChange={setPage}
             onPageLoad={async (page) => {
-              await dataStore.fetch({ pageNumber: page });
+              if (page !== dataStore.page) {
+                await dataStore.fetch({ pageNumber: page });
+              }
             }}
           />
         </Elem>

@@ -11,7 +11,6 @@ import React, {
 import { FaCode } from "react-icons/fa";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
-import InfiniteLoader from "react-window-infinite-loader";
 import { useSDK } from "../../../providers/SDKProvider";
 import { isDefined } from "../../../utils/utils";
 import { Button } from "../Button/Button";
@@ -229,13 +228,6 @@ export const Table = observer(
       ],
     );
 
-    const isItemLoaded = useCallback(
-      (index) => {
-        return props.isItemLoaded(data, index);
-      },
-      [props, data],
-    );
-
     const cachedScrollOffset = useRef();
 
     const initialScrollOffset = useCallback((height) => {
@@ -272,13 +264,11 @@ export const Table = observer(
         listComponent.scrollToItem(data.indexOf(focusedItem), "center");
       }
     }, [data]);
-    const tableWrapper = useRef();
 
-    console.log(tableWrapper.current);
+    const tableWrapper = useRef();
 
     const right = tableWrapper.current?.firstChild?.firstChild?.offsetWidth -
       tableWrapper.current?.firstChild?.firstChild?.firstChild?.offsetWidth || 0;
-
 
     return (
       <>
@@ -313,7 +303,6 @@ export const Table = observer(
               ref={listRef}
               overscanCount={10}
               itemHeight={props.rowHeight}
-              totalCount={props.total}
               itemCount={data.length + 1}
               itemKey={itemKey}
               innerElementType={innerElementType}
@@ -321,8 +310,6 @@ export const Table = observer(
               stickyItemsHeight={[headerHeight]}
               stickyComponent={renderTableHeader}
               initialScrollOffset={initialScrollOffset}
-              isItemLoaded={isItemLoaded}
-              loadMore={props.loadMore}
             >
               {renderRow}
             </StickyList>
@@ -354,9 +341,6 @@ const StickyList = observer(
       stickyComponent,
       stickyItems,
       stickyItemsHeight,
-      totalCount,
-      isItemLoaded,
-      loadMore,
       initialScrollOffset,
       ...rest
     } = props;
@@ -379,29 +363,20 @@ const StickyList = observer(
       <StickyListContext.Provider value={itemData}>
         <TableElem tag={AutoSizer} name="auto-size">
           {({ width, height }) => (
-            <InfiniteLoader
+            <TableElem
+              name="virual"
+              tag={VariableSizeList}
+              {...rest}
               ref={listRef}
-              itemCount={totalCount}
-              loadMoreItems={loadMore}
-              isItemLoaded={isItemLoaded}
+              width={width}
+              height={height}
+              itemData={itemData}
+              itemSize={itemSize}
+              // onItemsRendered={onItemsRendered}
+              initialScrollOffset={initialScrollOffset?.(height) ?? 0}
             >
-              {({ onItemsRendered, ref }) => (
-                <TableElem
-                  name="virual"
-                  tag={VariableSizeList}
-                  {...rest}
-                  ref={ref}
-                  width={width}
-                  height={height}
-                  itemData={itemData}
-                  itemSize={itemSize}
-                  onItemsRendered={onItemsRendered}
-                  initialScrollOffset={initialScrollOffset?.(height) ?? 0}
-                >
-                  {ItemWrapper}
-                </TableElem>
-              )}
-            </InfiniteLoader>
+              {ItemWrapper}
+            </TableElem>
           )}
         </TableElem>
       </StickyListContext.Provider>
