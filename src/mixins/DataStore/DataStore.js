@@ -153,7 +153,7 @@ export const DataStore = (
         return item;
       },
 
-      fetch: flow(function* ({ id, query, reload = false, interaction } = {}) {
+      fetch: flow(function* ({ id, query, pageNumber = null, reload = false, interaction } = {}) {
         let currentViewId, currentViewQuery;
         const requestId = self.requestId = guidGenerator();
 
@@ -171,8 +171,8 @@ export const DataStore = (
 
         self.loading = true;
 
-        if (reload) self.page = 0;
-        self.page++;
+        if (reload || isDefined(pageNumber)) self.page = pageNumber ?? 1;
+        else self.page++;
 
         const params = {
           page: self.page,
@@ -204,7 +204,11 @@ export const DataStore = (
 
         const { total, [apiMethod]: list } = data;
 
-        if (list) self.setList({ total, list, reload });
+        if (list) self.setList({
+          total,
+          list,
+          reload: reload || isDefined(pageNumber),
+        });
 
         if (!listIncludes(self.list, selectedID)) {
           self.selected = null;

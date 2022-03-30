@@ -13,13 +13,14 @@ const Select = ({
   skip,
   labelProps,
   ghost,
+  size = 'medium',
   defaultValue,
   ...props
 }) => {
   const rootClass = cn('form-select');
   const [value, setValue] = useValueTracker(props.value, defaultValue);
 
-  const classList = rootClass.mod({ ghost }).mix(className);
+  const classList = rootClass.mod({ ghost, size }).mix(className);
 
   const selectWrapper = (
     <FormField
@@ -38,12 +39,12 @@ const Select = ({
           <div className={classList}>
             <select
               {...props}
+              ref={ref}
               value={value}
               onChange={(e) => {
                 setValue(e.target.value),
                 props.onChange?.(e);
               }}
-              ref={ref}
               className={rootClass.elem('list')}
             >
               {props.placeholder && (!props.defaulValue || !props.value) && (

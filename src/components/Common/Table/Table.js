@@ -274,9 +274,12 @@ export const Table = observer(
     }, [data]);
     const tableWrapper = useRef();
 
-    const right = tableWrapper.current?.firstChild?.firstChild.offsetWidth -
-      tableWrapper.current?.firstChild?.firstChild?.firstChild.offsetWidth || 0;
-    
+    console.log(tableWrapper.current);
+
+    const right = tableWrapper.current?.firstChild?.firstChild?.offsetWidth -
+      tableWrapper.current?.firstChild?.firstChild?.firstChild?.offsetWidth || 0;
+
+
     return (
       <>
         {view.root.isLabeling && (

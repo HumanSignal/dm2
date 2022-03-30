@@ -1,6 +1,6 @@
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { useShortcut } from "../../sdk/hotkeys";
 import { Block, Elem } from "../../utils/bem";
@@ -12,6 +12,7 @@ import { Tag } from "../Common/Tag/Tag";
 import { Tooltip } from "../Common/Tooltip/Tooltip";
 import * as CellViews from "./CellViews";
 import { GridView } from "./GridView/GridView";
+import { getStoredPageSize, Pagination, setStoredPageSize } from "../Common/Pagination/Pagination";
 import "./Table.styl";
 
 const injector = inject(({ store }) => {
@@ -55,14 +56,23 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const [currentPageSize, setPageSize] = useState(getStoredPageSize("tasks", 30));
+
+    const setPage = useCallback((page, pageSize) => {
+      setCurrentPage(page);
+      setPageSize(pageSize);
+      setStoredPageSize("tasks", pageSize);
+    }, []);
+
     const focusedItem = useMemo(() => {
       return props.focusedItem;
     }, [props.focusedItem]);
 
     const loadMore = useCallback(() => {
-      if (!dataStore.hasNextPage || dataStore.loading) return;
+      // if (!dataStore.hasNextPage || dataStore.loading) return;
 
-      dataStore.fetch({ interaction: "scroll" });
+      // dataStore.fetch({ interaction: "scroll" });
     }, [dataStore]);
 
     const isItemLoaded = useCallback(
@@ -284,14 +294,33 @@ export const DataView = injector(
       if (highlighted && !highlighted.isSelected) store.startLabeling(highlighted);
     });
 
-    // Render the UI for your table
+    // Render the UI for the table
     return (
       <Block
         name="data-view"
         className="dm-content"
-        style={{ pointerEvents: isLocked ? "none" : "auto" }}
+        mod={{ loading: dataStore.loading, locked: isLocked }}
       >
         {renderContent(content)}
+
+        <Elem name="footer">
+          <Pagination
+            alwaysVisible
+            label="Tasks"
+            urlParamName="page"
+            page={currentPage}
+            totalItems={total}
+            size="small"
+            waiting={dataStore.loading}
+            deafultPageSize={currentPageSize}
+            pageSizeOptions={[10, 30, 50, 100]}
+            onInit={setPage}
+            onChange={setPage}
+            onPageLoad={async (page) => {
+              await dataStore.fetch({ pageNumber: page });
+            }}
+          />
+        </Elem>
       </Block>
     );
   },

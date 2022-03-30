@@ -55,6 +55,8 @@ export const Tab = types
       localStorage.getItem("labelingTableWidth") ?? defaultWidth,
     );
 
+    console.log({ labelingTableWidth });
+
     return {
       labelingTableWidth,
     };
