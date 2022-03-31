@@ -301,26 +301,28 @@ export const DataView = injector(
       >
         {renderContent(content)}
 
-        <Elem name="footer">
-          <Pagination
-            alwaysVisible
-            label="Tasks"
-            urlParamName="page"
-            page={dataStore.page ?? 1}
-            totalItems={total}
-            size="small"
-            waiting={dataStore.loading}
-            deafultPageSize={currentPageSize}
-            pageSizeOptions={[10, 30, 50, 100]}
-            onInit={setPage}
-            onChange={setPage}
-            onPageLoad={async (page) => {
-              if (page !== dataStore.page) {
-                await dataStore.fetch({ pageNumber: page });
-              }
-            }}
-          />
-        </Elem>
+        {store.mode !== "labelstream" && (
+          <Elem name="footer">
+            <Pagination
+              alwaysVisible
+              label="Tasks"
+              urlParamName="page"
+              page={dataStore.page ?? 1}
+              totalItems={total}
+              size="small"
+              waiting={dataStore.loading}
+              deafultPageSize={currentPageSize}
+              pageSizeOptions={[10, 30, 50, 100]}
+              onInit={setPage}
+              onChange={setPage}
+              onPageLoad={async (page) => {
+                if (page !== dataStore.page) {
+                  await dataStore.fetch({ pageNumber: page });
+                }
+              }}
+            />
+          </Elem>
+        )}
       </Block>
     );
   },
