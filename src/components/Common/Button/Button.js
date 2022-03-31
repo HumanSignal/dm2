@@ -45,13 +45,15 @@ export const Button = forwardRef(
       }
     }, [icon, size]);
 
+    console.log({ className: className?.toString() });
+
     return (
       <Block
         ref={ref}
         name="button"
         tag={finalTag}
         mod={mods}
-        mix={className}
+        className={className?.toString()}
         type={type}
         {...rest}
       >

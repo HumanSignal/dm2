@@ -18,7 +18,7 @@ import { TableBlock, TableContext, TableElem } from "./TableContext";
 import { TableHead } from "./TableHead/TableHead";
 import { TableRow } from "./TableRow/TableRow";
 import { prepareColumns } from "./utils";
-import { Block } from "../../../utils/bem";
+import { Block, Elem } from "../../../utils/bem";
 import { FieldsButton } from "../FieldsButton";
 import { LsGear } from "../../../assets/icons";
 
@@ -155,29 +155,16 @@ export const Table = observer(
 
     const tableWrapper = useRef();
 
-    const right = tableWrapper.current?.firstChild?.firstChild?.offsetWidth -
-      tableWrapper.current?.firstChild?.firstChild?.firstChild?.offsetWidth || 0;
-
     return (
       <>
         {view.root.isLabeling && (
-          <Block
-            name="columns__selector"
-            style={{
-              right,
-            }}
-          >
-            <FieldsButton
-              wrapper={FieldsButton.Checkbox}
+          <Block name="column-selector">
+            <Elem
+              name="button"
+              tag={FieldsButton}
               icon={<LsGear />}
-              style={{
-                padding: 0,
-                zIndex: 1000,
-                borderRadius: 0,
-                height: "45px",
-                width: "45px",
-                margin: "-1px",
-              }}
+              wrapper={FieldsButton.Checkbox}
+              style={{ padding: 0 }}
             />
           </Block>
         )}
