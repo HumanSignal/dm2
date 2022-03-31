@@ -23,6 +23,8 @@ interface PaginationProps {
   size?: "small" | "medium" | "large"
   style?: CSSProperties,
   alwaysVisible?: boolean,
+  showTitle?: boolean,
+  showPageSize?: boolean,
   onInit?: (pageNumber: number, pageSize: number) => void
   onChange?: (pageNumber: number, pageSize: number) => void
   onPageLoad?: (pageNumber: number, pageSize: number) => Promise<void>
@@ -58,6 +60,8 @@ export const Pagination: FC<PaginationProps> = forwardRef<any, PaginationProps>(
   pageSizeOptions = [],
   alwaysVisible = false,
   deafultPageSize,
+  showTitle = true,
+  showPageSize = true,
   ...props
 }, ref) => {
   const [inputMode, setInputMode] = useState(false);
@@ -187,7 +191,7 @@ export const Pagination: FC<PaginationProps> = forwardRef<any, PaginationProps>(
 
   return ((totalPages > 1) || alwaysVisible) ? (
     <Block name="pagination" mod={{ disabled, size, waiting }} style={props.style}>
-      {(props.label && isDefined(pageSize)) && (
+      {(props.label && isDefined(pageSize) && showTitle) && (
         <Elem name="label">
           {props.label}: {visibleItems.start}-{visibleItems.end}
         </Elem>
@@ -258,7 +262,7 @@ export const Pagination: FC<PaginationProps> = forwardRef<any, PaginationProps>(
         )}
       </Elem>
 
-      {pageSizeOptions?.length > 0 && (
+      {pageSizeOptions?.length > 0 && showPageSize && (
         <Elem name="page-size">
           <Select
             size={size}
