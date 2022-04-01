@@ -1,5 +1,5 @@
 import React from "react";
-import { Tag } from "../../Common/Tag/Tag";
+import { Tag } from "../Common/Tag/Tag";
 
 const parseBoolean = (value) => {
   if ([true, 1, "true", "1", "yes"].includes(value) || !!value === true) {

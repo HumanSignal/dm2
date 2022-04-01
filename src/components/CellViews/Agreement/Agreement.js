@@ -1,5 +1,5 @@
-import { Block, Elem } from '../../../../utils/bem';
-import { isDefined } from "../../../../utils/utils";
+import { Block, Elem } from '../../../utils/bem';
+import { isDefined } from "../../../utils/utils";
 import "./Agreement.styl";
 
 const agreement = (p) => {

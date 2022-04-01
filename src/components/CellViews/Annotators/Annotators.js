@@ -1,13 +1,13 @@
 import { inject } from "mobx-react";
-import { LsCheckAlt, LsCrossAlt } from "../../../../assets/icons";
-import { useSDK } from "../../../../providers/SDKProvider";
-import { Block, Elem } from "../../../../utils/bem";
-import { isDefined } from "../../../../utils/utils";
-import { Space } from "../../../Common/Space/Space";
-import { Tooltip } from "../../../Common/Tooltip/Tooltip";
-import { Userpic } from "../../../Common/Userpic/Userpic";
-import { Common } from "../../../Filters/types";
-import { VariantSelect } from "../../../Filters/types/List";
+import { LsCheckAlt, LsCrossAlt } from "../../../assets/icons";
+import { useSDK } from "../../../providers/SDKProvider";
+import { Block, Elem } from "../../../utils/bem";
+import { isDefined } from "../../../utils/utils";
+import { Space } from "../../Common/Space/Space";
+import { Tooltip } from "../../Common/Tooltip/Tooltip";
+import { Userpic } from "../../Common/Userpic/Userpic";
+import { Common } from "../../Filters/types";
+import { VariantSelect } from "../../Filters/types/List";
 import "./Annotators.styl";
 
 export const Annotators = (cell) => {

@@ -1,5 +1,3 @@
-import React from "react";
-
 const valueToString = (value) => {
   if (typeof value === "string") return value;
 
@@ -10,17 +8,14 @@ const valueToString = (value) => {
   }
 };
 
-export const StringCell = ({ value }) => {
+export const TextDataGroup = ({ value }) => {
   return (
     <div
-      style={{
-        maxHeight: "100%",
-        overflow: "hidden",
-        fontSize: 12,
-        lineHeight: "16px",
-      }}
+      style={{ padding: 5, height: TextDataGroup.height, overflow: "hidden" }}
     >
       {value ? valueToString(value) : ""}
     </div>
   );
 };
+
+TextDataGroup.height = 77;

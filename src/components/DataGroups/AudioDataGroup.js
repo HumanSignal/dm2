@@ -1,5 +1,4 @@
-import React from "react";
-import { AudioPlayer } from "../../Common/AudioPlayer/AudioPlayer";
+import { AudioPlayer } from "../Common/AudioPlayer/AudioPlayer";
 
 export const AudioDataGroup = ({ value }) => {
   return (

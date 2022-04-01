@@ -6,7 +6,7 @@ import { Block, Elem } from "../../../utils/bem";
 import { Checkbox } from "../../Common/Checkbox/Checkbox";
 import { Space } from "../../Common/Space/Space";
 import { getProperty, prepareColumns } from "../../Common/Table/utils";
-import * as DataGroups from "../DataGroups";
+import * as DataGroups from "../../DataGroups";
 import "./GridView.styl";
 
 const GridHeader = observer(({ row, selected }) => {
