@@ -67,12 +67,6 @@ export const DataView = injector(
       return props.focusedItem;
     }, [props.focusedItem]);
 
-    const loadMore = useCallback(() => {
-      // if (!dataStore.hasNextPage || dataStore.loading) return;
-
-      // dataStore.fetch({ interaction: "scroll" });
-    }, [dataStore]);
-
     const isItemLoaded = useCallback(
       (data, index) => {
         const rowExists = !!data[index];
@@ -230,7 +224,6 @@ export const DataView = injector(
           data={data}
           rowHeight={70}
           total={total}
-          loadMore={loadMore}
           fitContent={isLabeling}
           columns={columns}
           hiddenColumns={hiddenColumns}
@@ -259,7 +252,6 @@ export const DataView = injector(
           view={view}
           data={data}
           fields={columns}
-          loadMore={loadMore}
           onChange={(id) => view.toggleSelected(id)}
           hiddenFields={hiddenColumns}
           stopInteractions={isLocked}
