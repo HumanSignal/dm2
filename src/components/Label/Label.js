@@ -7,7 +7,7 @@ import { FieldsButton } from "../Common/FieldsButton";
 import { Icon } from "../Common/Icon/Icon";
 import { Resizer } from "../Common/Resizer/Resizer";
 import { Space } from "../Common/Space/Space";
-import { DataView } from "../MainView/DataView/DataView";
+import { DataView } from "../MainView";
 import "./Label.styl";
 
 const LabelingHeader = ({ SDK, onClick, isExplorerMode }) => {
