@@ -1,5 +1,13 @@
 import { observer } from "mobx-react";
-import React, { createContext, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  createContext,
+  forwardRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { FaCode } from "react-icons/fa";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
@@ -16,6 +24,9 @@ import { TableBlock, TableContext, TableElem } from "./TableContext";
 import { TableHead } from "./TableHead/TableHead";
 import { TableRow } from "./TableRow/TableRow";
 import { prepareColumns } from "./utils";
+import { Block } from "../../../utils/bem";
+import { FieldsButton } from "../FieldsButton";
+import { LsGear } from "../../../assets/icons";
 
 const Decorator = (decoration) => {
   return {
@@ -261,29 +272,60 @@ export const Table = observer(
         listComponent.scrollToItem(data.indexOf(focusedItem), "center");
       }
     }, [data]);
+    const tableWrapper = useRef();
 
+    const right = tableWrapper.current?.firstChild?.firstChild.offsetWidth -
+      tableWrapper.current?.firstChild?.firstChild?.firstChild.offsetWidth || 0;
+    
     return (
-      <TableBlock name="table" mod={{ fit: props.fitToContent }}>
-        <TableContext.Provider value={contextValue}>
-          <StickyList
-            ref={listRef}
-            overscanCount={10}
-            itemHeight={props.rowHeight}
-            totalCount={props.total}
-            itemCount={data.length + 1}
-            itemKey={itemKey}
-            innerElementType={innerElementType}
-            stickyItems={[0]}
-            stickyItemsHeight={[headerHeight]}
-            stickyComponent={renderTableHeader}
-            initialScrollOffset={initialScrollOffset}
-            isItemLoaded={isItemLoaded}
-            loadMore={props.loadMore}
+      <>
+        {view.root.isLabeling && (
+          <Block
+            name="columns__selector"
+            style={{
+              right,
+            }}
           >
-            {renderRow}
-          </StickyList>
-        </TableContext.Provider>
-      </TableBlock>
+            <FieldsButton
+              wrapper={FieldsButton.Checkbox}
+              icon={<LsGear />}
+              style={{
+                padding: 0,
+                zIndex: 1000,
+                borderRadius: 0,
+                height: "45px",
+                width: "45px",
+                margin: "-1px",
+              }}
+            />
+          </Block>
+        )}
+        <TableBlock
+          ref={tableWrapper}
+          name="table"
+          mod={{ fit: props.fitToContent }}
+        >
+          <TableContext.Provider value={contextValue}>
+            <StickyList
+              ref={listRef}
+              overscanCount={10}
+              itemHeight={props.rowHeight}
+              totalCount={props.total}
+              itemCount={data.length + 1}
+              itemKey={itemKey}
+              innerElementType={innerElementType}
+              stickyItems={[0]}
+              stickyItemsHeight={[headerHeight]}
+              stickyComponent={renderTableHeader}
+              initialScrollOffset={initialScrollOffset}
+              isItemLoaded={isItemLoaded}
+              loadMore={props.loadMore}
+            >
+              {renderRow}
+            </StickyList>
+          </TableContext.Provider>
+        </TableBlock>
+      </>
     );
   },
 );
