@@ -138,13 +138,13 @@ export const create = (columns) => {
     },
   })
     .actions((self) => ({
-      loadTask: flow(function* (taskID, { select = true } = {}) {
+      loadTask: flow(function* (taskID, { select = true, lock = true } = {}) {
         if (!isDefined(taskID)) {
           console.warn("Task ID must be provided");
           return;
         }
 
-        self.setLoading(taskID);
+        if (lock) self.setLoading(taskID);
 
         const taskData = yield self.root.apiCall("task", { taskID });
 
@@ -152,7 +152,7 @@ export const create = (columns) => {
 
         if (select !== false) self.setSelected(task);
 
-        self.finishLoading(taskID);
+        if (lock) self.finishLoading(taskID);
 
         return task;
       }),

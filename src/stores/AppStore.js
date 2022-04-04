@@ -209,7 +209,7 @@ export const AppStore = types
     prefetchTasks() {
       const ids = self.taskStore.list.filter(t => !t.full_data_loaded_at).map(t => t.id);
 
-      ids.forEach(id => self.taskStore.loadTask(id, { select: false }));
+      ids.forEach(id => self.taskStore.loadTask(id, { select: false, lock: false }));
     },
 
     unsetTask(options) {
