@@ -154,6 +154,8 @@ export const DataStore = (
           self.list.push(item);
         }
 
+        console.log({ patch, item });
+
         return item;
       },
 
