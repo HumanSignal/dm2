@@ -385,6 +385,7 @@ export const AppStore = types
 
         self.needsDataFetch = (options.force !== true && projectLength > 0) ? (
           self.project.task_count !== newProject.task_count ||
+          self.project.task_number !== newProject.task_number ||
           self.project.annotation_count !== newProject.annotation_count ||
           self.project.num_tasks_with_annotations !== newProject.num_tasks_with_annotations
         ) : false;
