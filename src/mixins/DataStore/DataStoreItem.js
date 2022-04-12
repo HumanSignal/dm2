@@ -36,9 +36,6 @@ export const DataStoreItem = types
       } catch (err) {
         console.log(err);
       }
-
-      console.log({ self, patch });
-
       return self;
     },
 
