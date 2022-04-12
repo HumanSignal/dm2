@@ -24,6 +24,8 @@ export const AppStore = types
 
     loading: types.optional(types.boolean, false),
 
+    loadingData: false,
+
     users: types.optional(types.array(User), []),
 
     taskStore: types.optional(
@@ -51,14 +53,17 @@ export const AppStore = types
     toolbar: types.string,
   })
   .views((self) => ({
+    /** @returns {import("../sdk/dm-sdk").DataManager} */
     get SDK() {
       return self._sdk;
     },
 
+    /** @returns {import("../sdk/lsf-sdk").LSFWrapper} */
     get LSF() {
       return self.SDK.lsf;
     },
 
+    /** @returns {import("../utils/api-proxy").APIProxy} */
     get API() {
       return self.SDK.api;
     },
@@ -185,12 +190,10 @@ export const AppStore = types
 
       if (!isDefined(taskID)) return;
 
+      self.loadingData = true;
+
       if (self.mode === 'labelstream') {
         yield self.taskStore.loadNextTask({
-          select: !!taskID && !!annotationID,
-        });
-      } else {
-        yield self.taskStore.loadTask(taskID, {
           select: !!taskID && !!annotationID,
         });
       }
@@ -199,6 +202,17 @@ export const AppStore = types
         self.annotationStore.setSelected(annotationID);
       } else {
         self.taskStore.setSelected(taskID);
+
+        yield self.taskStore.loadTask(taskID, {
+          select: !!taskID && !!annotationID,
+        });
+
+        const annotation = self.LSF.currentAnnotation;
+        const id = annotation?.pk ?? annotation?.id;
+
+        self.LSF?.setLSFTask(self.taskStore.selected, id);
+
+        self.loadingData = false;
       }
     }),
 
@@ -242,8 +256,6 @@ export const AppStore = types
       if (options?.pushState !== false) {
         History.navigate({ labeling: 1 });
       }
-
-      // self.setTask(options);
 
       return;
     },
@@ -373,6 +385,7 @@ export const AppStore = types
 
         self.needsDataFetch = (options.force !== true && projectLength > 0) ? (
           self.project.task_count !== newProject.task_count ||
+          self.project.task_number !== newProject.task_number ||
           self.project.annotation_count !== newProject.annotation_count ||
           self.project.num_tasks_with_annotations !== newProject.num_tasks_with_annotations
         ) : false;
@@ -405,27 +418,30 @@ export const AppStore = types
 
       const { tab, task, labeling, query } = History.getParams();
 
-      const [projectFetched] = yield Promise.all([
-        yield self.fetchProject(),
-        yield self.fetchUsers(),
-      ]);
+      self.viewsStore.fetchColumns();
+
+      const requests = [
+        self.fetchProject(),
+        self.fetchUsers(),
+      ];
+
+      if (!isLabelStream) {
+        requests.push(self.fetchActions());
+
+        if (!self.SDK.settings?.onlyVirtualTabs) {
+          requests.push(self.viewsStore.fetchTabs(tab, task, labeling));
+        } else {
+          requests.push(self.viewsStore.addView({ virtual: true }, { autosave: false }));
+        }
+      } else if (isLabelStream && !!tab) {
+        const { selectedItems } = JSON.parse(decodeURIComponent(query ?? "{}"));
+
+        requests.push(self.viewsStore.fetchSingleTab(tab, selectedItems ?? {}));
+      }
+
+      const [projectFetched] = yield Promise.all(requests);
 
       if (projectFetched) {
-        self.viewsStore.fetchColumns();
-
-        if (!isLabelStream) {
-          yield self.fetchActions();
-          if (!self.SDK.settings?.onlyVirtualTabs) {
-            yield self.viewsStore.fetchTabs(tab, task, labeling);
-          } else {
-            yield self.viewsStore.addView({ virtual: true }, { autosave: false });
-          }
-        } else if (isLabelStream && !!tab) {
-          const { selectedItems } = JSON.parse(decodeURIComponent(query ?? "{}"));
-
-          yield self.viewsStore.fetchSingleTab(tab, selectedItems ?? {});
-        }
-
         self.resolveURLParams();
 
         self.setLoading(false);

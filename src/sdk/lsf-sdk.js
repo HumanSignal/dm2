@@ -217,14 +217,18 @@ export class LSFWrapper {
 
     this.loadUserLabels();
 
-    this.setLoading(false);
+    this.setLSFTask(task, annotationID, fromHistory);
+  }
 
+  setLSFTask(task, annotationID, fromHistory) {
+    this.setLoading(true);
     const lsfTask = taskToLSFormat(task);
 
     this.lsf.resetState();
     this.lsf.assignTask(task);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory);
+    this.setLoading(false);
   }
 
   /** @private */
@@ -530,7 +534,6 @@ export class LSFWrapper {
     });
     await this.loadTask(task.id);
     this.datamanager.invoke("cancelSkippingTask");
-
   };
 
   // Proxy events that are unused by DM integration

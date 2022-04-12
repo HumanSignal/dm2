@@ -189,7 +189,7 @@ export const create = (columns) => {
           const id = taskID ?? taskData.id;
           const snapshot = self.mergeSnapshot(id, taskData);
 
-          task = self.updateItem(taskID ?? taskData.id, {
+          task = self.updateItem(id, {
             ...snapshot,
             source: JSON.stringify(taskData),
           });

@@ -69,6 +69,10 @@ const MixinBase = types
       }
     },
 
+    hasRecord(id) {
+      return self.list.some((t) => t.id === Number(id));
+    },
+
     unset({ withHightlight = false } = {}) {
       self.selected = undefined;
       if (withHightlight) self.highlighted = undefined;

@@ -188,32 +188,21 @@ export const Table = observer(
       ({ style, index }) => {
         const row = data[index - 1];
         const isEven = index % 2 === 0;
-        const mods = {
-          even: isEven,
-          selected: row.isSelected,
-          highlighted: row.isHighlighted,
-          loading: row.isLoading,
-          disabled: stopInteractions,
-        };
 
         return (
-          <TableElem
-            name="row-wrapper"
-            mod={mods}
-            style={style}
-            onClick={(e) => props.onRowClick?.(row, e)}
-          >
-            <TableRow
-              key={row.id}
-              data={row}
-              even={index % 2 === 0}
-              style={{
-                height: props.rowHeight,
-                width: props.fitContent ? "fit-content" : "auto",
-              }}
-              decoration={Decoration}
-            />
-          </TableElem>
+          <TableRow
+            key={row.id}
+            data={row}
+            even={isEven}
+            onClick={(row, e) => props.onRowClick(row, e)}
+            stopInteractions={stopInteractions}
+            wrapperStyle={style}
+            style={{
+              height: props.rowHeight,
+              width: props.fitContent ? "fit-content" : "auto",
+            }}
+            decoration={Decoration}
+          />
         );
       },
       [
