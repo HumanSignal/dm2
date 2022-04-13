@@ -7,7 +7,7 @@ import { Space } from "../Common/Space/Space";
 import { Spinner } from "../Common/Spinner";
 import { Tabs, TabsItem } from "../Common/Tabs/Tabs";
 import { FiltersSidebar } from "../Filters/FiltersSidebar/FilterSidebar";
-import { DataView } from "../Table/Table";
+import { DataView } from "../MainView";
 import "./DataManager.styl";
 import { Toolbar } from "./Toolbar/Toolbar";
 

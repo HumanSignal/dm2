@@ -2,12 +2,11 @@ import { observer } from "mobx-react";
 import React from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeGrid } from "react-window";
-import InfiniteLoader from "react-window-infinite-loader";
 import { Block, Elem } from "../../../utils/bem";
 import { Checkbox } from "../../Common/Checkbox/Checkbox";
 import { Space } from "../../Common/Space/Space";
 import { getProperty, prepareColumns } from "../../Common/Table/utils";
-import * as DataGroups from "../DataGroups";
+import * as DataGroups from "../../DataGroups";
 import "./GridView.styl";
 
 const GridHeader = observer(({ row, selected }) => {
@@ -74,7 +73,7 @@ const GridCell = observer(
 );
 
 export const GridView = observer(
-  ({ data, view, loadMore, fields, onChange, hiddenFields }) => {
+  ({ data, view, fields, onChange, hiddenFields }) => {
     const columnCount = view.gridWidth ?? 4;
 
     const getCellIndex = (row, column) => columnCount * row + column;
@@ -128,32 +127,7 @@ export const GridView = observer(
       ],
     );
 
-    const onItemsRenderedWrap = (cb) => ({
-      visibleRowStartIndex,
-      visibleRowStopIndex,
-      overscanRowStopIndex,
-      overscanRowStartIndex,
-    }) => {
-      cb({
-        overscanStartIndex: overscanRowStartIndex,
-        overscanStopIndex: overscanRowStopIndex,
-        visibleStartIndex: visibleRowStartIndex,
-        visibleStopIndex: visibleRowStopIndex,
-      });
-    };
-
     const itemCount = Math.ceil(data.length / columnCount);
-
-    const isItemLoaded = React.useCallback(
-      (index) => {
-        const rowIndex = index * columnCount;
-        const rowFullfilled =
-          data.slice(rowIndex, columnCount).length === columnCount;
-
-        return !view.dataStore.hasNextPage || rowFullfilled;
-      },
-      [columnCount, data, view.dataStore.hasNextPage],
-    );
 
     return (
       <Block
@@ -162,30 +136,20 @@ export const GridView = observer(
       >
         <Elem tag={AutoSizer} name="resize">
           {({ width, height }) => (
-            <InfiniteLoader
-              itemCount={itemCount}
-              isItemLoaded={isItemLoaded}
-              loadMoreItems={loadMore}
+            <Elem
+              tag={FixedSizeGrid}
+              width={width}
+              height={height}
+              name="list"
+              rowHeight={rowHeight + 42}
+              overscanRowCount={30}
+              columnCount={columnCount}
+              columnWidth={width / columnCount - 9.5}
+              rowCount={itemCount}
+              style={{ overflowX: "hidden" }}
             >
-              {({ onItemsRendered, ref }) => (
-                <Elem
-                  tag={FixedSizeGrid}
-                  ref={ref}
-                  width={width}
-                  height={height}
-                  name="list"
-                  rowHeight={rowHeight + 42}
-                  overscanRowCount={30}
-                  columnCount={columnCount}
-                  columnWidth={width / columnCount - 9.5}
-                  rowCount={itemCount}
-                  onItemsRendered={onItemsRenderedWrap(onItemsRendered)}
-                  style={{ overflowX: "hidden" }}
-                >
-                  {renderItem}
-                </Elem>
-              )}
-            </InfiniteLoader>
+              {renderItem}
+            </Elem>
           )}
         </Elem>
       </Block>

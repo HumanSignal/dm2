@@ -1,5 +1,4 @@
 import { format, isValid } from "date-fns";
-import React from "react";
 
 export const DateTimeCell = (column) => {
   const date = new Date(column.value);

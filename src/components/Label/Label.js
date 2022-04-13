@@ -8,7 +8,7 @@ import { FieldsButton } from "../Common/FieldsButton";
 import { Icon } from "../Common/Icon/Icon";
 import { Resizer } from "../Common/Resizer/Resizer";
 import { Space } from "../Common/Space/Space";
-import { DataView } from "../Table/Table";
+import { DataView } from "../MainView";
 import "./Label.styl";
 
 const LabelingHeader = ({ SDK, onClick, isExplorerMode }) => {
@@ -115,9 +115,9 @@ export const Labeling = injector(observer(({
               minWidth={200}
               showResizerLine={false}
               maxWidth={window.innerWidth * 0.35}
-              initialWidth={240} // hardcoded as in main-menu-trigger
+              initialWidth={view.labelingTableWidth} // hardcoded as in main-menu-trigger
               onResizeFinished={onResize}
-              style={{ display: "flex", flex: 1 }}
+              style={{ display: "flex", flex: 1, width: '100%' }}
             >
               <DataView />
             </Elem>

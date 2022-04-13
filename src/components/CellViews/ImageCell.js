@@ -1,6 +1,5 @@
 import { getRoot } from "mobx-state-tree";
-import React from "react";
-import { AnnotationPreview } from "../../Common/AnnotationPreview/AnnotationPreview";
+import { AnnotationPreview } from "../Common/AnnotationPreview/AnnotationPreview";
 
 export const ImageCell = (column) => {
   const {

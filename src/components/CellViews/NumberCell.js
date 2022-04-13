@@ -1,4 +1,4 @@
-import { isDefined } from "../../../utils/utils";
+import { isDefined } from "../../utils/utils";
 
 const formatNumber = (num) => {
   const number = Number(num);
