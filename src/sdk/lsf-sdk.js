@@ -217,14 +217,18 @@ export class LSFWrapper {
 
     this.loadUserLabels();
 
-    this.setLoading(false);
+    this.setLSFTask(task, annotationID, fromHistory);
+  }
 
+  setLSFTask(task, annotationID, fromHistory) {
+    this.setLoading(true);
     const lsfTask = taskToLSFormat(task);
 
     this.lsf.resetState();
     this.lsf.assignTask(task);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory);
+    this.setLoading(false);
   }
 
   /** @private */
@@ -530,7 +534,6 @@ export class LSFWrapper {
     });
     await this.loadTask(task.id);
     this.datamanager.invoke("cancelSkippingTask");
-
   };
 
   // Proxy events that are unused by DM integration
@@ -591,7 +594,8 @@ export class LSFWrapper {
       !annotation.userGenerate || annotation.sentUserGenerate;
 
     const result = {
-      lead_time: (new Date() - annotation.loadedDate) / 1000, // task execution time
+      // task execution time, always summed up with previous values
+      lead_time: (new Date() - annotation.loadedDate) / 1000 + Number(annotation.leadTime ?? 0),
       // don't serialize annotations twice for drafts
       result: draft ? annotation.versions.draft : annotation.serializeAnnotation(),
       draft_id: annotation.draftId,
