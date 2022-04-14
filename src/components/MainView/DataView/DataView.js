@@ -1,4 +1,4 @@
-import { inject } from "mobx-react";
+import { inject, observer } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import { useCallback, useMemo, useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
@@ -40,7 +40,7 @@ const injector = inject(({ store }) => {
 });
 
 export const DataView = injector(
-  ({
+  observer(({
     store,
     data,
     columns,
@@ -106,11 +106,15 @@ export const DataView = injector(
       [],
     );
 
-    const onSelectAll = useCallback(() => view.selectAll(), [view]);
+    const onSelectAll = useCallback(() => {
+      console.log('selected all');
+      view.selectAll();
+    }, [view]);
 
-    const onRowSelect = useCallback((id) => view.toggleSelected(id), [
-      view,
-    ]);
+    const onRowSelect = useCallback((id) => {
+      console.log('selected row');
+      view.toggleSelected(id);
+    }, [view]);
 
     const onRowClick = useCallback(
       (item, e) => {
@@ -123,42 +127,39 @@ export const DataView = injector(
       [view],
     );
 
-    const renderContent = useCallback(
-      (content) => {
-        if (isLoading && total === 0 && !isLabeling) {
-          return (
-            <Block name="fill-container">
-              <Spinner size="large" />
-            </Block>
-          );
-        } else if (total === 0 || !hasData) {
-          return (
-            <Block name="no-results">
-              <Elem name="description">
-                {hasData ? (
-                  <>
-                    <h3>Nothing found</h3>
+    const renderContent = (content) => {
+      if (isLoading && total === 0 && !isLabeling) {
+        return (
+          <Block name="fill-container">
+            <Spinner size="large" />
+          </Block>
+        );
+      } else if (total === 0 || !hasData) {
+        return (
+          <Block name="no-results">
+            <Elem name="description">
+              {hasData ? (
+                <>
+                  <h3>Nothing found</h3>
                     Try adjusting the filter
-                  </>
-                ) : (
-                  "Looks like you have not imported any data yet"
-                )}
-              </Elem>
-              {!hasData && (
-                <Elem name="navigation">
-                  <ImportButton look="primary" href="./import">
-                    Go to import
-                  </ImportButton>
-                </Elem>
+                </>
+              ) : (
+                "Looks like you have not imported any data yet"
               )}
-            </Block>
-          );
-        }
+            </Elem>
+            {!hasData && (
+              <Elem name="navigation">
+                <ImportButton look="primary" href="./import">
+                    Go to import
+                </ImportButton>
+              </Elem>
+            )}
+          </Block>
+        );
+      }
 
-        return content;
-      },
-      [hasData, isLabeling, isLoading, total],
-    );
+      return content;
+    };
 
     const decorationContent = (col) => {
       const column = col.original;
@@ -309,9 +310,12 @@ export const DataView = injector(
               pageSizeOptions={[10, 30, 50, 100]}
               onInit={setPage}
               onChange={setPage}
-              onPageLoad={async (page) => {
-                if (page !== dataStore.page) {
-                  await dataStore.fetch({ pageNumber: page });
+              onPageLoad={async (page, pageSize) => {
+                if (page !== dataStore.page || pageSize !== dataStore.pageSize) {
+                  await dataStore.fetch({
+                    pageNumber: page,
+                    pageSize,
+                  });
                 }
               }}
             />
@@ -319,5 +323,5 @@ export const DataView = injector(
         )}
       </Block>
     );
-  },
+  }),
 );
