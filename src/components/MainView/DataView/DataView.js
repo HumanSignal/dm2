@@ -32,7 +32,7 @@ const injector = inject(({ store }) => {
     total: dataStore?.total ?? 0,
     isLoading: dataStore?.loading ?? true,
     isLocked: currentView?.locked ?? false,
-    hasData: (store.project?.task_count ?? 0) > 0,
+    hasData: (store.project?.task_count ?? store.project?.task_number ?? 0) > 0,
     focusedItem: dataStore?.selected ?? dataStore?.highlighted,
   };
 
