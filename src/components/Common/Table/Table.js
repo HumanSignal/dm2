@@ -246,6 +246,7 @@ export const Table = observer(
                   key={`${row.id}-${index}`}l
                   row={row}
                   index={index}
+                  onRowClick={props.onRowClick}
                   stopInteractions={stopInteractions}
                   rowHeight={props.rowHeight}
                   fitContent={props.fitToContent}
