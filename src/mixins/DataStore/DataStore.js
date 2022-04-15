@@ -187,10 +187,13 @@ export const DataStore = (
 
         self.loading = true;
 
-        if (reload || isDefined(pageNumber)) self.page = pageNumber ?? 1;
-        if (pageSize) self.pageSize = pageSize;
+        if (reload || isDefined(pageNumber)) {
+          self.page = pageNumber ?? 1;
+        } else {
+          self.page++;
+        }
 
-        else self.page++;
+        if (pageSize) self.pageSize = pageSize;
 
         const params = {
           page: self.page,
