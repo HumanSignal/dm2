@@ -223,16 +223,21 @@ export class LSFWrapper {
   setLSFTask(task, annotationID, fromHistory) {
     this.setLoading(true);
     const lsfTask = taskToLSFormat(task);
+    const isRejectedQueue = isDefined(task.default_selected_annotation);
+
+    if (isRejectedQueue && !annotationID) {
+      annotationID = task.default_selected_annotation;
+    }
 
     this.lsf.resetState();
     this.lsf.assignTask(task);
     this.lsf.initializeStore(lsfTask);
-    this.setAnnotation(annotationID, fromHistory);
+    this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
   }
 
   /** @private */
-  setAnnotation(annotationID, fromHistory = false) {
+  setAnnotation(annotationID, selectAnnotation = false) {
     const id = annotationID ? annotationID.toString() : null;
     let { annotationStore: cs } = this.lsf;
     let annotation;
@@ -286,7 +291,7 @@ export class LSFWrapper {
       if (first?.draftId) {
         // not submitted draft, most likely from previous labeling session
         annotation = first;
-      } else if (isDefined(annotationID) && fromHistory) {
+      } else if (isDefined(annotationID) && selectAnnotation) {
         annotation = this.annotations.find(({ pk }) => pk === annotationID);
       } else if (showPredictions && this.predictions.length > 0 && !this.isInteractivePreannotations) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
