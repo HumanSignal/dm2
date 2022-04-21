@@ -4,6 +4,9 @@ export const FF_DEV_1621 = "ff_front_dev_1621_interactive_mode_150222_short";
 // Switch to page navigation
 export const FF_DEV_1470 = "ff_front_dev_1470_dm_pagination_010422_short";
 
+// Ask for comment during update in label stream
+export const FF_DEV_2186 = "ff_front_dev_2186_comments_for_update";
+
 // Customize flags
 const flags = {
   ff_front_dev_1470_dm_pagination_010422_short: false,
