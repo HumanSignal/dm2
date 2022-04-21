@@ -420,7 +420,14 @@ export class LSFWrapper {
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
 
-    await this.loadTask(this.task.id, annotation.pk, true);
+    const isRejectedQueue = isDefined(task.default_selected_annotation);
+
+    if (isRejectedQueue) {
+      // load next task if that one was updated task from rejected queue
+      await this.loadTask();
+    } else {
+      await this.loadTask(this.task.id, annotation.pk, true);
+    }
   };
 
   deleteDraft = async (id) => {
