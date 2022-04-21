@@ -394,9 +394,11 @@ export class LSFWrapper {
   };
 
   /** @private */
-  onUpdateAnnotation = async (ls, annotation) => {
+  onUpdateAnnotation = async (ls, annotation, extraData) => {
     const { task } = this;
     const serializedAnnotation = this.prepareData(annotation);
+
+    Object.assign(serializedAnnotation, extraData);
 
     await this.saveUserLabels();
 
