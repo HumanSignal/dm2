@@ -539,8 +539,8 @@ export class LSFWrapper {
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
-  onSelectAnnotation = (...args) => {
-    this.datamanager.invoke("onSelectAnnotation", ...[...args, this]);
+  onSelectAnnotation = (prevAnnotation, nextAnnotation) => {
+    this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, this);
   }
 
 
