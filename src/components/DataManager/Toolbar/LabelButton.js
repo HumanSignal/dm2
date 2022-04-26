@@ -11,7 +11,7 @@ const Arrow = ({ rotate }) => (
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
-  const totalTasks = store.project?.task_count ?? 0;
+  const totalTasks = store.project?.task_count ?? store.project?.task_number ?? 0;
   const foundTasks = dataStore?.total ?? 0;
 
   return {

@@ -169,7 +169,7 @@ export const DataStore = (
         return item;
       },
 
-      fetch: flow(function* ({ id, query, pageNumber = null, reload = false, interaction } = {}) {
+      fetch: flow(function* ({ id, query, pageNumber = null, reload = false, interaction, pageSize } = {}) {
         let currentViewId, currentViewQuery;
         const requestId = self.requestId = guidGenerator();
 
@@ -187,8 +187,13 @@ export const DataStore = (
 
         self.loading = true;
 
-        if (reload || isDefined(pageNumber)) self.page = pageNumber ?? 1;
-        else self.page++;
+        if (reload || isDefined(pageNumber)) {
+          self.page = pageNumber ?? 1;
+        } else {
+          self.page++;
+        }
+
+        if (pageSize) self.pageSize = pageSize;
 
         const params = {
           page: self.page,
