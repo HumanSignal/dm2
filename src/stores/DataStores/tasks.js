@@ -17,6 +17,8 @@ export const create = (columns) => {
     was_cancelled: false,
     assigned_task: false,
     queue: types.optional(types.maybeNull(types.string), null),
+    // annotation to select on rejected queue
+    default_selected_annotation: types.maybeNull(types.number),
     updated_by: types.optional(types.array(Assignee), []),
   })
     .views((self) => ({
