@@ -425,7 +425,14 @@ export class LSFWrapper {
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
 
-    await this.loadTask(this.task.id, annotation.pk, true);
+    const isRejectedQueue = isDefined(task.default_selected_annotation);
+
+    if (isRejectedQueue) {
+      // load next task if that one was updated task from rejected queue
+      await this.loadTask();
+    } else {
+      await this.loadTask(this.task.id, annotation.pk, true);
+    }
   };
 
   deleteDraft = async (id) => {
@@ -549,8 +556,9 @@ export class LSFWrapper {
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
-  onSelectAnnotation = (...args) =>
-    this.datamanager.invoke("onSelectAnnotation", ...args);
+  onSelectAnnotation = (prevAnnotation, nextAnnotation) => {
+    this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, this);
+  }
 
 
   onNextTask = (nextTaskId, nextAnnotationId) => {
