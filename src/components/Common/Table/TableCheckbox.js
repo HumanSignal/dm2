@@ -1,7 +1,8 @@
+import { observer } from "mobx-react";
 import React from "react";
 import { Checkbox } from "../Checkbox/Checkbox";
 
-const IndeterminateCheckbox = ({ checked, indeterminate, ...props }) => {
+const IndeterminateCheckbox = observer(({ checked, indeterminate, ...props }) => {
   return (
     <Checkbox
       indeterminate={indeterminate && !checked}
@@ -9,9 +10,9 @@ const IndeterminateCheckbox = ({ checked, indeterminate, ...props }) => {
       {...props}
     />
   );
-};
+});
 
-export const TableCheckboxCell = ({ checked, indeterminate, onChange }) => {
+export const TableCheckboxCell = observer(({ checked, indeterminate, onChange }) => {
   return (
     <IndeterminateCheckbox
       type="checkbox"
@@ -20,4 +21,4 @@ export const TableCheckboxCell = ({ checked, indeterminate, onChange }) => {
       onChange={e => onChange(e.target.checked)}
     />
   );
-};
+});

@@ -40,6 +40,56 @@ const Decorator = (decoration) => {
   };
 };
 
+const RowRenderer = observer(({
+  row,
+  index,
+  stopInteractions,
+  rowHeight,
+  fitContent,
+  onRowClick,
+  decoration,
+}) => {
+  const isEven = index % 2 === 0;
+  const mods = {
+    even: isEven,
+    selected: row.isSelected,
+    highlighted: row.isHighlighted,
+    loading: row.isLoading,
+    disabled: stopInteractions,
+  };
+
+  return (
+    <TableElem
+      key={`${row.id}-${index}`}
+      name="row-wrapper"
+      mod={mods}
+      onClick={(e) => onRowClick?.(row, e)}
+    >
+      <TableRow
+        key={row.id}
+        data={row}
+        even={index % 2 === 0}
+        style={{
+          height: rowHeight,
+          width: fitContent ? "fit-content" : "auto",
+        }}
+        decoration={decoration}
+      />
+    </TableElem>
+  );
+});
+
+const SelectionObserver = observer(({ id, selection, onSelect, className }) => {
+  return (
+    <TableCheckboxCell
+      checked={id ? selection.isSelected(id) : selection.isAllSelected}
+      indeterminate={!id && selection.isIndeterminate}
+      onChange={onSelect}
+      className={className}
+    />
+  );
+});
+
 export const Table = observer(
   ({
     view,
@@ -60,6 +110,8 @@ export const Table = observer(
     const Decoration = useMemo(() => Decorator(decoration), [decoration]);
     const { api } = useSDK();
 
+    console.log({ selectedItems });
+
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
         id: "select",
@@ -72,20 +124,21 @@ export const Table = observer(
         },
         onClick: (e) => e.stopPropagation(),
         Header: () => {
+          console.log('rendered header cell');
           return (
-            <TableCheckboxCell
-              checked={selectedItems.isAllSelected}
-              indeterminate={selectedItems.isIndeterminate}
-              onChange={() => props.onSelectAll()}
+            <SelectionObserver
+              selection={selectedItems}
+              onSelect={props.onSelectAll}
               className="select-all"
             />
           );
         },
         Cell: ({ data }) => {
           return (
-            <TableCheckboxCell
-              checked={selectedItems.isSelected(data.id)}
-              onChange={() => props.onSelectRow(data.id)}
+            <SelectionObserver
+              id={data.id}
+              selection={selectedItems}
+              onSelect={() => props.onSelectRow(data.id)}
             />
           );
         },
@@ -188,33 +241,17 @@ export const Table = observer(
               extra={headerExtra}
             />
             {data.map((row, index) => {
-              const isEven = index % 2 === 0;
-              const mods = {
-                even: isEven,
-                selected: row.isSelected,
-                highlighted: row.isHighlighted,
-                loading: row.isLoading,
-                disabled: stopInteractions,
-              };
-
               return (
-                <TableElem
-                  key={`${row.id}-${index}`}
-                  name="row-wrapper"
-                  mod={mods}
-                  onClick={(e) => props.onRowClick?.(row, e)}
-                >
-                  <TableRow
-                    key={row.id}
-                    data={row}
-                    even={index % 2 === 0}
-                    style={{
-                      height: props.rowHeight,
-                      width: props.fitContent ? "fit-content" : "auto",
-                    }}
-                    decoration={Decoration}
-                  />
-                </TableElem>
+                <RowRenderer
+                  key={`${row.id}-${index}`}l
+                  row={row}
+                  index={index}
+                  onRowClick={props.onRowClick}
+                  stopInteractions={stopInteractions}
+                  rowHeight={props.rowHeight}
+                  fitContent={props.fitToContent}
+                  decoration={Decoration}
+                />
               );
             })}
           </TableContext.Provider>
