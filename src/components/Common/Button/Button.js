@@ -51,7 +51,7 @@ export const Button = forwardRef(
         name="button"
         tag={finalTag}
         mod={mods}
-        mix={className}
+        className={className?.toString()}
         type={type}
         {...rest}
       >

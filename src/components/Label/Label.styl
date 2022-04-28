@@ -1,8 +1,23 @@
+@import "../../styles/waiting.styl"
+
 .label-view
   height 100%
   width 100%
   display flex
   flex-direction column
+
+  &__waiting
+    top 50%
+    left 50%
+    width 150px
+    height 10px
+    z-index 100
+    position absolute
+    border-radius 4px
+    transform translate(-50%, -50%)
+    box-shadow 0 5px 20px rgba(0, 0, 0, 0.2)
+
+    waiting($accent_color)
 
   &__header
     flex none
@@ -15,6 +30,7 @@
   &__table
     z-index 2
     display flex
+    height 100%
     flex 200px 0 0
     position relative
     flex-direction column
@@ -27,6 +43,7 @@
   &__dataview
     flex 1
     width 100%
+    height 100%
     display flex
     min-width 200px
     box-shadow 0 0 0 1px #ccc
@@ -52,6 +69,10 @@
     display flex
     flex-direction column
     overflow-y auto
+
+    ~/_loading &
+      opacity 0.2
+      pointer-events none
 
     & > div
       --main-bg-color #FAFAFA

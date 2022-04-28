@@ -1,4 +1,5 @@
 import { inject } from "mobx-react";
+import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { FaCaretDown, FaChevronLeft, FaColumns } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
@@ -7,7 +8,7 @@ import { FieldsButton } from "../Common/FieldsButton";
 import { Icon } from "../Common/Icon/Icon";
 import { Resizer } from "../Common/Resizer/Resizer";
 import { Space } from "../Common/Space/Space";
-import { DataView } from "../Table/Table";
+import { DataView } from "../MainView";
 import "./Label.styl";
 
 const LabelingHeader = ({ SDK, onClick, isExplorerMode }) => {
@@ -41,100 +42,98 @@ const LabelingHeader = ({ SDK, onClick, isExplorerMode }) => {
 const injector = inject(({ store }) => {
   return {
     store,
+    loading: store?.loadingData,
   };
 });
 
 /**
  * @param {{store: import("../../stores/AppStore").AppStore}} param1
  */
-export const Labeling = injector(
-  ({ store }) => {
-    const lsfRef = useRef();
-    const SDK = store?.SDK;
-    const view = store?.currentView;
-    const { isExplorerMode } = store;
+export const Labeling = injector(observer(({
+  store,
+  loading,
+}) => {
+  const lsfRef = useRef();
+  const SDK = store?.SDK;
+  const view = store?.currentView;
+  const { isExplorerMode } = store;
 
-    const isLabelStream = useMemo(() => {
-      return SDK.mode === 'labelstream';
-    }, []);
+  const isLabelStream = useMemo(() => {
+    return SDK.mode === 'labelstream';
+  }, []);
 
-    const closeLabeling = useCallback(() => {
-      store.closeLabeling();
-    }, [store]);
+  const closeLabeling = useCallback(() => {
+    store.closeLabeling();
+  }, [store]);
 
-    const initLabeling = useCallback(() => {
-      if (!SDK.lsf) SDK.initLSF(lsfRef.current);
-      SDK.startLabeling();
-    }, [lsfRef]);
+  const initLabeling = useCallback(() => {
+    if (!SDK.lsf) SDK.initLSF(lsfRef.current);
+    SDK.startLabeling();
+  }, []);
 
-    useEffect(() => {
-      if (!isLabelStream) SDK.on("taskSelected", initLabeling);
+  useEffect(() => {
+    if (!isLabelStream) SDK.on("taskSelected", initLabeling);
 
-      return () => {
-        if (!isLabelStream) {
-          SDK.off("taskSelected", initLabeling);
-          SDK.destroyLSF();
-        }
-      };
-    }, []);
+    return () => {
+      if (!isLabelStream) SDK.off("taskSelected", initLabeling);
+    };
+  }, []);
 
-    useEffect(() => {
-      if (isLabelStream) {
-        SDK.initLSF(lsfRef.current);
-        SDK.startLabeling();
-      }
+  useEffect(() => {
+    if (!SDK.lsf && store.dataStore.selected || isLabelStream) {
+      initLabeling();
+    }
+  }, []);
 
-      return () => {
-        if (isLabelStream) {
-          SDK.destroyLSF();
-        }
-      };
-    }, []);
+  useEffect(() => {
+    return () => SDK.destroyLSF();
+  }, []);
 
-    const onResize = useCallback((width) => {
-      view.setLabelingTableWidth(width);
-      // trigger resize events inside LSF
-      window.dispatchEvent(new Event("resize"));
-    }, []);
+  const onResize = useCallback((width) => {
+    view.setLabelingTableWidth(width);
+    // trigger resize events inside LSF
+    window.dispatchEvent(new Event("resize"));
+  }, []);
 
-    return (
-      <Block name="label-view">
-        {SDK.interfaceEnabled("labelingHeader") && (
-          <LabelingHeader
-            SDK={SDK}
-            onClick={closeLabeling}
-            isExplorerMode={isExplorerMode}
-          />
+  return (
+    <Block name="label-view" mod={{ loading }}>
+
+      {SDK.interfaceEnabled("labelingHeader") && (
+        <LabelingHeader
+          SDK={SDK}
+          onClick={closeLabeling}
+          isExplorerMode={isExplorerMode}
+        />
+      )}
+
+      <Elem name="content">
+        {isExplorerMode && (
+          <Elem name="table">
+            <Elem
+              tag={Resizer}
+              name="dataview"
+              minWidth={200}
+              showResizerLine={false}
+              maxWidth={window.innerWidth * 0.35}
+              initialWidth={view.labelingTableWidth} // hardcoded as in main-menu-trigger
+              onResizeFinished={onResize}
+              style={{ display: "flex", flex: 1, width: '100%' }}
+            >
+              <DataView />
+            </Elem>
+          </Elem>
         )}
 
-        <Elem name="content">
-          {isExplorerMode && (
-            <Elem name="table">
-              <Elem
-                tag={Resizer}
-                name="dataview"
-                minWidth={200}
-                showResizerLine={false}
-                maxWidth={window.innerWidth * 0.35}
-                initialWidth={240} // hardcoded as in main-menu-trigger
-                onResizeFinished={onResize}
-                style={{ display: "flex", flex: 1 }}
-              >
-                <DataView />
-              </Elem>
-            </Elem>
-          )}
-
-          <Elem name="lsf-wrapper" mod={{ mode: isExplorerMode ? "explorer" : "labeling" }}>
-            <Elem
-              ref={lsfRef}
-              id="label-studio-dm"
-              name="lsf-container"
-              key="label-studio"
-            />
-          </Elem>
+        <Elem name="lsf-wrapper" mod={{ mode: isExplorerMode ? "explorer" : "labeling" }}>
+          {loading && <Elem name="waiting" mod={{ animated: true }}/>}
+          <Elem
+            ref={lsfRef}
+            id="label-studio-dm"
+            name="lsf-container"
+            key="label-studio"
+          />
         </Elem>
-      </Block>
-    );
-  },
-);
+      </Elem>
+    </Block>
+  );
+}));

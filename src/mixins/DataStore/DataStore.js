@@ -65,8 +65,11 @@ const MixinBase = types
         self.highlighted = selected;
 
         getRoot(self).SDK.invoke('taskSelected');
-
       }
+    },
+
+    hasRecord(id) {
+      return self.list.some((t) => t.id === Number(id));
     },
 
     unset({ withHightlight = false } = {}) {
@@ -129,13 +132,26 @@ export const DataStore = (
     .model(modelName, {
       ...(properties ?? {}),
       list: types.optional(types.array(listItemType), []),
-      selected: types.maybeNull(
-        types.late(() => types.reference(listItemType)),
-      ),
-      highlighted: types.maybeNull(
-        types.late(() => types.reference(listItemType)),
-      ),
+      selectedId: types.optional(types.maybeNull(types.number), null),
+      highlightedId: types.optional(types.maybeNull(types.number), null),
     })
+    .views((self) => ({
+      get selected() {
+        return self.list.find(({ id }) => id === self.selectedId);
+      },
+
+      get highlighted() {
+        return self.list.find(({ id }) => id === self.highlightedId);
+      },
+
+      set selected(item) {
+        self.selectedId = item?.id ?? item;
+      },
+
+      set highlighted(item) {
+        self.highlightedId = item?.id ?? item;
+      },
+    }))
     .volatile(() => ({
       requestId: null,
     }))
@@ -153,7 +169,7 @@ export const DataStore = (
         return item;
       },
 
-      fetch: flow(function* ({ id, query, reload = false, interaction } = {}) {
+      fetch: flow(function* ({ id, query, pageNumber = null, reload = false, interaction, pageSize } = {}) {
         let currentViewId, currentViewQuery;
         const requestId = self.requestId = guidGenerator();
 
@@ -171,8 +187,13 @@ export const DataStore = (
 
         self.loading = true;
 
-        if (reload) self.page = 0;
-        self.page++;
+        if (reload || isDefined(pageNumber)) {
+          self.page = pageNumber ?? 1;
+        } else {
+          self.page++;
+        }
+
+        if (pageSize) self.pageSize = pageSize;
 
         const params = {
           page: self.page,
@@ -197,20 +218,17 @@ export const DataStore = (
           return;
         }
 
-        const [selectedID, highlightedID] = [
-          self.selected?.id,
-          self.highlighted?.id,
-        ];
+        const highlightedID = self.highlighted;
 
         const { total, [apiMethod]: list } = data;
 
-        if (list) self.setList({ total, list, reload });
+        if (list) self.setList({
+          total,
+          list,
+          reload: reload || isDefined(pageNumber),
+        });
 
-        if (!listIncludes(self.list, selectedID)) {
-          self.selected = null;
-        }
-
-        if (!listIncludes(self.list, highlightedID)) {
+        if (isDefined(highlightedID) && !listIncludes(self.list, highlightedID)) {
           self.highlighted = null;
         }
 

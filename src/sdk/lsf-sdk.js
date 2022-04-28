@@ -11,7 +11,7 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { FF_DEV_1621, isFF } from "../utils/feature-flags";
+import { FF_DEV_1621, FF_DEV_2186, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
@@ -93,6 +93,9 @@ export class LSFWrapper {
     if (this.labelStream) {
       interfaces.push("infobar");
       interfaces.push("topbar:prevnext");
+      if (FF_DEV_2186) {
+        interfaces.push("comments:update");
+      }
       if (this.project.show_skip_button) {
         interfaces.push("skip");
       }
@@ -217,18 +220,27 @@ export class LSFWrapper {
 
     this.loadUserLabels();
 
-    this.setLoading(false);
+    this.setLSFTask(task, annotationID, fromHistory);
+  }
 
+  setLSFTask(task, annotationID, fromHistory) {
+    this.setLoading(true);
     const lsfTask = taskToLSFormat(task);
+    const isRejectedQueue = isDefined(task.default_selected_annotation);
+
+    if (isRejectedQueue && !annotationID) {
+      annotationID = task.default_selected_annotation;
+    }
 
     this.lsf.resetState();
     this.lsf.assignTask(task);
     this.lsf.initializeStore(lsfTask);
-    this.setAnnotation(annotationID, fromHistory);
+    this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
+    this.setLoading(false);
   }
 
   /** @private */
-  setAnnotation(annotationID, fromHistory = false) {
+  setAnnotation(annotationID, selectAnnotation = false) {
     const id = annotationID ? annotationID.toString() : null;
     let { annotationStore: cs } = this.lsf;
     let annotation;
@@ -282,7 +294,7 @@ export class LSFWrapper {
       if (first?.draftId) {
         // not submitted draft, most likely from previous labeling session
         annotation = first;
-      } else if (isDefined(annotationID) && fromHistory) {
+      } else if (isDefined(annotationID) && selectAnnotation) {
         annotation = this.annotations.find(({ pk }) => pk === annotationID);
       } else if (showPredictions && this.predictions.length > 0 && !this.isInteractivePreannotations) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
@@ -390,9 +402,11 @@ export class LSFWrapper {
   };
 
   /** @private */
-  onUpdateAnnotation = async (ls, annotation) => {
+  onUpdateAnnotation = async (ls, annotation, extraData) => {
     const { task } = this;
     const serializedAnnotation = this.prepareData(annotation);
+
+    Object.assign(serializedAnnotation, extraData);
 
     await this.saveUserLabels();
 
@@ -411,7 +425,14 @@ export class LSFWrapper {
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
 
-    await this.loadTask(this.task.id, annotation.pk, true);
+    const isRejectedQueue = isDefined(task.default_selected_annotation);
+
+    if (isRejectedQueue) {
+      // load next task if that one was updated task from rejected queue
+      await this.loadTask();
+    } else {
+      await this.loadTask(this.task.id, annotation.pk, true);
+    }
   };
 
   deleteDraft = async (id) => {
@@ -530,14 +551,14 @@ export class LSFWrapper {
     });
     await this.loadTask(task.id);
     this.datamanager.invoke("cancelSkippingTask");
-
   };
 
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
-  onSelectAnnotation = (...args) =>
-    this.datamanager.invoke("onSelectAnnotation", ...args);
+  onSelectAnnotation = (prevAnnotation, nextAnnotation) => {
+    this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, this);
+  }
 
 
   onNextTask = (nextTaskId, nextAnnotationId) => {
@@ -591,7 +612,8 @@ export class LSFWrapper {
       !annotation.userGenerate || annotation.sentUserGenerate;
 
     const result = {
-      lead_time: (new Date() - annotation.loadedDate) / 1000, // task execution time
+      // task execution time, always summed up with previous values
+      lead_time: (new Date() - annotation.loadedDate) / 1000 + Number(annotation.leadTime ?? 0),
       // don't serialize annotations twice for drafts
       result: draft ? annotation.versions.draft : annotation.serializeAnnotation(),
       draft_id: annotation.draftId,

@@ -1,5 +1,4 @@
 import { toCamelCase } from 'strman';
-import { isDefined } from './utils';
 
 export const formDataToJPO = (formData: FormData) => {
   if (formData instanceof FormData) {
@@ -98,4 +97,8 @@ export const absoluteURL = (path = "") => {
       path.replace(/^([/]+)/, ''),
     ].join("/");
   }
+};
+
+export const isDefined = <T>(value?: T): value is NonNullable<T> => {
+  return value !== null && value !== undefined;
 };

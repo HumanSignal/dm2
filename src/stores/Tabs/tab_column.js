@@ -2,7 +2,7 @@ import { getRoot, getSnapshot, types } from "mobx-state-tree";
 import React from "react";
 import { toStudlyCaps } from "strman";
 import { LsAnnotation, LsBanSquare, LsSparkSquare, LsStarSquare, LsThumbsDown, LsThumbsUp } from "../../assets/icons";
-import * as CellViews from "../../components/Table/CellViews";
+import * as CellViews from "../../components/CellViews";
 import { all } from "../../utils/utils";
 
 export const ViewColumnType = types.enumeration([

@@ -7,7 +7,7 @@ import { Space } from "../Common/Space/Space";
 import { Spinner } from "../Common/Spinner";
 import { Tabs, TabsItem } from "../Common/Tabs/Tabs";
 import { FiltersSidebar } from "../Filters/FiltersSidebar/FilterSidebar";
-import { DataView } from "../Table/Table";
+import { DataView } from "../MainView";
 import "./DataManager.styl";
 import { Toolbar } from "./Toolbar/Toolbar";
 
@@ -23,7 +23,7 @@ const summaryInjector = inject(({ store }) => {
   const { project, taskStore } = store;
 
   return {
-    totalTasks: project?.task_count ?? 0,
+    totalTasks: project?.task_count ?? project?.task_number ?? 0,
     totalFoundTasks: taskStore?.total ?? 0,
     totalAnnotations: taskStore?.totalAnnotations ?? 0,
     totalPredictions: taskStore?.totalPredictions ?? 0,

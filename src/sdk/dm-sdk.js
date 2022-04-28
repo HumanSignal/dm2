@@ -129,6 +129,7 @@ export class DataManager {
    */
   constructor(config) {
     this.root = config.root;
+    this.project = config.project;
     this.projectId = config.projectId;
     this.settings = config.settings;
     this.labelStudioOptions = config.labelStudio;

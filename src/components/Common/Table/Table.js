@@ -1,9 +1,11 @@
 import { observer } from "mobx-react";
-import React, { createContext, forwardRef, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { FaCode } from "react-icons/fa";
-import AutoSizer from "react-virtualized-auto-sizer";
-import { VariableSizeList } from "react-window";
-import InfiniteLoader from "react-window-infinite-loader";
 import { useSDK } from "../../../providers/SDKProvider";
 import { isDefined } from "../../../utils/utils";
 import { Button } from "../Button/Button";
@@ -16,6 +18,9 @@ import { TableBlock, TableContext, TableElem } from "./TableContext";
 import { TableHead } from "./TableHead/TableHead";
 import { TableRow } from "./TableRow/TableRow";
 import { prepareColumns } from "./utils";
+import { Block, Elem } from "../../../utils/bem";
+import { FieldsButton } from "../FieldsButton";
+import { LsGear } from "../../../assets/icons";
 
 const Decorator = (decoration) => {
   return {
@@ -35,6 +40,56 @@ const Decorator = (decoration) => {
   };
 };
 
+const RowRenderer = observer(({
+  row,
+  index,
+  stopInteractions,
+  rowHeight,
+  fitContent,
+  onRowClick,
+  decoration,
+}) => {
+  const isEven = index % 2 === 0;
+  const mods = {
+    even: isEven,
+    selected: row.isSelected,
+    highlighted: row.isHighlighted,
+    loading: row.isLoading,
+    disabled: stopInteractions,
+  };
+
+  return (
+    <TableElem
+      key={`${row.id}-${index}`}
+      name="row-wrapper"
+      mod={mods}
+      onClick={(e) => onRowClick?.(row, e)}
+    >
+      <TableRow
+        key={row.id}
+        data={row}
+        even={index % 2 === 0}
+        style={{
+          height: rowHeight,
+          width: fitContent ? "fit-content" : "auto",
+        }}
+        decoration={decoration}
+      />
+    </TableElem>
+  );
+});
+
+const SelectionObserver = observer(({ id, selection, onSelect, className }) => {
+  return (
+    <TableCheckboxCell
+      checked={id ? selection.isSelected(id) : selection.isAllSelected}
+      indeterminate={!id && selection.isIndeterminate}
+      onChange={onSelect}
+      className={className}
+    />
+  );
+});
+
 export const Table = observer(
   ({
     view,
@@ -50,10 +105,10 @@ export const Table = observer(
     ...props
   }) => {
     const tableHead = useRef();
-    const listRef = useRef();
     const columns = prepareColumns(props.columns, props.hiddenColumns);
     const Decoration = useMemo(() => Decorator(decoration), [decoration]);
     const { api } = useSDK();
+
 
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
@@ -68,19 +123,19 @@ export const Table = observer(
         onClick: (e) => e.stopPropagation(),
         Header: () => {
           return (
-            <TableCheckboxCell
-              checked={selectedItems.isAllSelected}
-              indeterminate={selectedItems.isIndeterminate}
-              onChange={() => props.onSelectAll()}
+            <SelectionObserver
+              selection={selectedItems}
+              onSelect={props.onSelectAll}
               className="select-all"
             />
           );
         },
         Cell: ({ data }) => {
           return (
-            <TableCheckboxCell
-              checked={selectedItems.isSelected(data.id)}
-              onChange={() => props.onSelectRow(data.id)}
+            <SelectionObserver
+              id={data.id}
+              selection={selectedItems}
+              onSelect={() => props.onSelectRow(data.id)}
             />
           );
         },
@@ -140,268 +195,67 @@ export const Table = observer(
       cellViews,
     };
 
-    const headerHeight = 43;
+    const tableWrapper = useRef();
 
-    const renderTableHeader = useCallback(
-      ({ style }) => (
-        <TableHead
-          ref={tableHead}
-          style={style}
-          order={props.order}
-          columnHeaderExtra={props.columnHeaderExtra}
-          sortingEnabled={props.sortingEnabled}
-          onSetOrder={props.onSetOrder}
-          stopInteractions={stopInteractions}
-          onTypeChange={props.onTypeChange}
-          decoration={Decoration}
-          onResize={onColumnResize}
-          onReset={onColumnReset}
-          extra={headerExtra}
-        />
-      ),
-      [
-        props.order,
-        props.columnHeaderExtra,
-        props.sortingEnabled,
-        props.onSetOrder,
-        props.onTypeChange,
-        stopInteractions,
-        view,
-        view.selected.list,
-        view.selected.all,
-        tableHead,
-      ],
-    );
+    useEffect(() => {    
+      const highlightedIndex = data.indexOf(focusedItem) - 1;
+      const highlightedElement = tableWrapper.current?.children[highlightedIndex];
 
-    const renderRow = useCallback(
-      ({ style, index }) => {
-        const row = data[index - 1];
-        const isEven = index % 2 === 0;
-        const mods = {
-          even: isEven,
-          selected: row.isSelected,
-          highlighted: row.isHighlighted,
-          loading: row.isLoading,
-          disabled: stopInteractions,
-        };
-
-        return (
-          <TableElem
-            name="row-wrapper"
-            mod={mods}
-            style={style}
-            onClick={(e) => props.onRowClick?.(row, e)}
-          >
-            <TableRow
-              key={row.id}
-              data={row}
-              even={index % 2 === 0}
-              style={{
-                height: props.rowHeight,
-                width: props.fitContent ? "fit-content" : "auto",
-              }}
-              decoration={Decoration}
-            />
-          </TableElem>
-        );
-      },
-      [
-        data,
-        props.fitContent,
-        props.onRowClick,
-        props.rowHeight,
-        stopInteractions,
-        selectedItems,
-        view,
-        view.selected.list,
-        view.selected.all,
-      ],
-    );
-
-    const isItemLoaded = useCallback(
-      (index) => {
-        return props.isItemLoaded(data, index);
-      },
-      [props, data],
-    );
-
-    const cachedScrollOffset = useRef();
-
-    const initialScrollOffset = useCallback((height) => {
-      if (isDefined(cachedScrollOffset.current)) {
-        return cachedScrollOffset.current;
-      }
-
-      const { rowHeight: h } = props;
-      const index = data.indexOf(focusedItem);
-
-      if (index >= 0) {
-        const scrollOffset = index * h - height / 2 + h / 2; // + headerHeight
-
-        return cachedScrollOffset.current = scrollOffset;
-      } else {
-        return 0;
-      }
-    }, []);
-
-    const itemKey = useCallback(
-      (index) => {
-        if (index > (data.length - 1)) {
-          return index;
-        }
-        return data[index]?.key ?? index;
-      },
-      [data],
-    );
-
-    useEffect(() => {
-      const listComponent = listRef.current?._listRef;
-
-      if (listComponent) {
-        listComponent.scrollToItem(data.indexOf(focusedItem), "center");
-      }
-    }, [data]);
+      if (highlightedElement) highlightedElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, [tableWrapper.current]);
 
     return (
-      <TableBlock name="table" mod={{ fit: props.fitToContent }}>
-        <TableContext.Provider value={contextValue}>
-          <StickyList
-            ref={listRef}
-            focusedIndex={data.indexOf(focusedItem)}
-            overscanCount={10}
-            itemHeight={props.rowHeight}
-            totalCount={props.total}
-            itemCount={data.length + 1}
-            itemKey={itemKey}
-            innerElementType={innerElementType}
-            stickyItems={[0]}
-            stickyItemsHeight={[headerHeight]}
-            stickyComponent={renderTableHeader}
-            initialScrollOffset={initialScrollOffset}
-            isItemLoaded={isItemLoaded}
-            loadMore={props.loadMore}
-          >
-            {renderRow}
-          </StickyList>
-        </TableContext.Provider>
-      </TableBlock>
+      <>
+        {view.root.isLabeling && (
+          <Block name="column-selector">
+            <Elem
+              name="button"
+              tag={FieldsButton}
+              icon={<LsGear />}
+              wrapper={FieldsButton.Checkbox}
+              style={{ padding: 0 }}
+            />
+          </Block>
+        )}
+        <TableBlock
+          ref={tableWrapper}
+          name="table"
+          mod={{ fit: props.fitToContent }}
+        >
+          <TableContext.Provider value={contextValue}>
+            <TableHead
+              ref={tableHead}
+              order={props.order}
+              columnHeaderExtra={props.columnHeaderExtra}
+              sortingEnabled={props.sortingEnabled}
+              onSetOrder={props.onSetOrder}
+              stopInteractions={stopInteractions}
+              onTypeChange={props.onTypeChange}
+              decoration={Decoration}
+              onResize={onColumnResize}
+              onReset={onColumnReset}
+              extra={headerExtra}
+            />
+            {data.map((row, index) => {
+              return (
+                <RowRenderer
+                  key={`${row.id}-${index}`}l
+                  row={row}
+                  index={index}
+                  onRowClick={props.onRowClick}
+                  stopInteractions={stopInteractions}
+                  rowHeight={props.rowHeight}
+                  fitContent={props.fitToContent}
+                  decoration={Decoration}
+                />
+              );
+            })}
+          </TableContext.Provider>
+        </TableBlock>
+      </>
     );
   },
 );
-
-const StickyListContext = createContext();
-
-StickyListContext.displayName = "StickyListProvider";
-
-const ItemWrapper = ({ data, index, style }) => {
-  const { Renderer, stickyItems } = data;
-
-  if (stickyItems?.includes(index) === true) {
-    return null;
-  }
-
-  return <Renderer index={index} style={style} />;
-};
-
-const StickyList = observer(
-  forwardRef((props, listRef) => {
-    const {
-      children,
-      stickyComponent,
-      stickyItems,
-      stickyItemsHeight,
-      totalCount,
-      isItemLoaded,
-      loadMore,
-      focusedIndex,
-      initialScrollOffset,
-      ...rest
-    } = props;
-
-    const itemData = {
-      Renderer: children,
-      StickyComponent: stickyComponent,
-      stickyItems,
-      stickyItemsHeight,
-    };
-
-    const itemSize = (index) => {
-      if (stickyItems.includes(index)) {
-        return stickyItemsHeight[index] ?? rest.itemHeight;
-      }
-      return rest.itemHeight;
-    };
-
-    useEffect(() => {    
-      const listComponent = listRef.current?._listRef;
-
-      if (listComponent && focusedIndex !== -1) {
-        listComponent.scrollToItem(focusedIndex, "center");
-      }
-    }, [focusedIndex]);
-
-    return (
-      <StickyListContext.Provider value={itemData}>
-        <TableElem tag={AutoSizer} name="auto-size">
-          {({ width, height }) => (
-            <InfiniteLoader
-              ref={listRef}
-              itemCount={totalCount}
-              loadMoreItems={loadMore}
-              isItemLoaded={isItemLoaded}
-            >
-              {({ onItemsRendered, ref }) => (
-                <TableElem
-                  name="virual"
-                  tag={VariableSizeList}
-                  {...rest}
-                  ref={ref}
-                  width={width}
-                  height={height}
-                  itemData={itemData}
-                  itemSize={itemSize}
-                  onItemsRendered={()=>{
-                    onItemsRendered(ref);
-                  }}
-                  initialScrollOffset={initialScrollOffset?.(height) ?? 0}
-                >
-                  {ItemWrapper}
-                </TableElem>
-              )}
-            </InfiniteLoader>
-          )}
-        </TableElem>
-      </StickyListContext.Provider>
-    );
-  }),
-);
-
-StickyList.displayName = "StickyList";
-
-const innerElementType = forwardRef(({ children, ...rest }, ref) => {
-  return (
-    <StickyListContext.Consumer>
-      {({ stickyItems, stickyItemsHeight, StickyComponent }) => (
-        <div ref={ref} {...rest}>
-          {stickyItems.map((index) => (
-            <TableElem
-              name="sticky-header"
-              tag={StickyComponent}
-              key={index}
-              index={index}
-              style={{
-                height: stickyItemsHeight[index],
-                top: index * stickyItemsHeight[index],
-              }}
-            />
-          ))}
-
-          {children}
-        </div>
-      )}
-    </StickyListContext.Consumer>
-  );
-});
 
 const TaskSourceView = ({ content, onTaskLoad }) => {
   const [source, setSource] = useState(content);
