@@ -100,7 +100,7 @@ export const DatePicker = ({
             {...dateRange}
             ref={datepickerRef}
             selected={realStartDate}
-            onSelect={(date) => {
+            onChange={(date) => {
               if (realStartDate !== null && realEndDate === null && selectRange) {
                 setRealEndDate(date);
                 dropdownRef.current?.close();
