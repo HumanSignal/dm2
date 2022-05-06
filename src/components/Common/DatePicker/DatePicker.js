@@ -1,5 +1,5 @@
 import { format, isMatch, isValid } from "date-fns";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { default as DP } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaExchangeAlt } from "react-icons/fa";
@@ -90,6 +90,20 @@ export const DatePicker = ({
     }
   }, [realStartDate, realEndDate]);
 
+  const onChangeHandler = useCallback((date) => {
+    if (realStartDate !== null && realEndDate === null && selectRange) {
+      setRealEndDate(date);
+      dropdownRef.current?.close();
+    } else {
+      setRealStartDate(date);
+      if (selectRange) {
+        setRealEndDate(null);
+      } else {
+        dropdownRef.current?.close();
+      }
+    }
+  });
+
   return (
     <Block name="datepicker">
       <Dropdown.Trigger
@@ -100,19 +114,8 @@ export const DatePicker = ({
             {...dateRange}
             ref={datepickerRef}
             selected={realStartDate}
-            onSelect={(date) => {
-              if (realStartDate !== null && realEndDate === null && selectRange) {
-                setRealEndDate(date);
-                dropdownRef.current?.close();
-              } else {
-                setRealStartDate(date);
-                if (selectRange) {
-                  setRealEndDate(null);
-                } else {
-                  dropdownRef.current?.close();
-                }
-              }
-            }}
+            onChange={(date) => onChangeHandler(date)}
+            onSelect={(date) => onChangeHandler(date)}
             monthsShown={2}
             selectsRange={selectRange}
             showTimeSelect={showTime}
