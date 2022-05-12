@@ -93,7 +93,7 @@ export class LSFWrapper {
     if (this.labelStream) {
       interfaces.push("infobar");
       interfaces.push("topbar:prevnext");
-      if (FF_DEV_2186) {
+      if (FF_DEV_2186 && this.project.review_settings?.require_comment_on_reject) {
         interfaces.push("comments:update");
       }
       if (this.project.show_skip_button) {
