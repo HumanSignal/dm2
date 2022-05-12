@@ -105,12 +105,10 @@ export const Table = observer(
     ...props
   }) => {
     const tableHead = useRef();
-    const listRef = useRef();
     const columns = prepareColumns(props.columns, props.hiddenColumns);
     const Decoration = useMemo(() => Decorator(decoration), [decoration]);
     const { api } = useSDK();
 
-    console.log({ selectedItems });
 
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
@@ -124,7 +122,6 @@ export const Table = observer(
         },
         onClick: (e) => e.stopPropagation(),
         Header: () => {
-          console.log('rendered header cell');
           return (
             <SelectionObserver
               selection={selectedItems}
@@ -198,15 +195,14 @@ export const Table = observer(
       cellViews,
     };
 
-    useEffect(() => {
-      const listComponent = listRef.current?._listRef;
-
-      if (listComponent) {
-        listComponent.scrollToItem(data.indexOf(focusedItem), "center");
-      }
-    }, [data]);
-
     const tableWrapper = useRef();
+
+    useEffect(() => {    
+      const highlightedIndex = data.indexOf(focusedItem) - 1;
+      const highlightedElement = tableWrapper.current?.children[highlightedIndex];
+
+      if (highlightedElement) highlightedElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, [tableWrapper.current]);
 
     return (
       <>
