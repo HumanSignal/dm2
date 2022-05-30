@@ -450,6 +450,8 @@ export class LSFWrapper {
     const { task } = this;
     let response;
 
+    task.deleteAnnotation(annotation);
+
     if (annotation.userGenerate && annotation.sentUserGenerate === false) {
       if (annotation.draftId) {
         response = await this.deleteDraft(annotation.draftId);
