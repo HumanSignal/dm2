@@ -4,6 +4,10 @@ on:
   push:
     branches: [master, "*/*", "*/**", "fb-**"]
 
+env:
+  NODE: 12
+  CACHE_NAME_PREFIX: v1
+
 jobs:
   build:
     # ci can be skipped with `[skip ci]` prefix in message
@@ -14,7 +18,7 @@ jobs:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
-        node-version: 12
+        node-version: "${{ env.NODE }}"
 
     - name: Upgrade Yarn
       run: npm install -g yarn@1.22
@@ -27,7 +31,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ env.CACHE_NAME_PREFIX }}-${{ runner.os }}-node-${{ env.NODE }}-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ env.CACHE_NAME_PREFIX }}-${{ runner.os }}-node-${{ env.NODE }}-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/yarn.lock') }}
 
     - name: Print Yarn cache size
       run: du -d 0 -h ${{ steps.yarn-cache-dir-path.outputs.dir }}
