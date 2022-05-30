@@ -503,7 +503,7 @@ export class LSFWrapper {
     }
   };
 
-  onSkipTask = async () => {
+  onSkipTask = async (_, { comment } = {}) => {
     await this.submitCurrentAnnotation(
       "skipTask",
       (taskID, body) => {
@@ -512,6 +512,7 @@ export class LSFWrapper {
         const options = { body: annotation };
 
         options.body.was_cancelled = true;
+        if (comment) options.body.comment = comment;
 
         if (id === undefined) {
           return this.datamanager.apiCall("submitAnnotation", params, options);
