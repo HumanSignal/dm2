@@ -279,6 +279,7 @@ export class LSFWrapper {
         cs.selectAnnotation(c.id);
         c.deserializeResults(draft.result);
         c.setDraftId(draft.id);
+        c.setDraftSaved(draft.created_at);
         c.history.safeUnfreeze();
       }
     }
