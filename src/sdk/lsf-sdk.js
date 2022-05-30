@@ -508,7 +508,7 @@ export class LSFWrapper {
       "skipTask",
       (taskID, body) => {
         const { id, ...annotation } = body;
-        const params = { taskID, annotationID: id };
+        const params = { taskID };
         const options = { body: annotation };
 
         options.body.was_cancelled = true;
