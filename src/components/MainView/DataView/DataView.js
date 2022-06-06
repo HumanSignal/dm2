@@ -59,6 +59,11 @@ export const DataView = injector(
     const [currentPageSize, setPageSize] = useState(getStoredPageSize("tasks", 30));
 
     const setPage = useCallback((page, pageSize) => {
+      dataStore.fetch({
+        pageNumber: page,
+        pageSize,
+      });
+
       setPageSize(pageSize);
       setStoredPageSize("tasks", pageSize);
     }, []);
@@ -284,6 +289,7 @@ export const DataView = injector(
 
       if (highlighted && !highlighted.isSelected) store.startLabeling(highlighted);
     });
+
 
     // Render the UI for the table
     return (
