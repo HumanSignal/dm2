@@ -56,14 +56,9 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
-    const [currentPageSize, setPageSize] = useState(getStoredPageSize("tasks", 30));
+    const [currentPageSize, setPageSize] = useState(getStoredPageSize("tasks", dataStore.pageSize));
 
     const setPage = useCallback((page, pageSize) => {
-      dataStore.fetch({
-        pageNumber: page,
-        pageSize,
-      });
-
       setPageSize(pageSize);
       setStoredPageSize("tasks", pageSize);
     }, []);
