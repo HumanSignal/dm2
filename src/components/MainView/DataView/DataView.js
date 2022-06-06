@@ -285,7 +285,6 @@ export const DataView = injector(
       if (highlighted && !highlighted.isSelected) store.startLabeling(highlighted);
     });
 
-
     // Render the UI for the table
     return (
       <Block
