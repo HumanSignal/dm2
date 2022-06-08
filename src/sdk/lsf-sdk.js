@@ -11,7 +11,7 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { FF_DEV_1621, FF_DEV_2186, isFF } from "../utils/feature-flags";
+import { FF_DEV_2186 } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
@@ -300,7 +300,7 @@ export class LSFWrapper {
       } else if (showPredictions && this.predictions.length > 0 && !this.isInteractivePreannotations) {
         annotation = cs.addAnnotationFromPrediction(this.predictions[0]);
       } else {
-        annotation = isFF(FF_DEV_1621) ? cs.createAnnotation() : cs.addAnnotation({ userGenerate: true });
+        annotation = cs.createAnnotation();
       }
     } else {
       if (this.annotations.length === 0 && this.predictions.length > 0 && !this.isInteractivePreannotations) {
@@ -310,7 +310,7 @@ export class LSFWrapper {
       } else if (this.annotations.length > 0 && (id === "auto" || hasAutoAnnotations)) {
         annotation = first;
       } else {
-        annotation = isFF(FF_DEV_1621) ? cs.createAnnotation() : cs.addAnnotation({ userGenerate: true });
+        annotation = cs.createAnnotation();
       }
     }
 
