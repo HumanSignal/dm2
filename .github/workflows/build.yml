@@ -2,7 +2,11 @@ name: Build and Test
 
 on:
   push:
-    branches: [master, "*/*", "*/**"]
+    branches: [master, "*/*", "*/**", "fb-**"]
+
+env:
+  NODE: 12
+  CACHE_NAME_PREFIX: v1
 
 jobs:
   build:
@@ -11,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
-        node-version: 12
+        node-version: "${{ env.NODE }}"
 
     - name: Upgrade Yarn
       run: npm install -g yarn@1.22
@@ -24,10 +28,10 @@ jobs:
       run: echo "::set-output name=dir::$(yarn cache dir)"
 
     - name: Configure yarn cache
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-        key: ${{ env.CACHE_NAME_PREFIX }}-${{ runner.os }}-node-${{ env.NODE }}-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/package-lock.json') }}
+        key: ${{ env.CACHE_NAME_PREFIX }}-${{ runner.os }}-node-${{ env.NODE }}-${{ hashFiles('**/package.json') }}-${{ hashFiles('**/yarn.lock') }}
 
     - name: Print Yarn cache size
       run: du -d 0 -h ${{ steps.yarn-cache-dir-path.outputs.dir }}
