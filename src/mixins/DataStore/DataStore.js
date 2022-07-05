@@ -189,7 +189,10 @@ export const DataStore = (
         self.loading = true;
 
         if (reload || isDefined(pageNumber)) {
-          self.page = pageNumber ?? 1;
+          if (self.page === 0)
+            self.page = 1;
+          else if (isDefined(pageNumber))
+            self.page = pageNumber;
         } else {
           self.page++;
         }
