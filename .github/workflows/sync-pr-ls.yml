@@ -35,7 +35,7 @@ jobs:
         with:
           github-token: ${{ secrets.GIT_PAT }}
           script: |
-            const { repo, owner } = context.repo;
+            const [owner, repo] = '${{ github.event.pull_request.head.repo.full_name || github.repository }}'.split('/');
             let event_action = '${{ github.event.action }}'
             let commit_sha = '${{ github.event.pull_request.head.sha }}'
             if (${{ github.event.pull_request.merged }}) {
@@ -54,7 +54,7 @@ jobs:
               client_payload: {
                 branch_name: '${{ github.head_ref }}',
                 base_branch_name: '${{ github.base_ref }}',
-                repo_name: '${{ github.repository }}',
+                repo_name: '${{ github.event.pull_request.head.repo.full_name || github.repository }}',
                 commit_sha : commit_sha,
                 title: process.env.TITLE,
                 html_url: '${{ github.event.pull_request.html_url }}',
