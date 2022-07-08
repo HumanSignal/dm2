@@ -197,8 +197,11 @@ export const DataStore = (
           self.page++;
         }
 
-        if (pageSize) self.pageSize = pageSize;
-        else self.pageSize = getStoredPageSize("tasks", 30);
+        if (pageSize) {
+          self.pageSize = pageSize;
+        } else {
+          self.pageSize = getStoredPageSize("tasks", 30);
+        }
 
         const params = {
           page: self.page,
