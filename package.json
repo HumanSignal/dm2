@@ -9,6 +9,7 @@
   "repository": {
     "url": "https://github.com/heartexlabs/dm2"
   },
+  
   "files": [
     "build/",
     "CODE_OF_CONDUCT.md",
