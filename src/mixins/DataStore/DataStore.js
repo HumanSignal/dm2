@@ -197,8 +197,6 @@ export const DataStore = (
           self.page++;
         }
 
-        console.log('heartex pageSize', pageSize);
-
         if (pageSize) self.pageSize = pageSize;
         else self.pageSize = getStoredPageSize("tasks", 30);
 
