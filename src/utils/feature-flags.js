@@ -7,6 +7,10 @@ export const FF_DEV_1470 = "ff_front_dev_1470_dm_pagination_010422_short";
 // Ask for comment during update in label stream
 export const FF_DEV_2186 = "ff_front_dev_2186_comments_for_update";
 
+// Outliner + Details
+export const FF_DEV_1170 = "ff_front_1170_outliner_030222_short";
+
+
 // Customize flags
 const flags = {};
 
