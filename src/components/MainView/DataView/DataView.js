@@ -12,7 +12,7 @@ import { Tag } from "../../Common/Tag/Tag";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import * as CellViews from "../../CellViews";
 import { GridView } from "../GridView/GridView";
-import { getStoredPageSize, Pagination, setStoredPageSize } from "../../Common/Pagination/Pagination";
+import { DEFAULT_PAGE_SIZE, getStoredPageSize, Pagination, setStoredPageSize } from "../../Common/Pagination/Pagination";
 import "./DataView.styl";
 
 const injector = inject(({ store }) => {
@@ -56,7 +56,7 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
-    const [currentPageSize, setPageSize] = useState(getStoredPageSize("tasks", 30));
+    const [currentPageSize, setPageSize] = useState(getStoredPageSize("tasks", DEFAULT_PAGE_SIZE));
 
     const setPage = useCallback((page, pageSize) => {
       setPageSize(pageSize);
@@ -306,7 +306,7 @@ export const DataView = injector(
               showPageSize={!isLabeling}
               size={isLabeling ? "small" : "medium"}
               waiting={dataStore.loading}
-              deafultPageSize={currentPageSize}
+              defaultPageSize={currentPageSize}
               pageSizeOptions={[10, 30, 50, 100]}
               onInit={setPage}
               onChange={setPage}
