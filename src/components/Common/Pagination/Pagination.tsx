@@ -11,7 +11,7 @@ interface PaginationProps {
   page: number,
   totalPages: number,
   pageSize: number,
-  deafultPageSize?: number
+  defaultPageSize?: number
   totalItems: number,
   label?: string,
   allowInput?: boolean,
@@ -29,6 +29,8 @@ interface PaginationProps {
   onChange?: (pageNumber: number, pageSize: number) => void
   onPageLoad?: (pageNumber: number, pageSize: number) => Promise<void>
 }
+
+export const DEFAULT_PAGE_SIZE = 30;
 
 const isSystemEvent = (e: KeyboardEvent<HTMLInputElement>): boolean => {
   return (
@@ -59,7 +61,7 @@ export const Pagination: FC<PaginationProps> = forwardRef<any, PaginationProps>(
   size = "medium",
   pageSizeOptions = [],
   alwaysVisible = false,
-  deafultPageSize,
+  defaultPageSize,
   showTitle = true,
   showPageSize = true,
   ...props
@@ -78,7 +80,7 @@ export const Pagination: FC<PaginationProps> = forwardRef<any, PaginationProps>(
 
   const [pageSize, setPageSize] = useValueTracker(
     props.pageSize,
-    getStoredPageSize(finalName) ?? deafultPageSize ?? pageSizeOptions?.[0] ?? 10,
+    getStoredPageSize(finalName) ?? defaultPageSize ?? pageSizeOptions?.[0] ?? 10,
   );
 
   const totalPages = useMemo(() => {
