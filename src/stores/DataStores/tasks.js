@@ -7,7 +7,9 @@ import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 
 export const create = (columns) => {
+  console.log(columns);
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
+    comment_authors: types.optional(types.array(Assignee), []),
     annotators: types.optional(types.array(Assignee), []),
     reviewers: types.optional(types.array(Assignee), []),
     annotations: types.optional(types.array(CustomJSON), []),
