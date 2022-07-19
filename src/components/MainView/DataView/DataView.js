@@ -190,7 +190,9 @@ export const DataView = injector(
     const decoration = useMemo(
       () => [
         commonDecoration("total_annotations", 60, "center"),
+        commonDecoration("comment_count", 60, "center"),
         commonDecoration("cancelled_annotations", 60, "center"),
+        commonDecoration("unresolved_comment_count", 60, "center"),
         commonDecoration("total_predictions", 60, "center"),
         commonDecoration("completed_at", 180, "space-between", true),
         commonDecoration("reviews_accepted", 60, "center"),
