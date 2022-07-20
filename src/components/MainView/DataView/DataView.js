@@ -13,11 +13,13 @@ import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import * as CellViews from "../../CellViews";
 import { GridView } from "../GridView/GridView";
 import { DEFAULT_PAGE_SIZE, getStoredPageSize, Pagination, setStoredPageSize } from "../../Common/Pagination/Pagination";
+import { FF_DEV_2536, isFF } from '../../../utils/feature-flags';
+
 import "./DataView.styl";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
-  const props = {
+  let props = {
     store,
     dataStore,
     updated: dataStore.updated,
@@ -190,14 +192,14 @@ export const DataView = injector(
     const decoration = useMemo(
       () => [
         commonDecoration("total_annotations", 60, "center"),
-        commonDecoration("comment_count", 60, "center"),
         commonDecoration("cancelled_annotations", 60, "center"),
-        commonDecoration("unresolved_comment_count", 60, "center"),
         commonDecoration("total_predictions", 60, "center"),
         commonDecoration("completed_at", 180, "space-between", true),
         commonDecoration("reviews_accepted", 60, "center"),
         commonDecoration("reviews_rejected", 60, "center"),
         commonDecoration("ground_truth", 60, "center"),
+        isFF(FF_DEV_2536) && commonDecoration("comment_count", 60, "center"),
+        isFF(FF_DEV_2536) && commonDecoration("unresolved_comment_count", 60, "center"),
         {
           resolver: (col) => col.type === "Number",
           style(col) {
