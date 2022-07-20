@@ -11,7 +11,7 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { FF_DEV_1621, FF_DEV_2186, isFF } from "../utils/feature-flags";
+import { FF_DEV_1621, FF_DEV_2186, FF_DEV_2887, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
@@ -123,6 +123,9 @@ export class LSFWrapper {
     }
     if (this.interfacesModifier) {
       interfaces = this.interfacesModifier(interfaces, this.labelStream);
+    }
+    if (isFF(FF_DEV_2887)) {
+      interfaces.push("annotations:comments");
     }
 
     const lsfProperties = {

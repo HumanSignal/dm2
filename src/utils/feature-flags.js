@@ -7,6 +7,9 @@ export const FF_DEV_1470 = "ff_front_dev_1470_dm_pagination_010422_short";
 // Ask for comment during update in label stream
 export const FF_DEV_2186 = "ff_front_dev_2186_comments_for_update";
 
+// Comments for annotation editor
+export const FF_DEV_2887 = "fflag-feat-dev-2887-comments-ui-editor-short";
+
 // Customize flags
 const flags = {};
 
