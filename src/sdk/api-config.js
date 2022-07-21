@@ -127,5 +127,21 @@ export const APIConfig = {
       path: "/actions",
       method: "post",
     },
+
+    /** List comments ?annotation=<annotation_id> **/
+    comments: "/../comments", 
+
+    /** Create a new comment **/
+    createComment: {
+      path: "/../comments",
+      method: "post",
+    },
+
+    /** Update a comment **/
+    updateComment: {
+      path: "/../comments/:commentID",
+      method: "patch",
+    },
+
   },
 };

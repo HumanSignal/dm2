@@ -13,6 +13,7 @@
 
 import { FF_DEV_1621, FF_DEV_2186, FF_DEV_2887, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
+import { CommentsSdk } from "./comments-sdk";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
@@ -176,6 +177,11 @@ export class LSFWrapper {
           this.lsfInstance.on(name.replace(/^lsf:/, ''), clb);
         });
       });
+
+
+      if (isFF(FF_DEV_2887)) {
+        new CommentsSdk(this.lsfInstance, this.datamanager);
+      }
     } catch (err) {
       console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
