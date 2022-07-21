@@ -12,12 +12,14 @@ import { Tag } from "../../Common/Tag/Tag";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import * as CellViews from "../../CellViews";
 import { GridView } from "../GridView/GridView";
-import { getStoredPageSize, Pagination, setStoredPageSize } from "../../Common/Pagination/Pagination";
+import { DEFAULT_PAGE_SIZE, getStoredPageSize, Pagination, setStoredPageSize } from "../../Common/Pagination/Pagination";
+import { FF_DEV_2536, isFF } from '../../../utils/feature-flags';
+
 import "./DataView.styl";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
-  const props = {
+  let props = {
     store,
     dataStore,
     updated: dataStore.updated,
@@ -56,7 +58,7 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
-    const [currentPageSize, setPageSize] = useState(getStoredPageSize("tasks", 30));
+    const [currentPageSize, setPageSize] = useState(getStoredPageSize("tasks", DEFAULT_PAGE_SIZE));
 
     const setPage = useCallback((page, pageSize) => {
       setPageSize(pageSize);
@@ -196,6 +198,8 @@ export const DataView = injector(
         commonDecoration("reviews_accepted", 60, "center"),
         commonDecoration("reviews_rejected", 60, "center"),
         commonDecoration("ground_truth", 60, "center"),
+        isFF(FF_DEV_2536) && commonDecoration("comment_count", 60, "center"),
+        isFF(FF_DEV_2536) && commonDecoration("unresolved_comment_count", 60, "center"),
         {
           resolver: (col) => col.type === "Number",
           style(col) {
@@ -306,7 +310,7 @@ export const DataView = injector(
               showPageSize={!isLabeling}
               size={isLabeling ? "small" : "medium"}
               waiting={dataStore.loading}
-              deafultPageSize={currentPageSize}
+              defaultPageSize={currentPageSize}
               pageSizeOptions={[10, 30, 50, 100]}
               onInit={setPage}
               onChange={setPage}

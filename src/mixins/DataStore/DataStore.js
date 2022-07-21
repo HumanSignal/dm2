@@ -1,7 +1,7 @@
 import { flow, getRoot, types } from "mobx-state-tree";
 import { guidGenerator } from "../../utils/random";
 import { isDefined } from "../../utils/utils";
-import { getStoredPageSize } from "../../components/Common/Pagination/Pagination";
+import { DEFAULT_PAGE_SIZE, getStoredPageSize } from "../../components/Common/Pagination/Pagination";
 
 const listIncludes = (list, id) => {
   const index =
@@ -15,7 +15,7 @@ const listIncludes = (list, id) => {
 const MixinBase = types
   .model("InfiniteListMixin", {
     page: types.optional(types.integer, 0),
-    pageSize: types.optional(types.integer, getStoredPageSize("tasks", 30)),
+    pageSize: types.optional(types.integer, getStoredPageSize("tasks", DEFAULT_PAGE_SIZE)),
     total: types.optional(types.integer, 0),
     loading: false,
     loadingItem: false,
@@ -189,12 +189,19 @@ export const DataStore = (
         self.loading = true;
 
         if (reload || isDefined(pageNumber)) {
-          self.page = pageNumber ?? 1;
+          if (self.page === 0)
+            self.page = 1;
+          else if (isDefined(pageNumber))
+            self.page = pageNumber;
         } else {
           self.page++;
         }
 
-        if (pageSize) self.pageSize = pageSize;
+        if (pageSize) {
+          self.pageSize = pageSize;
+        } else {
+          self.pageSize = getStoredPageSize("tasks", DEFAULT_PAGE_SIZE);
+        }
 
         const params = {
           page: self.page,
