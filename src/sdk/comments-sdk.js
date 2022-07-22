@@ -13,8 +13,6 @@ export class CommentsSdk {
   }
 
   createComment = async (comment) => {
-    console.log({ createComment: comment });
-
     const { $meta: _, ...newComment } = await this.dm.apiCall("createComment", undefined, {
       body: {
         annotation: comment.annotation,
@@ -28,16 +26,17 @@ export class CommentsSdk {
 
   // @todo enable with ability to update comments for resolve/unresolve
   updateComment = async (comment) => {
-    console.log({ updateComment: comment });
+    if (!comment.id || comment.id < 0) return; // Don't allow an update with an incorrect id
 
-    // const res = await this.dm.apiCall("updateComment", {
+    const res = await this.dm.apiCall("updateComment", { id: comment.id }, {  body: comment });
 
-    // });
+    return res;
   }
 
   listComments = async (params) => {
     const res = await this.dm.apiCall("comments", {
       annotation: params.annotation,
+      ordering: params.ordering || "-id",
     });
 
     return res;  

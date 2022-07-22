@@ -139,7 +139,7 @@ export const APIConfig = {
 
     /** Update a comment **/
     updateComment: {
-      path: "/../comments/:commentID",
+      path: "/../comments/:id",
       method: "patch",
     },
 
