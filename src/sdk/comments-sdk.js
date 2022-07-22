@@ -7,6 +7,12 @@ export class CommentsSdk {
   }
 
   bindEventHandlers() {
+    [
+      'comments:create',
+      'comments:update',
+      'comments:list',
+    ].forEach((evt) => this.lsf.off(evt));
+
     this.lsf.on("comments:create", this.createComment);
     this.lsf.on("comments:update", this.updateComment);
     this.lsf.on("comments:list", this.listComments);
@@ -34,7 +40,7 @@ export class CommentsSdk {
   }
 
   listComments = async (params) => {
-    const res = await this.dm.apiCall("comments", {
+    const res = await this.dm.apiCall("listComments", {
       annotation: params.annotation,
       ordering: params.ordering || "-id",
     });

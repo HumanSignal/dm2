@@ -129,7 +129,7 @@ export const APIConfig = {
     },
 
     /** List comments ?annotation=<annotation_id> **/
-    comments: "/../comments", 
+    listComments: "/../comments", 
 
     /** Create a new comment **/
     createComment: {
@@ -142,6 +142,5 @@ export const APIConfig = {
       path: "/../comments/:id",
       method: "patch",
     },
-
   },
 };
