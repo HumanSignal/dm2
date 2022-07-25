@@ -11,12 +11,14 @@ import { VariantSelect } from "../../Filters/types/List";
 import "./Annotators.styl";
 
 export const Annotators = (cell) => {
+
   const { value, column, original: task } = cell;
   const sdk = useSDK();
   const userList = Array.from(value);
   const renderable = userList.slice(0, 10);
   const extra = userList.length - renderable.length;
 
+  console.log("userCellCounterClick", column.alias, task, userList);
   return (
     <Block name="annotators">
       {renderable.map((item) => {
@@ -24,6 +26,7 @@ export const Annotators = (cell) => {
         const { annotated, reviewed, review } = item;
 
         const userpicIsFaded = (isDefined(annotated) && annotated === false) || (isDefined(reviewed) && reviewed === false);
+        const suppressStats = column.alias === "comment_authors";
 
         return (
           <Elem
@@ -32,7 +35,7 @@ export const Annotators = (cell) => {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              sdk.invoke("userCellClick", e, column.alias, task, user);
+              sdk.invoke("userCellClick", e, column.alias, task, user, suppressStats);
             }}
           >
             <Tooltip title={user.fullName || user.email}>
@@ -55,7 +58,7 @@ export const Annotators = (cell) => {
         <Elem name="item" onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          sdk.invoke("userCellCounterClick", e, column.alias, task, userList);
+          sdk.invoke("userCellCounterClick", e, column.alias, task, userList );
         }}>
           <Userpic username={`+${extra}`}/>
         </Elem>
@@ -86,7 +89,7 @@ Annotators.customOperators = [{
   key: "contains",
   label: "contains",
   valueType: "list",
-  input: (props) => <VariantSelect {...props}/>,
+  input: (props) => <VariantSelect {...props} />,
 }, {
   key: "not_contains",
   label: "not contains",
