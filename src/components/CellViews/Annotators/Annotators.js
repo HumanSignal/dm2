@@ -11,14 +11,12 @@ import { VariantSelect } from "../../Filters/types/List";
 import "./Annotators.styl";
 
 export const Annotators = (cell) => {
-
   const { value, column, original: task } = cell;
   const sdk = useSDK();
   const userList = Array.from(value);
   const renderable = userList.slice(0, 10);
   const extra = userList.length - renderable.length;
 
-  console.log("userCellCounterClick", column.alias, task, userList);
   return (
     <Block name="annotators">
       {renderable.map((item) => {
@@ -89,7 +87,7 @@ Annotators.customOperators = [{
   key: "contains",
   label: "contains",
   valueType: "list",
-  input: (props) => <VariantSelect {...props} />,
+  input: (props) => <VariantSelect {...props}/>,
 }, {
   key: "not_contains",
   label: "not contains",
