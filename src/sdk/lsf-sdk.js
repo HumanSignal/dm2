@@ -219,7 +219,7 @@ export class LSFWrapper {
       if (newTask) this.selectTask(newTask, annotationID, fromHistory);
     };
 
-    if (isFF(FF_DEV_2887) && this.lsf.annotationStore?.selected?.commentStore?.hasUnpersisted) {
+    if (isFF(FF_DEV_2887) && this.lsf.annotationStore?.selected?.commentStore?.hasUnsaved) {
       Modal.confirm({
         title: "You have unsaved changes",
         body:

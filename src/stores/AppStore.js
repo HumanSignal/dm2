@@ -262,7 +262,7 @@ export const AppStore = types
 
       };
 
-      if (isFF(FF_DEV_2887) && self.LSF?.lsf?.annotationStore?.selected?.commentStore?.hasUnpersisted) {
+      if (isFF(FF_DEV_2887) && self.LSF?.lsf?.annotationStore?.selected?.commentStore?.hasUnsaved) {
         Modal.confirm({
           title: "You have unsaved changes",
           body:
@@ -311,7 +311,7 @@ export const AppStore = types
         }
       };
 
-      if (isFF(FF_DEV_2887) && self.LSF?.lsf?.annotationStore?.selected?.commentStore?.hasUnpersisted) {
+      if (isFF(FF_DEV_2887) && self.LSF?.lsf?.annotationStore?.selected?.commentStore?.hasUnsaved) {
         Modal.confirm({
           title: "You have unsaved changes",
           body:
