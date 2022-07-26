@@ -544,6 +544,7 @@ export class LSFWrapper {
 
     await this.withinLoadingState(async () => {
       currentAnnotation.pauseAutosave();
+
       if (currentAnnotation.draftId > 0) {
         await this.datamanager.apiCall("updateDraft", {
           draftID: currentAnnotation.draftId,
@@ -557,10 +558,17 @@ export class LSFWrapper {
           taskID: this.task.id,
         }, annotationData);
       }
+
+      // Carry over any comments to when the annotation draft is eventually submitted
+      if (isFF(FF_DEV_2887)) {
+        currentAnnotation.commentStore.toCache(`task.${task.id}`);
+      }
+
       await this.datamanager.apiCall("deleteAnnotation", {
         taskID: task.id,
         annotationID: currentAnnotation.pk,
       });
+      
     });
     await this.loadTask(task.id);
     this.datamanager.invoke("cancelSkippingTask");
@@ -607,7 +615,8 @@ export class LSFWrapper {
 
       this.datamanager.invoke(eventName, this.lsf, eventData, result);
 
-      if (isFF(FF_DEV_2887) && eventName === 'submitAnnotation') {
+      // Persist any queued comments which are not currently attached to an annotation
+      if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName)) {
         await currentAnnotation.commentStore.persistQueuedComments();
       }
 
