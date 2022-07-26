@@ -4,7 +4,7 @@ import { FilterDropdown } from "../FilterDropdown";
 // import { Common } from "./Common";
 
 export const VariantSelect = observer(({ filter, schema, onChange, multiple, value }) => {
-  if (!schema) return;
+  if (!schema) return <></>;
   const { items } = schema;
 
   const selectedValue = (() => {
