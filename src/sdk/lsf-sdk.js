@@ -607,6 +607,10 @@ export class LSFWrapper {
 
       this.datamanager.invoke(eventName, this.lsf, eventData, result);
 
+      if (isFF(FF_DEV_2887) && eventName === 'submitAnnotation') {
+        await currentAnnotation.commentStore.persistQueuedComments();
+      }
+
       // this.history?.add(taskID, currentAnnotation.pk);
     }
 
