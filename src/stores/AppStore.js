@@ -1,6 +1,5 @@
 import { destroy, flow, types } from "mobx-state-tree";
 import { Modal } from "../components/Common/Modal/Modal";
-import { FF_DEV_2887, isFF } from "../utils/feature-flags";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import { Action } from "./Action";
@@ -252,30 +251,11 @@ export const AppStore = types
     startLabelStream(options = {}) {
       if (!self.confirmLabelingConfigured()) return;
 
-      const nextAction = () => {
+      self.SDK.setMode("labelstream");
 
-        self.SDK.setMode("labelstream");
-
-        if (options?.pushState !== false) {
-          History.navigate({ labeling: 1 });
-        }
-
-      };
-
-      if (isFF(FF_DEV_2887) && self.LSF?.lsf?.annotationStore?.selected?.commentStore?.hasUnsaved) {
-        Modal.confirm({
-          title: "You have unsaved changes",
-          body:
-            "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
-          onOk() {
-            nextAction();
-          },
-          okText: "Discard and continue",
-        });
-        return;
+      if (options?.pushState !== false) {
+        History.navigate({ labeling: 1 });
       }
-
-      nextAction();
     },
 
     startLabeling(item, options = {}) {
@@ -283,48 +263,29 @@ export const AppStore = types
 
       if (self.dataStore.loadingItem) return;
 
-      
-      const nextAction = () => {
+      self.SDK.setMode("labeling");
 
+      if (item && !item.isSelected) {
+        const labelingParams = {
+          pushState: options?.pushState,
+        };
 
-        self.SDK.setMode("labeling");
-
-        if (item && !item.isSelected) {
-          const labelingParams = {
-            pushState: options?.pushState,
-          };
-
-          if (isDefined(item.task_id)) {
-            Object.assign(labelingParams, {
-              annotationID: item.id,
-              taskID: item.task_id,
-            });
-          } else {
-            Object.assign(labelingParams, {
-              taskID: item.id,
-            });
-          }
-
-          self.setTask(labelingParams);
+        if (isDefined(item.task_id)) {
+          Object.assign(labelingParams, {
+            annotationID: item.id,
+            taskID: item.task_id,
+          });
         } else {
-          self.closeLabeling();
+          Object.assign(labelingParams, {
+            taskID: item.id,
+          });
         }
-      };
 
-      if (isFF(FF_DEV_2887) && self.LSF?.lsf?.annotationStore?.selected?.commentStore?.hasUnsaved) {
-        Modal.confirm({
-          title: "You have unsaved changes",
-          body:
-            "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
-          onOk() {
-            nextAction();
-          },
-          okText: "Discard and continue",
-        });
-        return;
+        self.setTask(labelingParams);
+      } else {
+        self.closeLabeling();
       }
 
-      nextAction();
     },
 
     confirmLabelingConfigured() {
