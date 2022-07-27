@@ -11,8 +11,10 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { FF_DEV_1621, FF_DEV_2186, isFF } from "../utils/feature-flags";
+import { FF_DEV_1621, FF_DEV_2186, FF_DEV_2887, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
+import { CommentsSdk } from "./comments-sdk";
+import { Modal } from "../components/Common/Modal/Modal";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
@@ -124,6 +126,9 @@ export class LSFWrapper {
     if (this.interfacesModifier) {
       interfaces = this.interfacesModifier(interfaces, this.labelStream);
     }
+    if (isFF(FF_DEV_2887)) {
+      interfaces.push("annotations:comments");
+    }
 
     const lsfProperties = {
       user: options.user,
@@ -173,6 +178,11 @@ export class LSFWrapper {
           this.lsfInstance.on(name.replace(/^lsf:/, ''), clb);
         });
       });
+
+
+      if (isFF(FF_DEV_2887)) {
+        new CommentsSdk(this.lsfInstance, this.datamanager);
+      }
     } catch (err) {
       console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
@@ -185,27 +195,43 @@ export class LSFWrapper {
       return console.error("Make sure that LSF was properly initialized");
     }
 
-    const tasks = this.datamanager.store.taskStore;
+    const nextAction = async () => {
+      const tasks = this.datamanager.store.taskStore;
 
-    const newTask = await this.withinLoadingState(async () => {
-      if (!isDefined(taskID)) {
-        return tasks.loadNextTask();
+      const newTask = await this.withinLoadingState(async () => {
+        if (!isDefined(taskID)) {
+          return tasks.loadNextTask();
+        } else {
+          return tasks.loadTask(taskID);
+        }
+      });
+
+      /* If we're in label stream and there's no task – end the stream */
+      if (this.labelStream && !newTask) {
+        this.lsf.setFlags({ noTask: true });
+        return;
       } else {
-        return tasks.loadTask(taskID);
-      }
-    });
-
-    /* If we're in label stream and there's no task – end the stream */
-    if (this.labelStream && !newTask) {
-      this.lsf.setFlags({ noTask: true });
-      return;
-    } else {
       // don't break the LSF - if user explores tasks after finishing labeling, show them
-      this.lsf.setFlags({ noTask: false });
+        this.lsf.setFlags({ noTask: false });
+      }
+
+      // Add new data from received task
+      if (newTask) this.selectTask(newTask, annotationID, fromHistory);
+    };
+
+    if (isFF(FF_DEV_2887) && this.lsf.annotationStore?.selected?.commentStore?.hasUnsaved) {
+      Modal.confirm({
+        title: "You have unsaved changes",
+        body: "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
+        onOk() {
+          nextAction();
+        },
+        okText: "Discard and continue",
+      });
+      return;
     }
 
-    // Add new data from received task
-    if (newTask) this.selectTask(newTask, annotationID, fromHistory);
+    nextAction();
   }
 
   selectTask(task, annotationID, fromHistory = false) {
@@ -535,6 +561,7 @@ export class LSFWrapper {
 
     await this.withinLoadingState(async () => {
       currentAnnotation.pauseAutosave();
+
       if (currentAnnotation.draftId > 0) {
         await this.datamanager.apiCall("updateDraft", {
           draftID: currentAnnotation.draftId,
@@ -548,10 +575,17 @@ export class LSFWrapper {
           taskID: this.task.id,
         }, annotationData);
       }
+
+      // Carry over any comments to when the annotation draft is eventually submitted
+      if (isFF(FF_DEV_2887)) {
+        currentAnnotation.commentStore.toCache(`task.${task.id}`);
+      }
+
       await this.datamanager.apiCall("deleteAnnotation", {
         taskID: task.id,
         annotationID: currentAnnotation.pk,
       });
+      
     });
     await this.loadTask(task.id);
     this.datamanager.invoke("cancelSkippingTask");
@@ -597,6 +631,11 @@ export class LSFWrapper {
       const eventData = annotationToServer(currentAnnotation);
 
       this.datamanager.invoke(eventName, this.lsf, eventData, result);
+
+      // Persist any queued comments which are not currently attached to an annotation
+      if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName)) {
+        await currentAnnotation.commentStore.persistQueuedComments();
+      }
 
       // this.history?.add(taskID, currentAnnotation.pk);
     }
