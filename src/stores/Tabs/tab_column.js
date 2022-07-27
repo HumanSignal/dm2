@@ -3,7 +3,6 @@ import React from "react";
 import { toStudlyCaps } from "strman";
 import { CommentCheck, CommentRed, LsAnnotation, LsBanSquare, LsSparkSquare, LsStarSquare, LsThumbsDown, LsThumbsUp } from "../../assets/icons";
 import * as CellViews from "../../components/CellViews";
-import { FF_DEV_2536, isFF } from "../../utils/feature-flags";
 import { all } from "../../utils/utils";
 
 export const ViewColumnType = types.enumeration([
@@ -194,9 +193,9 @@ export const TabColumn = types
         case "ground_truth":
           return <LsStarSquare width="20" height="20" style={{ color: '#FFB700' }}/>;
         case "comment_count":
-          return isFF(FF_DEV_2536) && <CommentCheck width="20" height="20" style={{ color: '#FFB700' }} />;
+          return <CommentCheck width="20" height="20" style={{ color: '#FFB700' }} />;
         case "unresolved_comment_count":
-          return isFF(FF_DEV_2536) && <CommentRed width="20" height="20" style={{ color: '#FFB700' }}/>;
+          return <CommentRed width="20" height="20" style={{ color: '#FFB700' }}/>;
       }
     },
 
