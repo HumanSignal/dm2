@@ -222,8 +222,7 @@ export class LSFWrapper {
     if (isFF(FF_DEV_2887) && this.lsf.annotationStore?.selected?.commentStore?.hasUnsaved) {
       Modal.confirm({
         title: "You have unsaved changes",
-        body:
-            "There are comments which are not persisted. Continuing will discard these comments.",
+        body: "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
         onOk() {
           nextAction();
         },

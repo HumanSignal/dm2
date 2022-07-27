@@ -266,7 +266,7 @@ export const AppStore = types
         Modal.confirm({
           title: "You have unsaved changes",
           body:
-            "There are comments which are not persisted. Continuing will discard these comments.",
+            "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
           onOk() {
             nextAction();
           },
@@ -315,7 +315,7 @@ export const AppStore = types
         Modal.confirm({
           title: "You have unsaved changes",
           body:
-            "There are comments which are not persisted. Continuing will discard these comments.",
+            "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
           onOk() {
             nextAction();
           },
