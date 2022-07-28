@@ -13,6 +13,7 @@
 
 import { FF_DEV_1621, FF_DEV_2186, FF_DEV_2887, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
+import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
@@ -194,27 +195,43 @@ export class LSFWrapper {
       return console.error("Make sure that LSF was properly initialized");
     }
 
-    const tasks = this.datamanager.store.taskStore;
+    const nextAction = async () => {
+      const tasks = this.datamanager.store.taskStore;
 
-    const newTask = await this.withinLoadingState(async () => {
-      if (!isDefined(taskID)) {
-        return tasks.loadNextTask();
+      const newTask = await this.withinLoadingState(async () => {
+        if (!isDefined(taskID)) {
+          return tasks.loadNextTask();
+        } else {
+          return tasks.loadTask(taskID);
+        }
+      });
+
+      /* If we're in label stream and there's no task – end the stream */
+      if (this.labelStream && !newTask) {
+        this.lsf.setFlags({ noTask: true });
+        return;
       } else {
-        return tasks.loadTask(taskID);
-      }
-    });
-
-    /* If we're in label stream and there's no task – end the stream */
-    if (this.labelStream && !newTask) {
-      this.lsf.setFlags({ noTask: true });
-      return;
-    } else {
       // don't break the LSF - if user explores tasks after finishing labeling, show them
-      this.lsf.setFlags({ noTask: false });
+        this.lsf.setFlags({ noTask: false });
+      }
+
+      // Add new data from received task
+      if (newTask) this.selectTask(newTask, annotationID, fromHistory);
+    };
+
+    if (isFF(FF_DEV_2887) && this.lsf.annotationStore?.selected?.commentStore?.hasUnsaved) {
+      Modal.confirm({
+        title: "You have unsaved changes",
+        body: "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
+        onOk() {
+          nextAction();
+        },
+        okText: "Discard and continue",
+      });
+      return;
     }
 
-    // Add new data from received task
-    if (newTask) this.selectTask(newTask, annotationID, fromHistory);
+    nextAction();
   }
 
   selectTask(task, annotationID, fromHistory = false) {
@@ -560,7 +577,7 @@ export class LSFWrapper {
       }
 
       // Carry over any comments to when the annotation draft is eventually submitted
-      if (isFF(FF_DEV_2887)) {
+      if (isFF(FF_DEV_2887) && currentAnnotation?.commentStore?.toCache) {
         currentAnnotation.commentStore.toCache(`task.${task.id}`);
       }
 
@@ -616,7 +633,7 @@ export class LSFWrapper {
       this.datamanager.invoke(eventName, this.lsf, eventData, result);
 
       // Persist any queued comments which are not currently attached to an annotation
-      if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName)) {
+      if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName) && currentAnnotation?.commentStore?.persistQueuedComments) {
         await currentAnnotation.commentStore.persistQueuedComments();
       }
 
