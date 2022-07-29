@@ -47,10 +47,19 @@ export class CommentsSdk {
   }
 
   listComments = async (params) => {
-    const res = await this.dm.apiCall("listComments", {
-      draft: isFF(FF_DEV_3034) ? params.draft : undefined,
-      annotation: params.annotation,
+    const listParams = {
       ordering: params.ordering || "-id",
+    };
+
+    if (params.annotation) {
+      listParams.annotation = params.annotation;
+    }
+
+    if (isFF(FF_DEV_3034) && params.draft) {
+      listParams.draft = params.draft;
+    }
+    const res = await this.api.callApi("listCommentsV2", {
+      params: listParams,
     });
 
     return res;  
