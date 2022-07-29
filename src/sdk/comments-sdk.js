@@ -58,9 +58,8 @@ export class CommentsSdk {
     if (isFF(FF_DEV_3034) && params.draft) {
       listParams.draft = params.draft;
     }
-    const res = await this.dm.apiCall("listComments", {
-      params: listParams,
-    });
+
+    const res = await this.dm.apiCall("listComments", listParams);
 
     return res;  
   }
