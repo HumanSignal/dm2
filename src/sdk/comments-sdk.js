@@ -1,3 +1,4 @@
+import { FF_DEV_3034, isFF } from "../utils/feature-flags";
 
 export class CommentsSdk {
   constructor(lsf, dm) {
@@ -19,12 +20,18 @@ export class CommentsSdk {
   }
 
   createComment = async (comment) => {
+    const body = {
+      is_resolved: comment.is_resolved,
+      text: comment.text,
+    };
+
+    if (comment.annotation) {
+      body.annotation = comment.annotation;
+    } else if(isFF(FF_DEV_3034) && comment.draft) {
+      body.draft =  comment.draft;
+    }
     const { $meta: _, ...newComment } = await this.dm.apiCall("createComment", undefined, {
-      body: {
-        annotation: comment.annotation,
-        is_resolved: comment.is_resolved,
-        text: comment.text,
-      },
+      body,
     });
 
     return newComment;
@@ -41,6 +48,7 @@ export class CommentsSdk {
 
   listComments = async (params) => {
     const res = await this.dm.apiCall("listComments", {
+      draft: isFF(FF_DEV_3034) ? params.draft : undefined,
       annotation: params.annotation,
       ordering: params.ordering || "-id",
     });

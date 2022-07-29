@@ -15,6 +15,8 @@ export const FF_DEV_2536 = "fflag_feat_front_dev-2536_comment_notifications_shor
 // Outliner + Details
 export const FF_DEV_1170 = "ff_front_1170_outliner_030222_short";
 
+export const FF_DEV_3034 = "fflag-feat-dev-3034-comments-with-drafts-short";
+
 // Customize flags
 const flags = {};
 
