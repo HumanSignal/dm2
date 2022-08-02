@@ -101,6 +101,13 @@ export const APIConfig = {
       method: "post",
     },
 
+
+    /** Unskip a previously skipped annotation */
+    unskipAnnotation: {
+      path: "/../annotations/:annotationID/unskip",
+      method: "post",
+    },
+
     /** Override selected items list (checkboxes) */
     setSelectedItems: {
       path: "/views/:tabID/selected-items",

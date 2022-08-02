@@ -11,7 +11,7 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { FF_DEV_1621, FF_DEV_2186, FF_DEV_2887, isFF } from "../utils/feature-flags";
+import { FF_DEV_1621, FF_DEV_2186, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
@@ -149,7 +149,7 @@ export class LSFWrapper {
       onUpdateAnnotation: this.onUpdateAnnotation,
       onDeleteAnnotation: this.onDeleteAnnotation,
       onSkipTask: this.onSkipTask,
-      onCancelSkippingTask: this.onCancelSkippingTask,
+      onUnskipTask: this.onUnskipTask,
       onGroundTruth: this.onGroundTruth,
       onEntityCreate: this.onEntityCreate,
       onEntityDelete: this.onEntityDelete,
@@ -553,7 +553,7 @@ export class LSFWrapper {
     );
   };
 
-  onCancelSkippingTask = async () => {
+  onUnskipTask = async () => {
     const { task, currentAnnotation } = this;
 
     if (!isDefined(currentAnnotation) && !isDefined(currentAnnotation.pk)) {
@@ -564,33 +564,38 @@ export class LSFWrapper {
     await this.withinLoadingState(async () => {
       currentAnnotation.pauseAutosave();
 
-      if (currentAnnotation.draftId > 0) {
-        await this.datamanager.apiCall("updateDraft", {
-          draftID: currentAnnotation.draftId,
-        }, {
-          body: { annotation: null },
+      if(isFF(FF_DEV_3034)) {
+        await this.datamanager.apiCall("unskipAnnotation", {
+          annotationID: currentAnnotation.pk,
         });
       } else {
-        const annotationData = { body: this.prepareData(currentAnnotation) };
+        if (currentAnnotation.draftId > 0) {
+          await this.datamanager.apiCall("updateDraft", {
+            draftID: currentAnnotation.draftId,
+          }, {
+            body: { annotation: null },
+          });
+        } else {
+          const annotationData = { body: this.prepareData(currentAnnotation) };
 
-        await this.datamanager.apiCall("createDraftForTask", {
-          taskID: this.task.id,
-        }, annotationData);
+          await this.datamanager.apiCall("createDraftForTask", {
+            taskID: this.task.id,
+          }, annotationData);
+        }
+
+        // Carry over any comments to when the annotation draft is eventually submitted
+        if (isFF(FF_DEV_2887) && currentAnnotation?.commentStore?.toCache) {
+          currentAnnotation.commentStore.toCache(`task.${task.id}`);
+        }
+
+        await this.datamanager.apiCall("deleteAnnotation", {
+          taskID: task.id,
+          annotationID: currentAnnotation.pk,
+        });
       }
-
-      // Carry over any comments to when the annotation draft is eventually submitted
-      if (isFF(FF_DEV_2887) && currentAnnotation?.commentStore?.toCache) {
-        currentAnnotation.commentStore.toCache(`task.${task.id}`);
-      }
-
-      await this.datamanager.apiCall("deleteAnnotation", {
-        taskID: task.id,
-        annotationID: currentAnnotation.pk,
-      });
-      
     });
     await this.loadTask(task.id);
-    this.datamanager.invoke("cancelSkippingTask");
+    this.datamanager.invoke("unskipTask");
   };
 
   // Proxy events that are unused by DM integration
