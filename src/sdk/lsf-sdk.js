@@ -504,9 +504,11 @@ export class LSFWrapper {
     }
   };
 
-  onSubmitDraft = async (studio, annotation) => {
+  onSubmitDraft = async (studio, annotation, params = {}) => {
     const annotationDoesntExist = !annotation.pk;
     const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
+
+    Object.assign(data.body, params);
 
     await this.saveUserLabels();
 
