@@ -660,7 +660,7 @@ export class LSFWrapper {
       // task execution time, always summed up with previous values
       lead_time: (new Date() - annotation.loadedDate) / 1000 + Number(annotation.leadTime ?? 0),
       // don't serialize annotations twice for drafts
-      result: draft ? annotation.versions.draft : annotation.serializeAnnotation(),
+      result: (draft ? annotation.versions.draft : annotation.serializeAnnotation()) ?? [],
       draft_id: annotation.draftId,
       parent_prediction: annotation.parent_prediction,
       parent_annotation: annotation.parent_annotation,
