@@ -565,7 +565,7 @@ export class LSFWrapper {
       currentAnnotation.pauseAutosave();
 
       if(isFF(FF_DEV_3034)) {
-        await this.datamanager.apiCall("unskipAnnotation", {
+        await this.datamanager.apiCall("convertToDraft", {
           annotationID: currentAnnotation.pk,
         });
       } else {

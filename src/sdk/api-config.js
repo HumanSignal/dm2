@@ -102,9 +102,9 @@ export const APIConfig = {
     },
 
 
-    /** Unskip a previously skipped annotation */
-    unskipAnnotation: {
-      path: "/../annotations/:annotationID/unskip",
+    /** Convert an annotation to draft */
+    convertToDraft: {
+      path: "/../annotations/:annotationID/convert-to-draft",
       method: "post",
     },
 
