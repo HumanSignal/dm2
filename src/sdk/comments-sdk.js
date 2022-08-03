@@ -53,10 +53,10 @@ export class CommentsSdk {
 
     if (params.annotation) {
       listParams.annotation = params.annotation;
-    }
-
-    if (isFF(FF_DEV_3034) && params.draft) {
+    } else if (isFF(FF_DEV_3034) && params.draft) {
       listParams.draft = params.draft;
+    } else {
+      return [];
     }
 
     const res = await this.dm.apiCall("listComments", listParams);
