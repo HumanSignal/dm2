@@ -219,7 +219,7 @@ export class LSFWrapper {
       if (newTask) this.selectTask(newTask, annotationID, fromHistory);
     };
 
-    if (isFF(FF_DEV_2887) && this.lsf.annotationStore?.selected?.commentStore?.hasUnsaved) {
+    if (isFF(FF_DEV_2887) && this.lsf?.store?.commentStore?.hasUnsaved) {
       Modal.confirm({
         title: "You have unsaved changes",
         body: "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
@@ -438,6 +438,11 @@ export class LSFWrapper {
     await this.saveUserLabels();
 
     const result = await this.withinLoadingState(async () => {
+      if (isFF(FF_DEV_3034) && this.lsf?.store?.commentStore?.addCurrentComment) {
+        // Submit comment if there is content in the comment box
+        await this.lsf.store.commentStore.addCurrentComment();
+      }
+
       return this.datamanager.apiCall(
         "updateAnnotation",
         {
@@ -584,8 +589,8 @@ export class LSFWrapper {
         }
 
         // Carry over any comments to when the annotation draft is eventually submitted
-        if (isFF(FF_DEV_2887) && currentAnnotation?.commentStore?.toCache) {
-          currentAnnotation.commentStore.toCache(`task.${task.id}`);
+        if (isFF(FF_DEV_2887) && this.lsf?.store?.commentStore?.toCache) {
+          this.lsf.store.commentStore.toCache(`task.${task.id}`);
         }
 
         await this.datamanager.apiCall("deleteAnnotation", {
@@ -625,6 +630,11 @@ export class LSFWrapper {
     await this.saveUserLabels();
 
     const result = await this.withinLoadingState(async () => {
+      if (isFF(FF_DEV_3034) && this.lsf?.store?.commentStore?.addCurrentComment) {
+        // Submit comment if there is content in the comment box
+        await this.lsf.store.commentStore.addCurrentComment();
+      }
+
       const result = await submit(taskID, serializedAnnotation);
 
       return result;
@@ -640,8 +650,8 @@ export class LSFWrapper {
       this.datamanager.invoke(eventName, this.lsf, eventData, result);
 
       // Persist any queued comments which are not currently attached to an annotation
-      if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName) && currentAnnotation?.commentStore?.persistQueuedComments) {
-        await currentAnnotation.commentStore.persistQueuedComments();
+      if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName) && this.lsf?.store?.commentStore?.persistQueuedComments) {
+        await this.lsf.store.commentStore.persistQueuedComments();
       }
 
       // this.history?.add(taskID, currentAnnotation.pk);
