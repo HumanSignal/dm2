@@ -438,11 +438,6 @@ export class LSFWrapper {
     await this.saveUserLabels();
 
     const result = await this.withinLoadingState(async () => {
-      if (isFF(FF_DEV_3034) && this.lsf?.commentStore?.addCurrentComment) {
-        // Submit comment if there is content in the comment box
-        await this.lsf.commentStore.addCurrentComment();
-      }
-
       return this.datamanager.apiCall(
         "updateAnnotation",
         {
@@ -630,11 +625,6 @@ export class LSFWrapper {
     await this.saveUserLabels();
 
     const result = await this.withinLoadingState(async () => {
-      if (isFF(FF_DEV_3034) && this.lsf?.commentStore?.addCurrentComment) {
-        // Submit comment if there is content in the comment box
-        await this.lsf.commentStore.addCurrentComment();
-      }
-
       const result = await submit(taskID, serializedAnnotation);
 
       return result;
