@@ -101,6 +101,13 @@ export const APIConfig = {
       method: "post",
     },
 
+
+    /** Convert an annotation to draft */
+    convertToDraft: {
+      path: "/../annotations/:annotationID/convert-to-draft",
+      method: "post",
+    },
+
     /** Override selected items list (checkboxes) */
     setSelectedItems: {
       path: "/views/:tabID/selected-items",

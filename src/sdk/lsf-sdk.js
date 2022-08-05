@@ -11,7 +11,7 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { FF_DEV_1621, FF_DEV_2186, FF_DEV_2887, isFF } from "../utils/feature-flags";
+import { FF_DEV_1621, FF_DEV_2186, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
@@ -149,7 +149,7 @@ export class LSFWrapper {
       onUpdateAnnotation: this.onUpdateAnnotation,
       onDeleteAnnotation: this.onDeleteAnnotation,
       onSkipTask: this.onSkipTask,
-      onCancelSkippingTask: this.onCancelSkippingTask,
+      onUnskipTask: this.onUnskipTask,
       onGroundTruth: this.onGroundTruth,
       onEntityCreate: this.onEntityCreate,
       onEntityDelete: this.onEntityDelete,
@@ -219,7 +219,7 @@ export class LSFWrapper {
       if (newTask) this.selectTask(newTask, annotationID, fromHistory);
     };
 
-    if (isFF(FF_DEV_2887) && this.lsf.annotationStore?.selected?.commentStore?.hasUnsaved) {
+    if (isFF(FF_DEV_2887) && this.lsf?.commentStore?.hasUnsaved) {
       Modal.confirm({
         title: "You have unsaved changes",
         body: "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
@@ -504,9 +504,11 @@ export class LSFWrapper {
     }
   };
 
-  onSubmitDraft = async (studio, annotation) => {
+  onSubmitDraft = async (studio, annotation, params = {}) => {
     const annotationDoesntExist = !annotation.pk;
     const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
+
+    Object.assign(data.body, params);
 
     await this.saveUserLabels();
 
@@ -551,7 +553,7 @@ export class LSFWrapper {
     );
   };
 
-  onCancelSkippingTask = async () => {
+  onUnskipTask = async () => {
     const { task, currentAnnotation } = this;
 
     if (!isDefined(currentAnnotation) && !isDefined(currentAnnotation.pk)) {
@@ -562,33 +564,38 @@ export class LSFWrapper {
     await this.withinLoadingState(async () => {
       currentAnnotation.pauseAutosave();
 
-      if (currentAnnotation.draftId > 0) {
-        await this.datamanager.apiCall("updateDraft", {
-          draftID: currentAnnotation.draftId,
-        }, {
-          body: { annotation: null },
+      if(isFF(FF_DEV_3034)) {
+        await this.datamanager.apiCall("convertToDraft", {
+          annotationID: currentAnnotation.pk,
         });
       } else {
-        const annotationData = { body: this.prepareData(currentAnnotation) };
+        if (currentAnnotation.draftId > 0) {
+          await this.datamanager.apiCall("updateDraft", {
+            draftID: currentAnnotation.draftId,
+          }, {
+            body: { annotation: null },
+          });
+        } else {
+          const annotationData = { body: this.prepareData(currentAnnotation) };
 
-        await this.datamanager.apiCall("createDraftForTask", {
-          taskID: this.task.id,
-        }, annotationData);
+          await this.datamanager.apiCall("createDraftForTask", {
+            taskID: this.task.id,
+          }, annotationData);
+        }
+
+        // Carry over any comments to when the annotation draft is eventually submitted
+        if (isFF(FF_DEV_2887) && this.lsf?.commentStore?.toCache) {
+          this.lsf.commentStore.toCache(`task.${task.id}`);
+        }
+
+        await this.datamanager.apiCall("deleteAnnotation", {
+          taskID: task.id,
+          annotationID: currentAnnotation.pk,
+        });
       }
-
-      // Carry over any comments to when the annotation draft is eventually submitted
-      if (isFF(FF_DEV_2887) && currentAnnotation?.commentStore?.toCache) {
-        currentAnnotation.commentStore.toCache(`task.${task.id}`);
-      }
-
-      await this.datamanager.apiCall("deleteAnnotation", {
-        taskID: task.id,
-        annotationID: currentAnnotation.pk,
-      });
-      
     });
     await this.loadTask(task.id);
-    this.datamanager.invoke("cancelSkippingTask");
+    this.datamanager.invoke("unskipTask");
   };
 
   // Proxy events that are unused by DM integration
@@ -633,8 +640,8 @@ export class LSFWrapper {
       this.datamanager.invoke(eventName, this.lsf, eventData, result);
 
       // Persist any queued comments which are not currently attached to an annotation
-      if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName) && currentAnnotation?.commentStore?.persistQueuedComments) {
-        await currentAnnotation.commentStore.persistQueuedComments();
+      if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName) && this.lsf?.commentStore?.persistQueuedComments) {
+        await this.lsf.commentStore.persistQueuedComments();
       }
 
       // this.history?.add(taskID, currentAnnotation.pk);
@@ -658,7 +665,7 @@ export class LSFWrapper {
       // task execution time, always summed up with previous values
       lead_time: (new Date() - annotation.loadedDate) / 1000 + Number(annotation.leadTime ?? 0),
       // don't serialize annotations twice for drafts
-      result: draft ? annotation.versions.draft : annotation.serializeAnnotation(),
+      result: (draft ? annotation.versions.draft : annotation.serializeAnnotation()) ?? [],
       draft_id: annotation.draftId,
       parent_prediction: annotation.parent_prediction,
       parent_annotation: annotation.parent_annotation,
