@@ -37,7 +37,6 @@ export class CommentsSdk {
     return newComment;
   }
 
-  // @todo enable with ability to update comments for resolve/unresolve
   updateComment = async (comment) => {
     if (!comment.id || comment.id < 0) return; // Don't allow an update with an incorrect id
 
@@ -60,6 +59,27 @@ export class CommentsSdk {
     }
 
     const res = await this.dm.apiCall("listComments", listParams);
+
+    // @todo replace when the api can fetch this in a more performant way.
+    const users = this.lsf.store.users;
+
+    const missingUserIds = res.map((c) =>
+      !users.some(u => +u.id === +c.created_by) ? c.created_by : null,
+    )
+      .reduce((ids, id) => !id || ids.includes(id) ? ids : [id, ...ids], []);
+
+    // if user not found, fetch the info and put into users list.
+    const fetchedUsers = await Promise.all(missingUserIds.map(async (pk) => {
+      const { id, email, username, first_name, last_name, avatar, initials } = await this.dm.apiCall("user", {
+        pk,
+      });
+
+      return { id, email, username, first_name, last_name, avatar, initials };
+    }));
+
+    if (fetchedUsers.length) {
+      this.lsf.store.mergeUsers(fetchedUsers);
+    }
 
     return res;  
   }
