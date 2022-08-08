@@ -1,4 +1,3 @@
-import uniq from 'lodash/uniq';
 import { FF_DEV_3034, isFF } from "../utils/feature-flags";
 
 export class CommentsSdk {
@@ -49,6 +48,7 @@ export class CommentsSdk {
   listComments = async (params) => {
     const listParams = {
       ordering: params.ordering || "-id",
+      expand_created_by: true,
     };
 
     if (params.annotation) {
@@ -61,26 +61,17 @@ export class CommentsSdk {
 
     const res = await this.dm.apiCall("listComments", listParams);
 
-    // @todo replace when the api can fetch this in a more performant way.
-    const users = this.lsf.store.users;
+    const commentUsers = [];
+    const comments = res.map((comment) => {
+      commentUsers.push(comment.created_by);
+      return { ...comment, created_by: comment.created_by.id };
+    });
 
-    const missingUserIds = uniq(res.map((c) =>
-      !users.some(u => +u.id === +c.created_by) ? c.created_by : null,
-    )
-      .filter(Boolean));
-
-    // if user not found, fetch the info and put into users list.
-    const fetchedUsers = await Promise.all(missingUserIds.map(async (pk) => 
-      this.dm.apiCall("user", {
-        pk,
-      }),
-    ));
-
-    if (fetchedUsers.length) {
-      this.lsf.store.mergeUsers(fetchedUsers);
+    if (commentUsers.length) {
+      this.lsf.store.mergeUsers(commentUsers);
     }
 
-    return res;  
+    return comments;
   }
 }
 
