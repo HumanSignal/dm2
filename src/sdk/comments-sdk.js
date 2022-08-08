@@ -1,3 +1,4 @@
+import uniq from 'lodash/uniq';
 import { FF_DEV_3034, isFF } from "../utils/feature-flags";
 
 export class CommentsSdk {
@@ -63,19 +64,17 @@ export class CommentsSdk {
     // @todo replace when the api can fetch this in a more performant way.
     const users = this.lsf.store.users;
 
-    const missingUserIds = res.map((c) =>
+    const missingUserIds = uniq(res.map((c) =>
       !users.some(u => +u.id === +c.created_by) ? c.created_by : null,
     )
-      .reduce((ids, id) => !id || ids.includes(id) ? ids : [id, ...ids], []);
+      .filter(Boolean));
 
     // if user not found, fetch the info and put into users list.
-    const fetchedUsers = await Promise.all(missingUserIds.map(async (pk) => {
-      const { id, email, username, first_name, last_name, avatar, initials } = await this.dm.apiCall("user", {
+    const fetchedUsers = await Promise.all(missingUserIds.map(async (pk) => 
+      this.dm.apiCall("user", {
         pk,
-      });
-
-      return { id, email, username, first_name, last_name, avatar, initials };
-    }));
+      }),
+    ));
 
     if (fetchedUsers.length) {
       this.lsf.store.mergeUsers(fetchedUsers);
