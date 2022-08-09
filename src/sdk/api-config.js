@@ -101,6 +101,13 @@ export const APIConfig = {
       method: "post",
     },
 
+
+    /** Convert an annotation to draft */
+    convertToDraft: {
+      path: "/../annotations/:annotationID/convert-to-draft",
+      method: "post",
+    },
+
     /** Override selected items list (checkboxes) */
     setSelectedItems: {
       path: "/views/:tabID/selected-items",
@@ -126,6 +133,21 @@ export const APIConfig = {
     invokeAction: {
       path: "/actions",
       method: "post",
+    },
+
+    /** List comments ?annotation=<annotation_id> **/
+    listComments: "/../comments", 
+
+    /** Create a new comment **/
+    createComment: {
+      path: "/../comments",
+      method: "post",
+    },
+
+    /** Update a comment **/
+    updateComment: {
+      path: "/../comments/:id",
+      method: "patch",
     },
   },
 };
