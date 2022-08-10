@@ -8,6 +8,9 @@ export const APIConfig = {
     /** users list */
     users: "/../users",
 
+    /** user info */
+    user: "/../users/:pk",
+
     /** Available columns/fields of the dataset */
     columns: "/columns",
 

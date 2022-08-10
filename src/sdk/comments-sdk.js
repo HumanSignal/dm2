@@ -37,7 +37,6 @@ export class CommentsSdk {
     return newComment;
   }
 
-  // @todo enable with ability to update comments for resolve/unresolve
   updateComment = async (comment) => {
     if (!comment.id || comment.id < 0) return; // Don't allow an update with an incorrect id
 
@@ -49,6 +48,7 @@ export class CommentsSdk {
   listComments = async (params) => {
     const listParams = {
       ordering: params.ordering || "-id",
+      expand_created_by: true,
     };
 
     if (params.annotation) {
@@ -61,7 +61,17 @@ export class CommentsSdk {
 
     const res = await this.dm.apiCall("listComments", listParams);
 
-    return res;  
+    const commentUsers = [];
+    const comments = res.map((comment) => {
+      commentUsers.push(comment.created_by);
+      return { ...comment, created_by: comment.created_by.id };
+    });
+
+    if (commentUsers.length) {
+      this.lsf.store.mergeUsers(commentUsers);
+    }
+
+    return comments;
   }
 }
 
