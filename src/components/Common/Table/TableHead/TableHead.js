@@ -184,8 +184,6 @@ export const TableHead = observer(
         TableContext,
       );
 
-      console.log({ columns });
-
       return (
         <Block
           name="table-head"

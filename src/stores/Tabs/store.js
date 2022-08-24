@@ -212,7 +212,6 @@ export const TabStore = types
       if (autoselect) {
         const selectedView = self.views[self.views.length - 1];
 
-        console.log('selecting and reloading', selectedView.id);
         self.setSelected(selectedView);
       }
 
@@ -305,7 +304,6 @@ export const TabStore = types
 
         return newView;
       } else {
-        console.log('saved');
         applySnapshot(view, newViewSnapshot);
 
         if (reload !== false) {
