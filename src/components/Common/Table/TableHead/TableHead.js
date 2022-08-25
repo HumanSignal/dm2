@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React from "react";
+import React, { useState } from "react";
 import {
   ViewColumnType,
   ViewColumnTypeName,
@@ -93,14 +93,70 @@ const ColumnRenderer = observer(
     onTypeChange,
     onResize,
     onReset,
+    onDragStart,
+    onDragEnd,
+    onDrag,
   }) => {
     const { Header, Cell: _, id, ...column } = columnInput;
+    const { isDragging, setIsDragging } = useState(false);
+    const { initialDragPos, setInitialDragPos } = useState;
+
+    const allowDraggable = true;
+    const draggableStyles = {};
+
+    const dragStartHandler = (e) => {
+      console.log("is this happening?1", e);
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(true);
+      setInitialDragPos({ x: e.clientX, y: e.clientY });
+      onDragStart?.(e);
+    };
+    const dragEndHandler = (e) => {
+      console.log("is this happening?2");
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragging(false);
+      setInitialDragPos();
+      onDragEnd?.(e);
+    };
+    const dragHandler = (e) => {
+      if (isDragging) {
+        console.log("is this happening?3", e.target);
+        e.preventDefault();
+        e.stopPropagation();
+        const { x, y } = initialDragPos;
+
+        draggableStyles["--translatex"] = `${e.clientX - x}px`;
+        draggableStyles["--translatey"] = `${e.clientY - y}px`;
+        onDrag?.(e);
+      }
+    };
 
     if (Header instanceof Function) {
       const { cellClassName: _, headerClassName, ...rest } = column;
 
       return (
-        <TableElem {...rest} name="cell" key={id} mix={["th", headerClassName]}>
+        <TableElem 
+          mod={{ 
+            draggable: allowDraggable,
+            dragging: isDragging,
+          }} 
+          {...rest} 
+          name="cell" 
+          key={id} 
+          mix={["th", headerClassName]}
+          {...(
+            allowDraggable ? {
+              onDragStart: (e) => dragStartHandler(e),
+              onDragEnd: (e) => dragEndHandler(e),
+              onDrag: (e) => dragHandler(e),
+              style: draggableStyles,
+            }
+              :
+              {}
+          )}
+        >
           <Header />
         </TableElem>
       );
@@ -130,7 +186,22 @@ const ColumnRenderer = observer(
     );
 
     return (
-      <TableCell data-id={id} mix="th">
+      <TableCell data-id={id} mix="th" mod={{ 
+        draggable: allowDraggable,
+        dragging: isDragging, 
+      }} 
+      {...(
+        allowDraggable ? {
+          onDragStart: (e) => dragStartHandler(e),
+          onDragEnd: (e) => dragEndHandler(e),
+          onDrag: (e) => dragHandler(e),
+          style: { ...style, ...draggableStyles },
+
+        }
+          :
+          {}
+      )}
+      >
         <Resizer
           style={{
             height: 22,
@@ -191,7 +262,18 @@ export const TableHead = observer(
           name="table-head"
           ref={ref}
           style={style}
+          mod={{ droppable: true }}
           mix="horizontal-shadow"
+          onDrop={(e) => {
+            console.log("drop", e);
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onDragOver={(e) => {
+            console.log("dragOver", e);
+            e.preventDefault();
+            e.stopPropagation();
+          }}
         >
           {columns.map((col) => {
             return (
@@ -207,6 +289,11 @@ export const TableHead = observer(
                 onTypeChange={onTypeChange}
                 onResize={onResize}
                 onReset={onReset}
+                onDragStart={(e) => {
+                  console.log("drag started", col, e);
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
               />
             );
           })}
