@@ -1,3 +1,4 @@
+import { FF_DEV_3034, isFF } from "../utils/feature-flags";
 
 export class CommentsSdk {
   constructor(lsf, dm) {
@@ -19,18 +20,23 @@ export class CommentsSdk {
   }
 
   createComment = async (comment) => {
+    const body = {
+      is_resolved: comment.is_resolved,
+      text: comment.text,
+    };
+
+    if (comment.annotation) {
+      body.annotation = comment.annotation;
+    } else if(isFF(FF_DEV_3034) && comment.draft) {
+      body.draft =  comment.draft;
+    }
     const { $meta: _, ...newComment } = await this.dm.apiCall("createComment", undefined, {
-      body: {
-        annotation: comment.annotation,
-        is_resolved: comment.is_resolved,
-        text: comment.text,
-      },
+      body,
     });
 
     return newComment;
   }
 
-  // @todo enable with ability to update comments for resolve/unresolve
   updateComment = async (comment) => {
     if (!comment.id || comment.id < 0) return; // Don't allow an update with an incorrect id
 
@@ -40,12 +46,32 @@ export class CommentsSdk {
   }
 
   listComments = async (params) => {
-    const res = await this.dm.apiCall("listComments", {
-      annotation: params.annotation,
+    const listParams = {
       ordering: params.ordering || "-id",
+      expand_created_by: true,
+    };
+
+    if (params.annotation) {
+      listParams.annotation = params.annotation;
+    } else if (isFF(FF_DEV_3034) && params.draft) {
+      listParams.draft = params.draft;
+    } else {
+      return [];
+    }
+
+    const res = await this.dm.apiCall("listComments", listParams);
+
+    const commentUsers = [];
+    const comments = res.map((comment) => {
+      commentUsers.push(comment.created_by);
+      return { ...comment, created_by: comment.created_by.id };
     });
 
-    return res;  
+    if (commentUsers.length) {
+      this.lsf.store.mergeUsers(commentUsers);
+    }
+
+    return comments;
   }
 }
 

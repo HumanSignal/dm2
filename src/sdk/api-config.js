@@ -8,6 +8,9 @@ export const APIConfig = {
     /** users list */
     users: "/../users",
 
+    /** user info */
+    user: "/../users/:pk",
+
     /** Available columns/fields of the dataset */
     columns: "/columns",
 
@@ -98,6 +101,13 @@ export const APIConfig = {
     /** Create draft for new annotation */
     createDraftForTask: {
       path: "/../tasks/:taskID/drafts",
+      method: "post",
+    },
+
+
+    /** Convert an annotation to draft */
+    convertToDraft: {
+      path: "/../annotations/:annotationID/convert-to-draft",
       method: "post",
     },
 

@@ -1,6 +1,3 @@
-// Add an interactivity flag to the results to make some predictions' results be able to be automatically added to newly created annotations.
-export const FF_DEV_1621 = "ff_front_dev_1621_interactive_mode_150222_short";
-
 // Switch to page navigation
 export const FF_DEV_1470 = "ff_front_dev_1470_dm_pagination_010422_short";
 
@@ -14,6 +11,8 @@ export const FF_DEV_2536 = "fflag_feat_front_dev-2536_comment_notifications_shor
 
 // Outliner + Details
 export const FF_DEV_1170 = "ff_front_1170_outliner_030222_short";
+
+export const FF_DEV_3034 = "fflag-feat-dev-3034-comments-with-drafts-short";
 
 // Customize flags
 const flags = {};

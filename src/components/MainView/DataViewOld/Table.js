@@ -12,6 +12,7 @@ import { Tag } from "../../Common/Tag/Tag";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import * as CellViews from "../../CellViews";
 import { GridView } from "../GridViewOld/GridView";
+import { FF_DEV_2536, isFF } from '../../../utils/feature-flags';
 import "./Table.styl";
 
 const injector = inject(({ store }) => {
@@ -193,6 +194,8 @@ export const DataView = injector(
         commonDecoration("reviews_accepted", 60, "center"),
         commonDecoration("reviews_rejected", 60, "center"),
         commonDecoration("ground_truth", 60, "center"),
+        isFF(FF_DEV_2536) && commonDecoration("comment_count", 60, "center"),
+        isFF(FF_DEV_2536) && commonDecoration("unresolved_comment_count", 60, "center"),
         {
           resolver: (col) => col.type === "Number",
           style(col) {
