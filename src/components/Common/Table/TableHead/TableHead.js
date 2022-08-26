@@ -1,5 +1,6 @@
-import { observer } from "mobx-react";
-import React, { useState } from "react";
+import { observer, useLocalStore } from "mobx-react";
+import { toJS } from "mobx";
+import React, { forwardRef, useEffect, useRef } from "react";
 import {
   ViewColumnType,
   ViewColumnTypeName,
@@ -16,6 +17,7 @@ import { TableCell, TableCellContent } from "../TableCell/TableCell";
 import { TableContext, TableElem } from "../TableContext";
 import { getStyle } from "../utils";
 import "./TableHead.styl";
+import { useCallback } from "react";
 
 const { Block, Elem } = BemWithSpecifiContext();
 
@@ -93,69 +95,18 @@ const ColumnRenderer = observer(
     onTypeChange,
     onResize,
     onReset,
-    onDragStart,
-    onDragEnd,
-    onDrag,
   }) => {
     const { Header, Cell: _, id, ...column } = columnInput;
-    const { isDragging, setIsDragging } = useState(false);
-    const { initialDragPos, setInitialDragPos } = useState;
-
-    const allowDraggable = true;
-    const draggableStyles = {};
-
-    const dragStartHandler = (e) => {
-      console.log("is this happening?1", e);
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(true);
-      setInitialDragPos({ x: e.clientX, y: e.clientY });
-      onDragStart?.(e);
-    };
-    const dragEndHandler = (e) => {
-      console.log("is this happening?2");
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-      setInitialDragPos();
-      onDragEnd?.(e);
-    };
-    const dragHandler = (e) => {
-      if (isDragging) {
-        console.log("is this happening?3", e.target);
-        e.preventDefault();
-        e.stopPropagation();
-        const { x, y } = initialDragPos;
-
-        draggableStyles["--translatex"] = `${e.clientX - x}px`;
-        draggableStyles["--translatey"] = `${e.clientY - y}px`;
-        onDrag?.(e);
-      }
-    };
 
     if (Header instanceof Function) {
       const { cellClassName: _, headerClassName, ...rest } = column;
 
       return (
         <TableElem 
-          mod={{ 
-            draggable: allowDraggable,
-            dragging: isDragging,
-          }} 
           {...rest} 
           name="cell" 
           key={id} 
           mix={["th", headerClassName]}
-          {...(
-            allowDraggable ? {
-              onDragStart: (e) => dragStartHandler(e),
-              onDragEnd: (e) => dragEndHandler(e),
-              onDrag: (e) => dragHandler(e),
-              style: draggableStyles,
-            }
-              :
-              {}
-          )}
         >
           <Header />
         </TableElem>
@@ -186,22 +137,7 @@ const ColumnRenderer = observer(
     );
 
     return (
-      <TableCell data-id={id} mix="th" mod={{ 
-        draggable: allowDraggable,
-        dragging: isDragging, 
-      }} 
-      {...(
-        allowDraggable ? {
-          onDragStart: (e) => dragStartHandler(e),
-          onDragEnd: (e) => dragEndHandler(e),
-          onDrag: (e) => dragHandler(e),
-          style: { ...style, ...draggableStyles },
-
-        }
-          :
-          {}
-      )}
-      >
+      <TableCell data-id={id} mix="th">
         <Resizer
           style={{
             height: 22,
@@ -236,7 +172,7 @@ const ColumnRenderer = observer(
 );
 
 export const TableHead = observer(
-  React.forwardRef(
+  forwardRef(
     (
       {
         style,
@@ -254,8 +190,41 @@ export const TableHead = observer(
       const { columns, headerRenderers, cellViews } = React.useContext(
         TableContext,
       );
+      const states = useLocalStore(() => ({
+        displayedColumns: [],
+        setDisplayedColumns(updatedColumns) {
+          states.displayedColumns = [...updatedColumns];
+        },
+        getDisplayedColumns() {
+          return toJS(states.displayedColumns) ?? [];
+        },
+        isDragging: false,
+        setIsDragging(isDragging) {
+          states.isDragging = isDragging;
+        },
+        getIsDragging() {
+          return toJS(states.isDragging);
+        },
+        initialDragPos: false,
+        setInitialDragPos(initPos) {
+          states.initialDragPos = initPos;
+        },
+        getInitialDragPos() {
+          return toJS(states.isDragging);
+        },
+        draggedCol: false,
+        setDraggedCol(draggedCol) {
+          states.draggedCol = draggedCol;
+        },
+        getDraggedCol() {
+          return toJS(states.draggedCol);
+        },
+      }));
+      let colRefs = useRef({});
 
-      console.log({ columns });
+      useEffect(() => {
+        states.setDisplayedColumns(columns);
+      }, [columns]);
 
       return (
         <Block
@@ -264,37 +233,50 @@ export const TableHead = observer(
           style={style}
           mod={{ droppable: true }}
           mix="horizontal-shadow"
-          onDrop={(e) => {
-            console.log("drop", e);
-            e.preventDefault();
-            e.stopPropagation();
-          }}
-          onDragOver={(e) => {
-            console.log("dragOver", e);
-            e.preventDefault();
-            e.stopPropagation();
-          }}
+          onDragOver={useCallback((e) => {
+            const updatedColumns = [...states.getDisplayedColumns()].sort((a, b) => {
+              const colRefrence = colRefs.current;
+              const colAID = a.id;
+              const colBID = b.id;
+
+              console.log(colRefrence, colRefrence[colAID], colRefrence[colBID]);
+              return 0;
+            });
+
+            console.log("onDragOver", e.clientX, updatedColumns);
+          }, [states])}
         >
-          {columns.map((col) => {
+          {states.getDisplayedColumns().map((col) => {
+            
             return (
-              <ColumnRenderer
-                key={col.id}
-                column={col}
-                headerRenderers={headerRenderers}
-                cellViews={cellViews}
-                columnHeaderExtra={columnHeaderExtra}
-                sortingEnabled={sortingEnabled}
-                stopInteractions={stopInteractions}
-                decoration={decoration}
-                onTypeChange={onTypeChange}
-                onResize={onResize}
-                onReset={onReset}
-                onDragStart={(e) => {
-                  console.log("drag started", col, e);
-                  e.preventDefault();
-                  e.stopPropagation();
+              <Elem name="draggable" draggable={true} ref={(ele) => colRefs.current[col.id] = ele} key={col.id}
+                onDragStart={() => {
+                  const ele = colRefs.current[col.id];
+
+                  states.setInitialDragPos({
+                    x: ele.clientX,
+                    y: ele.clientY,
+                  });
+                  states.setDraggedCol(ele);
                 }}
-              />
+                onDragEnd ={(e) => {
+                  console.log("drag ended", col, e, colRefs[col.id]);
+                  states.setDraggedCol(colRefs[col.id]);
+                }}>
+                <ColumnRenderer
+                  column={col}
+                  mod={{ draggable: true }}
+                  headerRenderers={headerRenderers}
+                  cellViews={cellViews}
+                  columnHeaderExtra={columnHeaderExtra}
+                  sortingEnabled={sortingEnabled}
+                  stopInteractions={stopInteractions}
+                  decoration={decoration}
+                  onTypeChange={onTypeChange}
+                  onResize={onResize}
+                  onReset={onReset}
+                />
+              </Elem>
             );
           })}
           <Elem name="extra">{extra}</Elem>

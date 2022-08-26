@@ -224,7 +224,7 @@ export const BemWithSpecifiContext = (context?: Context<CN | null>) => {
       .mix(...(finalMix as CNMix[]), rest.className)
       .toClassName();
 
-    const finalProps: any = { ...rest, ref, className, draggable: (mod?.draggable ?? false) };
+    const finalProps: any = { ...rest, ref, className };
 
     if (typeof tag !== 'string') finalProps.block = blockCtx;
     if (component) finalProps.tag = tag;
