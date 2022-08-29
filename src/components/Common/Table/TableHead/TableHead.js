@@ -1,6 +1,6 @@
 import { observer, useLocalStore } from "mobx-react";
 import { toJS } from "mobx";
-import React, { forwardRef, useEffect, useRef } from "react";
+import React, { forwardRef, useRef } from "react";
 import {
   ViewColumnType,
   ViewColumnTypeName,
@@ -184,6 +184,7 @@ export const TableHead = observer(
         onResize,
         onReset,
         extra,
+        onDragEnd,
       },
       ref,
     ) => {
@@ -191,12 +192,12 @@ export const TableHead = observer(
         TableContext,
       );
       const states = useLocalStore(() => ({
-        displayedColumns: [],
-        setDisplayedColumns(updatedColumns) {
-          states.displayedColumns = [...updatedColumns];
+        orderedColumns: {},
+        setOrderedColumns(updatedColumns) {
+          states.orderedColumns = { ...updatedColumns };
         },
-        getDisplayedColumns() {
-          return toJS(states.displayedColumns) ?? [];
+        getOrderedColumns() {
+          return toJS(states.orderedColumns) ?? {};
         },
         isDragging: false,
         setIsDragging(isDragging) {
@@ -210,9 +211,9 @@ export const TableHead = observer(
           states.initialDragPos = initPos;
         },
         getInitialDragPos() {
-          return toJS(states.isDragging);
+          return toJS(states.initialDragPos);
         },
-        draggedCol: false,
+        draggedCol: null,
         setDraggedCol(draggedCol) {
           states.draggedCol = draggedCol;
         },
@@ -221,9 +222,13 @@ export const TableHead = observer(
         },
       }));
       let colRefs = useRef({});
+      const getUpdatedColOrder = useCallback((cols) => {
+        const orderedColumns = {};
 
-      useEffect(() => {
-        states.setDisplayedColumns(columns);
+        (cols ?? columns).forEach((col, colIndex) => {
+          orderedColumns[col.id] = colIndex;
+        });
+        return orderedColumns;
       }, [columns]);
 
       return (
@@ -234,34 +239,47 @@ export const TableHead = observer(
           mod={{ droppable: true }}
           mix="horizontal-shadow"
           onDragOver={useCallback((e) => {
-            const updatedColumns = [...states.getDisplayedColumns()].sort((a, b) => {
-              const colRefrence = colRefs.current;
-              const colAID = a.id;
-              const colBID = b.id;
+            const draggedCol = states.getDraggedCol();
 
-              console.log(colRefrence, colRefrence[colAID], colRefrence[colBID]);
-              return 0;
-            });
-
-            console.log("onDragOver", e.clientX, updatedColumns);
+            colRefs.current[draggedCol].style.setProperty("--scale", "0");
+            e.stopPropagation();
           }, [states])}
         >
-          {states.getDisplayedColumns().map((col) => {
+          {columns.map((col) => {
             
             return (
               <Elem name="draggable" draggable={true} ref={(ele) => colRefs.current[col.id] = ele} key={col.id}
-                onDragStart={() => {
+                onDragStart={(e) => {  
+                  e.dataTransfer.effectAllowed = "none";
                   const ele = colRefs.current[col.id];
 
                   states.setInitialDragPos({
-                    x: ele.clientX,
-                    y: ele.clientY,
+                    x: ele.offsetLeft,
+                    y: ele.offsetTop,
                   });
-                  states.setDraggedCol(ele);
+                  states.setDraggedCol(col.id);
                 }}
-                onDragEnd ={(e) => {
-                  console.log("drag ended", col, e, colRefs[col.id]);
-                  states.setDraggedCol(colRefs[col.id]);
+                onDragEnd={(e) => {
+                  e.stopPropagation();
+                  console.log("onDrop");
+                  const draggedCol = states.getDraggedCol();
+                  const curColumns = columns.filter(curCol => curCol.id !== draggedCol);
+                  const newIndex = curColumns.findIndex((curCol) => {
+                    const colRefrence = colRefs.current[curCol.id];
+                    const mousePos = e.clientX + (ref?.current?.parentElement.scrollLeft ?? 0);
+                    let isGreaterThanPos = mousePos < (colRefrence.offsetLeft + (colRefrence.clientWidth / 2));
+      
+                    return isGreaterThanPos;
+                  });
+      
+                  console.log(colRefs, draggedCol);
+                  colRefs.current[draggedCol].style.setProperty("--scale", "");
+      
+                  states.setDraggedCol(null);
+                  curColumns.splice(newIndex, 0, col);
+                  const updatedColOrder = getUpdatedColOrder(curColumns);
+      
+                  onDragEnd?.(updatedColOrder);
                 }}>
                 <ColumnRenderer
                   column={col}
