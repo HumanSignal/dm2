@@ -78,8 +78,10 @@ export class LSFWrapper {
    */
   constructor(dm, element, options) {
     this.datamanager = dm;
+    this.store = dm.store;
     this.root = element;
     this.task = options.task;
+    this.preload = options.preload;
     this.labelStream = options.isLabelStream ?? false;
     this.initialAnnotation = options.annotation;
     this.interfacesModifier = options.interfacesModifier;
@@ -187,6 +189,32 @@ export class LSFWrapper {
       console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
     }
+  }
+
+  /** @private */
+  async preloadTask() {
+    const {
+      annotation: annotationId,
+      draft: draftId,
+    } = this.preload;
+    const api = this.datamanager.api;
+    let annotation;
+    let response;
+
+    if (annotationId) {
+      response = await api.call("annotation", { params: { id: annotationId } });
+      annotation = response;
+    } else if (draftId) {
+      response = await api.call("draft", { params: { id: draftId } });
+    }
+
+    if (response && response.task) {
+      const task = await api.call("task", { params: { taskID: response.task } });
+
+      this.selectTask(task, annotation?.id, true);
+    }
+
+    return false;
   }
 
   /** @private */
@@ -398,11 +426,17 @@ export class LSFWrapper {
     this.datamanager.invoke("labelStudioLoad", ls);
     this.lsf = ls;
 
+    if (!this.lsf.task) this.setLoading(true);
+
     await this.loadUserLabels();
 
-    if (this.labelStream) {
+    if (this.preload) {
+      await this.preloadTask();
+    } else if (this.labelStream) {
       await this.loadTask();
     }
+
+    this.setLoading(false);
   };
 
   /** @private */
