@@ -16,8 +16,9 @@ export const FF_DEV_3034 = "fflag-feat-dev-3034-comments-with-drafts-short";
 
 /**
  * Support for notification links in the Label Steam and the Review Stream.
+ * @link https://app.launchdarkly.com/default/branch/features/feat_front_dev_1752_notification_links_in_label_and_review_streams
  */
-export const DEV_1752 = "feat_front_dev_1752_notification_links_in_label_and_review_streams";
+export const FF_DEV_1752 = "feat_front_dev_1752_notification_links_in_label_and_review_streams";
 
 // Customize flags
 const flags = {};

@@ -11,7 +11,7 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { DEV_1752, FF_DEV_2186, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
+import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
@@ -430,7 +430,7 @@ export class LSFWrapper {
 
     await this.loadUserLabels();
 
-    if (this.preload && isFF(DEV_1752)) {
+    if (this.preload && isFF(FF_DEV_1752)) {
       await this.preloadTask();
     } else if (this.labelStream) {
       await this.loadTask();
