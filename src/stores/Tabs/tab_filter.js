@@ -118,15 +118,22 @@ export const TabFilter = types
       if (!isDefined(value)) return;
 
       const previousFilterType = self.filter.currentType;
+      const previousFilter = self.filter.id;
 
       self.filter = value;
 
-      if (previousFilterType !== self.filter.currentType) {
+      const typeChanged = previousFilterType !== self.filter.currentType;
+      const filterChanged = previousFilter !== self.filter.id;
+
+      if (typeChanged || filterChanged) {
         self.markUnsaved();
-        self.setDefaultValue();
       }
 
-      self.setOperator(self.component[0].key);
+      if (typeChanged) {
+        self.setDefaultValue();
+        self.setOperator(self.component[0].key);
+      }
+
       if (save) self.saved();
     },
 

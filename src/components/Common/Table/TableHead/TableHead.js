@@ -1,6 +1,6 @@
 import { observer, useLocalStore } from "mobx-react";
 import { toJS } from "mobx";
-import React, { forwardRef, useRef } from "react";
+import React, { forwardRef, useCallback, useRef } from "react";
 import {
   ViewColumnType,
   ViewColumnTypeName,
@@ -17,7 +17,6 @@ import { TableCell, TableCellContent } from "../TableCell/TableCell";
 import { TableContext, TableElem } from "../TableContext";
 import { getStyle } from "../utils";
 import "./TableHead.styl";
-import { useCallback } from "react";
 import { FF_DEV_2984, isFF } from "../../../../utils/feature-flags";
 
 const { Block, Elem } = BemWithSpecifiContext();
@@ -105,12 +104,7 @@ const ColumnRenderer = observer(
       const { cellClassName: _, headerClassName, ...rest } = column;
 
       return (
-        <TableElem 
-          {...rest} 
-          name="cell" 
-          key={id} 
-          mix={["th", headerClassName]}
-        >
+        <TableElem {...rest} name="cell" key={id} mix={["th", headerClassName]}>
           <Header />
         </TableElem>
       );
@@ -266,7 +260,6 @@ export const TableHead = observer(
                   }}
                   onDragEnd={(e) => {
                     e.stopPropagation();
-                    console.log("onDrop");
                     const draggedCol = states.getDraggedCol();
                     const curColumns = columns.filter(curCol => curCol.id !== draggedCol);
                     const newIndex = curColumns.findIndex((curCol) => {
@@ -277,7 +270,6 @@ export const TableHead = observer(
                       return isGreaterThanPos;
                     });
         
-                    console.log(colRefs, draggedCol);
                     colRefs.current[draggedCol].style.setProperty("--scale", "");
         
                     states.setDraggedCol(null);
