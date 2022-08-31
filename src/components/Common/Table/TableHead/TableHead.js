@@ -303,7 +303,6 @@ export const TableHead = observer(
             name="table-head"
             ref={ref}
             style={style}
-            mod={{ droppable: true }}
             mix="horizontal-shadow"
           >
             {columns.map((col) => {

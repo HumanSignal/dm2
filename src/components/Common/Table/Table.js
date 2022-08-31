@@ -115,7 +115,6 @@ export const Table = observer(
       localStorage.setItem(colOrderKey, JSON.stringify(colOrder));
     }, [colOrder]);
 
-
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
         id: "select",
