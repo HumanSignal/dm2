@@ -264,7 +264,7 @@ export const TableHead = observer(
                     const curColumns = columns.filter(curCol => curCol.id !== draggedCol);
                     const newIndex = curColumns.findIndex((curCol) => {
                       const colRefrence = colRefs.current[curCol.id];
-                      const mousePos = e.clientX + (ref?.current?.parentElement.scrollLeft ?? 0);
+                      const mousePos = e.clientX + (ref?.current?.parentElement?.parentElement.scrollLeft ?? 0);
                       let isGreaterThanPos = mousePos < (colRefrence.offsetLeft + (colRefrence.clientWidth / 2));
         
                       return isGreaterThanPos;
