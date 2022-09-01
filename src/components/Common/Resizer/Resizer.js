@@ -29,6 +29,7 @@ export const Resizer = ({
   /** @param {MouseEvent} evt */
   const handleResize = React.useCallback(
     (evt) => {
+      evt.stopPropagation();
       const initialX = evt.pageX;
       let newWidth = width;
 

@@ -104,11 +104,16 @@ export const Table = observer(
     headerExtra,
     ...props
   }) => {
+    const colOrderKey = 'dm:columnorder';
     const tableHead = useRef();
+    const [colOrder, setColOrder] = useState(JSON.parse(localStorage.getItem(colOrderKey)) ?? {});
     const columns = prepareColumns(props.columns, props.hiddenColumns);
     const Decoration = useMemo(() => Decorator(decoration), [decoration]);
     const { api } = useSDK();
 
+    useEffect(() => {
+      localStorage.setItem(colOrderKey, JSON.stringify(colOrder));
+    }, [colOrder]);
 
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
@@ -189,6 +194,12 @@ export const Table = observer(
       },
     });
 
+    if (Object.keys(colOrder).length > 0) {
+      columns.sort( (a, b) => {
+        return colOrder[a.id] < colOrder[b.id] ? -1 : 1;
+      });
+    }
+
     const contextValue = {
       columns,
       data,
@@ -235,6 +246,7 @@ export const Table = observer(
               onResize={onColumnResize}
               onReset={onColumnReset}
               extra={headerExtra}
+              onDragEnd={(updatedColOrder) => setColOrder(updatedColOrder)}
             />
             {data.map((row, index) => {
               return (
