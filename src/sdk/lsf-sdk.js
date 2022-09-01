@@ -430,7 +430,7 @@ export class LSFWrapper {
 
     await this.loadUserLabels();
 
-    if (this.preload && isFF(FF_DEV_1752)) {
+    if (this.canPreloadTask && isFF(FF_DEV_1752)) {
       await this.preloadTask();
     } else if (this.labelStream) {
       await this.loadTask();
@@ -770,5 +770,9 @@ export class LSFWrapper {
   /** @returns {string|null} */
   get instruction() {
     return (this.project.instruction ?? this.project.expert_instruction ?? "").trim() || null;
+  }
+
+  get canPreloadTask() {
+    return Object.values(this.preload ?? {}).some((value) => isDefined(value));
   }
 }
