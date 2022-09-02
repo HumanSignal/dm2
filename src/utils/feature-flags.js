@@ -20,6 +20,9 @@ export const FF_DEV_3034 = "fflag-feat-dev-3034-comments-with-drafts-short";
  */
 export const FF_DEV_1752 = "feat_front_dev_1752_notification_links_in_label_and_review_streams";
 
+// toggles the ability to drag columns on the datamanager table
+export const FF_DEV_2984 = "fflag_feat_front_dev_2984_dm_draggable_columns_short";
+
 // Customize flags
 const flags = {};
 
