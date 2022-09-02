@@ -14,6 +14,12 @@ export const FF_DEV_1170 = "ff_front_1170_outliner_030222_short";
 
 export const FF_DEV_3034 = "fflag-feat-dev-3034-comments-with-drafts-short";
 
+/**
+ * Support for notification links in the Label Steam and the Review Stream.
+ * @link https://app.launchdarkly.com/default/branch/features/feat_front_dev_1752_notification_links_in_label_and_review_streams
+ */
+export const FF_DEV_1752 = "feat_front_dev_1752_notification_links_in_label_and_review_streams";
+
 // toggles the ability to drag columns on the datamanager table
 export const FF_DEV_2984 = "fflag_feat_front_dev_2984_dm_draggable_columns_short";
 
