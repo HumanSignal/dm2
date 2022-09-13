@@ -11,7 +11,7 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { FF_DEV_2186, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
+import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
@@ -78,8 +78,10 @@ export class LSFWrapper {
    */
   constructor(dm, element, options) {
     this.datamanager = dm;
+    this.store = dm.store;
     this.root = element;
     this.task = options.task;
+    this.preload = options.preload;
     this.labelStream = options.isLabelStream ?? false;
     this.initialAnnotation = options.annotation;
     this.interfacesModifier = options.interfacesModifier;
@@ -187,6 +189,32 @@ export class LSFWrapper {
       console.error("Failed to initialize LabelStudio", settings);
       console.error(err);
     }
+  }
+
+  /** @private */
+  async preloadTask() {
+    const {
+      annotation: annotationId,
+      draft: draftId,
+    } = this.preload;
+    const api = this.datamanager.api;
+    let annotation;
+    let response;
+
+    if (annotationId) {
+      response = await api.call("annotation", { params: { id: annotationId } });
+      annotation = response;
+    } else if (draftId) {
+      response = await api.call("draft", { params: { id: draftId } });
+    }
+
+    if (response && response.task) {
+      const task = await api.call("task", { params: { taskID: response.task } });
+
+      this.selectTask(task, annotation?.id, true);
+    }
+
+    return false;
   }
 
   /** @private */
@@ -398,11 +426,17 @@ export class LSFWrapper {
     this.datamanager.invoke("labelStudioLoad", ls);
     this.lsf = ls;
 
+    if (!this.lsf.task) this.setLoading(true);
+
     await this.loadUserLabels();
 
-    if (this.labelStream) {
+    if (this.canPreloadTask && isFF(FF_DEV_1752)) {
+      await this.preloadTask();
+    } else if (this.labelStream) {
       await this.loadTask();
     }
+
+    this.setLoading(false);
   };
 
   /** @private */
@@ -736,5 +770,9 @@ export class LSFWrapper {
   /** @returns {string|null} */
   get instruction() {
     return (this.project.instruction ?? this.project.expert_instruction ?? "").trim() || null;
+  }
+
+  get canPreloadTask() {
+    return Object.values(this.preload ?? {}).some((value) => isDefined(value));
   }
 }

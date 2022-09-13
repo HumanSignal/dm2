@@ -146,6 +146,7 @@ export class DataManager {
     this.spinnerSize = config.spinnerSize;
     this.instruments = prepareInstruments(config.instruments ?? {}),
     this.apiTransform = config.apiTransform ?? {};
+    this.preload = config.preload ?? {};
     this.interfaces = objectToMap({
       tabs: true,
       toolbar: true,
@@ -378,6 +379,7 @@ export class DataManager {
     this.lsf = new LSFWrapper(this, element, {
       ...this.labelStudioOptions,
       task: this.store.taskStore.selected,
+      preload: this.preload,
       // annotation: this.store.annotationStore.selected,
       isLabelStream: this.mode === 'labelstream',
     });
