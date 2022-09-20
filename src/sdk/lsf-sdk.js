@@ -103,6 +103,10 @@ export class LSFWrapper {
       if (this.project.show_skip_button) {
         interfaces.push("skip");
       }
+      // undefined or true for backward compatibility
+      if (this.task.allow_postpone !== false) {
+        interfaces.push("postpone");
+      }
     } else {
       interfaces.push(
         "infobar",
