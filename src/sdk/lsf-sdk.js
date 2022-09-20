@@ -103,10 +103,6 @@ export class LSFWrapper {
       if (this.project.show_skip_button) {
         interfaces.push("skip");
       }
-      // undefined or true for backward compatibility
-      if (this.task.allow_postpone !== false) {
-        interfaces.push("postpone");
-      }
     } else {
       interfaces.push(
         "infobar",
@@ -291,6 +287,8 @@ export class LSFWrapper {
     }
 
     this.lsf.resetState();
+    // undefined or true for backward compatibility
+    this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
     this.lsf.assignTask(task);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
