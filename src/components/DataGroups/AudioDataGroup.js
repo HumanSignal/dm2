@@ -1,4 +1,4 @@
-import { AudioPlayer } from "../Common/AudioPlayer/AudioPlayer";
+import { AudioPlayer } from "../Common/MediaPlayer/MediaPlayer";
 
 export const AudioDataGroup = ({ value }) => {
   return (

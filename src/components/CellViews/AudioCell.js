@@ -1,7 +1,7 @@
-import { AudioPlayer } from "../Common/AudioPlayer/AudioPlayer";
+import { MediaPlayer } from "../Common/MediaPlayer/MediaPlayer";
 
 export const AudioCell = (column) => {
-  return <AudioPlayer src={column.value} />;
+  return <MediaPlayer src={column.value} />;
 };
 
 AudioCell.style = {
@@ -12,7 +12,7 @@ AudioCell.style = {
 /* Audio Plus */
 
 export const AudioPlusCell = (column) => {
-  return <AudioPlayer src={column.value} />;
+  return <MediaPlayer src={column.value} />;
 };
 
 AudioPlusCell.style = {
