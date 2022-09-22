@@ -327,6 +327,8 @@ export class LSFWrapper {
           c = cs.addAnnotation({
             draft: draft.result,
             userGenerate: true,
+            comment_count: draft.comment_count,
+            unresolved_comment_count: draft.unresolved_comment_count,
             createdBy: draft.created_username,
             createdAgo: draft.created_ago,
             createdDate: draft.created_at,
