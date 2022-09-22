@@ -287,6 +287,8 @@ export class LSFWrapper {
     }
 
     this.lsf.resetState();
+    // undefined or true for backward compatibility
+    this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
     this.lsf.assignTask(task);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
@@ -325,6 +327,8 @@ export class LSFWrapper {
           c = cs.addAnnotation({
             draft: draft.result,
             userGenerate: true,
+            comment_count: draft.comment_count,
+            unresolved_comment_count: draft.unresolved_comment_count,
             createdBy: draft.created_username,
             createdAgo: draft.created_ago,
             createdDate: draft.created_at,
