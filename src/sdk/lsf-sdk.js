@@ -235,8 +235,11 @@ export class LSFWrapper {
       if (isPrevious && !isDefined(_taskId)) {
         const props = {
           projectId,
-          task: taskId,
         };
+
+        if (taskId) {
+          props.task = taskId;
+        }
 
         if (annotationId) {
           props.annotation = annotationId;
