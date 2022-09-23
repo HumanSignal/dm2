@@ -100,6 +100,12 @@ export const create = (columns) => {
     },
   })
     .actions((self) => ({
+      loadTaskHistory: flow(function* (props) {
+        const taskData = yield self.root.apiCall("taskHistory", props);
+
+        return taskData;
+      }),
+
       loadTask: flow(function* (taskID, { select = true } = {}) {
         if (!isDefined(taskID)) {
           console.warn("Task ID must be provided");

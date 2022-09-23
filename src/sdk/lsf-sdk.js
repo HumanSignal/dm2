@@ -218,19 +218,41 @@ export class LSFWrapper {
   }
 
   /** @private */
-  async loadTask(taskID, annotationID, fromHistory = false) {
+  async loadTask(taskID, annotationID, fromHistory = false, isPrevious = false) {
     if (!this.lsf) {
       return console.error("Make sure that LSF was properly initialized");
     }
 
-    const nextAction = async () => {
+    const nextAction = async (isPrevious) => {
       const tasks = this.datamanager.store.taskStore;
 
+      const projectId = this.datamanager.store.project.id;
+      const taskId = tasks.selectedId;
+      const annotationId = this.store.LSF.lsf.annotationStore.selected?.pk;
+      const draftId = this.store.LSF.lsf.annotationStore.selected?.draftId;
+      let _taskId = taskID;
+
+      if (isPrevious && !isDefined(_taskId)) {
+        const props = {
+          projectId,
+          task: taskId,
+        };
+
+        if (annotationId) {
+          props.annotation = annotationId;
+        } else if (draftId) {
+          props.draft = draftId;
+        }
+        const taskHistory = await tasks.loadTaskHistory(props);
+
+        _taskId = taskHistory[0].previous.task;
+      }
+
       const newTask = await this.withinLoadingState(async () => {
-        if (!isDefined(taskID)) {
+        if (!isDefined(_taskId) && !isPrevious) {
           return tasks.loadNextTask();
         } else {
-          return tasks.loadTask(taskID);
+          return tasks.loadTask(_taskId);
         }
       });
 
@@ -244,7 +266,7 @@ export class LSFWrapper {
       }
 
       // Add new data from received task
-      if (newTask) this.selectTask(newTask, annotationID, fromHistory);
+      if (newTask) this.selectTask(newTask, annotationID, fromHistory, isPrevious);
     };
 
     if (isFF(FF_DEV_2887) && this.lsf?.commentStore?.hasUnsaved) {
@@ -252,17 +274,17 @@ export class LSFWrapper {
         title: "You have unsaved changes",
         body: "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
         onOk() {
-          nextAction();
+          nextAction(isPrevious);
         },
         okText: "Discard and continue",
       });
       return;
     }
 
-    nextAction();
+    nextAction(isPrevious);
   }
 
-  selectTask(task, annotationID, fromHistory = false) {
+  selectTask(task, annotationID, fromHistory = false, isPrevious) {
     const needsAnnotationsMerge = task && this.task?.id === task.id;
     const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
 
@@ -274,10 +296,10 @@ export class LSFWrapper {
 
     this.loadUserLabels();
 
-    this.setLSFTask(task, annotationID, fromHistory);
+    this.setLSFTask(task, annotationID, fromHistory, isPrevious);
   }
 
-  setLSFTask(task, annotationID, fromHistory) {
+  setLSFTask(task, annotationID, fromHistory, isPrevious = false) {
     this.setLoading(true);
     const lsfTask = taskToLSFormat(task);
     const isRejectedQueue = isDefined(task.default_selected_annotation);
@@ -289,7 +311,7 @@ export class LSFWrapper {
     this.lsf.resetState();
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
-    this.lsf.assignTask(task);
+    this.lsf.assignTask(task, isPrevious);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
@@ -645,14 +667,10 @@ export class LSFWrapper {
 
 
   onNextTask = (nextTaskId, nextAnnotationId) => {
-    console.log(nextTaskId, nextAnnotationId);
-
     this.loadTask(nextTaskId, nextAnnotationId, true);
   }
   onPrevTask = (prevTaskId, prevAnnotationId) => {
-    console.log(prevTaskId, prevAnnotationId);
-
-    this.loadTask(prevTaskId, prevAnnotationId, true);
+    this.loadTask(prevTaskId, prevAnnotationId, true, true);
   }
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
     const { taskID, currentAnnotation } = this;

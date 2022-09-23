@@ -5,6 +5,9 @@ export const APIConfig = {
     /** Project base info */
     project: "/project",
 
+    /** Project base info */
+    taskHistory: "/../projects/:projectId/previous-task",
+
     /** users list */
     users: "/../users",
 
