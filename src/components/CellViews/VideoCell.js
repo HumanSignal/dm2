@@ -5,7 +5,7 @@ export const VideoCell = (column) => {
 };
 
 VideoCell.style = {
-  width: 50,
+  width: 240,
   minWidth: 240,
 };
 
