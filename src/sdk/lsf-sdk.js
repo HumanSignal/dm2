@@ -223,7 +223,7 @@ export class LSFWrapper {
       return console.error("Make sure that LSF was properly initialized");
     }
 
-    const nextAction = async (isPrevious) => {
+    const nextAction = async () => {
       const tasks = this.datamanager.store.taskStore;
 
       const projectId = this.datamanager.store.project.id;
@@ -277,14 +277,14 @@ export class LSFWrapper {
         title: "You have unsaved changes",
         body: "There are comments which are not persisted. Please submit the annotation. Continuing will discard these comments.",
         onOk() {
-          nextAction(isPrevious);
+          nextAction();
         },
         okText: "Discard and continue",
       });
       return;
     }
 
-    nextAction(isPrevious);
+    nextAction();
   }
 
   selectTask(task, annotationID, fromHistory = false, isPrevious) {
