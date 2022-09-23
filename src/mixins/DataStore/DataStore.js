@@ -174,7 +174,6 @@ export const DataStore = (
         let currentViewId, currentViewQuery;
         const requestId = self.requestId = guidGenerator();
 
-        console.log("filtering!!!", id, query, pageSize, interaction);
         if (id) {
           currentViewId = id;
           currentViewQuery = query;
