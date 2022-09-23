@@ -188,7 +188,9 @@ export const DataStore = (
 
         self.loading = true;
 
-        if (reload || isDefined(pageNumber)) {
+        if(interaction === "filter") {
+          self.page = 1;
+        } else if (reload || isDefined(pageNumber)) {
           if (self.page === 0)
             self.page = 1;
           else if (isDefined(pageNumber))
