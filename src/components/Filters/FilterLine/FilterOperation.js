@@ -36,12 +36,10 @@ export const FilterOperation = observer(
     }, [operator, types, filter]);
 
     const saveFilter = useCallback(debounce(() => {
-      console.log('changed', filter.id);
       filter.save(true);
     }, 300), [filter]);
 
     const onChange = (newValue) => {
-      console.log({ newValue });
       filter.setValue(newValue);
       saveFilter();
     };
