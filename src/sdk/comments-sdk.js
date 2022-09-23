@@ -24,7 +24,7 @@ export class CommentsSdk {
       is_resolved: comment.is_resolved,
       text: comment.text,
     };
-    
+
     if (comment.annotation) {
       body.annotation = comment.annotation;
     } else if(isFF(FF_DEV_3034) && comment.draft) {
@@ -50,7 +50,7 @@ export class CommentsSdk {
       ordering: params.ordering || "-id",
       expand_created_by: true,
     };
-    
+
     if (params.annotation) {
       listParams.annotation = params.annotation;
     } else if (isFF(FF_DEV_3034) && params.draft) {
