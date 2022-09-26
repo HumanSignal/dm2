@@ -8,7 +8,7 @@ Data exploration tool for [Label Studio][ls].
 
 <img src="https://raw.githubusercontent.com/heartexlabs/dm2/master/docs/image.png" height="500" align="center"/>
 
-# TEST 2
+# TEST 3
 
 ## Summary
 
