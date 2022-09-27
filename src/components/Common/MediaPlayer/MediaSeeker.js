@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Block, cn, Elem } from "../../../utils/bem";
-import "./AudioSeeker.styl";
+import "./MediaSeeker.styl";
 
-export const AudioSeeker = ({ currentTime, duration, buffer, onSeekStart, onSeekEnd, onChange }) => {
+export const MediaSeeker = ({ currentTime, duration, buffer, onSeekStart, onSeekEnd, onChange, video }) => {
   /** @type {import("react").RefObject<HTMLElement>} */
   const seekerRef = useRef();
   const progress = (duration && currentTime) ? (currentTime / duration) * 100 : 0;
@@ -59,7 +59,7 @@ export const AudioSeeker = ({ currentTime, duration, buffer, onSeekStart, onSeek
 
   return (
     <Block name="audio-seeker" ref={seekerRef} onMouseDownCapture={handleMouseDown}>
-      <Elem name="wrapper">
+      <Elem name="wrapper" mod={{ video }}>
         <Elem name="progress" style={{ width: `${progress}%` }}/>
         <Elem name="buffer" style={{ width: `${buffered}%` }}/>
       </Elem>
