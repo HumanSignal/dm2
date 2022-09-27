@@ -230,25 +230,32 @@ export class LSFWrapper {
       const taskId = tasks.selectedId;
       const annotationId = this.store.LSF.lsf.annotationStore.selected?.pk;
       const draftId = this.store.LSF.lsf.annotationStore.selected?.draftId;
+      let _annotationId = annotationID;
       let _taskId = taskID;
+
+      console.log('heartex notask', this.lsf.noTask);
 
       if (isPrevious && !isDefined(_taskId)) {
         const props = {
           projectId,
         };
 
-        if (taskId) {
-          props.task = taskId;
+        if (!this.lsf.noTask) {
+          if (taskId) {
+            props.task = taskId;
+          }
+
+          if (annotationId) {
+            props.annotation = annotationId;
+          } else if (draftId) {
+            props.draft = draftId;
+          }
         }
 
-        if (annotationId) {
-          props.annotation = annotationId;
-        } else if (draftId) {
-          props.draft = draftId;
-        }
         const taskHistory = await tasks.loadTaskHistory(props);
 
         _taskId = taskHistory[0].previous.task;
+        _annotationId = taskHistory[0].previous.annotation || taskHistory[0].previous.draft;
       }
 
       const newTask = await this.withinLoadingState(async () => {
@@ -269,7 +276,7 @@ export class LSFWrapper {
       }
 
       // Add new data from received task
-      if (newTask) this.selectTask(newTask, annotationID, fromHistory, isPrevious);
+      if (newTask) this.selectTask(newTask, _annotationId, fromHistory, isPrevious);
     };
 
     if (isFF(FF_DEV_2887) && this.lsf?.commentStore?.hasUnsaved) {
