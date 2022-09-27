@@ -233,8 +233,6 @@ export class LSFWrapper {
       let _annotationId = annotationID;
       let _taskId = taskID;
 
-      console.log('heartex notask', this.lsf.noTask);
-
       if (isPrevious && !isDefined(_taskId)) {
         const props = {
           projectId,
