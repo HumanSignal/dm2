@@ -252,6 +252,13 @@ export class LSFWrapper {
 
         const taskHistory = await tasks.loadTaskHistory(props);
 
+        if (!taskHistory[0].previous) {
+          this.store.LSF.lsf.task?.setHasPrevTask(false);
+          return;
+        } else {
+          this.store.LSF.lsf.task?.setHasPrevTask(true);
+        }
+
         _taskId = taskHistory[0].previous.task;
         _annotationId = taskHistory[0].previous.annotation || taskHistory[0].previous.draft;
       }
