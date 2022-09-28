@@ -264,7 +264,7 @@ export class LSFWrapper {
       }
 
       const newTask = await this.withinLoadingState(async () => {
-        if (isDefined(_taskId) || isPrevious) {
+        if (isDefined(_taskId)) {
           return tasks.loadTask(_taskId);
         } else {
           return tasks.loadNextTask();
