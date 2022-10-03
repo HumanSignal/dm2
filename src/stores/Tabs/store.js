@@ -184,7 +184,7 @@ export const TabStore = types
       } = options ?? {};
 
       const loadVirtualTab = !!(viewSnapshot?.virtual && viewSnapshot?.tab && isNaN(viewSnapshot.tab));
-      const snapshot = (loadVirtualTab ? self.snapshotFromUrl(viewSnapshot.tab) : viewSnapshot) ?? {};
+      const snapshot = { ...viewSnapshot, ...((loadVirtualTab ? self.snapshotFromUrl(viewSnapshot.tab) : viewSnapshot) ?? {}) };
       const lastView = self.views[self.views.length - 1];
       const newTitle = snapshot.title ?? `New Tab ${self.views.length + 1}`;
       const newID = snapshot.id ?? (lastView?.id ? lastView.id + 1 : 0);
@@ -195,7 +195,6 @@ export const TabStore = types
       };
 
       const newSnapshot = {
-        ...viewSnapshot,
         ...snapshot,
         id: newID,
         title: newTitle,
