@@ -195,6 +195,7 @@ export const TabStore = types
       };
 
       const newSnapshot = {
+        ...viewSnapshot,
         ...snapshot,
         id: newID,
         title: newTitle,
