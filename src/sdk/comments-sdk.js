@@ -11,11 +11,13 @@ export class CommentsSdk {
     [
       'comments:create',
       'comments:update',
+      'comments:delete',
       'comments:list',
     ].forEach((evt) => this.lsf.off(evt));
 
     this.lsf.on("comments:create", this.createComment);
     this.lsf.on("comments:update", this.updateComment);
+    this.lsf.on("comments:delete", this.deleteComment);
     this.lsf.on("comments:list", this.listComments);
   }
 
@@ -72,6 +74,14 @@ export class CommentsSdk {
     }
 
     return comments;
+  }
+
+  deleteComment = async (comment) => {
+    if (!comment.id || comment.id < 0) return; // Don't allow an update with an incorrect id
+
+    const res = await this.dm.apiCall("deleteComment", { id: comment.id }, {  body: comment });
+
+    return res;
   }
 }
 
