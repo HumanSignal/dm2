@@ -183,7 +183,8 @@ export const TabStore = types
         reload = true,
       } = options ?? {};
 
-      const snapshot = viewSnapshot ?? {};
+      const loadVirtualTab = !!(viewSnapshot?.virtual && viewSnapshot?.tab && isNaN(viewSnapshot.tab));
+      const snapshot = { ...viewSnapshot, ...((loadVirtualTab ? self.snapshotFromUrl(viewSnapshot.tab) : viewSnapshot) ?? {}) };
       const lastView = self.views[self.views.length - 1];
       const newTitle = snapshot.title ?? `New Tab ${self.views.length + 1}`;
       const newID = snapshot.id ?? (lastView?.id ? lastView.id + 1 : 0);
@@ -194,7 +195,7 @@ export const TabStore = types
       };
 
       const newSnapshot = {
-        ...viewSnapshot,
+        ...snapshot,
         id: newID,
         title: newTitle,
         key: snapshot.key ?? guidGenerator(),
@@ -218,13 +219,14 @@ export const TabStore = types
       return newView;
     }),
 
-    getViewByKey: flow(function*(key){
+    getViewByKey: flow(function*(key) {
       let view = self.views.find((v) => v.key === key);
 
       if (view) return view;
       const viewSnapshot = self.snapshotFromUrl(key);
 
       if (!viewSnapshot) return null;
+
       return yield self.addVirtualView(viewSnapshot);
     }),
 
