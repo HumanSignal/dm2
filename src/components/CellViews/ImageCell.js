@@ -12,36 +12,34 @@ export const ImageCell = (column) => {
   const renderImagePreview = original.total_annotations === 0 || !root.showPreviews;
   const imgSrc = Array.isArray(value) ? value[0] : value;
 
-  return imgSrc ? (
-    renderImagePreview ? (
-      <img
-        key={imgSrc}
-        src={imgSrc}
-        alt="Data"
-        style={{
-          maxHeight: "100%",
-          maxWidth: "100px",
-          objectFit: "contain",
-          borderRadius: 3,
-        }}
-      />
-    ) : (
-      <AnnotationPreview
-        task={original}
-        annotation={original.annotations[0]}
-        config={getRoot(original).SDK}
-        name={alias}
-        variant="120x120"
-        fallbackImage={value}
-        style={{
-          maxHeight: "100%",
-          maxWidth: "100px",
-          objectFit: "contain",
-          borderRadius: 3,
-        }}
-      />
-    )
-  )
-    :
-    <></>;
+  if (!imgSrc) return null;
+
+  return renderImagePreview ? (
+    <img
+      key={imgSrc}
+      src={imgSrc}
+      alt="Data"
+      style={{
+        maxHeight: "100%",
+        maxWidth: "100px",
+        objectFit: "contain",
+        borderRadius: 3,
+      }}
+    />
+  ) : (
+    <AnnotationPreview
+      task={original}
+      annotation={original.annotations[0]}
+      config={getRoot(original).SDK}
+      name={alias}
+      variant="120x120"
+      fallbackImage={value}
+      style={{
+        maxHeight: "100%",
+        maxWidth: "100px",
+        objectFit: "contain",
+        borderRadius: 3,
+      }}
+    />
+  );
 };
