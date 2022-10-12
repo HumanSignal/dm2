@@ -227,21 +227,24 @@ export class LSFWrapper {
       const tasks = this.datamanager.store.taskStore;
 
       const newTask = await this.withinLoadingState(async () => {
-        if (!isDefined(taskID)) {
-          return tasks.loadNextTask();
-        } else {
-          return tasks.loadTask(taskID);
-        }
-      });
+        let nextTask;
 
-      /* If we're in label stream and there's no task – end the stream */
-      if (this.labelStream && !newTask) {
-        this.lsf.setFlags({ noTask: true });
-        return;
-      } else {
-      // don't break the LSF - if user explores tasks after finishing labeling, show them
-        this.lsf.setFlags({ noTask: false });
-      }
+        if (!isDefined(taskID)) {
+          nextTask = await tasks.loadNextTask();
+        } else {
+          nextTask = await tasks.loadTask(taskID);
+        }
+
+        /**
+         * If we're in label stream and there's no task – end the stream
+         * Otherwise allow user to continue exploring tasks after finished labelling
+         */
+        const noTask = this.labelStream && !nextTask;
+
+        this.lsf.setFlags({ noTask });
+
+        return nextTask;
+      });
 
       // Add new data from received task
       if (newTask) this.selectTask(newTask, annotationID, fromHistory);
@@ -259,7 +262,7 @@ export class LSFWrapper {
       return;
     }
 
-    nextAction();
+    await nextAction();
   }
 
   selectTask(task, annotationID, fromHistory = false) {
