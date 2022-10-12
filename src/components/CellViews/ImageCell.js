@@ -12,6 +12,8 @@ export const ImageCell = (column) => {
   const renderImagePreview = original.total_annotations === 0 || !root.showPreviews;
   const imgSrc = Array.isArray(value) ? value[0] : value;
 
+  if (!imgSrc) return null;
+
   return renderImagePreview ? (
     <img
       key={imgSrc}
