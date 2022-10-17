@@ -452,8 +452,6 @@ export const TabStore = types
       });
 
       self.views.push(...snapshots);
-      
-      console.log("tabs", tabId, tab);
 
       yield self.setSelected(Number.isNaN(tabId) ? tab : tabId, {
         pushState: tab === undefined,
