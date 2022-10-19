@@ -129,7 +129,8 @@ export const TabStore = types
         selected = self.views.find((v) => v.id === view);
       }  else if (view && view.id) {
         selected = self.views.find((v) => v.id === view.id);
-      } else {
+      } 
+      if(!selected) {
         selected = self.views[0];
       }
 
@@ -469,7 +470,7 @@ export const TabStore = types
         pushState: tab === undefined,
       });
 
-      yield self.selected.save();
+      yield self.selected?.save();
 
       if (labeling) {
         getRoot(self).startLabelStream({
