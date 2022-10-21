@@ -30,6 +30,18 @@ export const isEmptyString = (value: any) => {
   return typeof value === 'string' && value.trim().length === 0;
 };
 
+export const isEmptyObject = (value: any) => {
+  return (typeof value === 'object' && !value || Object.keys(value).length === 0);
+};
+
+export const isEmptyArray = (value: any) => {
+  return Array.isArray(value) && value.length === 0;
+};
+
+export const isEmpty = (value: any) => {
+  return isEmptyString(value) || isEmptyObject(value) || isEmptyArray(value);
+};
+
 type CamelCase<S extends string> = S extends `${infer P1}_${infer P2}${infer P3}`
   ? `${Lowercase<P1>}${Uppercase<P2>}${CamelCase<P3>}`
   : Lowercase<S>

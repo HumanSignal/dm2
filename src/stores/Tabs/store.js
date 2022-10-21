@@ -16,6 +16,7 @@ import { TabColumn } from "./tab_column";
 import { TabFilterType } from "./tab_filter_type";
 import { TabHiddenColumns } from "./tab_hidden_columns";
 import { packJSON } from '../../utils/packJSON';
+import { isEmpty } from "../../utils/helpers";
 
 const storeValue = (name, value) => {
   window.localStorage.setItem(name, value);
@@ -177,15 +178,17 @@ export const TabStore = types
       destroy(view);
     }),
 
-    addView: flow(function* (viewSnapshot = {}, options) {
-      const {
-        autoselect = true,
-        autosave = true,
-        reload = true,
-      } = options ?? {};
-
-      const loadVirtualTab = !!(viewSnapshot?.virtual && viewSnapshot?.tab && isNaN(viewSnapshot.tab));
-      const snapshot = { ...viewSnapshot, ...((loadVirtualTab ? self.snapshotFromUrl(viewSnapshot.tab) : viewSnapshot) ?? {}) };
+    createSnapshot(viewSnapshot = {}) {
+      const isVirtual = !!viewSnapshot?.virtual;
+      const tabStorageKey = isVirtual && viewSnapshot.projectId ? `virtual-tab-${viewSnapshot.projectId}` : null;
+      const existingTabStorage = isVirtual && localStorage.getItem(tabStorageKey);
+      const existingTabStorageParsed = existingTabStorage ? JSON.parse(existingTabStorage) : null;
+      const urlTabIsVirtualCandidate = !!(viewSnapshot?.tab && isNaN(viewSnapshot.tab));
+      const existingTabUrlParsed = isVirtual && urlTabIsVirtualCandidate ? self.snapshotFromUrl(viewSnapshot.tab) : null;
+      const urlTabNotEmpty = !isEmpty(existingTabUrlParsed);
+      const existingTab = urlTabNotEmpty ? existingTabUrlParsed : existingTabStorageParsed;
+      const existingTabKey = urlTabNotEmpty ? viewSnapshot.tab : existingTabStorageParsed?.tab;
+      const snapshot = { ...viewSnapshot, key: existingTabKey, tab: existingTabKey, ...(existingTab ?? viewSnapshot ?? {}) };
       const lastView = self.views[self.views.length - 1];
       const newTitle = snapshot.title ?? `New Tab ${self.views.length + 1}`;
       const newID = snapshot.id ?? (lastView?.id ? lastView.id + 1 : 0);
@@ -195,16 +198,26 @@ export const TabStore = types
         labeling: [],
       };
 
-      const newSnapshot = {
+      return {
         ...snapshot,
         id: newID,
         title: newTitle,
         key: snapshot.key ?? guidGenerator(),
         hiddenColumns: snapshot.hiddenColumns ?? defaultHiddenColumns,
       };
+    },
+
+    addView: flow(function* (viewSnapshot = {}, options) {
+      const {
+        autoselect = true,
+        autosave = true,
+        reload = true,
+      } = options ?? {};
+
+      const newSnapshot = self.createSnapshot(viewSnapshot);
 
       self.views.push(newSnapshot);
-      let newView = self.views[self.views.length - 1];
+      const newView = self.views[self.views.length - 1];
 
       if (autosave) {
         // with autosave it will be reloaded anyway

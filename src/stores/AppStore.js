@@ -465,7 +465,11 @@ export const AppStore = types
         requests.push(self.fetchActions());
 
         if (self.SDK.settings?.onlyVirtualTabs) {
-          requests.push(self.viewsStore.addView({ virtual: true, tab }, { autosave: false, reload: false }));
+          requests.push(self.viewsStore.addView({
+            virtual: true,
+            projectId: self.SDK.projectId,
+            tab,
+          }, { autosave: false, reload: false }));
         } else {
           requests.push(self.viewsStore.fetchTabs(tab, task, labeling));
         }
