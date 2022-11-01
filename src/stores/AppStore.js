@@ -464,10 +464,14 @@ export const AppStore = types
       if (!isLabelStream) {
         requests.push(self.fetchActions());
 
-        if (!self.SDK.settings?.onlyVirtualTabs) {
-          requests.push(self.viewsStore.fetchTabs(tab, task, labeling));
+        if (self.SDK.settings?.onlyVirtualTabs) {
+          requests.push(self.viewsStore.addView({
+            virtual: true,
+            projectId: self.SDK.projectId,
+            tab,
+          }, { autosave: false, reload: false }));
         } else {
-          requests.push(self.viewsStore.addView({ virtual: true }, { autosave: false }));
+          requests.push(self.viewsStore.fetchTabs(tab, task, labeling));
         }
       } else if (isLabelStream && !!tab) {
         const { selectedItems } = JSON.parse(decodeURIComponent(query ?? "{}"));

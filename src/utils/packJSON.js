@@ -280,7 +280,7 @@ PackJSON.prototype.decodeNumber = function() {
     case NUMBER_INTEGER_TYPE: {
       const sign = this.buffer.readChunk(1);
       const size = this.buffer.readChunk(MAX_INT_SIZE.toString(2).length);
-      const b32 = Array.apply(null, new Array(Math.ceil(size / 5))).map((v, idx) => this.buffer.readChunk(idx ? 5 : size % 5).toString(32)).join('');
+      const b32 = Array.apply(null, new Array(Math.ceil(size / 5))).map((v, idx) => this.buffer.readChunk(idx ? 5 : size % 5 || 5).toString(32)).join('');
 
       return (sign ? -1 : 1) * parseInt(b32, 32);
     }
