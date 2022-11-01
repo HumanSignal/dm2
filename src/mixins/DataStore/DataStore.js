@@ -58,6 +58,9 @@ const MixinBase = types
 
       if (typeof val === "number") {
         selected = self.list.find((t) => t.id === val);
+        if (!selected) {
+          selected = getRoot(self).taskStore.loadTask(val);
+        }
       } else {
         selected = val;
       }
