@@ -461,10 +461,10 @@ export const AppStore = types
         self.fetchUsers(),
       ];
 
-      if (!isLabelStream || task) {
+      if (!isLabelStream || (self.project?.show_annotation_history && task)) {
         requests.push(self.fetchActions());
 
-        if (self.SDK.settings?.onlyVirtualTabs && !task) {
+        if (self.SDK.settings?.onlyVirtualTabs && (self.project?.show_annotation_history && !task)) {
           requests.push(self.viewsStore.addView({
             virtual: true,
             projectId: self.SDK.projectId,
