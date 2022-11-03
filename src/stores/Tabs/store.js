@@ -32,6 +32,8 @@ const restoreValue = (name) => {
 const dataCleanup = (tab, columnIds) => {
   const { data } = tab;
 
+  if (!data) return { ...tab };
+
   if (data.filters) {
     data.filters.items = data.filters.items.filter(({ filter }) => {
       return columnIds.includes(filter.replace(/^filter:/, ''));
