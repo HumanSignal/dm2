@@ -136,6 +136,9 @@ export const create = (columns) => {
 
         const task = self.applyTaskSnapshot(taskData);
 
+        // if task is already in the list on next task it should be moved to the end
+        self.list.push(task);
+
         if (select !== false) self.setSelected(task);
 
         if (labelStreamModeChanged) {
