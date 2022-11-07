@@ -284,6 +284,7 @@ export class LSFWrapper {
     this.setLoading(true);
     const lsfTask = taskToLSFormat(task);
     const isRejectedQueue = isDefined(task.default_selected_annotation);
+    const taskHistory = this.datamanager.store.taskStore.list.map(task => ({ taskId: task.id, annotationId: null }));
 
     if (isRejectedQueue && !annotationID) {
       annotationID = task.default_selected_annotation;
@@ -292,7 +293,7 @@ export class LSFWrapper {
     this.lsf.resetState();
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
-    this.lsf.assignTask(task);
+    this.lsf.assignTask(task, taskHistory);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
