@@ -137,14 +137,14 @@ export const create = (columns) => {
         const task = self.applyTaskSnapshot(taskData);
 
         // if task is already in the list on next task it should be moved to the end
-        const taskIndex = self.list.indexOf(task);
+        // const taskIndex = self.list.indexOf(task);
         // self.list.splice(taskIndex, 1);
         // self.list = [...self.list, task];
 
-        for (let i = taskIndex; i < self.list.length - 1; i++) {
-          self.list[i] = self.list[i + 1];
-        }
-        self.list[self.list.length - 1] = task;
+        // for (let i = taskIndex; i < self.list.length - 1; i++) {
+        //   self.list[i] = self.list[i + 1];
+        // }
+        // self.list[self.list.length - 1] = task;
 
         if (select !== false) self.setSelected(task);
 

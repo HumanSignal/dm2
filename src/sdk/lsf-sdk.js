@@ -290,6 +290,17 @@ export class LSFWrapper {
       .map(task => this.taskHistory.find(item => item.taskId === task.id))
       .filter(Boolean);
 
+    const extracted = taskHistory.find(item => item.taskId === task.id);
+
+    if (!fromHistory && extracted) {
+      taskHistory.splice(taskHistory.indexOf(extracted), 1);
+      taskHistory.push(extracted);
+    }
+
+    if (!extracted) {
+      taskHistory.push({ taskId: task.id, annotationId: null });
+    }
+
     if (isRejectedQueue && !annotationID) {
       annotationID = task.default_selected_annotation;
     }
@@ -750,7 +761,7 @@ export class LSFWrapper {
   }
 
   get taskHistory() {
-    return this.lsf.annotationStore.taskHistory;
+    return this.lsf.taskHistory;
   }
 
   get currentAnnotation() {
