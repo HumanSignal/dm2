@@ -284,7 +284,10 @@ export class LSFWrapper {
     this.setLoading(true);
     const lsfTask = taskToLSFormat(task);
     const isRejectedQueue = isDefined(task.default_selected_annotation);
-    const taskHistory = this.datamanager.store.taskStore.list.map(task => ({ taskId: task.id, annotationId: null }));
+    const taskHistory = this.datamanager.store.taskStore.list.map(task => ({
+      taskId: task.id,
+      annotationId: task.annotations[0]?.id ?? null,
+    }));
 
     if (isRejectedQueue && !annotationID) {
       annotationID = task.default_selected_annotation;
