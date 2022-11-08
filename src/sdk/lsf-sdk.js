@@ -284,6 +284,22 @@ export class LSFWrapper {
     this.setLoading(true);
     const lsfTask = taskToLSFormat(task);
     const isRejectedQueue = isDefined(task.default_selected_annotation);
+    const taskList = this.datamanager.store.taskStore.list;
+    // annotations are set in LSF only and order in DM only, so combine them
+    const taskHistory = taskList
+      .map(task => this.taskHistory.find(item => item.taskId === task.id))
+      .filter(Boolean);
+
+    const extracted = taskHistory.find(item => item.taskId === task.id);
+
+    if (!fromHistory && extracted) {
+      taskHistory.splice(taskHistory.indexOf(extracted), 1);
+      taskHistory.push(extracted);
+    }
+
+    if (!extracted) {
+      taskHistory.push({ taskId: task.id, annotationId: null });
+    }
 
     if (isRejectedQueue && !annotationID) {
       annotationID = task.default_selected_annotation;
@@ -292,7 +308,7 @@ export class LSFWrapper {
     this.lsf.resetState();
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
-    this.lsf.assignTask(task);
+    this.lsf.assignTask(task, taskHistory);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
@@ -745,7 +761,7 @@ export class LSFWrapper {
   }
 
   get taskHistory() {
-    return this.lsf.annotationStore.taskHistory;
+    return this.lsf.taskHistory;
   }
 
   get currentAnnotation() {
