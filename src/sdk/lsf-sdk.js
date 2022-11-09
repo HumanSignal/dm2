@@ -61,7 +61,7 @@ export class LSFWrapper {
   /** @type {LSFHistory} */
   // history = null;
 
-  /** @type {Hiostory} */
+  /** @type {TaskHistory} */
   taskHistory = null;
 
   /** @type {boolean} */
