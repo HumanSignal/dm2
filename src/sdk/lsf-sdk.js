@@ -61,6 +61,9 @@ export class LSFWrapper {
   /** @type {LSFHistory} */
   // history = null;
 
+  /** @type {Hiostory} */
+  taskHistory = null;
+
   /** @type {boolean} */
   labelStream = false;
 
@@ -223,10 +226,12 @@ export class LSFWrapper {
       return console.error("Make sure that LSF was properly initialized");
     }
 
+    console.log('heartex', this.task);
+
     const nextAction = async () => {
       const tasks = this.datamanager.store.taskStore;
-
       const projectId = this.datamanager.store.project.id;
+
       const taskId = tasks.selectedId;
       const annotationId = this.store.LSF.lsf.annotationStore.selected?.pk;
       const draftId = this.store.LSF.lsf.annotationStore.selected?.draftId;
@@ -243,24 +248,32 @@ export class LSFWrapper {
             props.task = taskId;
           }
 
-          if (annotationId) {
-            props.annotation = annotationId;
-          } else if (draftId) {
-            props.draft = draftId;
+          if (this.taskHistory) {
+            if (this.taskHistory[0].previous?.draft) {
+              props.draft = this.taskHistory[0].previous?.draft;
+            } else if (this.taskHistory[0].previous?.annotation) {
+              props.annotation = this.taskHistory[0].previous?.annotation;
+            }
+          } else {
+            if (annotationId) {
+              props.annotation = annotationId;
+            } else if (draftId) {
+              props.draft = draftId;
+            }
           }
         }
 
-        const taskHistory = await tasks.loadTaskHistory(props);
+        this.taskHistory = await tasks.loadTaskHistory(props);
 
-        if (!taskHistory[0].previous) {
+        if (!this.taskHistory[0].previous) {
           this.store.LSF.lsf.task?.setHasPrevTask(false);
           return;
         } else {
           this.store.LSF.lsf.task?.setHasPrevTask(true);
         }
 
-        _taskId = taskHistory[0].previous.task;
-        _annotationId = taskHistory[0].previous.annotation || taskHistory[0].previous.draft;
+        _taskId = this.taskHistory[0].previous.task;
+        _annotationId = this.taskHistory[0].previous.annotation || this.taskHistory[0].previous.draft;
       }
 
       const newTask = await this.withinLoadingState(async () => {
@@ -326,7 +339,7 @@ export class LSFWrapper {
     this.lsf.resetState();
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
-    this.lsf.assignTask(task, isPrevious);
+    this.lsf.assignTask(task, null, isPrevious);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
@@ -338,6 +351,7 @@ export class LSFWrapper {
     let { annotationStore: cs } = this.lsf;
     let annotation;
     const activeDrafts = cs.annotations.map(a => a.draftId).filter(Boolean);
+
 
     if (this.task.drafts) {
       for (const draft of this.task.drafts) {
@@ -376,6 +390,7 @@ export class LSFWrapper {
         c.setDraftId(draft.id);
         c.setDraftSaved(draft.created_at);
         c.history.safeUnfreeze();
+        return;
       }
     }
 
@@ -408,7 +423,6 @@ export class LSFWrapper {
         annotation = cs.createAnnotation();
       }
     }
-
 
     if (annotation) {
       cs.selectAnnotation(annotation.id);
