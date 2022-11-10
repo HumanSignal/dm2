@@ -226,7 +226,6 @@ export class LSFWrapper {
       return console.error("Make sure that LSF was properly initialized");
     }
 
-    console.log('heartex', this.task);
 
     const nextAction = async () => {
       const tasks = this.datamanager.store.taskStore;
