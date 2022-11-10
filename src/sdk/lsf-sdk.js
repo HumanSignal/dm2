@@ -482,7 +482,7 @@ export class LSFWrapper {
   onSubmitAnnotation = async () => {
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
-    });
+    }, false, this.shouldLoadNext());
   };
 
   /** @private */
@@ -607,6 +607,7 @@ export class LSFWrapper {
         }
       },
       true,
+      this.shouldLoadNext(),
     );
   };
 
@@ -655,13 +656,20 @@ export class LSFWrapper {
     this.datamanager.invoke("unskipTask");
   };
 
+  shouldLoadNext = () => {
+    // validating if URL is from notification, in case of notification it shouldn't load next task
+    const urlParam = new URLSearchParams(location.search).get('interaction');
+    let loadNext = urlParam !== 'notifications';
+
+    return loadNext;
+  }
+
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
   onSelectAnnotation = (prevAnnotation, nextAnnotation, options) => {
     this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
   }
-
 
   onNextTask = (nextTaskId, nextAnnotationId) => {
     console.log(nextTaskId, nextAnnotationId);
