@@ -155,5 +155,11 @@ export const APIConfig = {
       path: "/../comments/:id",
       method: "patch",
     },
+
+    /** Update a comment **/
+    deleteComment: {
+      path: "/../comments/:id",
+      method: "delete",
+    },
   },
 };

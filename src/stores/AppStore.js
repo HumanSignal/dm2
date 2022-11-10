@@ -461,13 +461,17 @@ export const AppStore = types
         self.fetchUsers(),
       ];
 
-      if (!isLabelStream) {
+      if (!isLabelStream || (self.project?.show_annotation_history && task)) {
         requests.push(self.fetchActions());
 
-        if (!self.SDK.settings?.onlyVirtualTabs) {
-          requests.push(self.viewsStore.fetchTabs(tab, task, labeling));
+        if (self.SDK.settings?.onlyVirtualTabs && (self.project?.show_annotation_history && !task)) {
+          requests.push(self.viewsStore.addView({
+            virtual: true,
+            projectId: self.SDK.projectId,
+            tab,
+          }, { autosave: false, reload: false }));
         } else {
-          requests.push(self.viewsStore.addView({ virtual: true }, { autosave: false }));
+          requests.push(self.viewsStore.fetchTabs(tab, task, labeling));
         }
       } else if (isLabelStream && !!tab) {
         const { selectedItems } = JSON.parse(decodeURIComponent(query ?? "{}"));
