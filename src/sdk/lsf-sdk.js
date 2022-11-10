@@ -659,6 +659,7 @@ export class LSFWrapper {
   shouldLoadNext = () => {
     // validating if URL is from notification, in case of notification it shouldn't load next task
     const urlParam = new URLSearchParams(location.search).get('interaction');
+
     return urlParam !== 'notifications';
   }
 
