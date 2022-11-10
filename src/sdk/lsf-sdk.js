@@ -659,9 +659,7 @@ export class LSFWrapper {
   shouldLoadNext = () => {
     // validating if URL is from notification, in case of notification it shouldn't load next task
     const urlParam = new URLSearchParams(location.search).get('interaction');
-    let loadNext = urlParam !== 'notifications';
-
-    return loadNext;
+    return urlParam !== 'notifications';
   }
 
   // Proxy events that are unused by DM integration
