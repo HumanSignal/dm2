@@ -194,34 +194,19 @@ export class LSFWrapper {
   /** @private */
   async preloadTask() {
     const {
-      annotation: annotationId,
-      draft: draftId,
       comment: commentId,
+      task: taskID,
     } = this.preload;
     const api = this.datamanager.api;
     let annotation;
-    let response;
-    let params;
-    let endpoint = "task";
+    let params = { taskID };
 
     if (commentId) {
-      params = { with_comment: commentId };
-      endpoint = "tasks";
-    } else {
-      if (annotationId) {
-        response = await api.call("annotation", { params: { id: annotationId } });
-        annotation = response;
-      } else if (draftId) {
-        response = await api.call("draft", { params: { id: draftId } });
-      }
-
-      if (response && response.task) {
-        params = { taskID: response.task };
-      }
+      params.with_comment = commentId;
     }
 
     if (params) {
-      const task = await api.call(endpoint, { params });
+      const task = await api.call("task", { params });
 
       this.selectTask(task, annotation?.id, true);
     }
