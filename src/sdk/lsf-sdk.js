@@ -100,7 +100,7 @@ export class LSFWrapper {
       if (FF_DEV_2186 && this.project.review_settings?.require_comment_on_reject) {
         interfaces.push("comments:update");
       }
-      if (this.project.show_skip_button) {
+      if (this.project.show_skip_button && this.shouldLoadNext()) {
         interfaces.push("skip");
       }
     } else {
@@ -511,7 +511,7 @@ export class LSFWrapper {
 
     const isRejectedQueue = isDefined(task.default_selected_annotation);
 
-    if (isRejectedQueue) {
+    if (isRejectedQueue || this.shouldLoadNext()) {
       // load next task if that one was updated task from rejected queue
       await this.loadTask();
     } else {
