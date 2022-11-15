@@ -202,9 +202,11 @@ export class LSFWrapper {
     let annotation;
     let response;
     let params;
+    let endpoint = "task";
 
     if (commentId) {
       params = { with_comment: commentId };
+      endpoint = "tasks";
     } else {
       if (annotationId) {
         response = await api.call("annotation", { params: { id: annotationId } });
@@ -219,7 +221,7 @@ export class LSFWrapper {
     }
 
     if (params) {
-      const task = await api.call("task", { params });
+      const task = await api.call(endpoint, { params });
 
       this.selectTask(task, annotation?.id, true);
     }
