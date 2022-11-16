@@ -100,7 +100,7 @@ export class LSFWrapper {
       if (FF_DEV_2186 && this.project.review_settings?.require_comment_on_reject) {
         interfaces.push("comments:update");
       }
-      if (this.project.show_skip_button && this.shouldLoadNext()) {
+      if (this.project.show_skip_button) {
         interfaces.push("skip");
       }
     } else {
@@ -130,6 +130,11 @@ export class LSFWrapper {
     }
     if (isFF(FF_DEV_2887)) {
       interfaces.push("annotations:comments");
+    }
+
+    if (!this.shouldLoadNext()) {
+      interfaces.splice(interfaces.indexOf("topbar:prevnext"), 1);
+      interfaces.splice(interfaces.indexOf("skip"), 1);
     }
 
     const lsfProperties = {
@@ -657,6 +662,8 @@ export class LSFWrapper {
   };
 
   shouldLoadNext = () => {
+    if (!this.labelStream) return false;
+
     // validating if URL is from notification, in case of notification it shouldn't load next task
     const urlParam = new URLSearchParams(location.search).get('interaction');
 
