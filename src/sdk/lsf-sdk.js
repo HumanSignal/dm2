@@ -132,10 +132,20 @@ export class LSFWrapper {
       interfaces.push("annotations:comments");
     }
 
+    console.group("Interfaces");
+    console.log([...interfaces]);
+
     if (!this.shouldLoadNext()) {
-      interfaces.splice(interfaces.indexOf("topbar:prevnext"), 1);
-      interfaces.splice(interfaces.indexOf("skip"), 1);
+      interfaces = interfaces.filter((item) => {
+        return ![
+          "topbar:prevnext",
+          "skip",
+        ].includes(item);
+      });
     }
+
+    console.log([...interfaces]);
+    console.groupEnd();
 
     const lsfProperties = {
       user: options.user,
