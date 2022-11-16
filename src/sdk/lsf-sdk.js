@@ -198,7 +198,6 @@ export class LSFWrapper {
       task: taskID,
     } = this.preload;
     const api = this.datamanager.api;
-    let annotation;
     let params = { taskID };
 
     if (commentId) {
@@ -207,6 +206,8 @@ export class LSFWrapper {
 
     if (params) {
       const task = await api.call("task", { params });
+      // for preload it's good to always load the first one
+      const annotation = task.annotations[0];
 
       this.selectTask(task, annotation?.id, true);
     }
