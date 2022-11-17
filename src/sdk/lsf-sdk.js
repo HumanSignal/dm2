@@ -169,7 +169,7 @@ export class LSFWrapper {
     try {
       const LSF = await resolveLabelStudio();
 
-      this.globalLSF = window.LabelStudio === LSF;
+      window.LabelStudio === LSF;
       this.lsfInstance = new LSF(this.root, settings);
 
       const names = Array.from(this.datamanager.callbacks.keys())
@@ -305,7 +305,6 @@ export class LSFWrapper {
       annotationID = task.default_selected_annotation;
     }
 
-    this.lsf.resetState();
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
     this.lsf.assignTask(task, taskHistory);
@@ -754,6 +753,7 @@ export class LSFWrapper {
 
   destroy() {
     this.lsfInstance?.destroy?.();
+    this.lsfInstance = null;
   }
 
   get taskID() {
