@@ -524,7 +524,7 @@ export class LSFWrapper {
 
     const isRejectedQueue = isDefined(task.default_selected_annotation);
 
-    if (isRejectedQueue || this.shouldLoadNext()) {
+    if (isRejectedQueue) {
       // load next task if that one was updated task from rejected queue
       await this.loadTask();
     } else {
