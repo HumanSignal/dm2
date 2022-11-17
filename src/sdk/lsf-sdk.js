@@ -132,6 +132,21 @@ export class LSFWrapper {
       interfaces.push("annotations:comments");
     }
 
+    console.group("Interfaces");
+    console.log([...interfaces]);
+
+    if (!this.shouldLoadNext()) {
+      interfaces = interfaces.filter((item) => {
+        return ![
+          "topbar:prevnext",
+          "skip",
+        ].includes(item);
+      });
+    }
+
+    console.log([...interfaces]);
+    console.groupEnd();
+
     const lsfProperties = {
       user: options.user,
       config: this.lsfConfig,
@@ -482,7 +497,7 @@ export class LSFWrapper {
   onSubmitAnnotation = async () => {
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
-    });
+    }, false, this.shouldLoadNext());
   };
 
   /** @private */
@@ -511,7 +526,7 @@ export class LSFWrapper {
 
     const isRejectedQueue = isDefined(task.default_selected_annotation);
 
-    if (isRejectedQueue) {
+    if (isRejectedQueue || this.shouldLoadNext()) {
       // load next task if that one was updated task from rejected queue
       await this.loadTask();
     } else {
@@ -607,6 +622,7 @@ export class LSFWrapper {
         }
       },
       true,
+      this.shouldLoadNext(),
     );
   };
 
@@ -655,13 +671,21 @@ export class LSFWrapper {
     this.datamanager.invoke("unskipTask");
   };
 
+  shouldLoadNext = () => {
+    if (!this.labelStream) return false;
+
+    // validating if URL is from notification, in case of notification it shouldn't load next task
+    const urlParam = new URLSearchParams(location.search).get('interaction');
+
+    return urlParam !== 'notifications';
+  }
+
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
   onSelectAnnotation = (prevAnnotation, nextAnnotation, options) => {
     this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
   }
-
 
   onNextTask = (nextTaskId, nextAnnotationId) => {
     console.log(nextTaskId, nextAnnotationId);
