@@ -221,6 +221,17 @@ export class LSFWrapper {
 
     if (params) {
       const task = await api.call("task", { params });
+      const noData = !task || (!task.annotations?.length && !task.drafts?.length);
+      const body = `Task #${taskID}${commentId ? ` with comment #${commentId}` : ``} was not found!`;
+
+      if (noData) {
+        Modal.modal({
+          title: "Can't find task",
+          body,
+        });
+        return false;
+      }
+
       // for preload it's good to always load the first one
       const annotation = task.annotations[0];
 
