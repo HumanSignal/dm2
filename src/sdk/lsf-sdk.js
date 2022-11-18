@@ -305,6 +305,7 @@ export class LSFWrapper {
       annotationID = task.default_selected_annotation;
     }
 
+    this.lsf.resetState();
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
     this.lsf.assignTask(task, taskHistory);
