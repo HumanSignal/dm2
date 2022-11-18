@@ -209,22 +209,31 @@ export class LSFWrapper {
   /** @private */
   async preloadTask() {
     const {
-      annotation: annotationId,
-      draft: draftId,
+      comment: commentId,
+      task: taskID,
     } = this.preload;
     const api = this.datamanager.api;
-    let annotation;
-    let response;
+    let params = { taskID };
 
-    if (annotationId) {
-      response = await api.call("annotation", { params: { id: annotationId } });
-      annotation = response;
-    } else if (draftId) {
-      response = await api.call("draft", { params: { id: draftId } });
+    if (commentId) {
+      params.with_comment = commentId;
     }
 
-    if (response && response.task) {
-      const task = await api.call("task", { params: { taskID: response.task } });
+    if (params) {
+      const task = await api.call("task", { params });
+      const noData = !task || (!task.annotations?.length && !task.drafts?.length);
+      const body = `Task #${taskID}${commentId ? ` with comment #${commentId}` : ``} was not found!`;
+
+      if (noData) {
+        Modal.modal({
+          title: "Can't find task",
+          body,
+        });
+        return false;
+      }
+
+      // for preload it's good to always load the first one
+      const annotation = task.annotations[0];
 
       this.selectTask(task, annotation?.id, true);
     }
