@@ -829,6 +829,6 @@ export class LSFWrapper {
   }
 
   get canPreloadTask() {
-    return Object.values(this.preload ?? {}).some((value) => isDefined(value));
+    return Boolean(this.preload?.interaction);
   }
 }
