@@ -186,7 +186,7 @@ export const AppStore = types
 
     setTask: flow(function* ({ taskID, annotationID, pushState }) {
       if (pushState !== false) {
-        History.navigate({ task: taskID, annotation: annotationID ?? null });
+        History.navigate({ task: taskID, annotation: annotationID ?? null, interaction: null });
       }
 
       if (!isDefined(taskID)) return;
