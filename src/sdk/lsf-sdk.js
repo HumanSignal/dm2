@@ -132,6 +132,21 @@ export class LSFWrapper {
       interfaces.push("annotations:comments");
     }
 
+    console.group("Interfaces");
+    console.log([...interfaces]);
+
+    if (!this.shouldLoadNext()) {
+      interfaces = interfaces.filter((item) => {
+        return ![
+          "topbar:prevnext",
+          "skip",
+        ].includes(item);
+      });
+    }
+
+    console.log([...interfaces]);
+    console.groupEnd();
+
     const lsfProperties = {
       user: options.user,
       config: this.lsfConfig,
@@ -194,22 +209,31 @@ export class LSFWrapper {
   /** @private */
   async preloadTask() {
     const {
-      annotation: annotationId,
-      draft: draftId,
+      comment: commentId,
+      task: taskID,
     } = this.preload;
     const api = this.datamanager.api;
-    let annotation;
-    let response;
+    let params = { taskID };
 
-    if (annotationId) {
-      response = await api.call("annotation", { params: { id: annotationId } });
-      annotation = response;
-    } else if (draftId) {
-      response = await api.call("draft", { params: { id: draftId } });
+    if (commentId) {
+      params.with_comment = commentId;
     }
 
-    if (response && response.task) {
-      const task = await api.call("task", { params: { taskID: response.task } });
+    if (params) {
+      const task = await api.call("task", { params });
+      const noData = !task || (!task.annotations?.length && !task.drafts?.length);
+      const body = `Task #${taskID}${commentId ? ` with comment #${commentId}` : ``} was not found!`;
+
+      if (noData) {
+        Modal.modal({
+          title: "Can't find task",
+          body,
+        });
+        return false;
+      }
+
+      // for preload it's good to always load the first one
+      const annotation = task.annotations[0];
 
       this.selectTask(task, annotation?.id, true);
     }
@@ -487,7 +511,7 @@ export class LSFWrapper {
   onSubmitAnnotation = async () => {
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
-    });
+    }, false, this.shouldLoadNext());
   };
 
   /** @private */
@@ -612,6 +636,7 @@ export class LSFWrapper {
         }
       },
       true,
+      this.shouldLoadNext(),
     );
   };
 
@@ -660,13 +685,21 @@ export class LSFWrapper {
     this.datamanager.invoke("unskipTask");
   };
 
+  shouldLoadNext = () => {
+    if (!this.labelStream) return false;
+
+    // validating if URL is from notification, in case of notification it shouldn't load next task
+    const urlParam = new URLSearchParams(location.search).get('interaction');
+
+    return urlParam !== 'notifications';
+  }
+
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
   onSelectAnnotation = (prevAnnotation, nextAnnotation, options) => {
     this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
   }
-
 
   onNextTask = (nextTaskId, nextAnnotationId) => {
     console.log(nextTaskId, nextAnnotationId);
@@ -802,6 +835,6 @@ export class LSFWrapper {
   }
 
   get canPreloadTask() {
-    return Object.values(this.preload ?? {}).some((value) => isDefined(value));
+    return Boolean(this.preload?.interaction);
   }
 }
