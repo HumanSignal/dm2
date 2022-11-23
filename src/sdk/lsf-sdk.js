@@ -184,7 +184,6 @@ export class LSFWrapper {
     try {
       const LSF = await resolveLabelStudio();
 
-      window.LabelStudio === LSF;
       this.lsfInstance = new LSF(this.root, settings);
 
       const names = Array.from(this.datamanager.callbacks.keys())
