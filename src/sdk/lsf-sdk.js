@@ -184,7 +184,6 @@ export class LSFWrapper {
     try {
       const LSF = await resolveLabelStudio();
 
-      this.globalLSF = window.LabelStudio === LSF;
       this.lsfInstance = new LSF(this.root, settings);
 
       const names = Array.from(this.datamanager.callbacks.keys())
@@ -306,6 +305,7 @@ export class LSFWrapper {
 
   setLSFTask(task, annotationID, fromHistory) {
     this.setLoading(true);
+    const hasChangedTasks = this.lsf?.task?.id !== task?.id && task?.id;
     const lsfTask = taskToLSFormat(task);
     const isRejectedQueue = isDefined(task.default_selected_annotation);
     const taskList = this.datamanager.store.taskStore.list;
@@ -329,7 +329,12 @@ export class LSFWrapper {
       annotationID = task.default_selected_annotation;
     }
 
-    this.lsf.resetState();
+    if (hasChangedTasks) {
+      this.lsf.resetState();
+    } else {
+      this.lsf.resetAnnotationStore();
+    }
+
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
     this.lsf.assignTask(task, taskHistory);
@@ -384,8 +389,7 @@ export class LSFWrapper {
         c.history.safeUnfreeze();
       }
     }
-
-    const first = this.annotations[0];
+    const first = this.annotations?.length ? this.annotations[0] : null;
     // if we have annotations created automatically, we don't need to create another one
     // automatically === created here and haven't saved yet, so they don't have pk
     // @todo because of some weird reason pk may be string uid, so check flags then
@@ -787,6 +791,7 @@ export class LSFWrapper {
 
   destroy() {
     this.lsfInstance?.destroy?.();
+    this.lsfInstance = null;
   }
 
   get taskID() {
