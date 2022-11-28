@@ -135,6 +135,21 @@ export class LSFWrapper {
       interfaces.push("annotations:comments");
     }
 
+    console.group("Interfaces");
+    console.log([...interfaces]);
+
+    if (!this.shouldLoadNext()) {
+      interfaces = interfaces.filter((item) => {
+        return ![
+          "topbar:prevnext",
+          "skip",
+        ].includes(item);
+      });
+    }
+
+    console.log([...interfaces]);
+    console.groupEnd();
+
     const lsfProperties = {
       user: options.user,
       config: this.lsfConfig,
@@ -172,7 +187,6 @@ export class LSFWrapper {
     try {
       const LSF = await resolveLabelStudio();
 
-      this.globalLSF = window.LabelStudio === LSF;
       this.lsfInstance = new LSF(this.root, settings);
 
       const names = Array.from(this.datamanager.callbacks.keys())
@@ -197,22 +211,31 @@ export class LSFWrapper {
   /** @private */
   async preloadTask() {
     const {
-      annotation: annotationId,
-      draft: draftId,
+      comment: commentId,
+      task: taskID,
     } = this.preload;
     const api = this.datamanager.api;
-    let annotation;
-    let response;
+    let params = { taskID };
 
-    if (annotationId) {
-      response = await api.call("annotation", { params: { id: annotationId } });
-      annotation = response;
-    } else if (draftId) {
-      response = await api.call("draft", { params: { id: draftId } });
+    if (commentId) {
+      params.with_comment = commentId;
     }
 
-    if (response && response.task) {
-      const task = await api.call("task", { params: { taskID: response.task } });
+    if (params) {
+      const task = await api.call("task", { params });
+      const noData = !task || (!task.annotations?.length && !task.drafts?.length);
+      const body = `Task #${taskID}${commentId ? ` with comment #${commentId}` : ``} was not found!`;
+
+      if (noData) {
+        Modal.modal({
+          title: "Can't find task",
+          body,
+        });
+        return false;
+      }
+
+      // for preload it's good to always load the first one
+      const annotation = task.annotations[0];
 
       this.selectTask(task, annotation?.id, true);
     }
@@ -331,6 +354,7 @@ export class LSFWrapper {
 
   setLSFTask(task, annotationID, fromHistory, isPrevious = false) {
     this.setLoading(true);
+    const hasChangedTasks = this.lsf?.task?.id !== task?.id && task?.id;
     const lsfTask = taskToLSFormat(task);
     const isRejectedQueue = isDefined(task.default_selected_annotation);
     const taskList = this.datamanager.store.taskStore.list;
@@ -354,7 +378,12 @@ export class LSFWrapper {
       annotationID = task.default_selected_annotation;
     }
 
-    this.lsf.resetState();
+    if (hasChangedTasks) {
+      this.lsf.resetState();
+    } else {
+      this.lsf.resetAnnotationStore();
+    }
+
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
     this.lsf.assignTask(task, taskHistory, isPrevious);
@@ -411,8 +440,7 @@ export class LSFWrapper {
         return;
       }
     }
-
-    const first = this.annotations[0];
+    const first = this.annotations?.length ? this.annotations[0] : null;
     // if we have annotations created automatically, we don't need to create another one
     // automatically === created here and haven't saved yet, so they don't have pk
     // @todo because of some weird reason pk may be string uid, so check flags then
@@ -532,7 +560,7 @@ export class LSFWrapper {
   onSubmitAnnotation = async () => {
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
-    });
+    }, false, this.shouldLoadNext());
   };
 
   /** @private */
@@ -657,6 +685,7 @@ export class LSFWrapper {
         }
       },
       true,
+      this.shouldLoadNext(),
     );
   };
 
@@ -705,13 +734,21 @@ export class LSFWrapper {
     this.datamanager.invoke("unskipTask");
   };
 
+  shouldLoadNext = () => {
+    if (!this.labelStream) return false;
+
+    // validating if URL is from notification, in case of notification it shouldn't load next task
+    const urlParam = new URLSearchParams(location.search).get('interaction');
+
+    return urlParam !== 'notifications';
+  }
+
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
   onSelectAnnotation = (prevAnnotation, nextAnnotation, options) => {
     this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
   }
-
 
   onNextTask = (nextTaskId, nextAnnotationId) => {
     this.loadTask(nextTaskId, nextAnnotationId, true);
@@ -800,6 +837,7 @@ export class LSFWrapper {
 
   destroy() {
     this.lsfInstance?.destroy?.();
+    this.lsfInstance = null;
   }
 
   get taskID() {
@@ -842,6 +880,6 @@ export class LSFWrapper {
   }
 
   get canPreloadTask() {
-    return Object.values(this.preload ?? {}).some((value) => isDefined(value));
+    return Boolean(this.preload?.interaction);
   }
 }
