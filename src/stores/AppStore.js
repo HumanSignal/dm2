@@ -9,6 +9,11 @@ import { DynamicModel, registerModel } from "./DynamicModel";
 import { TabStore } from "./Tabs";
 import { CustomJSON } from "./types";
 import { User } from "./Users";
+import { ActivityObserver } from "../utils/ActivityObserver";
+
+const networkActivity = new ActivityObserver();
+
+const PROJECTS_FETCH_PERIOD = 10 * 1000; // 10 seconds
 
 export const AppStore = types
   .model("AppStore", {
@@ -134,8 +139,9 @@ export const AppStore = types
       if (self.SDK.polling === false) return;
 
       const poll = async (self) => {
-        await self.fetchProject({ interaction: "timer" });
-        self._poll = setTimeout(() => poll(self), 10000);
+        console.log('Network active', networkActivity.active);
+        if (networkActivity.active) await self.fetchProject({ interaction: "timer" });
+        self._poll = setTimeout(() => poll(self), PROJECTS_FETCH_PERIOD);
       };
 
       poll(self);
@@ -144,6 +150,7 @@ export const AppStore = types
     beforeDestroy() {
       clearTimeout(self._poll);
       window.removeEventListener("popstate", self.handlePopState);
+      networkActivity.destroy();
     },
 
     setMode(mode) {
