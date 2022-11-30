@@ -139,7 +139,6 @@ export const AppStore = types
       if (self.SDK.polling === false) return;
 
       const poll = async (self) => {
-        console.log('Network active', networkActivity.active);
         if (networkActivity.active) await self.fetchProject({ interaction: "timer" });
         self._poll = setTimeout(() => poll(self), PROJECTS_FETCH_PERIOD);
       };
