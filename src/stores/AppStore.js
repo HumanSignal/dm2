@@ -11,7 +11,10 @@ import { CustomJSON } from "./types";
 import { User } from "./Users";
 import { ActivityObserver } from "../utils/ActivityObserver";
 
-const networkActivity = new ActivityObserver();
+/**
+ * @type {ActivityObserver | null}
+ */
+let networkActivity = null;
 
 const PROJECTS_FETCH_PERIOD = 10 * 1000; // 10 seconds
 
@@ -144,6 +147,11 @@ export const AppStore = types
       };
 
       poll(self);
+    },
+
+    afterCreate() {
+      networkActivity?.destroy();
+      networkActivity = new ActivityObserver();
     },
 
     beforeDestroy() {
