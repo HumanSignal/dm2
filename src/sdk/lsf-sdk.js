@@ -341,6 +341,11 @@ export class LSFWrapper {
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
+    this.setDataLoaded(true);
+  }
+
+  setDataLoaded(value) {
+    this.lsf.setDataLoaded(value);
   }
 
   /** @private */
