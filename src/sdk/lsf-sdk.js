@@ -148,6 +148,8 @@ export class LSFWrapper {
     console.groupEnd();
 
     const lsfProperties = {
+      // ensure that we are able to distinguish at component level if the app has fully hydrated.
+      hydrated: false,
       user: options.user,
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
@@ -341,11 +343,11 @@ export class LSFWrapper {
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
-    this.setDataLoaded(true);
+    this.setHydrated(true);
   }
 
-  setDataLoaded(value) {
-    this.lsf.setDataLoaded(value);
+  setHydrated(value) {
+    this.lsf.setHydrated(value);
   }
 
   /** @private */
