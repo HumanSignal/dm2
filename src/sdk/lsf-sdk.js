@@ -11,7 +11,7 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
+import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
@@ -343,11 +343,13 @@ export class LSFWrapper {
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
-    this.setHydrated(true);
+    if (isFF(FF_DEV_2715)) {
+      this.setHydrated(true);
+    }
   }
 
   setHydrated(value) {
-    this.lsf.setHydrated(value);
+    this.lsf.setHydrated?.(value);
   }
 
   /** @private */

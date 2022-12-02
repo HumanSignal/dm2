@@ -23,6 +23,12 @@ export const FF_DEV_1752 = "feat_front_dev_1752_notification_links_in_label_and_
 // toggles the ability to drag columns on the datamanager table
 export const FF_DEV_2984 = "fflag_feat_front_dev_2984_dm_draggable_columns_short";
 
+/**
+ * Support for loading media files only a single time. Part of the Audio v3 epic.
+ * @link https://app.launchdarkly.com/default/production/features/ff_front_dev_2715_audio_3_280722_short
+ */
+export const FF_DEV_2715 = 'ff_front_dev_2715_audio_3_280722_short';
+
 // Customize flags
 const flags = {};
 
