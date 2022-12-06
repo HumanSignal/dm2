@@ -62,7 +62,7 @@ export class LSFWrapper {
   // history = null;
 
   /** @type {TaskHistory} */
-  taskHistory = null;
+  taskHistoryList = null;
 
   /** @type {boolean} */
   labelStream = false;
@@ -270,11 +270,11 @@ export class LSFWrapper {
             props.task = taskId;
           }
 
-          if (this.taskHistory) {
-            if (this.taskHistory[0].previous?.draft) {
-              props.draft = this.taskHistory[0].previous?.draft;
-            } else if (this.taskHistory[0].previous?.annotation) {
-              props.annotation = this.taskHistory[0].previous?.annotation;
+          if (this.taskHistoryList) {
+            if (this.taskHistoryList[0].previous?.draft) {
+              props.draft = this.taskHistoryList[0].previous?.draft;
+            } else if (this.taskHistoryList[0].previous?.annotation) {
+              props.annotation = this.taskHistoryList[0].previous?.annotation;
             }
           } else {
             if (annotationId) {
@@ -285,17 +285,17 @@ export class LSFWrapper {
           }
         }
 
-        this.taskHistory = await tasks.loadTaskHistory(props);
+        this.taskHistoryList = await tasks.loadTaskHistory(props);
 
-        if (!this.taskHistory[0].previous) {
+        if (!this.taskHistoryList[0].previous) {
           this.store.LSF.lsf.task?.setHasPrevTask(false);
           return;
         } else {
           this.store.LSF.lsf.task?.setHasPrevTask(true);
         }
 
-        _taskId = this.taskHistory[0].previous.task;
-        _annotationId = this.taskHistory[0].previous.annotation || this.taskHistory[0].previous.draft;
+        _taskId = this.taskHistoryList[0].previous.task;
+        _annotationId = this.taskHistoryList[0].previous.annotation || this.taskHistoryList[0].previous.draft;
       }
 
       const newTask = await this.withinLoadingState(async () => {
