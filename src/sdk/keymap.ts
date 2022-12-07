@@ -1,19 +1,19 @@
 export const keymap = {
   "dm.focus-previous": {
     title: "Focus previous task",
-    shortcut: "w, shift+up",
+    shortcut: "shift+up",
   },
   "dm.focus-next": {
     title: "Focus previous task",
-    shortcut: "s, shift+down",
+    shortcut: "shift+down",
   },
   "dm.close-labeling": {
     title: "Focus previous task",
-    shortcut: "a, shift+left",
+    shortcut: "shift+left",
   },
   "dm.open-labeling": {
     title: "Focus previous task",
-    shortcut: "d, shift+right, enter",
+    shortcut: "shift+right",
   },
   "lsf.save-annotation": {
     title: "Save results",
