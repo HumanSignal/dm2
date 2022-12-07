@@ -360,7 +360,7 @@ export class LSFWrapper {
     const taskList = this.datamanager.store.taskStore.list;
     // annotations are set in LSF only and order in DM only, so combine them
     const taskHistory = taskList
-      .map(task => this.taskHistory?.find(item => item.taskId === task.id))
+      .map(task => this.taskHistory.find(item => item.taskId === task.id))
       .filter(Boolean);
 
     const extracted = taskHistory.find(item => item.taskId === task.id);
