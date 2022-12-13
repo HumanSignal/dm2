@@ -13,7 +13,7 @@ import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import * as CellViews from "../../CellViews";
 import { GridView } from "../GridView/GridView";
 import { DEFAULT_PAGE_SIZE, getStoredPageSize, Pagination, setStoredPageSize } from "../../Common/Pagination/Pagination";
-import { FF_DEV_2536, isFF } from '../../../utils/feature-flags';
+import { FF_DEV_2536, FF_DEV_4008, isFF } from '../../../utils/feature-flags';
 
 import "./DataView.styl";
 
@@ -265,13 +265,18 @@ export const DataView = injector(
 
     useShortcut("dm.focus-previous", () => {
       if (document.activeElement !== document.body) return;
-      dataStore.focusPrev();
+
+      const task = dataStore.focusPrev();
+
+      if (isFF(FF_DEV_4008)) getRoot(view).startLabeling(task);
     });
 
     useShortcut("dm.focus-next", () => {
       if (document.activeElement !== document.body) return;
 
-      dataStore.focusNext();
+      const task = dataStore.focusNext();
+
+      if (isFF(FF_DEV_4008)) getRoot(view).startLabeling(task);
     });
 
     useShortcut("dm.close-labeling", () => {

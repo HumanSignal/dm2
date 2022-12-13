@@ -262,6 +262,8 @@ export const DataStore = (
 
         self.highlighted = self.list[index];
         self.updated = guidGenerator();
+
+        return self.highlighted;
       },
 
       focusNext() {
@@ -272,6 +274,8 @@ export const DataStore = (
 
         self.highlighted = self.list[index];
         self.updated = guidGenerator();
+
+        return self.highlighted;
       },
     }));
 

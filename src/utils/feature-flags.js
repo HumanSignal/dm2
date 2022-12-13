@@ -23,8 +23,12 @@ export const FF_DEV_1752 = "feat_front_dev_1752_notification_links_in_label_and_
 // toggles the ability to drag columns on the datamanager table
 export const FF_DEV_2984 = "fflag_feat_front_dev_2984_dm_draggable_columns_short";
 
+export const FF_DEV_4008 = "feat_front_dev_4008_quick_task_open_short";
+
 // Customize flags
-const flags = {};
+const flags = {
+  [FF_DEV_4008]: true,
+};
 
 function getFeatureFlags() {
   return Object.assign(window.APP_SETTINGS?.feature_flags || {}, flags);
