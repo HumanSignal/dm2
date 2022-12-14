@@ -26,9 +26,7 @@ export const FF_DEV_2984 = "fflag_feat_front_dev_2984_dm_draggable_columns_short
 export const FF_DEV_4008 = "feat_front_dev_4008_quick_task_open_short";
 
 // Customize flags
-const flags = {
-  [FF_DEV_4008]: true,
-};
+const flags = {};
 
 function getFeatureFlags() {
   return Object.assign(window.APP_SETTINGS?.feature_flags || {}, flags);
