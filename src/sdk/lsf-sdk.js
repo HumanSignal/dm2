@@ -11,7 +11,7 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
+import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
@@ -148,6 +148,8 @@ export class LSFWrapper {
     console.groupEnd();
 
     const lsfProperties = {
+      // ensure that we are able to distinguish at component level if the app has fully hydrated.
+      hydrated: false,
       user: options.user,
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
@@ -341,6 +343,13 @@ export class LSFWrapper {
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
+    if (isFF(FF_DEV_2715)) {
+      this.setHydrated(true);
+    }
+  }
+
+  setHydrated(value) {
+    this.lsf.setHydrated?.(value);
   }
 
   /** @private */
