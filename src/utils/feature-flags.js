@@ -23,8 +23,8 @@ export const FF_DEV_1752 = "feat_front_dev_1752_notification_links_in_label_and_
 // toggles the ability to drag columns on the datamanager table
 export const FF_DEV_2984 = "fflag_feat_front_dev_2984_dm_draggable_columns_short";
 
-// Show task counter for Manual assignment only
-export const FF_DEV_3734 = 'fflag_fix_front_dev_3734_show_task_counter_131222_short';
+// Hide task counter because it's mostly irrelevant
+export const FF_DEV_3734 = 'fflag_fix_front_dev_3734_hide_task_counter_131222_short';
 
 // Customize flags
 const flags = {};
