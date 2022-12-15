@@ -396,6 +396,7 @@ export class LSFWrapper {
         c.setDraftId(draft.id);
         c.setDraftSaved(draft.created_at);
         c.history.safeUnfreeze();
+        c.history.reinit();
       }
     }
     const first = this.annotations?.length ? this.annotations[0] : null;
