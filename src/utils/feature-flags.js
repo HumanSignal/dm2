@@ -29,6 +29,12 @@ export const FF_DEV_2984 = "fflag_feat_front_dev_2984_dm_draggable_columns_short
  */
 export const FF_DEV_2715 = 'ff_front_dev_2715_audio_3_280722_short';
 
+/**
+ * Hide task counter because it's mostly irrelevant
+ * @link https://app.launchdarkly.com/default/production/features/fflag_fix_front_dev_3734_hide_task_counter_131222_short
+ */
+export const FF_DEV_3734 = 'fflag_fix_front_dev_3734_hide_task_counter_131222_short';
+
 // Customize flags
 const flags = {};
 
