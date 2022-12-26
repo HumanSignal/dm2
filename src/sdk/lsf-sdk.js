@@ -728,9 +728,12 @@ export class LSFWrapper {
   }
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
     const { taskID, currentAnnotation } = this;
+    const unique_id = this.task.unique_lock_id;
     const serializedAnnotation = this.prepareData(currentAnnotation, { includeId });
 
-    serializedAnnotation.unique_id = this.task.unique_lock_id;
+    if (unique_id) {
+      serializedAnnotation.unique_id = unique_id;
+    }
 
     this.setLoading(true);
 
