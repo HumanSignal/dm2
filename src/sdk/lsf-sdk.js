@@ -525,7 +525,13 @@ export class LSFWrapper {
   /** @private */
   onSubmitAnnotation = async () => {
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
-      return await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
+      return await this.datamanager.apiCall(
+        "submitAnnotation",
+        { taskID },
+        { body },
+        // don't react on duplicated annotations error
+        { errorHandler: result => result.status === 409 },
+      );
     }, false, this.shouldLoadNext());
   };
 
