@@ -85,6 +85,26 @@ export const TabsItem = ({
 
   const active = tab === selectedTab;
 
+  const tabIsEditable = useMemo(() => editable && allowedActions.edit, [
+    editable, allowedActions,
+  ]);
+
+  const tabIsDeletable = useMemo(() => !lastTab && deletable && allowedActions.delete, [
+    lastTab, deletable, allowedActions,
+  ]);
+
+  const tabIsCloneable = useMemo(() => allowedActions.add && allowedActions.duplicate, [
+    allowedActions.add, allowedActions.duplicate,
+  ]);
+
+  const showMenu = useMemo(() => {
+    return managable && (
+      tabIsEditable ||
+      tabIsDeletable ||
+      tabIsCloneable
+    );
+  }, [managable, tabIsEditable, tabIsDeletable, tabIsCloneable]);
+
   const saveTabTitle = useCallback((ev) => {
     const { type, key } = ev;
 
@@ -141,14 +161,14 @@ export const TabsItem = ({
       <Elem
         name='item-right'
       >
-        {(managable) && (
+        {showMenu && (
           <Dropdown.Trigger
             align="bottom-left"
             content={(
               <TabsMenu
-                editable={editable && allowedActions.edit}
-                closable={!lastTab && deletable && allowedActions.delete}
-                clonable={allowedActions.add && allowedActions.duplicate}
+                editable={tabIsEditable}
+                closable={tabIsDeletable}
+                clonable={tabIsCloneable}
                 virtual={virtual}
                 onClick={(action) => {
                   switch(action) {
