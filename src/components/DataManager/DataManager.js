@@ -33,6 +33,7 @@ const summaryInjector = inject(({ store }) => {
 
 const switchInjector = inject(({ store }) => {
   return {
+    sdk: store.SDK,
     views: store.viewsStore,
     tabs: Array.from(store.viewsStore?.all ?? []),
     selectedKey: store.viewsStore?.selected?.key,
@@ -64,7 +65,9 @@ const ProjectSummary = summaryInjector((props) => {
   );
 });
 
-const TabsSwitch = switchInjector(observer(({ views, tabs, selectedKey }) => {
+const TabsSwitch = switchInjector(observer(({ sdk, views, tabs, selectedKey }) => {
+  const editable = sdk.tabControls;
+
   return (
     <Tabs
       activeTab={selectedKey}
@@ -72,6 +75,7 @@ const TabsSwitch = switchInjector(observer(({ views, tabs, selectedKey }) => {
       onChange={(key) => views.setSelected(key)}
       tabBarExtraContent={<ProjectSummary />}
       addIcon={<LSPlus />}
+      allowedActions={editable}
     >
       {tabs.map((tab) => (
         <TabsItem

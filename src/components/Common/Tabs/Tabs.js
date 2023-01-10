@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { FaEllipsisV } from "react-icons/fa";
 import { BemWithSpecifiContext } from "../../../utils/bem";
 import { Button } from "../Button/Button";
@@ -18,6 +18,7 @@ export const Tabs = ({
   onChange,
   onAdd,
   tabBarExtraContent,
+  allowedActions,
   addIcon,
 }) => {
   const [selectedTab, setSelectedTab] = useState(activeTab);
@@ -31,23 +32,30 @@ export const Tabs = ({
     if (selectedTab !== activeTab) setSelectedTab(activeTab);
   }, [selectedTab, activeTab]);
 
-  return (
-    <TabsContext.Provider value={{
+  const contextValue = useMemo(() => {
+    return {
       switchTab,
       selectedTab,
+      allowedActions,
       lastTab: children.length === 1,
-    }}>
+    };
+  }, [switchTab, selectedTab, allowedActions, children.length]);
+
+  return (
+    <TabsContext.Provider value={contextValue}>
       <Block name="tabs">
         <Elem name="list">
           {children}
 
-          <Elem
-            tag={Button}
-            name="add"
-            type="text"
-            onClick={onAdd}
-            icon={addIcon}
-          />
+          {allowedActions.add !== false && (
+            <Elem
+              tag={Button}
+              name="add"
+              type="text"
+              onClick={onAdd}
+              icon={addIcon}
+            />
+          )}
         </Elem>
         <Elem name="extra">
           {tabBarExtraContent}
@@ -70,12 +78,32 @@ export const TabsItem = ({
   managable = true,
   virtual = false,
 }) => {
-  const { switchTab, selectedTab, lastTab } = useContext(TabsContext);
+  const { switchTab, selectedTab, lastTab, allowedActions } = useContext(TabsContext);
   const [currentTitle, setCurrentTitle] = useState(title);
   const [renameMode, setRenameMode] = useState(false);
   const [hover, setHover] = useState(false);
 
   const active = tab === selectedTab;
+
+  const tabIsEditable = useMemo(() => editable && allowedActions.edit, [
+    editable, allowedActions,
+  ]);
+
+  const tabIsDeletable = useMemo(() => !lastTab && deletable && allowedActions.delete, [
+    lastTab, deletable, allowedActions,
+  ]);
+
+  const tabIsCloneable = useMemo(() => allowedActions.add && allowedActions.duplicate, [
+    allowedActions.add, allowedActions.duplicate,
+  ]);
+
+  const showMenu = useMemo(() => {
+    return managable && (
+      tabIsEditable ||
+      tabIsDeletable ||
+      tabIsCloneable
+    );
+  }, [managable, tabIsEditable, tabIsDeletable, tabIsCloneable]);
 
   const saveTabTitle = useCallback((ev) => {
     const { type, key } = ev;
@@ -99,7 +127,7 @@ export const TabsItem = ({
       mod={{ active, hover, virtual }}
       onMouseEnter={()=>setHover(true)}
       onMouseLeave={()=>setHover(false)}
-    > 
+    >
       <Elem
         name="item-left"
         onClick={() => switchTab?.(tab)}
@@ -121,7 +149,7 @@ export const TabsItem = ({
             }}
           />
         ) : (
-          <span style={{  
+          <span style={{
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -133,13 +161,14 @@ export const TabsItem = ({
       <Elem
         name='item-right'
       >
-        {(managable) && (
+        {showMenu && (
           <Dropdown.Trigger
             align="bottom-left"
             content={(
               <TabsMenu
-                editable={editable}
-                closable={!lastTab && deletable}
+                editable={tabIsEditable}
+                closable={tabIsDeletable}
+                clonable={tabIsCloneable}
                 virtual={virtual}
                 onClick={(action) => {
                   switch(action) {
