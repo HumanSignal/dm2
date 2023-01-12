@@ -11,7 +11,7 @@
  * interfacesModifier: function,
  * }} LSFOptions */
 
-import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
+import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, FF_DEV_3734, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
@@ -151,6 +151,8 @@ export class LSFWrapper {
     console.groupEnd();
 
     const lsfProperties = {
+      // ensure that we are able to distinguish at component level if the app has fully hydrated.
+      hydrated: false,
       user: options.user,
       config: this.lsfConfig,
       task: taskToLSFormat(this.task),
@@ -384,12 +386,25 @@ export class LSFWrapper {
       this.lsf.resetAnnotationStore();
     }
 
+    // Initial idea to show counter for Manual assignment only
+    // But currently we decided to hide it for any stream
+    // const distribution = this.project.assignment_settings.label_stream_task_distribution;
+    // const isManuallyAssigned = distribution === "assigned_only";
+
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
+    this.lsf.toggleInterface("topbar:task-counter", !isFF(FF_DEV_3734));
     this.lsf.assignTask(task, taskHistory, isPrevious);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
+    if (isFF(FF_DEV_2715)) {
+      this.setHydrated(true);
+    }
+  }
+
+  setHydrated(value) {
+    this.lsf.setHydrated?.(value);
   }
 
   /** @private */
@@ -437,7 +452,7 @@ export class LSFWrapper {
         c.setDraftId(draft.id);
         c.setDraftSaved(draft.created_at);
         c.history.safeUnfreeze();
-        return;
+        c.history.reinit();
       }
     }
     const first = this.annotations?.length ? this.annotations[0] : null;
