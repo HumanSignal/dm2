@@ -525,7 +525,13 @@ export class LSFWrapper {
   /** @private */
   onSubmitAnnotation = async () => {
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
-      return await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
+      return await this.datamanager.apiCall(
+        "submitAnnotation",
+        { taskID },
+        { body },
+        // don't react on duplicated annotations error
+        { errorHandler: result => result.status === 409 },
+      );
     }, false, this.shouldLoadNext());
   };
 
@@ -728,7 +734,12 @@ export class LSFWrapper {
   }
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
     const { taskID, currentAnnotation } = this;
+    const unique_id = this.task.unique_lock_id;
     const serializedAnnotation = this.prepareData(currentAnnotation, { includeId });
+
+    if (unique_id) {
+      serializedAnnotation.unique_id = unique_id;
+    }
 
     this.setLoading(true);
 

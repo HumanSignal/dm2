@@ -22,6 +22,7 @@ export const create = (columns) => {
     // annotation to select on rejected queue
     default_selected_annotation: types.maybeNull(types.number),
     allow_postpone: types.maybeNull(types.boolean),
+    unique_lock_id: types.maybeNull(types.string),
     updated_by: types.optional(types.array(Assignee), []),
   })
     .views((self) => ({
