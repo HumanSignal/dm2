@@ -251,7 +251,6 @@ export class LSFWrapper {
       return console.error("Make sure that LSF was properly initialized");
     }
 
-
     const nextAction = async () => {
       const tasks = this.datamanager.store.taskStore;
       const projectId = this.datamanager.store.project.id;
@@ -392,9 +391,9 @@ export class LSFWrapper {
     // const isManuallyAssigned = distribution === "assigned_only";
 
     // undefined or true for backward compatibility
-    this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
+    this.lsf.toggleInterface("postpone", !!task);
     this.lsf.toggleInterface("topbar:task-counter", !isFF(FF_DEV_3734));
-    this.lsf.assignTask(task, taskHistory, isPrevious);
+    this.lsf.assignTask({ ...task, annotationId: annotationID && parseInt(annotationID) }, taskHistory, isPrevious);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
@@ -414,8 +413,11 @@ export class LSFWrapper {
     let annotation;
     const activeDrafts = cs.annotations.map(a => a.draftId).filter(Boolean);
 
+    const isAnnotation = this.task.annotations.some(x => {
+      return x.id === annotationID;
+    });
 
-    if (this.task.drafts) {
+    if (this.task.drafts && !isAnnotation) {
       for (const draft of this.task.drafts) {
         if (activeDrafts.includes(draft.id)) continue;
         let c;
