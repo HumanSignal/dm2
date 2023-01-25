@@ -28,7 +28,8 @@
     "build": "npx webpack",
     "watch": "npx webpack --watch",
     "start": "node dev-server.js",
-    "test": "echo \"Error: no test specified\" && exit 0"
+    "test": "echo \"Error: no test specified\" && exit 0",
+    "lint": "npx eslint ./src"
   },
   "author": "Heartex, Inc.",
   "license": "ISC",
