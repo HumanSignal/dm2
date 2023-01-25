@@ -50,6 +50,6 @@ jobs:
       - name: Print Yarn cache size
         run: du -d 0 -h ${{ steps.yarn-cache-dir-path.outputs.dir }}
 
-      - name: Build
+      - name: Lint
         working-directory: label_studio/frontend
         run: yarn install --frozen-lockfile && yarn lint
