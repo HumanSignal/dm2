@@ -9,6 +9,7 @@
  * task: Task
  * labelStream: boolean,
  * interfacesModifier: function,
+ * messages: Dict<string|Function>
  * }} LSFOptions */
 
 import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, FF_DEV_3734, isFF } from "../utils/feature-flags";
@@ -159,6 +160,7 @@ export class LSFWrapper {
       keymap: options.keymap,
       forceAutoAnnotation: this.isInteractivePreannotations,
       forceAutoAcceptSuggestions: this.isInteractivePreannotations,
+      messages: options.messages,
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
