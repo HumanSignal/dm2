@@ -231,12 +231,6 @@ export const TableHead = observer(
           ref.current?.addEventListener("mousedown", (event) => {
             if (event.target.className.includes("handle")) event.preventDefault();
           });
-
-          return () => {
-            ref.current?.removeEventListener("mousedown", (event) => {
-              if (event.target.className.includes("handle")) event.preventDefault();
-            });
-          };
         }, [],
         );
   
