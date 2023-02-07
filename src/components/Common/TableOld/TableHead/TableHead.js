@@ -1,6 +1,6 @@
 import { observer, useLocalStore } from "mobx-react";
 import { toJS } from "mobx";
-import React, { forwardRef, useCallback, useRef } from "react";
+import React, { forwardRef, useCallback, useEffect, useRef } from "react";
 import {
   ViewColumnType,
   ViewColumnTypeName,
@@ -143,9 +143,6 @@ const ColumnRenderer = observer(
             justifyContent: style.justifyContent ?? "space-between",
             overflow: "hidden",
           }}
-          handleStyle={{
-            marginLeft: 9,
-          }}
           initialWidth={style.width ?? 150}
           minWidth={style.minWidth ?? 30}
           onResizeFinished={(width) => onResize?.(column, width)}
@@ -229,7 +226,15 @@ export const TableHead = observer(
           });
           return orderedColumns;
         }, [columns]);
-  
+        
+        useEffect(() => {
+          ref.current?.addEventListener("mousedown", (event) => {
+            if (event.target.className.includes("handle")) event.preventDefault();
+          });
+
+        }, [],
+        );
+                
         return (
           <Block
             name="table-head"
