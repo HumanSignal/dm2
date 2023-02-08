@@ -1,6 +1,6 @@
-import { observer, useEffect, useLocalStore } from "mobx-react";
+import { observer, useLocalStore } from "mobx-react";
 import { toJS } from "mobx";
-import React, { forwardRef, useCallback, useRef } from "react";
+import React, { forwardRef, useCallback, useEffect, useRef } from "react";
 import {
   ViewColumnType,
   ViewColumnTypeName,
