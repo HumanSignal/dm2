@@ -35,6 +35,12 @@ export const FF_DEV_4008 = "feat_front_dev_4008_quick_task_open_short";
  */
 export const FF_DEV_2715 = 'ff_front_dev_2715_audio_3_280722_short';
 
+/**
+ * Hide task counter because it's mostly irrelevant
+ * @link https://app.launchdarkly.com/default/production/features/fflag_fix_front_dev_3734_hide_task_counter_131222_short
+ */
+export const FF_DEV_3734 = 'fflag_fix_front_dev_3734_hide_task_counter_131222_short';
+
 // Customize flags
 const flags = {};
 

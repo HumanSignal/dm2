@@ -9,9 +9,10 @@
  * task: Task
  * labelStream: boolean,
  * interfacesModifier: function,
+ * messages: Dict<string|Function>
  * }} LSFOptions */
 
-import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, isFF } from "../utils/feature-flags";
+import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, FF_DEV_3734, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
@@ -159,6 +160,7 @@ export class LSFWrapper {
       keymap: options.keymap,
       forceAutoAnnotation: this.isInteractivePreannotations,
       forceAutoAcceptSuggestions: this.isInteractivePreannotations,
+      messages: options.messages,
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
@@ -337,8 +339,14 @@ export class LSFWrapper {
       this.lsf.resetAnnotationStore();
     }
 
+    // Initial idea to show counter for Manual assignment only
+    // But currently we decided to hide it for any stream
+    // const distribution = this.project.assignment_settings.label_stream_task_distribution;
+    // const isManuallyAssigned = distribution === "assigned_only";
+
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
+    this.lsf.toggleInterface("topbar:task-counter", !isFF(FF_DEV_3734));
     this.lsf.assignTask(task, taskHistory);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
@@ -519,7 +527,13 @@ export class LSFWrapper {
   /** @private */
   onSubmitAnnotation = async () => {
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
-      return await this.datamanager.apiCall("submitAnnotation", { taskID }, { body });
+      return await this.datamanager.apiCall(
+        "submitAnnotation",
+        { taskID },
+        { body },
+        // don't react on duplicated annotations error
+        { errorHandler: result => result.status === 409 },
+      );
     }, false, this.shouldLoadNext());
   };
 
@@ -722,7 +736,12 @@ export class LSFWrapper {
   }
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
     const { taskID, currentAnnotation } = this;
+    const unique_id = this.task.unique_lock_id;
     const serializedAnnotation = this.prepareData(currentAnnotation, { includeId });
+
+    if (unique_id) {
+      serializedAnnotation.unique_id = unique_id;
+    }
 
     this.setLoading(true);
 

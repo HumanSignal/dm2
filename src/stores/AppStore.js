@@ -504,7 +504,17 @@ export const AppStore = types
       }
     }),
 
-    apiCall: flow(function* (methodName, params, body) {
+    /**
+     * Main API calls provider for the whole application.
+     * `params` are used both for var substitution and query params if var is unknown:
+     * `{ project: 123, order: "desc" }` for method `"tasks": "/project/:pk/tasks"`
+     * will produce `/project/123/tasks?order=desc` url
+     * @param {string} methodName one of the methods in api-config
+     * @param {object} params url vars and query string params
+     * @param {object} body for POST/PATCH requests
+     * @param {{ errorHandler?: fn }} [options] additional options like errorHandler
+     */
+    apiCall: flow(function* (methodName, params, body, options) {
       const apiTransform = self.SDK.apiTransform?.[methodName];
       const requestParams = apiTransform?.params?.(params) ?? params ?? {};
       const requestBody = apiTransform?.body?.(body) ?? body ?? undefined;
@@ -512,6 +522,10 @@ export const AppStore = types
       let result = yield self.API[methodName](requestParams, requestBody);
 
       if (result.error && result.status !== 404) {
+        if (options?.errorHandler?.(result)) {
+          return result;
+        }
+
         if (result.response) {
           self.serverError.set(methodName, {
             error: "Something went wrong",
