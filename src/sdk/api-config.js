@@ -47,6 +47,9 @@ export const APIConfig = {
     /** List of tasks (samples) in the dataset */
     tasks: "/tasks",
 
+    /** List of task history */
+    taskHistory: "/../projects/:projectId/label-stream-history",
+
     /** Per-task annotations (annotations, predictions) */
     annotations: "/views/:tabID/annotations",
 
