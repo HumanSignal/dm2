@@ -347,7 +347,7 @@ export class LSFWrapper {
     // undefined or true for backward compatibility
     this.lsf.toggleInterface("postpone", this.task.allow_postpone !== false);
     this.lsf.toggleInterface("topbar:task-counter", !isFF(FF_DEV_3734));
-    this.lsf.assignTask(task, taskHistory);
+    this.lsf.assignTask(task);
     this.lsf.initializeStore(lsfTask);
     this.setAnnotation(annotationID, fromHistory || isRejectedQueue);
     this.setLoading(false);
@@ -496,6 +496,12 @@ export class LSFWrapper {
     this.lsf = ls;
 
     if (!this.lsf.task) this.setLoading(true);
+
+    const _taskHistory =  await this.datamanager.store.taskStore.loadTaskHistory({
+      projectId: this.datamanager.store.project.id,
+    });
+
+    this.lsf.setTaskHistory(_taskHistory);
 
     await this.loadUserLabels();
 
