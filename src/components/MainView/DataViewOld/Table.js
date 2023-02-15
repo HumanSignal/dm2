@@ -4,15 +4,15 @@ import { useCallback, useMemo } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";
+import { FF_DEV_2536, FF_DEV_4008, isFF } from '../../../utils/feature-flags';
+import * as CellViews from "../../CellViews";
 import { Icon } from "../../Common/Icon/Icon";
 import { ImportButton } from "../../Common/SDKButtons";
 import { Spinner } from "../../Common/Spinner";
 import { Table } from "../../Common/TableOld/Table";
 import { Tag } from "../../Common/Tag/Tag";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
-import * as CellViews from "../../CellViews";
 import { GridView } from "../GridViewOld/GridView";
-import { FF_DEV_2536, isFF } from '../../../utils/feature-flags';
 import "./Table.styl";
 
 const injector = inject(({ store }) => {
@@ -263,13 +263,18 @@ export const DataView = injector(
 
     useShortcut("dm.focus-previous", () => {
       if (document.activeElement !== document.body) return;
-      dataStore.focusPrev();
+
+      const task = dataStore.focusPrev();
+
+      if (isFF(FF_DEV_4008)) getRoot(view).startLabeling(task);
     });
 
     useShortcut("dm.focus-next", () => {
       if (document.activeElement !== document.body) return;
 
-      dataStore.focusNext();
+      const task = dataStore.focusNext();
+
+      if (isFF(FF_DEV_4008)) getRoot(view).startLabeling(task);
     });
 
     useShortcut("dm.close-labeling", () => {
