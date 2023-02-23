@@ -2,6 +2,7 @@ import { inject, observer } from "mobx-react";
 import React from "react";
 import { LSPlus } from "../../assets/icons";
 import { Block, Elem } from "../../utils/bem";
+import { FF_LOPS_12, isFF } from "../../utils/feature-flags";
 import { Interface } from "../Common/Interface";
 import { Space } from "../Common/Space/Space";
 import { Spinner } from "../Common/Spinner";
@@ -20,15 +21,28 @@ const injector = inject(({ store }) => {
 });
 
 const summaryInjector = inject(({ store }) => {
-  const { project, taskStore } = store;
+  const { project, taskStore, SDK } = store;
 
-  return {
-    totalTasks: project?.task_count ?? project?.task_number ?? 0,
-    totalFoundTasks: taskStore?.total ?? 0,
-    totalAnnotations: taskStore?.totalAnnotations ?? 0,
-    totalPredictions: taskStore?.totalPredictions ?? 0,
-    cloudSync: project.target_syncing ?? project.source_syncing ?? false,
-  };
+  if (isFF(FF_LOPS_12) && SDK?.type === 'labelops') {
+    console.log("summaryInjector", SDK?.type, project, taskStore);
+    return {
+      totalTasks: project?.task_count ?? project?.task_number ?? 0,
+      totalFoundTasks: taskStore?.total ?? 0,
+      totalAnnotations: taskStore?.totalAnnotations ?? 0,
+      totalPredictions: taskStore?.totalPredictions ?? 0,
+      cloudSync: project.target_syncing ?? project.source_syncing ?? false,
+      SDK,
+    };
+  } else {
+    return {
+      totalTasks: project?.task_count ?? project?.task_number ?? 0,
+      totalFoundTasks: taskStore?.total ?? 0,
+      totalAnnotations: taskStore?.totalAnnotations ?? 0,
+      totalPredictions: taskStore?.totalPredictions ?? 0,
+      cloudSync: project.target_syncing ?? project.source_syncing ?? false,
+    };
+  }
+
 });
 
 const switchInjector = inject(({ store }) => {
@@ -41,28 +55,34 @@ const switchInjector = inject(({ store }) => {
 });
 
 const ProjectSummary = summaryInjector((props) => {
-  return (
-    <Space size="large" style={{ paddingRight: "1em", color: "rgba(0,0,0,0.3)" }}>
-      {props.cloudSync && (
-        <Space
-          size="small"
-          style={{ fontSize: 12, fontWeight: 400, opacity: 0.8 }}
-        >
-          Storage sync
-          <Spinner size="small" />
-        </Space>
-      )}
-      <span style={{ display: "flex", alignItems: "center", fontSize: 12 }}>
-        <Space size="compact">
-          <span>
-            Tasks: {props.totalFoundTasks} / {props.totalTasks}
-          </span>
-          <span>Annotations: {props.totalAnnotations}</span>
-          <span>Predictions: {props.totalPredictions}</span>
-        </Space>
-      </span>
-    </Space>
-  );
+  if (isFF(FF_LOPS_12) && props.SDK?.type === 'labelops') {
+    return (
+      <Space size="large" style={{ paddingRight: "1em", color: "rgba(0,0,0,0.3)" }}>LabelOps Summary</Space>
+    );
+  } else {
+    return (
+      <Space size="large" style={{ paddingRight: "1em", color: "rgba(0,0,0,0.3)" }}>
+        {props.cloudSync && (
+          <Space
+            size="small"
+            style={{ fontSize: 12, fontWeight: 400, opacity: 0.8 }}
+          >
+            Storage sync
+            <Spinner size="small" />
+          </Space>
+        )}
+        <span style={{ display: "flex", alignItems: "center", fontSize: 12 }}>
+          <Space size="compact">
+            <span>
+              Tasks: {props.totalFoundTasks} / {props.totalTasks}
+            </span>
+            <span>Annotations: {props.totalAnnotations}</span>
+            <span>Predictions: {props.totalPredictions}</span>
+          </Space>
+        </span>
+      </Space>
+    );
+  }
 });
 
 const TabsSwitch = switchInjector(observer(({ sdk, views, tabs, selectedKey }) => {
