@@ -1,10 +1,12 @@
 import { FaCaretDown } from "react-icons/fa";
+import { FF_LOPS_12, isFF } from "../../../utils/feature-flags";
 import { ErrorBox } from "../../Common/ErrorBox";
 import { FieldsButton } from "../../Common/FieldsButton";
 import { FiltersPane } from "../../Common/FiltersPane";
 import { Icon } from "../../Common/Icon/Icon";
 import { Interface } from "../../Common/Interface";
 import { ExportButton, ImportButton } from "../../Common/SDKButtons";
+import { SemanticSearch } from "../../Common/SemanticSearch/SemanticSearch";
 import { ActionsButton } from "./ActionsButton";
 import { GridWidthButton } from "./GridWidthButton";
 import { LabelButton } from "./LabelButton";
@@ -66,6 +68,14 @@ export const instruments = {
       <Interface name="export">
         <ExportButton size={size}>Export</ExportButton>
       </Interface>
+    );
+  },
+  'semantic-search': ({ size }) => {
+    
+    return isFF(FF_LOPS_12) ? (
+      <SemanticSearch size={size}/>
+    ) : (
+      <></>
     );
   },
 };
