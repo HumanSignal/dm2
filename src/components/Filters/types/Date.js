@@ -3,7 +3,12 @@ import { observer } from "mobx-react";
 import React from "react";
 import { DatePicker } from "../../Common/DatePicker/DatePicker";
 
+const userOffset = new Date().getTimezoneOffset();
+const convertDateToUTC = (date) => new Date(new Date(date).getTime() - userOffset * 60 * 1000);
+const convertUTCtoLocalDate = (utcDateString) => new Date(new Date(utcDateString).getTime() + userOffset * 60 * 1000);
+
 export const DateTimeInput = observer(({ value, range, time, onChange }) => {
+
   const onValueChange = React.useCallback(
     (selectedDate) => {
       let value;
@@ -11,11 +16,11 @@ export const DateTimeInput = observer(({ value, range, time, onChange }) => {
       if (Array.isArray(selectedDate)) {
         const [min, max] = selectedDate
           .map((d) => d ? new Date(d) : null)
-          .map((d) => (isValid(d) ? d.toISOString() : null));
+          .map((d) => (isValid(d) ? convertDateToUTC(d).toISOString() : null));
 
         value = { min, max };
       } else {
-        value = selectedDate?.toISOString();
+        value = convertDateToUTC(selectedDate).toISOString();
       }
 
       onChange(value);
@@ -23,16 +28,16 @@ export const DateTimeInput = observer(({ value, range, time, onChange }) => {
     [onChange],
   );
 
-  const dateValue = React.useMemo(() => {
+  const localDateValue = React.useMemo(() => {
     if (range) {
       const { min, max } = value ?? {};
 
       return [min, max]
         .map((d) => (d === null ? undefined : d))
-        .map((d) => new Date(d))
+        .map((d) => convertUTCtoLocalDate(d))
         .map((d) => (isValid(d) ? d : undefined));
     } else {
-      const date = new Date(value === null ? undefined : value);
+      const date = convertUTCtoLocalDate(value === null ? undefined : value);
 
       return isValid(date) ? date : undefined;
     }
@@ -41,7 +46,7 @@ export const DateTimeInput = observer(({ value, range, time, onChange }) => {
   return (
     <DatePicker
       size="small"
-      value={dateValue}
+      value={localDateValue}
       selectRange={range}
       showTime={time === true}
       onChange={onValueChange}
