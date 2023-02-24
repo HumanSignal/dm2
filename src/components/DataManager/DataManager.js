@@ -24,12 +24,11 @@ const summaryInjector = inject(({ store }) => {
   const { project, taskStore, SDK } = store;
 
   if (isFF(FF_LOPS_12) && SDK?.type === 'labelops') {
-    console.log("summaryInjector", SDK?.type, project, taskStore);
     return {
-      totalTasks: project?.task_count ?? project?.task_number ?? 0,
-      totalFoundTasks: taskStore?.total ?? 0,
-      totalAnnotations: taskStore?.totalAnnotations ?? 0,
-      totalPredictions: taskStore?.totalPredictions ?? 0,
+      total: taskStore?.total ?? 0,
+      coverage: taskStore?.coverage ?? 'N/A',
+      precision: taskStore?.precision ?? 'N/A',
+      confidence: taskStore?.confidence ?? 'N/A',
       cloudSync: project.target_syncing ?? project.source_syncing ?? false,
       SDK,
     };
@@ -55,22 +54,29 @@ const switchInjector = inject(({ store }) => {
 });
 
 const ProjectSummary = summaryInjector((props) => {
-  if (isFF(FF_LOPS_12) && props.SDK?.type === 'labelops') {
-    return (
-      <Space size="large" style={{ paddingRight: "1em", color: "rgba(0,0,0,0.3)" }}>LabelOps Summary</Space>
-    );
-  } else {
-    return (
-      <Space size="large" style={{ paddingRight: "1em", color: "rgba(0,0,0,0.3)" }}>
-        {props.cloudSync && (
-          <Space
-            size="small"
-            style={{ fontSize: 12, fontWeight: 400, opacity: 0.8 }}
-          >
-            Storage sync
-            <Spinner size="small" />
+  return (
+    <Space size="large" style={{ paddingRight: "1em", color: "rgba(0,0,0,0.3)" }}>
+      {props.cloudSync && (
+        <Space
+          size="small"
+          style={{ fontSize: 12, fontWeight: 400, opacity: 0.8 }}
+        >
+          Storage sync
+          <Spinner size="small" />
+        </Space>
+      )}
+      {isFF(FF_LOPS_12) && props.SDK?.type === 'labelops' ? (
+        <span style={{ display: "flex", alignItems: "center", fontSize: 12 }}>
+          <Space size="compact">
+            <span>
+              Total: {props.total}
+            </span>
+            <span>GT coverage: {props.coverage}</span>
+            <span>Precision: {props.precision}</span>
+            <span>Confidence: {props.confidence}</span>
           </Space>
-        )}
+        </span>
+      ) : (
         <span style={{ display: "flex", alignItems: "center", fontSize: 12 }}>
           <Space size="compact">
             <span>
@@ -80,9 +86,9 @@ const ProjectSummary = summaryInjector((props) => {
             <span>Predictions: {props.totalPredictions}</span>
           </Space>
         </span>
-      </Space>
-    );
-  }
+      )}
+    </Space>
+  );
 });
 
 const TabsSwitch = switchInjector(observer(({ sdk, views, tabs, selectedKey }) => {
