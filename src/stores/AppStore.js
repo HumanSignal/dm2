@@ -488,10 +488,10 @@ export const AppStore = types
           }, { autosave: false, reload: false }));
         } else if (self.SDK.type === 'labelops') {
           requests.push(self.viewsStore.addView({
-            virtual: true,
+            virtual: false,
             projectId: self.SDK.projectId,
             tab,
-          }, { autosave: false, reload: true }));
+          }, { autosave: false, autoSelect: true, reload: true }));
         } else {
           requests.push(self.viewsStore.fetchTabs(tab, task, labeling));
         }

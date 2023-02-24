@@ -14,6 +14,7 @@ import { TabFilter } from "./tab_filter";
 import { TabHiddenColumns } from "./tab_hidden_columns";
 import { TabSelectedItems } from "./tab_selected_items";
 import { History } from '../../utils/history';
+import { FF_LOPS_12, isFF } from "../../utils/feature-flags";
 
 export const Tab = types
   .model("View", {
@@ -356,6 +357,8 @@ export const Tab = types
         yield self.dataStore.reload({ id: self.id, interaction });
       }
       if (self.virtual) {
+        yield self.dataStore.reload({ query: self.query, interaction });
+      } else if (isFF(FF_LOPS_12) && self.root.SDK.type === 'labelops') {
         yield self.dataStore.reload({ query: self.query, interaction });
       }
     }),
