@@ -4,8 +4,9 @@ import React from "react";
 import { DatePicker } from "../../Common/DatePicker/DatePicker";
 
 const userOffset = new Date().getTimezoneOffset();
-const convertDateToUTC = (date) => new Date(new Date(date).getTime() - userOffset * 60 * 1000);
-const convertUTCtoLocalDate = (utcDateString) => new Date(new Date(utcDateString).getTime() + userOffset * 60 * 1000);
+const msInHour = 60 * 1000;
+const convertDateToUTC = (date) => new Date(new Date(date).getTime() - userOffset * msInHour);
+const convertUTCtoLocalDate = (utcDateString) => new Date(new Date(utcDateString).getTime() + userOffset * msInHour);
 
 export const DateTimeInput = observer(({ value, range, time, onChange }) => {
 
