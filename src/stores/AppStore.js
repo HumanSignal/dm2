@@ -476,14 +476,22 @@ export const AppStore = types
       ];
 
       if (!isLabelStream || (self.project?.show_annotation_history && task)) {
-        requests.push(self.fetchActions());
+        if(self.SDK.type === 'dm') {
+          requests.push(self.fetchActions()); 
+        }
 
-        if (self.SDK.settings?.onlyVirtualTabs && (self.project?.show_annotation_history && !task)) {
+        if (self.SDK.settings?.onlyVirtualTabs && self.project?.show_annotation_history && !task) {
           requests.push(self.viewsStore.addView({
             virtual: true,
             projectId: self.SDK.projectId,
             tab,
           }, { autosave: false, reload: false }));
+        } else if (self.SDK.type === 'labelops') {
+          requests.push(self.viewsStore.addView({
+            virtual: false,
+            projectId: self.SDK.projectId,
+            tab,
+          }, { autosave: false, autoSelect: true, reload: true }));
         } else {
           requests.push(self.viewsStore.fetchTabs(tab, task, labeling));
         }

@@ -49,6 +49,7 @@ export const initDevApp = async (DataManager) => {
         return () => <Button style={{ width: 105 }}>Review</Button>;
       },
     },
+    type: 'dm',
   });
 
   dm.on("lsf:groundTruth", () => {
