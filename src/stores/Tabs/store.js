@@ -455,6 +455,9 @@ export const TabStore = types
       const tabs = response.tabs ?? response ?? [];
       const columnIds = self.columns.map(c => c.id);
 
+      if (tabs.error) {
+        console.error ("Error:", tabs.error);
+      }
       const snapshots = tabs.map((t) => {
         const { data, ...tab } = dataCleanup(t, columnIds);
 

@@ -486,12 +486,12 @@ export const AppStore = types
             projectId: self.SDK.projectId,
             tab,
           }, { autosave: false, reload: false }));
-        } else if (self.SDK.type === 'labelops') {
-          requests.push(self.viewsStore.addView({
-            virtual: false,
-            projectId: self.SDK.projectId,
-            tab,
-          }, { autosave: false, autoSelect: true, reload: true }));
+        // } else if (self.SDK.type === 'labelops') {
+        //   requests.push(self.viewsStore.addView({
+        //     virtual: false,
+        //     projectId: self.SDK.projectId,
+        //     tab,
+        //   }, { autosave: false, autoSelect: true, reload: true }));
         } else {
           requests.push(self.viewsStore.fetchTabs(tab, task, labeling));
         }
