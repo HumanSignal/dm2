@@ -8,7 +8,6 @@ export const ImageDataGroup = (column) => {
     field: { alias },
   } = column;
   const root = getRoot(original);
-  const objectFit = "contain";
 
   return original.total_annotations === 0 || !root.showPreviews ? (
     <div>
@@ -16,7 +15,6 @@ export const ImageDataGroup = (column) => {
         src={value}
         width="100%"
         height={ImageDataGroup.height}
-        style={{ objectFit  }}
         alt=""
       />
     </div>
@@ -30,7 +28,6 @@ export const ImageDataGroup = (column) => {
       size="large"
       fallbackImage={value}
       height={ImageDataGroup.height}
-      style={{ objectFit }}
     />
   );
 };
