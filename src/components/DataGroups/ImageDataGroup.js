@@ -15,7 +15,6 @@ export const ImageDataGroup = (column) => {
         src={value}
         width="100%"
         height={ImageDataGroup.height}
-        style={{ objectFit: "cover" }}
         alt=""
       />
     </div>
@@ -29,7 +28,6 @@ export const ImageDataGroup = (column) => {
       size="large"
       fallbackImage={value}
       height={ImageDataGroup.height}
-      style={{ objectFit: "cover" }}
     />
   );
 };
