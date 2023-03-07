@@ -490,7 +490,7 @@ export const TabStore = types
     fetchSingleTab: flow(function * (tabKey, selectedItems) {
       let tab, tabId = parseInt(tabKey);
 
-      if (!Number.isNaN(tabId)) {
+      if (!isNaN(tabKey) && !isNaN(tabId)) {
         const tabData = yield getRoot(self).apiCall("tab", { tabId });
         const columnIds = (self.columns ?? []).map(c => c.id);
         const { data, ...tabClean } = dataCleanup(tabData, columnIds);
