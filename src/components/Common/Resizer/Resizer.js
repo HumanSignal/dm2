@@ -26,6 +26,13 @@ export const Resizer = ({
   const [isResizing, setIsResizing] = React.useState(false);
   const resizeHandler = React.useRef();
 
+  React.useEffect(() => {
+    const newWidth = Math.max(minWidth, Math.min(width));
+
+    setWidth(newWidth);
+    onResizeCallback?.(newWidth);
+  }, []);
+
   /** @param {MouseEvent} evt */
   const handleResize = React.useCallback(
     (evt) => {
