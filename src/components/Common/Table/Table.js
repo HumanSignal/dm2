@@ -81,12 +81,14 @@ const RowRenderer = observer(({
 
 const SelectionObserver = observer(({ id, selection, onSelect, className }) => {
   return (
-    <TableCheckboxCell
-      checked={id ? selection.isSelected(id) : selection.isAllSelected}
-      indeterminate={!id && selection.isIndeterminate}
-      onChange={onSelect}
-      className={className}
-    />
+    <>
+      <TableCheckboxCell
+        checked={id ? selection.isSelected(id) : selection.isAllSelected}
+        indeterminate={!id && selection.isIndeterminate}
+        onChange={onSelect}
+        className={className}
+      />
+    </>
   );
 });
 
@@ -118,7 +120,7 @@ export const Table = observer(
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
         id: "select",
-        headerClassName: "select-all",
+        headerClassName: "table__select-all",
         cellClassName: "select-row",
         style: {
           width: 40,
