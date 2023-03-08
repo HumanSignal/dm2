@@ -81,14 +81,12 @@ const RowRenderer = observer(({
 
 const SelectionObserver = observer(({ id, selection, onSelect, className }) => {
   return (
-    <>
-      <TableCheckboxCell
-        checked={id ? selection.isSelected(id) : selection.isAllSelected}
-        indeterminate={!id && selection.isIndeterminate}
-        onChange={onSelect}
-        className={className}
-      />
-    </>
+    <TableCheckboxCell
+      checked={id ? selection.isSelected(id) : selection.isAllSelected}
+      indeterminate={!id && selection.isIndeterminate}
+      onChange={onSelect}
+      className={className}
+    />
   );
 });
 
