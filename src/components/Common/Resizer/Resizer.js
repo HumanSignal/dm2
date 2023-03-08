@@ -84,12 +84,6 @@ export const Resizer = ({
     [maxWidth, minWidth, onResizeCallback, onResizeFinished, width],
   );
 
-  const _style = handleStyle || {};
-
-  if(type === 'label') {
-    _style.marginLeft = '0';
-  }
-
   return (
     <Block name="resizer" mix={className} style={{ width }}>
       <Elem name="content" style={style ?? {}}>
@@ -99,8 +93,8 @@ export const Resizer = ({
       <Elem
         name="handle"
         ref={resizeHandler}
-        style={_style}
-        mod={{ resizing: showResizerLine !== false && isResizing }}
+        style={handleStyle}
+        mod={{ resizing: showResizerLine !== false && isResizing, label: type === 'label' }}
         onMouseDown={handleResize}
         onDoubleClick={() => onReset?.()}
       />
