@@ -116,6 +116,7 @@ export const Labeling = injector(observer(({
               name="dataview"
               minWidth={200}
               showResizerLine={false}
+              type={'quickview'}
               maxWidth={window.innerWidth * 0.35}
               initialWidth={view.labelingTableWidth} // hardcoded as in main-menu-trigger
               onResizeFinished={onResize}
