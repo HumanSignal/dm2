@@ -118,7 +118,7 @@ export const Table = observer(
     if (props.onSelectAll && props.onSelectRow) {
       columns.unshift({
         id: "select",
-        headerClassName: "select-all",
+        headerClassName: "table__select-all",
         cellClassName: "select-row",
         style: {
           width: 40,
