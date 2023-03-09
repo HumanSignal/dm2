@@ -134,9 +134,6 @@ export class DataManager {
     duplicate: true,
   }
 
-  /** @type {"dm" | "labelops"} */
-  type = "dm";
-
   /**
    * Constructor
    * @param {DMConfig} config
@@ -195,8 +192,6 @@ export class DataManager {
         this.actions.set(action.id, { action, callback });
       });
     }
-
-    this.type = config.type ?? "dm";
 
     this.initApp();
   }

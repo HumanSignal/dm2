@@ -41,12 +41,6 @@ export const FF_DEV_2715 = 'ff_front_dev_2715_audio_3_280722_short';
  */
 export const FF_DEV_3734 = 'fflag_fix_front_dev_3734_hide_task_counter_131222_short';
 
-/**
- * Support for LabelOps functionality.
- * @link https://app.launchdarkly.com/default/branch/features/fflag_feat_front_lops_12_label_ops_ui_short
- */
-export const FF_LOPS_12 = "fflag_feat_front_lops_12_label_ops_ui_short";
-
 // Customize flags
 const flags = {};
 
