@@ -25,6 +25,21 @@
   overflow auto
   background-color #fff
 
+  &__select-all
+    &::after
+      top 50%
+      right 5px
+      bottom 0
+      width 1px
+      height 22px
+      content ""
+      z-index 5
+      display block
+      background #bdbdbd
+      transform translateY(-50%)
+      position absolute
+
+
   &_fit
     width max-content
 
