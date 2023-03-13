@@ -421,7 +421,7 @@ export const AppStore = types
     fetchProject: flow(function* (options = {}) {
       self.projectFetch = options.force === true;
 
-      const oldProject = JSON.stringify(self.project ?? {});
+      const oldProjectAsString = JSON.stringify(self.project ?? {});
       const isTimer = options.interaction === "timer";
       const params =
         options && options.interaction
@@ -450,8 +450,8 @@ export const AppStore = types
         ) : false;
 
         if (options.interaction === "timer") {
-          self.project = Object.assign(oldProject, newProject);
-        } else if (JSON.stringify(newProject ?? {}) !== oldProject) {
+          self.project = Object.assign(self.project ?? {}, newProject);
+        } else if (JSON.stringify(newProject ?? {}) !== oldProjectAsString) {
           self.project = newProject;
         }
       } catch {
