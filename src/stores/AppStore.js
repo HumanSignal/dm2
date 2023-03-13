@@ -449,7 +449,7 @@ export const AppStore = types
           self.project.num_tasks_with_annotations !== newProject.num_tasks_with_annotations
         ) : false;
 
-        if (options.interactiom === "timer") {
+        if (options.interaction === "timer") {
           self.project = Object.assign(oldProject, newProject);
         } else if (JSON.stringify(newProject ?? {}) !== oldProject) {
           self.project = newProject;
