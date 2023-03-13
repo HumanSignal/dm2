@@ -421,11 +421,19 @@ export const AppStore = types
     fetchProject: flow(function* (options = {}) {
       self.projectFetch = options.force === true;
 
-      const oldProject = JSON.stringify(self.project ?? {});
+      const isTimer = options.interaction === "timer";
       const params =
         options && options.interaction
           ? {
             interaction: options.interaction,
+            ...(isTimer ? ({
+              include: [
+                "task_count",
+                "task_number",
+                "annotation_count",
+                "num_tasks_with_annotations",
+              ].join(","),
+            }) : null),
           }
           : null;
 
@@ -440,7 +448,9 @@ export const AppStore = types
           self.project.num_tasks_with_annotations !== newProject.num_tasks_with_annotations
         ) : false;
 
-        if (JSON.stringify(newProject ?? {}) !== oldProject) {
+        if (options.interaction === "timer") {
+          self.project = Object.assign(self.project ?? {}, newProject);
+        } else if (JSON.stringify(newProject ?? {}) !== JSON.stringify(self.project ?? {})) {
           self.project = newProject;
         }
       } catch {
