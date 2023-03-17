@@ -451,7 +451,28 @@ export const TabStore = types
 
     fetchTabs: flow(function* (tab, taskID, labeling) {
       const tabId = parseInt(tab);
-      const response = yield getRoot(self).apiCall("tabs");
+      // const response = yield getRoot(self).apiCall("tabs");
+      const response = [{
+        "id": 371,
+        "data": {
+          "type": "list",
+          "title": "Default",
+          "target": "tasks",
+          "gridWidth": 4,
+          "columnsWidth": {},
+          "hiddenColumns": {
+            "explore": ["tasks:inner_id"],
+            "labeling": ["tasks:id", "tasks:inner_id", "tasks:completed_at", "tasks:cancelled_annotations"],
+          },
+          "columnsDisplayType": {},
+          "filters": {
+            "conjunction": "and",
+            "items": [],
+          },
+        },
+        "project": 268,
+        "user": 1,
+      }];
       const tabs = response.tabs ?? response ?? [];
       const columnIds = self.columns.map(c => c.id);
 

@@ -11,3 +11,5 @@ export { default as LsRefresh } from "./refresh.svg";
 export { default as LsGear } from "./gear.svg";
 export { default as CommentCheck } from "./comment_check.svg";
 export { default as CommentRed } from "./comment_red.svg";
+export { default as LsGrid } from "./grid.svg";
+export { default as LsList } from "./list.svg";

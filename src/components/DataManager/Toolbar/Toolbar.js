@@ -1,6 +1,7 @@
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { Block } from "../../../utils/bem";
+import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { Space } from "../../Common/Space/Space";
 import "./TabPanel.styl";
 
@@ -22,7 +23,7 @@ export const Toolbar = injector(observer(({ store }) => {
               return Instrument ? (
                 <Instrument
                   key={`instrument-${instrument}-${i}`}
-                  size="medium"
+                  size={isFF(FF_LOPS_E_3) ? "large" : "medium"}
                 />
               ) : null;
             })}

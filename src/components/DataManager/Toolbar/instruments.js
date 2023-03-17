@@ -1,5 +1,5 @@
 import { FaCaretDown } from "react-icons/fa";
-import { FF_LOPS_12, isFF } from "../../../utils/feature-flags";
+import { FF_LOPS_12, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { ErrorBox } from "../../Common/ErrorBox";
 import { FieldsButton } from "../../Common/FieldsButton";
 import { FiltersPane } from "../../Common/FiltersPane";
@@ -15,7 +15,10 @@ import { OrderButton } from "./OrderButton";
 import { RefreshButton } from "./RefreshButton";
 import { ViewToggle } from "./ViewToggle";
 
-const style = { minWidth: '110px', justifyContent: 'space-between' };
+const style = { 
+  minWidth: isFF(FF_LOPS_E_3) ? '' : '110px', 
+  justifyContent: 'space-between', 
+};
 
 export const instruments = {
   'view-toggle': ({ size }) => {
@@ -72,7 +75,7 @@ export const instruments = {
   },
   'semantic-search': ({ size }) => {
     
-    return isFF(FF_LOPS_12) ? (
+    return (isFF(FF_LOPS_12) || isFF(FF_LOPS_E_3)) ? (
       <SemanticSearch size={size}/>
     ) : (
       <></>

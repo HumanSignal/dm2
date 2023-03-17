@@ -39,7 +39,58 @@ const createDynamicModels = (columns) => {
 export const createApp = async (rootNode, datamanager) => {
   const isLabelStream = datamanager.mode === 'labelstream';
 
-  const response = await datamanager.api.columns();
+  // const response = await datamanager.api.columns();
+  const response = [{
+    "id": "id",
+    "title": "ID",
+    "type": "Number",
+    "help": "Task ID",
+    "target": "tasks",
+    "visibility_defaults": {
+      "explore": true,
+      "labeling": false,
+    },
+  }, {
+    "id": "inner_id",
+    "title": "Inner ID",
+    "type": "Number",
+    "help": "Internal task ID starting from 1 for the current project",
+    "target": "tasks",
+    "visibility_defaults": {
+      "explore": false,
+      "labeling": false,
+    },
+  }, {
+    "id": "completed_at",
+    "title": "Completed",
+    "type": "Datetime",
+    "target": "tasks",
+    "help": "Last annotation date",
+    "visibility_defaults": {
+      "explore": true,
+      "labeling": false,
+    },
+  }, {
+    "id": "total_annotations",
+    "title": "Annotations",
+    "type": "Number",
+    "target": "tasks",
+    "help": "Total annotations per task",
+    "visibility_defaults": {
+      "explore": true,
+      "labeling": true,
+    },
+  }, {
+    "id": "cancelled_annotations",
+    "title": "Cancelled",
+    "type": "Number",
+    "target": "tasks",
+    "help": "Total cancelled (skipped) annotations",
+    "visibility_defaults": {
+      "explore": true,
+      "labeling": false,
+    },
+  }];
 
   if ((!response || response.error)) {
     const message = `
