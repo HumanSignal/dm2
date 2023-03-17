@@ -1,5 +1,6 @@
 import React, { cloneElement, forwardRef, useMemo } from "react";
 import { Block, Elem } from "../../../utils/bem";
+import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { isDefined } from "../../../utils/utils";
 import "./Button.styl";
 
@@ -30,6 +31,7 @@ export const Button = forwardRef(
       withIcon: !!icon,
       withExtra: !!extra,
       disabled: !!rest.disabled,
+      newUI: isFF(FF_LOPS_E_3),
     };
 
     const iconElem = useMemo(() => {
