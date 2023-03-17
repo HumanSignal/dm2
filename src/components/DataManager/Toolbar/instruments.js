@@ -1,4 +1,4 @@
-import { FaCaretDown } from "react-icons/fa";
+import { FaCaretDown, FaChevronDown } from "react-icons/fa";
 import { FF_LOPS_12, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { ErrorBox } from "../../Common/ErrorBox";
 import { FieldsButton } from "../../Common/FieldsButton";
@@ -16,7 +16,7 @@ import { RefreshButton } from "./RefreshButton";
 import { ViewToggle } from "./ViewToggle";
 
 const style = { 
-  minWidth: isFF(FF_LOPS_E_3) ? '' : '110px', 
+  minWidth: '110px', 
   justifyContent: 'space-between', 
 };
 
@@ -25,10 +25,20 @@ export const instruments = {
     return <ViewToggle size={size} style={style} />;
   },
   'columns': ({ size }) => {
+    const iconProps = {};
+    const isNewUI = isFF(FF_LOPS_E_3);
+    
+    if (isNewUI) {
+      iconProps.size = 12;
+      iconProps.style = {
+        marginRight: 3,
+      };
+      iconProps.color = "#1F1F1F";
+    }
     return (
       <FieldsButton
         wrapper={FieldsButton.Checkbox}
-        trailingIcon={<Icon icon={FaCaretDown} />}
+        trailingIcon={<Icon {...iconProps} icon={isNewUI ? FaChevronDown : FaCaretDown} />}
         title={"Columns"}
         size={size}
         style={style}
