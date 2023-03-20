@@ -82,7 +82,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
       <Button size={size} disabled={!hasSelected} {...rest} >
         {selectedCount > 0 ? selectedCount + " Tasks": "Actions"}
         {isFF(FF_LOPS_E_3) ? (
-          <FaChevronDown size="12" style={{ marginLeft: 4, marginRight: -7 }} color={!hasSelected ? "#898098" : "#1F1F1F"} />
+          <FaChevronDown size="12" style={{ marginLeft: 4, marginRight: -7 }} />
         ) : (
           <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
         )}
