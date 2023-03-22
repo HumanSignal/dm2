@@ -136,7 +136,7 @@ export const DataView = injector(
             <Spinner size="large" />
           </Block>
         );
-      } else if (total === 0 || !hasData) {
+      } else if ((total === 0 || !hasData) && store.SDK.type !== "DE") {
         return (
           <Block name="no-results">
             <Elem name="description">
