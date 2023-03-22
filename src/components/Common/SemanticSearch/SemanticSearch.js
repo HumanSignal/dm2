@@ -73,7 +73,9 @@ export const SemanticSearch = injector(observer(({
         <Elem name='container'>
           <Elem name='description'>Similarity Range 
             <Tooltip title="Filter results by degree of similarity">
-              <RiInformationLine />
+              <Elem name='icon'>
+                <RiInformationLine />
+              </Elem>
             </Tooltip>
           </Elem>
           <Elem name='controls'>
@@ -93,7 +95,7 @@ export const SemanticSearch = injector(observer(({
   return (
     <Block tag="form" onSubmit={submitHandler} name='semanticSearch'>
       <Tooltip title="Search using natural language">
-        <>
+        <Elem name='tooltipWrapper'>
           <Elem name='container'>
             <Elem name='input'
               tag={Input}
@@ -122,7 +124,7 @@ export const SemanticSearch = injector(observer(({
             </Elem>
           </Elem>
           <Elem tag={Button} name='button' look="primary">Search</Elem>
-        </>
+        </Elem>
       </Tooltip>
     </Block>
   );
