@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useEffect } from "react";
 import { Block, Elem } from "../../../utils/bem";
 import Input from "../Input/Input";
@@ -9,6 +9,7 @@ import "./SemanticSearch.styl";
 import { Tooltip } from "../Tooltip/Tooltip";
 import { inject, observer } from "mobx-react";
 import { Dropdown } from "../Dropdown/DropdownComponent";
+import { clamp } from "../../../utils/helpers";
 
 const injector = inject(({ store }) => ({
   store,
@@ -27,17 +28,21 @@ export const SemanticSearch = injector(observer(({
 }) => {
   const inputRef = React.useRef();
   const [currentValue, setCurrentValue] = useState();
-  const [from, setFrom] = useState(0);
-  const [to, setTo] = useState(100);
+  const min = 0;
+  const max = 100;
+  const minDiff = 0;
+  const numericRegex = /([\d.])*/g;
+  const [from, setFrom] = useState(min);
+  const [to, setTo] = useState(max);
   const updateValue = (value) => {
     setCurrentValue(value);
     onChange?.(value);
   };
-  const submitHandler = (e) => {
+  const submitHandler = useCallback((e) => {
     e.preventDefault();
-    console.log("submitHandler", currentValue);
-    onSubmit?.(currentValue);
-  };
+    console.log("fire semanticSearch request", currentValue, from, to);
+    onSubmit?.(currentValue, from, to);
+  }, [currentValue, from, to]);
   const onChangeHandler = () => {
     const value = inputRef.current?.value ?? inputRef.current?.input?.value;
 
@@ -49,28 +54,32 @@ export const SemanticSearch = injector(observer(({
     updateValue(value);
   };
   const SemanticSearchDropdown = (() => {
-    const fromChangeHandler = (e) => {
-      console.log(e);
-      setFrom(50);
-    };
-    const toChangeHandler = (e) => {
-      console.log(e);
-      setTo(100);
-    };
+    const fromChangeHandler = useCallback((e) => {
+      const val = e?.target?.value;
+      const newVal = Number(val?.match( numericRegex ).join(''));
+
+      setFrom(clamp(newVal, min, to - minDiff));
+    }, [min, minDiff, to]);
+    const toChangeHandler = useCallback((e) => {
+      const val = e?.target?.value;
+      const newVal = Number(val?.match( numericRegex ).join(''));
+
+      setTo(clamp(newVal, from + minDiff, max));
+    }, [from, max, minDiff]);
 
     return (
       <Block name='searchDropdown'>
         {/* <Elem name='slider'>slider placeholder</Elem> */}
-        <Elem name=''>
-          <Elem name=''>Similarity Range 
+        <Elem name='container'>
+          <Elem name='description'>Similarity Range 
             <Tooltip title="Filter results by degree of similarity">
               <RiInformationLine />
             </Tooltip>
           </Elem>
           <Elem name='controls'>
-            <Input value={`${from}%`} onChange={fromChangeHandler}/>
+            <Input value={`${from}%`} min={min} max={max} onChange={fromChangeHandler}/>
             to
-            <Input value={`${to}%`} onChange={toChangeHandler}/>
+            <Input value={`${to}%`} min={min} max={max} onChange={toChangeHandler}/>
           </Elem>
         </Elem>
       </Block>
