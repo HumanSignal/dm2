@@ -4,14 +4,21 @@
   &__container
     position relative
 
-  &__icon
+  &__controls
+    display flex
     position absolute
     top 50%
     transform translateY(-50%)
-    &_prefix
-      left 0
-    &_filter
-      right 0
+    right 0
+    gap 8px
+    padding 4px
+  &__icon
+    display flex
+    cursor pointer
+    padding 4px
+    border-radius 4px
+    &:hover
+      background rgba(9, 109, 217, 0.08)
   &__input
     border-radius 5px 0 0 5px 
   &__button
