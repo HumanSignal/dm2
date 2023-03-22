@@ -34,7 +34,7 @@ const injector = inject(({ store }) => {
     total: dataStore?.total ?? 0,
     isLoading: dataStore?.loading ?? true,
     isLocked: currentView?.locked ?? false,
-    hasData: (store.project?.task_count ?? store.project?.task_number ?? 0) > 0,
+    hasData: (store.project?.task_count ?? store.project?.task_number ?? dataStore?.total ?? 0) > 0,
     focusedItem: dataStore?.selected ?? dataStore?.highlighted,
   };
 
@@ -136,7 +136,7 @@ export const DataView = injector(
             <Spinner size="large" />
           </Block>
         );
-      } else if ((total === 0 || !hasData) && store.SDK.type !== "DE") {
+      } else if (total === 0 || !hasData) {
         return (
           <Block name="no-results">
             <Elem name="description">
