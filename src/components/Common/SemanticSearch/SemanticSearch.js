@@ -4,12 +4,12 @@ import { Block, Elem } from "../../../utils/bem";
 import Input from "../Input/Input";
 import { Button } from "../Button/Button";
 import { RiFilter3Line, RiInformationLine } from "react-icons/ri";
-import { FaTimes } from "react-icons/fa";
 import "./SemanticSearch.styl";
 import { Tooltip } from "../Tooltip/Tooltip";
 import { inject, observer } from "mobx-react";
 import { Dropdown } from "../Dropdown/DropdownComponent";
 import { clamp } from "../../../utils/helpers";
+import { LSPlus } from "../../../assets/icons";
 
 const injector = inject(({ store }) => ({
   store,
@@ -109,14 +109,14 @@ export const SemanticSearch = injector(observer(({
             <Elem name="controls">
               {!!currentValue?.length && (
                 <Elem name='icon' mod={{ delete: true }} onClick={clearHandler}>
-                  <FaTimes />
+                  <LSPlus/>
                 </Elem>
               )}
               <Dropdown.Trigger
                 content={<SemanticSearchDropdown />}
               >
                 <Elem name='icon' mod={{ filter: true }}>
-                  <RiFilter3Line />
+                  <RiFilter3Line size={18}/>
                 </Elem>
               </Dropdown.Trigger>
             </Elem>
