@@ -120,7 +120,9 @@ export const DataView = injector(
 
     const onRowClick = useCallback(
       (item, e) => {
-        if (e.metaKey || e.ctrlKey) {
+        if (store.SDK.type === 'DE') {
+          console.log("open candidate task UI");
+        } else if (e.metaKey || e.ctrlKey) {
           window.open(`./?task=${item.task_id ?? item.id}`, "_blank");
         } else {
           getRoot(view).startLabeling(item);
