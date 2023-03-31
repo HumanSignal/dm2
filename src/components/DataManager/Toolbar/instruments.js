@@ -1,5 +1,5 @@
-import { FaCaretDown } from "react-icons/fa";
-import { FF_LOPS_12, isFF } from "../../../utils/feature-flags";
+import { FaCaretDown, FaChevronDown } from "react-icons/fa";
+import { FF_LOPS_12, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { ErrorBox } from "../../Common/ErrorBox";
 import { FieldsButton } from "../../Common/FieldsButton";
 import { FiltersPane } from "../../Common/FiltersPane";
@@ -15,17 +15,30 @@ import { OrderButton } from "./OrderButton";
 import { RefreshButton } from "./RefreshButton";
 import { ViewToggle } from "./ViewToggle";
 
-const style = { minWidth: '110px', justifyContent: 'space-between' };
+const style = { 
+  minWidth: '110px', 
+  justifyContent: 'space-between', 
+};
 
 export const instruments = {
   'view-toggle': ({ size }) => {
     return <ViewToggle size={size} style={style} />;
   },
   'columns': ({ size }) => {
+    const iconProps = {};
+    const isNewUI = isFF(FF_LOPS_E_3);
+    
+    if (isNewUI) {
+      iconProps.size = 12;
+      iconProps.style = {
+        marginRight: 3,
+      };
+      iconProps.color = "#1F1F1F";
+    }
     return (
       <FieldsButton
         wrapper={FieldsButton.Checkbox}
-        trailingIcon={<Icon icon={FaCaretDown} />}
+        trailingIcon={<Icon {...iconProps} icon={isNewUI ? FaChevronDown : FaCaretDown} />}
         title={"Columns"}
         size={size}
         style={style}
@@ -72,7 +85,7 @@ export const instruments = {
   },
   'semantic-search': ({ size }) => {
     
-    return isFF(FF_LOPS_12) ? (
+    return (isFF(FF_LOPS_12) || isFF(FF_LOPS_E_3)) ? (
       <SemanticSearch size={size}/>
     ) : (
       <></>

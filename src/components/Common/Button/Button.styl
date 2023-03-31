@@ -19,6 +19,21 @@
   font-weight 500
   font-size 14px
 
+  &_newUI:not(&_withIcon)
+    box-shadow none
+    border 1px solid rgba(65,60,74,0.16)
+    font-weight 400
+    &.button
+      &_waiting,
+      &_disabled,
+      &:disabled,
+      &[disabled]
+        border 1px solid rgba(65,60,74,0.16)
+        background-color #FFFFFF
+    &.dropdown
+      &__trigger
+        background-color #FAFAFA
+
   svg
     max-height 100%
 
