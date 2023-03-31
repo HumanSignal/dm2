@@ -111,7 +111,7 @@ export const SemanticSearch = injector(observer(({
             <Elem name="controls">
               {!!currentValue?.length && (
                 <Elem name='icon' mod={{ delete: true }} onClick={clearHandler}>
-                  <LSPlus/>
+                  <LSPlus />
                 </Elem>
               )}
               <Dropdown.Trigger
