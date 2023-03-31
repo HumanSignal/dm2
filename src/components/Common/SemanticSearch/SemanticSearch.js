@@ -118,7 +118,7 @@ export const SemanticSearch = injector(observer(({
                 content={<SemanticSearchDropdown />}
               >
                 <Elem name='icon' mod={{ filter: true }}>
-                  <RiFilter3Line size={18}/>
+                  <RiFilter3Line size={18} />
                 </Elem>
               </Dropdown.Trigger>
             </Elem>
