@@ -2,13 +2,19 @@
   display flex
   gap 16px
   align-items stretch
+  &__data-display-container
+    display flex
+    flex 1 auto
+    flex-direction column
+    gap 16px
   &__data-display
     border 1px solid rgba(137, 128, 152, 0.16)
-    background-color #FAFAFA
-    display flex
-    align-items center
-    justify-content center
     flex 1 auto
+    &_image
+      background linear-gradient(0deg, rgba(9, 109, 217, 0.05), rgba(9, 109, 217, 0.05)), #FAFAFA
+      display flex
+      align-items center
+      justify-content center
   &__details
     background-color #FAFAFA
     border-radius 8px

@@ -8,12 +8,14 @@ export const CandidateTaskView = observer(({ item }) => {
 
   return (
     <Block name="candidate-task-view">
-      <Elem name="data-display">
+      <Elem name="data-display-container">
         {data?.image && (
-          <Elem name='image' tag="img" src={data?.image} />
+          <Elem name='data-display' mod={{ image: true }}>
+            <img src={data?.image} />
+          </Elem>
         )}
         {data?.text && (
-          <Elem name='text'>
+          <Elem name='data-display' mod={{ text: true }} >
             {data?.text}
           </Elem>
         )}
