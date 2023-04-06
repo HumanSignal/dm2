@@ -12,8 +12,10 @@ const injector = inject(({ store }) => {
 });
 
 export const Toolbar = injector(observer(({ store }) => {
+  const isNewUI = isFF(FF_LOPS_E_3);
+
   return (
-    <Block name="tab-panel">
+    <Block name="tab-panel" mod={{ newUI: isNewUI }}>
       {store.SDK.toolbarInstruments.map((section, i) => {
         return (
           <Space size="small" key={`section-${i}`}>
@@ -23,7 +25,7 @@ export const Toolbar = injector(observer(({ store }) => {
               return Instrument ? (
                 <Instrument
                   key={`instrument-${instrument}-${i}`}
-                  size={isFF(FF_LOPS_E_3) ? "large" : "medium"}
+                  size={isNewUI ? "large" : "medium"}
                 />
               ) : null;
             })}

@@ -17,7 +17,7 @@ import { TableCell, TableCellContent } from "../TableCell/TableCell";
 import { TableContext, TableElem } from "../TableContext";
 import { getStyle } from "../utils";
 import "./TableHead.styl";
-import { FF_DEV_2984, isFF } from "../../../../utils/feature-flags";
+import { FF_DEV_2984, FF_LOPS_E_3, isFF } from "../../../../utils/feature-flags";
 
 const { Block, Elem } = BemWithSpecifiContext();
 
@@ -35,6 +35,23 @@ const DropdownWrapper = observer(
 
         return cellView && (selectable && displayType);
       });
+
+    const styles = {
+      flex: 1,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      background: "none",
+      fontSize: 14,
+    };
+    
+    if ( isFF( FF_LOPS_E_3 ) ) {
+      styles.border = "0 none";
+      styles.fontWeight =  500;
+      styles.fontSize =  16;
+      styles.lineHeight =  24;
+      styles.letterSpacing =  0.15;
+    }
 
     return (
       <Dropdown.Trigger
@@ -70,14 +87,7 @@ const DropdownWrapper = observer(
         <Button
           type="text"
           size="small"
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            background: "none",
-            fontSize: 14,
-          }}
+          style={styles}
         >
           {children}
         </Button>
