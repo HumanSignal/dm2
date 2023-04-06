@@ -81,6 +81,7 @@ export class LSFWrapper {
     this.datamanager = dm;
     this.store = dm.store;
     this.root = element;
+    this.role = this.datamanager.role;
     this.task = options.task;
     this.preload = options.preload;
     this.labelStream = options.isLabelStream ?? false;
@@ -97,7 +98,7 @@ export class LSFWrapper {
 
     if (this.labelStream) {
       interfaces.push("infobar");
-      interfaces.push("topbar:prevnext");
+      interfaces.push("topbar:prev-next-history");
       if (FF_DEV_2186 && this.project.review_settings?.require_comment_on_reject) {
         interfaces.push("comments:update");
       }
@@ -107,8 +108,6 @@ export class LSFWrapper {
     } else {
       interfaces.push(
         "infobar",
-        "annotations:add-new",
-        "annotations:view-all",
         "annotations:delete",
         "annotations:tabs",
         "predictions:tabs",
@@ -133,20 +132,23 @@ export class LSFWrapper {
       interfaces.push("annotations:comments");
     }
 
-    console.group("Interfaces");
-    console.log([...interfaces]);
+    if (this.role) {
+      if (this.role === 'REVIEWER') interfaces.push("annotations:view-all");
+      if ((this.role === 'ADMIN' || this.role === 'MANAGER' || this.role === "OWNER") && !this.labelStream) {
+        interfaces.push("annotations:add-new", "annotations:view-all");
+      }
+    } else interfaces.push("annotations:add-new", "annotations:view-all");
+
 
     if (!this.shouldLoadNext()) {
       interfaces = interfaces.filter((item) => {
         return ![
-          "topbar:prevnext",
+          "topbar:prev-next-history",
           "skip",
         ].includes(item);
       });
     }
 
-    console.log([...interfaces]);
-    console.groupEnd();
 
     const lsfProperties = {
       // ensure that we are able to distinguish at component level if the app has fully hydrated.
@@ -307,6 +309,16 @@ export class LSFWrapper {
     this.setLSFTask(task, annotationID, fromHistory);
   }
 
+  adjacentTaskIds() { 
+    const filteredOrderedList = this.datamanager.store.viewsStore.dataStore.list;
+    const thisTaskInView = filteredOrderedList.findIndex((task) => task.id === this.task.id);
+  
+    return {
+      prevTaskId: filteredOrderedList[thisTaskInView - 1]?.id,
+      nextTaskId: filteredOrderedList[thisTaskInView + 1]?.id,
+    };
+  }
+
   setLSFTask(task, annotationID, fromHistory) {
     this.setLoading(true);
     const hasChangedTasks = this.lsf?.task?.id !== task?.id && task?.id;
@@ -335,6 +347,7 @@ export class LSFWrapper {
 
     if (hasChangedTasks) {
       this.lsf.resetState();
+      this.lsf.adjacentTaskIds = this.adjacentTaskIds();
     } else {
       this.lsf.resetAnnotationStore();
     }
@@ -502,6 +515,7 @@ export class LSFWrapper {
     });
 
     this.lsf.setTaskHistory(_taskHistory);
+    this.lsf.adjacentTaskIds = this.adjacentTaskIds();
 
     await this.loadUserLabels();
 
