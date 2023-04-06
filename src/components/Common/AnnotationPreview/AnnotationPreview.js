@@ -123,6 +123,7 @@ export const AnnotationPreview = injector(
 
     return preview ? (
       <img
+        crossOrigin="anonymous"
         src={preview[`$${name}`][variant]}
         alt=""
         style={style}

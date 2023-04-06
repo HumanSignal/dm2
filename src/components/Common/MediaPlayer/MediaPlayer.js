@@ -173,7 +173,7 @@ export const MediaPlayer = ({ src, video = false }) => {
 
 const MediaSource = forwardRef(({ type = "audio", src, ...props }, ref) => {
   return (
-    <Elem name="media" tag={type} ref={ref} {...props}>
+    <Elem crossOrigin="anonymous" name="media" tag={type} ref={ref} {...props}>
       <source src={src}/>
     </Elem>
   );

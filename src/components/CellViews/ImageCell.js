@@ -16,6 +16,7 @@ export const ImageCell = (column) => {
 
   return renderImagePreview ? (
     <img
+      crossOrigin="anonymous"
       key={imgSrc}
       src={imgSrc}
       alt="Data"
