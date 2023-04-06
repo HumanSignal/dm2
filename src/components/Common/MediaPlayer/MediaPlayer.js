@@ -8,6 +8,12 @@ import "./MediaPlayer.styl";
 import { MediaSeeker } from "./MediaSeeker";
 import { Duration } from "./Duration";
 import { forwardRef } from "react";
+import { FF_LSDV_4711, isFF } from "../../../utils/feature-flags";
+
+
+const mediaDefaultProps = {};
+
+if (isFF(FF_LSDV_4711)) mediaDefaultProps.crossOrigin = 'anonymous';
 
 const initialState = {
   duration: 0,
@@ -173,7 +179,7 @@ export const MediaPlayer = ({ src, video = false }) => {
 
 const MediaSource = forwardRef(({ type = "audio", src, ...props }, ref) => {
   return (
-    <Elem crossOrigin="anonymous" name="media" tag={type} ref={ref} {...props}>
+    <Elem {...mediaDefaultProps} name="media" tag={type} ref={ref} {...props}>
       <source src={src}/>
     </Elem>
   );
