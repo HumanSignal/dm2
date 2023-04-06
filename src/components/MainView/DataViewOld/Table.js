@@ -32,7 +32,7 @@ const injector = inject(({ store }) => {
     total: dataStore?.total ?? 0,
     isLoading: dataStore?.loading ?? true,
     isLocked: currentView?.locked ?? false,
-    hasData: (store.project?.task_count ?? store.project?.task_number ?? 0) > 0,
+    hasData: (store.project?.task_count ?? store.project?.task_number ?? dataStore?.total ?? 0) > 0,
     focusedItem: dataStore?.selected ?? dataStore?.highlighted,
   };
 
@@ -113,7 +113,9 @@ export const DataView = injector(
 
     const onRowClick = useCallback(
       (item, e) => {
-        if (e.metaKey || e.ctrlKey) {
+        if (store.SDK.type === 'DE') {
+          console.log("open candidate task UI");
+        } else if (e.metaKey || e.ctrlKey) {
           window.open(`./?task=${item.task_id ?? item.id}`, "_blank");
         } else {
           getRoot(view).startLabeling(item);

@@ -1,4 +1,6 @@
 import { inject, observer } from "mobx-react";
+import { LsGrid, LsList } from "../../../assets/icons";
+import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { RadioGroup } from "../../Common/RadioGroup/RadioGroup";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
 
@@ -7,6 +9,8 @@ const viewInjector = inject(({ store }) => ({
 }));
 
 export const ViewToggle = viewInjector(observer(({ view, size, ...rest }) => {
+  const isDatasetsFF = isFF(FF_LOPS_E_3);
+
   return (
     <RadioGroup
       size={size}
@@ -16,12 +20,12 @@ export const ViewToggle = viewInjector(observer(({ view, size, ...rest }) => {
     >
       <RadioGroup.Button value="list">
         <Tooltip title="List view">
-          <span>List</span>
+          {isDatasetsFF ? <LsList /> : <span>List</span>}
         </Tooltip>
       </RadioGroup.Button>
       <RadioGroup.Button value="grid">
         <Tooltip title="Grid view">
-          <span>Grid</span>
+          {isDatasetsFF ? <LsGrid /> : <span>Grid</span>}
         </Tooltip>
       </RadioGroup.Button>
     </RadioGroup>

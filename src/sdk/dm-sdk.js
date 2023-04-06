@@ -28,7 +28,8 @@
  * table: TableConfig,
  * links: Dict<string|null>,
  * showPreviews: boolean,
- * projectId: number,
+ * projectId?: number,
+ * datasetId?: number,
  * interfaces: Dict<boolean>,
  * instruments: Dict<any>,
  * toolbar?: string,
@@ -146,6 +147,8 @@ export class DataManager {
     this.role = config.role;
     this.project = config.project;
     this.projectId = config.projectId;
+    this.dataset = config.dataset;
+    this.datasetId = config.datasetId;
     this.settings = config.settings;
     this.labelStudioOptions = config.labelStudio;
     this.env = config.env ?? process.env.NODE_ENV ?? this.env;
@@ -232,9 +235,17 @@ export class DataManager {
     config.commonHeaders = apiHeaders;
 
     Object.assign(config.endpoints, apiEndpoints ?? {});
+    const sharedParams = {};
+
+    if (!isNaN(this.projectId)) {
+      sharedParams.project = this.projectId;
+    }
+    if (!isNaN(this.datasetId)) {
+      sharedParams.dataset = this.datasetId;
+    }
     Object.assign(config, {
       sharedParams: {
-        project: this.projectId,
+        ...sharedParams,
         ...(apiSharedParams ?? {}),
       },
     });

@@ -62,3 +62,30 @@
       --font-size 12px
       --button-padding 0 5px
       --button-checked-shadow 0px 1px 0px rgba(0, 0, 0, 0.1), 0px 0px 0px 1px rgba(0, 0, 0, 0.02), 0px 2px 4px rgba(0, 0, 0, 0.15)
+  &_newUI
+    --button-checked-shadow none
+    --button-padding 4px 8px
+    box-shadow none
+    background rgba(240, 238, 242, 0.08)
+    border 1px solid rgba(65, 60, 74, 0.16);
+    .radio-group
+      &__buttons
+        gap 8px
+      &__button
+        --button-border-width 1px
+        opacity 1
+        border var(--button-border-width) solid transparent
+        height calc(var(--height) - calc(var(--padding) * 2) - calc(var(--button-border-width) * 2))
+        cursor pointer
+        .radio-group__input
+          cursor pointer
+        &_checked
+          color #096DD9
+          background #096DD914
+          border-color #096DD9
+          cursor default
+          .radio-group__input
+            cursor default
+        &:hover
+          background linear-gradient(0deg, rgba(9, 109, 217, 0.05), rgba(9, 109, 217, 0.05)), #FAFAFA
+
