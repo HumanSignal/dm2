@@ -118,7 +118,6 @@ export const DataView = injector(
         const itemID = item.task_id ?? item.id;
 
         if (store.SDK.type === 'DE') {
-          console.log("open candidate task UI", itemID);
           modal({
             title: `${itemID} Preview`,
             style:{ width: `80vw` },
