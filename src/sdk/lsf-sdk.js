@@ -134,7 +134,7 @@ export class LSFWrapper {
 
     if (this.role) {
       if (this.role === 'REVIEWER') interfaces.push("annotations:view-all");
-      if ((this.role === 'ADMIN' || this.role === 'MANAGER' || this.role === "OWNER") && !this.labelStream) {
+      else if ((this.role === 'ADMIN' || this.role === 'MANAGER' || this.role === "OWNER") && !this.labelStream) {
         interfaces.push("annotations:add-new", "annotations:view-all");
       }
     } else interfaces.push("annotations:add-new", "annotations:view-all");
