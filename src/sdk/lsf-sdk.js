@@ -312,7 +312,8 @@ export class LSFWrapper {
   adjacentTaskIds() { 
     const filteredOrderedList = this.datamanager.store.viewsStore.dataStore.list;
     const thisTaskInView = filteredOrderedList.findIndex((task) => task.id === this.task.id);
-  
+
+    if (thisTaskInView < 0) return { prevTaskId: null, nextTaskId: null };
     return {
       prevTaskId: filteredOrderedList[thisTaskInView - 1]?.id,
       nextTaskId: filteredOrderedList[thisTaskInView + 1]?.id,
