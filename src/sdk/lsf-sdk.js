@@ -17,7 +17,7 @@ import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
 // import { LSFHistory } from "./lsf-history";
-import { annotationToServer, taskToLSFormat } from "./lsf-utils";
+import { adjacentTaskIds, annotationToServer, taskToLSFormat } from "./lsf-utils";
 
 const DEFAULT_INTERFACES = [
   "basic",
@@ -148,7 +148,6 @@ export class LSFWrapper {
         ].includes(item);
       });
     }
-
 
     const lsfProperties = {
       // ensure that we are able to distinguish at component level if the app has fully hydrated.
@@ -309,17 +308,6 @@ export class LSFWrapper {
     this.setLSFTask(task, annotationID, fromHistory);
   }
 
-  adjacentTaskIds() { 
-    const filteredOrderedList = this.datamanager.store.viewsStore.dataStore.list;
-    const thisTaskInView = filteredOrderedList.findIndex((task) => task.id === this.task.id);
-
-    if (thisTaskInView < 0) return { prevTaskId: null, nextTaskId: null };
-    return {
-      prevTaskId: filteredOrderedList[thisTaskInView - 1]?.id,
-      nextTaskId: filteredOrderedList[thisTaskInView + 1]?.id,
-    };
-  }
-
   setLSFTask(task, annotationID, fromHistory) {
     this.setLoading(true);
     const hasChangedTasks = this.lsf?.task?.id !== task?.id && task?.id;
@@ -348,7 +336,7 @@ export class LSFWrapper {
 
     if (hasChangedTasks) {
       this.lsf.resetState();
-      this.lsf.adjacentTaskIds = this.adjacentTaskIds();
+      this.lsf.adjacentTaskIds = adjacentTaskIds(this.task.id, this.datamanager.store.viewsStore.dataStore.list);
     } else {
       this.lsf.resetAnnotationStore();
     }
@@ -516,7 +504,7 @@ export class LSFWrapper {
     });
 
     this.lsf.setTaskHistory(_taskHistory);
-    this.lsf.adjacentTaskIds = this.adjacentTaskIds();
+    this.lsf.adjacentTaskIds = adjacentTaskIds(this.task.id, this.datamanager.store.viewsStore.dataStore.list);
 
     await this.loadUserLabels();
 
