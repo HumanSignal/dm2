@@ -12,26 +12,12 @@
  * messages: Dict<string|Function>
  * }} LSFOptions */
 
-import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, FF_DEV_3734, isFF } from "../utils/feature-flags";
+import { FF_DEV_1752, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, FF_DEV_3734, isFF } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
 // import { LSFHistory } from "./lsf-history";
-import { adjacentTaskIds, annotationToServer, taskToLSFormat } from "./lsf-utils";
-
-const DEFAULT_INTERFACES = [
-  "basic",
-  "controls",
-  "submit",
-  "update",
-  "predictions",
-  "topbar",
-  "predictions:menu", // right menu with prediction items
-  "annotations:menu", // right menu with annotation items
-  "annotations:current",
-  "side-column", // entity
-  "edit-history", // undo/redo
-];
+import { adjacentTaskIds, annotationToServer, findInterfaces, taskToLSFormat } from "./lsf-utils";
 
 let LabelStudioDM;
 
@@ -90,65 +76,9 @@ export class LSFWrapper {
     this.isInteractivePreannotations = options.isInteractivePreannotations ?? false;
     // this.history = this.labelStream ? new LSFHistory(this) : null;
 
-    let interfaces = [...DEFAULT_INTERFACES];
-
-    if (this.project.enable_empty_annotation === false) {
-      interfaces.push("annotations:deny-empty");
-    }
-
-    if (this.labelStream) {
-      interfaces.push("infobar");
-      interfaces.push("topbar:prev-next-history");
-      if (FF_DEV_2186 && this.project.review_settings?.require_comment_on_reject) {
-        interfaces.push("comments:update");
-      }
-      if (this.project.show_skip_button) {
-        interfaces.push("skip");
-      }
-    } else {
-      interfaces.push(
-        "infobar",
-        "annotations:delete",
-        "annotations:tabs",
-        "predictions:tabs",
-      );
-    }
-
-    if (this.datamanager.hasInterface('instruction')) {
-      interfaces.push('instruction');
-    }
-
-    if (!this.labelStream && this.datamanager.hasInterface('groundTruth')) {
-      interfaces.push('ground-truth');
-    }
-
-    if (this.datamanager.hasInterface("autoAnnotation")) {
-      interfaces.push("auto-annotation");
-    }
-    if (this.interfacesModifier) {
-      interfaces = this.interfacesModifier(interfaces, this.labelStream);
-    }
-    if (isFF(FF_DEV_2887)) {
-      interfaces.push("annotations:comments");
-    }
-
-    if (this.role) {
-      if (this.role === 'REVIEWER') interfaces.push("annotations:view-all");
-      else if ((this.role === 'ADMIN' || this.role === 'MANAGER' || this.role === "OWNER") && !this.labelStream) {
-        interfaces.push("annotations:add-new", "annotations:view-all");
-      }
-    } else interfaces.push("annotations:add-new", "annotations:view-all");
-
-
-    if (!this.shouldLoadNext()) {
-      interfaces = interfaces.filter((item) => {
-        return ![
-          "topbar:prev-next-history",
-          "skip",
-        ].includes(item);
-      });
-    }
-
+    const interfaces = findInterfaces(this.project, this.labelStream, this.datamanager, this.role, this.shouldLoadNext, this.interfacesModifier);
+    
+    console.log(interfaces);
     const lsfProperties = {
       // ensure that we are able to distinguish at component level if the app has fully hydrated.
       hydrated: false,
