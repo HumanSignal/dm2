@@ -78,7 +78,6 @@ export class LSFWrapper {
 
     const interfaces = findInterfaces(this.project, this.labelStream, this.datamanager, this.role, this.shouldLoadNext, this.interfacesModifier);
     
-    console.log(interfaces);
     const lsfProperties = {
       // ensure that we are able to distinguish at component level if the app has fully hydrated.
       hydrated: false,
