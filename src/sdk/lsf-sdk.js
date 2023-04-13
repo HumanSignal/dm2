@@ -431,9 +431,9 @@ export class LSFWrapper {
     const _taskHistory =  await this.datamanager.store.taskStore.loadTaskHistory({
       projectId: this.datamanager.store.project.id,
     });
-
+    
     this.lsf.setTaskHistory(_taskHistory);
-    this.lsf.adjacentTaskIds = adjacentTaskIds(this.task.id, this.datamanager.store.viewsStore.dataStore.list);
+    this.lsf.adjacentTaskIds = adjacentTaskIds(this.datamanager.store.viewsStore.dataStore.list, this.task?.id);
 
     await this.loadUserLabels();
 

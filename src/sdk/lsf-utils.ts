@@ -73,7 +73,7 @@ export const getAnnotationSnapshot = (c: LSFAnnotation) => ({
   sentUserGenerate: !!c.sentUserGenerate,
 });
 
-export const adjacentTaskIds = (currentId: number, filteredOrderedList: { id: number }[]) => {
+export const adjacentTaskIds = (filteredOrderedList: { id: number }[], currentId?: number) => {
   const thisTaskInView = filteredOrderedList.findIndex((task) => task.id === currentId);
 
   if (thisTaskInView < 0) return { prevTaskId: undefined, nextTaskId: undefined };
