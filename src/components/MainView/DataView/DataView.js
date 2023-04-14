@@ -127,7 +127,7 @@ export const DataView = injector(
           modal({
             title: `${itemID} Preview`,
             style:{ width: `80vw` },
-            body: <CandidateTaskView item={item} />,
+            body: <CandidateTaskView item={item} columns={columns}/>,
           });
         } else if (e.metaKey || e.ctrlKey) {
           window.open(`./?task=${itemID}`, "_blank");
@@ -135,7 +135,7 @@ export const DataView = injector(
           getRoot(view).startLabeling(item);
         }
       },
-      [view],
+      [view, columns],
     );
 
     const renderContent = (content) => {
