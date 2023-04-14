@@ -265,7 +265,7 @@ export class LSFWrapper {
 
     if (hasChangedTasks) {
       this.lsf.resetState();
-      this.lsf.adjacentTaskIds = adjacentTaskIds(this.task.id, this.datamanager.store.viewsStore.dataStore.list);
+      this.lsf.adjacentTaskIds = adjacentTaskIds(this.datamanager.store.viewsStore.dataStore.list, this.task.id);
     } else {
       this.lsf.resetAnnotationStore();
     }
