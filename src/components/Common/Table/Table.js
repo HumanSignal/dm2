@@ -6,7 +6,7 @@ import React, {
   useState
 } from "react";
 import { FaCode } from "react-icons/fa";
-import { RiCodeSLine } from "react-icons/ri";
+import { RiCodeLine } from "react-icons/ri";
 import { useSDK } from "../../../providers/SDKProvider";
 import { isDefined } from "../../../utils/utils";
 import { Button } from "../Button/Button";
@@ -192,7 +192,7 @@ export const Table = observer(
                   body: <TaskSourceView content={out} onTaskLoad={onTaskLoad} sdkType={type} />,
                 });
               }}
-              icon={isFF(FF_LOPS_E_3) ? <Icon icon={RiCodeSLine} style={{ width: 24, height: 24 }}/> : <Icon icon={FaCode}/>}
+              icon={isFF(FF_LOPS_E_3) ? <Icon icon={RiCodeLine} style={{ width: 24, height: 24 }}/> : <Icon icon={FaCode}/>}
             />
           </Tooltip>
         );
