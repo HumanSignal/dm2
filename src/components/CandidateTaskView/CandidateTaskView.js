@@ -5,24 +5,19 @@ import "./CandidateTaskView.styl";
 
 const DataItemVisual = ({ columns, dataKey, data }) => {
   const columnDefinition = columns.find(colData => colData.alias === dataKey);
-  let elementDisplay;
-          
-  if (columnDefinition) {
-    if (columnDefinition.currentType === "Image") {
-      elementDisplay = (
-        <Elem name='data-display' mod={{ image: true }}>
-          <img src={data} />
-        </Elem>
-      );
-    } else {
-      elementDisplay = (
-        <Elem name='data-display' mod={{ text: true }} >
-          {data}
-        </Elem>
-      );
-    }
+
+  if (columnDefinition?.currentType === "Image") {
+    return (
+      <Elem name='data-display' mod={{ image: true }}>
+        <img src={data} />
+      </Elem>
+    );
   }
-  return elementDisplay;
+  return (
+    <Elem name='data-display' mod={{ text: true }} >
+      {data}
+    </Elem>
+  );
 };
 
 export const CandidateTaskView = observer(({ item, columns }) => {
@@ -40,7 +35,7 @@ export const CandidateTaskView = observer(({ item, columns }) => {
           <Elem name="title">File Attributes</Elem>
         </Elem>
         <Elem name="detailContainer">
-          coming soon
+          Coming soon
         </Elem>
       </Elem>
     </Block>
