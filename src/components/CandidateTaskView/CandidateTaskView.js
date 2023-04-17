@@ -3,34 +3,37 @@ import React from "react";
 import { Block, Elem } from "../../utils/bem";
 import "./CandidateTaskView.styl";
 
+const DataItemVisual = ({ columns, dataKey, data }) => {
+  const columnDefinition = columns.find(colData => colData.alias === dataKey);
+  let elementDisplay;
+          
+  if (columnDefinition) {
+    if (columnDefinition.currentType === "Image") {
+      elementDisplay = (
+        <Elem name='data-display' mod={{ image: true }}>
+          <img src={data} />
+        </Elem>
+      );
+    } else {
+      elementDisplay = (
+        <Elem name='data-display' mod={{ text: true }} >
+          {data}
+        </Elem>
+      );
+    }
+  }
+  return elementDisplay;
+};
+
 export const CandidateTaskView = observer(({ item, columns }) => {
   const { data } = item;
 
   return (
     <Block name="candidate-task-view">
       <Elem name="data-display-container">
-        {Object.keys(data).map( (dataKey) => {
-          const columnDefinition = columns.find(colData => colData.alias === dataKey);
-          const dataValue = data[dataKey];
-          let elementDisplay;
-          
-          if (columnDefinition) {
-            if (columnDefinition.currentType === "Image") {
-              elementDisplay = (
-                <Elem name='data-display' mod={{ image: true }}>
-                  <img src={dataValue} />
-                </Elem>
-              );
-            } else {
-              elementDisplay = (
-                <Elem name='data-display' mod={{ text: true }} >
-                  {dataValue}
-                </Elem>
-              );
-            }
-          }
-          return elementDisplay;
-        })}
+        {Object.entries(data).map( ([dataKey, dataValue]) => (
+          <DataItemVisual key={dataKey} columns={columns} dataKey={dataKey} data={dataValue} />
+        ))}
       </Elem>
       <Elem name="details">
         <Elem name="detailContainer">
