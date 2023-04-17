@@ -19,19 +19,25 @@
   font-weight 500
   font-size 14px
 
-  &_newUI:not(&_withIcon)
+  &_newUI
     box-shadow none
     border 1px solid rgba(65,60,74,0.16)
     font-weight 400
     &.button
-      &_waiting,
-      &_disabled,
-      &:disabled,
-      &[disabled]
-        border 1px solid rgba(65,60,74,0.16)
-        background-color #FFFFFF
+      &_withIcon
+        border 0 none
+    &:not(.button_withIcon)
+      font-weight 500
+      &.button
+        &_waiting,
+        &_disabled,
+        &:disabled,
+        &[disabled]
+          border 1px solid rgba(65,60,74,0.16)
+          background-color #FFFFFF
     &.dropdown
       &__trigger
+        font-weight 400
         background-color #FAFAFA
 
   svg
@@ -223,14 +229,16 @@
       margin-left 16px
 
   &_collapsed
-    .button:first-child
-      border-radius 5px 0 0 5px
-
-    .button:last-child
-      border-radius 0 5px 5px 0
-
-    .button:not(:first-child):not(:last-child)
-      border-radius 0
+    .button
+      &:first-child
+        border-radius 5px 0 0 5px
+      &:last-child
+        border-radius 0 5px 5px 0
+      &:not(:first-child):not(:last-child)
+        border-radius 0
+      &_newUI
+        border 1px solid rgba(65,60,74,0.16)
+        box-shadow none
 
 @keyframes button-waiting
   0%
