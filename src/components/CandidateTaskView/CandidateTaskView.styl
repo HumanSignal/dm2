@@ -51,14 +51,20 @@
       border-top 0
       padding-top 0
   &__subtitle
+    font-family 'Roboto'
     font-weight 500
     font-size 12px
     line-height 16px
     letter-spacing 0.5px
     color #898098
+    margin-bottom 16px
 
 .attributeRow
   display flex
+  justify-content space-between
+  font-family 'Roboto'
+  margin-top 8px
+  flex-wrap wrap
   &__name
     font-weight 500
     font-size 12px
@@ -71,6 +77,9 @@
     line-height 16px
     letter-spacing 0.4px
     color #1F1F1F
+    overflow auto
+  &:first-child
+    margin-top 0
 
 @media (max-width 600px)
   .candidate-task-view
