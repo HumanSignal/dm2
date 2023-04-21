@@ -14,7 +14,8 @@ import { Table } from "../../Common/Table/Table";
 import { Tag } from "../../Common/Tag/Tag";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import { GridView } from "../GridView/GridView";
-
+import { CandidateTaskView } from "../../CandidateTaskView";
+import { modal } from "../../Common/Modal/Modal";
 import "./DataView.styl";
 
 const injector = inject(({ store }) => {
@@ -120,15 +121,21 @@ export const DataView = injector(
 
     const onRowClick = useCallback(
       (item, e) => {
+        const itemID = item.task_id ?? item.id;
+
         if (store.SDK.type === 'DE') {
-          console.log("open candidate task UI");
+          modal({
+            title: `${itemID} Preview`,
+            style:{ width: `80vw` },
+            body: <CandidateTaskView item={item} columns={columns}/>,
+          });
         } else if (e.metaKey || e.ctrlKey) {
-          window.open(`./?task=${item.task_id ?? item.id}`, "_blank");
+          window.open(`./?task=${itemID}`, "_blank");
         } else {
           getRoot(view).startLabeling(item);
         }
       },
-      [view],
+      [view, columns],
     );
 
     const renderContent = (content) => {

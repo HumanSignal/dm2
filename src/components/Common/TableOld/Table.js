@@ -9,6 +9,7 @@ import React, {
   useState
 } from "react";
 import { FaCode } from "react-icons/fa";
+import { RiCodeLine } from "react-icons/ri";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
@@ -27,6 +28,7 @@ import { prepareColumns } from "./utils";
 import { Block } from "../../../utils/bem";
 import { FieldsButton } from "../FieldsButton";
 import { LsGear } from "../../../assets/icons";
+import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 
 const Decorator = (decoration) => {
   return {
@@ -66,7 +68,7 @@ export const Table = observer(
     const listRef = useRef();
     const columns = prepareColumns(props.columns, props.hiddenColumns);
     const Decoration = useMemo(() => Decorator(decoration), [decoration]);
-    const { api } = useSDK();
+    const { api, type } = useSDK();
 
     useEffect(() => {
       localStorage.setItem(colOrderKey, JSON.stringify(colOrder));
@@ -127,6 +129,9 @@ export const Table = observer(
         };
 
         const onTaskLoad = async () => {
+          if (isFF(FF_LOPS_E_3) && type === "DE") {
+            return new Promise(resolve => resolve(out));
+          }
           const response = await api.task({ taskID: out.id });
 
           return response ?? {};
@@ -141,10 +146,10 @@ export const Table = observer(
                 modal({
                   title: "Source for task " + out?.id,
                   style: { width: 800 },
-                  body: <TaskSourceView content={out} onTaskLoad={onTaskLoad} />,
+                  body: <TaskSourceView content={out} onTaskLoad={onTaskLoad} sdkType={type} />,
                 });
               }}
-              icon={<Icon icon={FaCode}/>}
+              icon={isFF(FF_LOPS_E_3) ? <Icon icon={RiCodeLine} style={{ width: 24, height: 24 }}/> : <Icon icon={FaCode}/>}
             />
           </Tooltip>
         );
@@ -435,7 +440,7 @@ const innerElementType = forwardRef(({ children, ...rest }, ref) => {
   );
 });
 
-const TaskSourceView = ({ content, onTaskLoad }) => {
+const TaskSourceView = ({ content, onTaskLoad, sdkType }) => {
   const [source, setSource] = useState(content);
 
   useEffect(() => {
@@ -443,10 +448,12 @@ const TaskSourceView = ({ content, onTaskLoad }) => {
       const formatted = {
         id: response.id,
         data: response.data,
-        annotations: response.annotations ?? [],
-        predictions: response.predictions ?? [],
       };
 
+      if (sdkType !== "DE") {
+        formatted.annotations =  response.annotations ?? [];
+        formatted.predictions =  response.predictions ?? [];
+      }
       setSource(formatted);
     });
   }, []);
