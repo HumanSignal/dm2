@@ -46,21 +46,25 @@ export const CandidateTaskView = observer(({ item, columns }) => {
   const [bucket, setBucket] = useState();
   const imgRef = useRef({});
 
-  useEffect(async () => {
-    const { metadata } = await getRoot(item).apiCall("candidateTaskMeta", {
-      candidate_task_id,
-    });
-
-    if (metadata) {
-      setFName(metadata.name.split('/').pop());
-      setFType(metadata.contentType.split('/').shift());
-      setMType(metadata.contentType);
-      setCreated(metadata.timeCreated ? format(new Date(metadata.timeCreated), dateDisplayFormat) : "");
-      setModified(metadata.updated ? format(new Date(metadata.updated), dateDisplayFormat) : "");
-      setSize(`${new Intl.NumberFormat().format(parseInt(metadata.size))} bytes`);
-      setBucket(metadata.bucket);
-      setDimensions(Object.values(imgRef.current).map(ref => `${ref.naturalWidth} x ${ref.naturalHeight} px`));
-    }
+  useEffect(() => {
+    const setDefaultMetadata = async () => {
+      const { metadata } = await getRoot(item).apiCall("candidateTaskMeta", {
+        candidate_task_id,
+      });
+  
+      if (metadata) {
+        setFName(metadata.name.split('/').pop());
+        setFType(metadata.contentType.split('/').shift());
+        setMType(metadata.contentType);
+        setCreated(metadata.timeCreated ? format(new Date(metadata.timeCreated), dateDisplayFormat) : "");
+        setModified(metadata.updated ? format(new Date(metadata.updated), dateDisplayFormat) : "");
+        setSize(`${new Intl.NumberFormat().format(parseInt(metadata.size))} bytes`);
+        setBucket(metadata.bucket);
+        setDimensions(Object.values(imgRef.current).map(ref => `${ref.naturalWidth} x ${ref.naturalHeight} px`));
+      }
+    };
+    
+    setDefaultMetadata();
   }, [candidate_task_id]);
   
 
