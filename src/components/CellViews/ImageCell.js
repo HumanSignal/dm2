@@ -1,5 +1,10 @@
 import { getRoot } from "mobx-state-tree";
+import { FF_LSDV_4711, isFF } from "../../utils/feature-flags";
 import { AnnotationPreview } from "../Common/AnnotationPreview/AnnotationPreview";
+
+const imgDefaultProps = {};
+
+if (isFF(FF_LSDV_4711)) imgDefaultProps.crossOrigin = 'anonymous';
 
 export const ImageCell = (column) => {
   const {
@@ -16,6 +21,7 @@ export const ImageCell = (column) => {
 
   return renderImagePreview ? (
     <img
+      {...imgDefaultProps}
       key={imgSrc}
       src={imgSrc}
       alt="Data"
