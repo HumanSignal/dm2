@@ -2,8 +2,13 @@ import { inject, observer } from "mobx-react";
 import React from "react";
 import { taskToLSFormat } from "../../../sdk/lsf-utils";
 import { Block } from "../../../utils/bem";
+import { FF_LSDV_4711, isFF } from "../../../utils/feature-flags";
 import { Spinner } from "../Spinner";
 import "./AnnotationPreview.styl";
+
+const imgDefaultProps = {};
+
+if (isFF(FF_LSDV_4711)) imgDefaultProps.crossOrigin = 'anonymous';
 
 const wait = (timeout) =>
   new Promise((resolve) => setTimeout(resolve, timeout));
@@ -123,6 +128,7 @@ export const AnnotationPreview = injector(
 
     return preview ? (
       <img
+        {...imgDefaultProps}
         src={preview[`$${name}`][variant]}
         alt=""
         style={style}
