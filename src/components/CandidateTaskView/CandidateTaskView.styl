@@ -1,4 +1,6 @@
 .candidate-task-view
+  --border-color rgba(137, 128, 152, 0.12)
+  --border-color-hard rgba(137, 128, 152, 0.16)
   display flex
   gap 16px
   align-items stretch
@@ -8,7 +10,7 @@
     flex-direction column
     gap 16px
   &__data-display
-    border 1px solid rgba(137, 128, 152, 0.16)
+    border 1px solid var(--border-color-hard)
     flex 1 auto
     &_image
       background linear-gradient(0deg, rgba(9, 109, 217, 0.05), rgba(9, 109, 217, 0.05)), #FAFAFA
@@ -27,7 +29,7 @@
     border-radius 8px
     display flex
     width 256px
-    border 1px solid rgba(137, 128, 152, 0.16)
+    border 1px solid var(--border-color-hard)
     flex-direction column
     flex-shrink 0
   &__title
@@ -39,9 +41,52 @@
     color #1F1F1F
   &__detailContainer
     padding 16px
-    border-top 1px solid rgba(137, 128, 152, 0.12)
+    border-top 1px solid var(--border-color)
     &:first-child
       border-top 0
+  &__detailSubContainer
+    border-top 1px solid var(--border-color)
+    padding 18px 0 8px
+    &:first-child
+      border-top 0
+      padding-top 0
+  &__subtitle
+    font-family 'Roboto'
+    font-weight 500
+    font-size 12px
+    line-height 16px
+    letter-spacing 0.5px
+    color #898098
+    margin-bottom 16px
+  &__detailContent
+    font-family 'Roboto'
+    font-weight 400
+    font-size 12px
+    line-height 16px
+    letter-spacing 0.4px
+    color #898098
+
+.attributeRow
+  display flex
+  justify-content space-between
+  font-family 'Roboto'
+  margin-top 8px
+  flex-wrap wrap
+  &__name
+    font-weight 500
+    font-size 12px
+    line-height 16px
+    letter-spacing 0.5px
+    color #1F1F1F
+  &__value
+    font-weight 400
+    font-size 12px
+    line-height 16px
+    letter-spacing 0.4px
+    color #1F1F1F
+    overflow auto
+  &:first-child
+    margin-top 0
 
 @media (max-width 600px)
   .candidate-task-view
