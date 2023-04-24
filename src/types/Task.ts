@@ -97,5 +97,5 @@ export interface LSFAnnotation extends LSFAnnotationData {
 
   // editable: boolean;
 
-  serializeAnnotation(): APIResult[];
+  serializeAnnotation(): Promise<APIResult[]>;
 }
