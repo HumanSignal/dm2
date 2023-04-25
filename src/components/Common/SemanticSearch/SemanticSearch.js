@@ -81,9 +81,9 @@ export const SemanticSearch = injector(observer(({
             </Tooltip>
           </Elem>
           <Elem name='controls'>
-            <Input value={`${from}%`} min={min} max={max} onChange={fromChangeHandler}/>
+            <Input defaultValue={`${from}%`} min={min} max={max} onBlur={fromChangeHandler}/>
             to
-            <Input value={`${to}%`} min={min} max={max} onChange={toChangeHandler}/>
+            <Input defaultValue={`${to}%`} min={min} max={max} onBlur={toChangeHandler}/>
           </Elem>
         </Elem>
       </Block>
