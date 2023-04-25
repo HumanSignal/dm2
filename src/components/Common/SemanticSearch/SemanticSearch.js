@@ -13,6 +13,7 @@ import { LSPlus } from "../../../assets/icons";
 
 const injector = inject(({ store }) => ({
   store,
+  view: store?.currentView,
 }));
 
 export const SemanticSearch = injector(observer(({
@@ -25,6 +26,7 @@ export const SemanticSearch = injector(observer(({
   style,
   size,
   store,
+  view,
 }) => {
   const inputRef = React.useRef();
   const [currentValue, setCurrentValue] = useState();
@@ -32,15 +34,15 @@ export const SemanticSearch = injector(observer(({
   const max = 100;
   const minDiff = 0;
   const numericRegex = /([\d.])*/g;
-  const [from, setFrom] = useState(min);
-  const [to, setTo] = useState(max);
+  const [from, setFrom] = useState(0);
+  const [to, setTo] = useState(100);
   const updateValue = (value) => {
     setCurrentValue(value);
     onChange?.(value);
   };
   const submitHandler = useCallback((e) => {
     e.preventDefault();
-    console.log("fire semanticSearch request", currentValue, from, to);
+    view.setSemanticSearch(currentValue, from, to);
     onSubmit?.(currentValue, from, to);
   }, [currentValue, from, to]);
   const onChangeHandler = () => {
@@ -91,6 +93,15 @@ export const SemanticSearch = injector(observer(({
   useEffect(() => {
     setCurrentValue(value);
   }, [value]);
+  useEffect(() => {
+    setFrom(view?.threshold?.from ?? 0);
+  }, [view?.threshold?.from]);
+  useEffect(() => {
+    setTo(view?.threshold?.to ?? 100);
+  }, [view?.threshold?.to]);
+  useEffect(() => {
+    setCurrentValue(view?.search_text);
+  }, [view?.search_text]);
 
   return (
     <Block tag="form" onSubmit={submitHandler} name='semanticSearch'>
