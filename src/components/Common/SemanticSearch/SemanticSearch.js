@@ -70,7 +70,7 @@ export const SemanticSearch = injector(observer(({
 
     return (
       <Block name='searchDropdown'>
-        <Elem name='slider' tag={Slider} from={from} to={to} min={min} max={max}>slider placeholder</Elem>
+        <Elem name='slider' tag={Slider} from={from} to={to} min={min} max={max} onFromChange={setFrom} onToChange={setTo}/>
         <Elem name='container'>
           <Elem name='description'>Similarity Range 
             <Tooltip title="Filter results by degree of similarity">
