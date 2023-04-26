@@ -8,6 +8,7 @@ import "./SemanticSearch.styl";
 import { Tooltip } from "../Tooltip/Tooltip";
 import { inject, observer } from "mobx-react";
 import { Dropdown } from "../Dropdown/DropdownComponent";
+import { Slider } from "../Slider/Slider";
 import { clamp } from "../../../utils/helpers";
 import { LSPlus } from "../../../assets/icons";
 
@@ -69,7 +70,7 @@ export const SemanticSearch = injector(observer(({
 
     return (
       <Block name='searchDropdown'>
-        {/* <Elem name='slider'>slider placeholder</Elem> */}
+        <Elem name='slider' tag={Slider} from={from} to={to} min={min} max={max}>slider placeholder</Elem>
         <Elem name='container'>
           <Elem name='description'>Similarity Range 
             <Tooltip title="Filter results by degree of similarity">

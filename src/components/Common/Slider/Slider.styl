@@ -1,0 +1,17 @@
+.sliderContainer
+  --from-pos ''
+  --to-pos ''
+  --slider-height 4px
+  display flex
+  width 100%
+  position relative
+  background rgba(65, 60, 74, 0.08)
+  border-radius 8px
+  height var(--slider-height)
+  &__fill
+    position absolute
+    background-color #BAE7FF 
+    left var(--from-pos)
+    right var(--to-pos)
+    height 100%
+    width calc(var(--to-pos) - var(--from-pos))

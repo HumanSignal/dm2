@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Block, Elem } from "../../../utils/bem";
 import { clamp } from "../../../utils/helpers";
-import "./Resizer.styl";
+import "./Slider.styl";
 
 interface SliderInterface {
   onFromChange?: (number: number) => void,
@@ -34,7 +34,7 @@ export const Slider = ({
   }
 
   return (
-    <Block name="slider" style={style}>
+    <Block name="sliderContainer" style={style}>
       <Elem name='fill' />
       <Elem name='handle' ref={fromRef} mod={{left: true}} />
       <Elem name='handle' ref={toRef} mod={{right: true}} />
