@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { MutableRefObject, Ref, useRef, useState } from "react";
 import { Block, Elem } from "../../../utils/bem";
 import { clamp } from "../../../utils/helpers";
 import "./Slider.styl";
@@ -12,6 +12,7 @@ interface SliderInterface {
   max?: number,
   step?: number,
   minDiff?: number,
+  notchCount?: number,
 };
 
 export const Slider = ({
@@ -23,9 +24,10 @@ export const Slider = ({
   from = clamp(0, min, max),
   to = clamp(100, min, max),
   minDiff = 0,
+  notchCount = 9,
 }: SliderInterface) => {
-  const fromRef = useRef();
-  const toRef = useRef();
+  const fromRef = useRef<HTMLElement>();
+  const toRef = useRef<HTMLElement>();
   const [currentFrom, setCurrentFrom] = useState(from);
   const [currentTo, setCurrentTo] = useState(to);
   const style = {
@@ -33,11 +35,26 @@ export const Slider = ({
     "--to-pos": `${(to/max) * 100}%`,
   }
 
+  const mouseDownHandler = (ref : MutableRefObject<HTMLElement|undefined>) => {
+    if (ref.current) {
+      ref.current.style.setProperty("--handle-cursor", "grabbing");
+    }
+  }
+
+  const mouseUpHandler = (ref : MutableRefObject<HTMLElement|undefined>) => {
+    if (ref.current) {
+      ref.current.style.setProperty("--handle-cursor", "");
+    }
+  }
+
   return (
     <Block name="sliderContainer" style={style}>
       <Elem name='fill' />
-      <Elem name='handle' ref={fromRef} mod={{left: true}} />
-      <Elem name='handle' ref={toRef} mod={{right: true}} />
+      <Elem name='notchContainer'>
+        {[...Array(notchCount).keys()].map((index) => <Elem name='notch' key={index} />)}
+      </Elem>
+      <Elem name='handle' ref={fromRef} mod={{left: true}} onMouseDown={() => mouseDownHandler(fromRef)} onMouseUp={() => mouseUpHandler(fromRef)}/>
+      <Elem name='handle' ref={toRef} mod={{right: true}} onMouseDown={() => mouseDownHandler(toRef)} onMouseUp={() => mouseUpHandler(toRef)}/>
     </Block>
   );
 };

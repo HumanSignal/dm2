@@ -1,13 +1,17 @@
 .sliderContainer
   --from-pos ''
   --to-pos ''
-  --slider-height 4px
-  display flex
-  width 100%
+  --slider-base-size 4px
+  --handle-cursor grab
+  --handle-scale 3
+  --slider-net-width calc(var(--slider-base-size) * var(--handle-scale))
+  display block
+  width calc(100% - var(--slider-net-width))
+  left calc(var(--slider-net-width) / 2)
   position relative
   background rgba(65, 60, 74, 0.08)
   border-radius 8px
-  height var(--slider-height)
+  height var(--slider-base-size)
   &__fill
     position absolute
     background-color #BAE7FF 
@@ -15,3 +19,28 @@
     right var(--to-pos)
     height 100%
     width calc(var(--to-pos) - var(--from-pos))
+    z-index -1
+  &__notchContainer
+    display flex
+    justify-content space-evenly
+    width 100%
+    height 100%
+    position absolute
+  &__notch
+    height 100%
+    width 1px
+    background-color rgba(65, 60, 74, 0.16)
+  &__handle
+    display block
+    cursor var(--handle-cursor)
+    background-color #0099FF
+    width var(--slider-base-size)
+    height var(--slider-base-size)
+    border-radius 50%
+    position absolute
+    transform-origin left
+    transform scale(3) translateX(calc(var(--slider-base-size) / -2))
+    &_left
+      left var(--from-pos)
+    &_right
+      left var(--to-pos)
