@@ -65,7 +65,7 @@ export const ViewColumnTypeName = (type) => {
     case "Audio":
       return "Audio";
     case "AudioPlus":
-      return "AudioPlus";
+      return "Audio";
     case "Video":
       return "Video";
     case "Text":

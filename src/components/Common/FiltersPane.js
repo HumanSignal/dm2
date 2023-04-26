@@ -1,6 +1,7 @@
 import { inject, observer } from "mobx-react";
 import React, { useEffect, useRef } from "react";
-import { FaAngleDown } from "react-icons/fa";
+import { FaAngleDown, FaChevronDown } from "react-icons/fa";
+import { FF_LOPS_E_3, isFF } from "../../utils/feature-flags";
 import { Filters } from "../Filters/Filters";
 import { Badge } from "./Badge/Badge";
 import { Button } from "./Button/Button";
@@ -30,7 +31,11 @@ export const FiltersButton = buttonInjector(observer(
         Filters {hasFilters && (
           <Badge size="small" style={{ marginLeft: 5 }}>{activeFiltersNumber}</Badge>
         )}
-        <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
+        {isFF(FF_LOPS_E_3) ? (
+          <FaChevronDown size="12" style={{ marginLeft: 8, marginRight: -7 }} color="#1F1F1F" />
+        ) : (
+          <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
+        )}
       </Button>
     );
   }),

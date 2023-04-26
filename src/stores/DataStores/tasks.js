@@ -5,7 +5,13 @@ import { isDefined } from "../../utils/utils";
 import { Assignee } from "../Assignee";
 import { DynamicModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
-import { FF_DEV_2536, isFF } from "../../utils/feature-flags";
+import { FF_DEV_2536, FF_LOPS_E_3, isFF } from "../../utils/feature-flags";
+
+const fileAttributes = types.model({
+  "certainty": types.optional(types.maybeNull(types.number), 0),
+  "distance": types.optional(types.maybeNull(types.number), 0),
+  "id": types.optional(types.maybeNull(types.string), ""),
+});
 
 export const create = (columns) => {
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
@@ -24,6 +30,10 @@ export const create = (columns) => {
     allow_postpone: types.maybeNull(types.boolean),
     unique_lock_id: types.maybeNull(types.string),
     updated_by: types.optional(types.array(Assignee), []),
+    ...(isFF(FF_LOPS_E_3) ? { 
+      _additional: types.optional(fileAttributes, {}),
+      candidate_task_id: types.optional(types.string, ""),
+    } : {}),
   })
     .views((self) => ({
       get lastAnnotation() {

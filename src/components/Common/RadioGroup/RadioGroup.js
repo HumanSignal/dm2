@@ -1,5 +1,6 @@
 import React from "react";
-import { cn } from "../../../utils/bem";
+import { Block, Elem } from "../../../utils/bem";
+import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import "./RadioGroup.styl";
 
 const RadioContext = React.createContext();
@@ -16,9 +17,9 @@ export const RadioGroup = ({ size, value, onChange, children, ...rest }) => {
         onChange: onRadioChange,
       }}
     >
-      <div className={cn("radio-group").mod({ size })} {...rest}>
-        <div className={cn("radio-group").elem("buttons")}>{children}</div>
-      </div>
+      <Block name="radio-group" mod={{ size, newUI: isFF(FF_LOPS_E_3) }} {...rest}>
+        <Elem name='buttons'>{children}</Elem>
+      </Block>
     </RadioContext.Provider>
   );
 };
@@ -28,19 +29,17 @@ const RadioButton = ({ value, disabled, children }) => {
   const checked = value === currentValue;
 
   return (
-    <label
-      className={cn("radio-group").elem("button").mod({ checked, disabled })}
-    >
-      <input
-        className={cn("radio-group").elem("input")}
-        type="radio"
+    <Elem tag='label' name='button' mod={{ checked, disabled }}>
+      <Elem name='input' 
+        tag='input' 
+        type="radio" 
         value={value}
         checked={value === currentValue}
         onChange={onChange}
         disabled={disabled}
       />
       {children}
-    </label>
+    </Elem>
   );
 };
 

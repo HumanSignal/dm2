@@ -1,6 +1,7 @@
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { Block } from "../../../utils/bem";
+import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { Space } from "../../Common/Space/Space";
 import "./TabPanel.styl";
 
@@ -11,8 +12,10 @@ const injector = inject(({ store }) => {
 });
 
 export const Toolbar = injector(observer(({ store }) => {
+  const isNewUI = isFF(FF_LOPS_E_3);
+
   return (
-    <Block name="tab-panel">
+    <Block name="tab-panel" mod={{ newUI: isNewUI }}>
       {store.SDK.toolbarInstruments.map((section, i) => {
         return (
           <Space size="small" key={`section-${i}`}>
@@ -22,7 +25,7 @@ export const Toolbar = injector(observer(({ store }) => {
               return Instrument ? (
                 <Instrument
                   key={`instrument-${instrument}-${i}`}
-                  size="medium"
+                  size={isNewUI ? "large" : "medium"}
                 />
               ) : null;
             })}

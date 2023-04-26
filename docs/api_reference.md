@@ -339,7 +339,6 @@ Represents a type of a column value. Column can have one of the tipes listed bel
 | List<T>     | List of items. T can be one of the types listed in this table |
 | Image       | Image url |
 | Audio       | Audio url |
-| AudioPlus   | Audio url |
 | Text        | Text string |
 | HyperText   | HTML or XML based markup |
 | TimeSeries  | TimeSeries data |

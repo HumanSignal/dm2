@@ -1,7 +1,8 @@
 import { inject, observer } from "mobx-react";
 import { useRef } from "react";
-import { FaAngleDown, FaTrash } from "react-icons/fa";
+import { FaAngleDown, FaChevronDown, FaTrash } from "react-icons/fa";
 import { Block, Elem } from "../../../utils/bem";
+import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { Button } from "../../Common/Button/Button";
 import { Dropdown } from "../../Common/Dropdown/DropdownComponent";
 import Form from "../../Common/Form/Form";
@@ -80,7 +81,11 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     <Dropdown.Trigger content={<Menu size="compact">{actionButtons}</Menu>} disabled={!hasSelected}>
       <Button size={size} disabled={!hasSelected} {...rest} >
         {selectedCount > 0 ? selectedCount + " Tasks": "Actions"}
-        <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
+        {isFF(FF_LOPS_E_3) ? (
+          <FaChevronDown size="12" style={{ marginLeft: 4, marginRight: -7 }} />
+        ) : (
+          <FaAngleDown size="16" style={{ marginLeft: 4 }} color="#0077FF" />
+        )}
       </Button>
     </Dropdown.Trigger>
   );

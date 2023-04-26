@@ -14,7 +14,8 @@ import { Table } from "../../Common/Table/Table";
 import { Tag } from "../../Common/Tag/Tag";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import { GridView } from "../GridView/GridView";
-
+import { CandidateTaskView } from "../../CandidateTaskView";
+import { modal } from "../../Common/Modal/Modal";
 import "./DataView.styl";
 
 const injector = inject(({ store }) => {
@@ -34,7 +35,7 @@ const injector = inject(({ store }) => {
     total: dataStore?.total ?? 0,
     isLoading: dataStore?.loading ?? true,
     isLocked: currentView?.locked ?? false,
-    hasData: (store.project?.task_count ?? store.project?.task_number ?? 0) > 0,
+    hasData: (store.project?.task_count ?? store.project?.task_number ?? dataStore?.total ?? 0) > 0,
     focusedItem: dataStore?.selected ?? dataStore?.highlighted,
   };
 
@@ -120,13 +121,21 @@ export const DataView = injector(
 
     const onRowClick = useCallback(
       (item, e) => {
-        if (e.metaKey || e.ctrlKey) {
-          window.open(`./?task=${item.task_id ?? item.id}`, "_blank");
+        const itemID = item.task_id ?? item.id;
+
+        if (store.SDK.type === 'DE') {
+          modal({
+            title: `${itemID} Preview`,
+            style:{ width: `80vw` },
+            body: <CandidateTaskView item={item} columns={columns}/>,
+          });
+        } else if (e.metaKey || e.ctrlKey) {
+          window.open(`./?task=${itemID}`, "_blank");
         } else {
           getRoot(view).startLabeling(item);
         }
       },
-      [view],
+      [view, columns],
     );
 
     const renderContent = (content) => {
