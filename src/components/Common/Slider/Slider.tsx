@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useCallback, useEffect, useRef, useState } from "react";
+import React, { MutableRefObject, useCallback, useRef, useState } from "react";
 import { Block, Elem } from "../../../utils/bem";
 import { clamp } from "../../../utils/helpers";
 import "./Slider.styl";
@@ -13,7 +13,7 @@ interface SliderInterface {
   step?: number,
   minDiff?: number,
   notchCount?: number,
-};
+}
 
 export const Slider = ({
   onFromChange,
@@ -35,7 +35,7 @@ export const Slider = ({
   const style = {
     "--from-pos": `${(currentFrom/max) * 100}%`,
     "--to-pos": `${(currentTo/max) * 100}%`,
-  }
+  };
 
   const mouseDownHandler = (ref : MutableRefObject<HTMLElement|undefined>, isLeft : boolean) => {
     if (ref.current) {
@@ -43,7 +43,7 @@ export const Slider = ({
       setDraggingLeft(isLeft);
       ref.current.style.setProperty("--handle-cursor", "grabbing");
     }
-  }
+  };
 
   const mouseUpHandler = useCallback(() => {
     if (currentRef.current) {
@@ -73,7 +73,7 @@ export const Slider = ({
       <Elem name='notchContainer'>
         {[...Array(notchCount).keys()].map((index) => <Elem name='notch' key={index} />)}
       </Elem>
-      <Elem name='handle' ref={fromRef} mod={{left: true}} 
+      <Elem name='handle' ref={fromRef} mod={{ left: true }} 
         onMouseDown={() => mouseDownHandler(fromRef, true)} 
         onMouseUp={() => mouseUpHandler()}
         // onDragStart={(e: MouseEvent) => dragStartHandler(fromRef, e)}
@@ -81,7 +81,7 @@ export const Slider = ({
         draggable
         droppable="droppable"
       />
-      <Elem name='handle' ref={toRef} mod={{right: true}} 
+      <Elem name='handle' ref={toRef} mod={{ right: true }} 
         onMouseDown={() => mouseDownHandler(toRef, false)} 
         onMouseUp={() => mouseUpHandler()}
         // onDragStart={(e: MouseEvent) => dragStartHandler(toRef, e)}
