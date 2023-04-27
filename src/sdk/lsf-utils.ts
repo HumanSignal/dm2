@@ -158,7 +158,10 @@ export const findInterfaces = (
   }
 
   if (role) {
-    if (role === "REVIEWER") interfaces.push("annotations:view-all");
+    if (role === "REVIEWER") {
+      interfaces.push("annotations:view-all");
+      interfaces.push("annotations:add-new", "annotations:view-all");
+    }
     else if (
       (role === "ADMIN" || role === "MANAGER" || role === "OWNER") &&
       !labelStream
