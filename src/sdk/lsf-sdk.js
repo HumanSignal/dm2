@@ -16,8 +16,7 @@ import { FF_DEV_1752, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, FF_DEV_3734, isFF }
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
-// import { LSFHistory } from "./lsf-history";
-import { adjacentTaskIds, annotationToServer, findInterfaces, taskToLSFormat } from "./lsf-utils";
+import { adjacentTaskIds, annotationToServer, findInterfaces, lookupAnnotationId, taskToLSFormat } from "./lsf-utils";
 
 let LabelStudioDM;
 
@@ -662,15 +661,20 @@ export class LSFWrapper {
     this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
   }
 
-  onNextTask = (nextTaskId, nextAnnotationId) => {
-    console.log(nextTaskId, nextAnnotationId);
+  onNextTask = async (nextTaskId, nextAnnotationId) => {
+    const _taskHistory =  await this.datamanager.store.taskStore.loadTaskHistory({
+      projectId: this.datamanager.store.project.id,
+    });
+    const taskList = this.datamanager.store.viewsStore.dataStore.list;
+    const annotationId = nextAnnotationId || lookupAnnotationId(taskList, nextTaskId);
 
-    this.loadTask(nextTaskId, nextAnnotationId, true);
+    this.loadTask(nextTaskId, annotationId, true);
   }
   onPrevTask = (prevTaskId, prevAnnotationId) => {
-    console.log(prevTaskId, prevAnnotationId);
+    const taskList = this.datamanager.store.viewsStore.dataStore.list;
+    const annotationId = prevAnnotationId || lookupAnnotationId(taskList, prevTaskId);
 
-    this.loadTask(prevTaskId, prevAnnotationId, true);
+    this.loadTask(prevTaskId, annotationId, true);
   }
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
     const { taskID, currentAnnotation } = this;
