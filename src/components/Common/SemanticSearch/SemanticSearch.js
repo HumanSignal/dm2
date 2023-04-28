@@ -3,12 +3,12 @@ import { useEffect } from "react";
 import { Block, Elem } from "../../../utils/bem";
 import Input from "../Input/Input";
 import { Button } from "../Button/Button";
-import { RiFilter3Line, RiInformationLine } from "react-icons/ri";
+// import { RiFilter3Line, RiInformationLine } from "react-icons/ri";
 import "./SemanticSearch.styl";
 import { Tooltip } from "../Tooltip/Tooltip";
 import { inject, observer } from "mobx-react";
-import { Dropdown } from "../Dropdown/DropdownComponent";
-import { clamp } from "../../../utils/helpers";
+// import { Dropdown } from "../Dropdown/DropdownComponent";
+// import { clamp } from "../../../utils/helpers";
 import { LSPlus } from "../../../assets/icons";
 
 const injector = inject(({ store }) => ({
@@ -30,10 +30,10 @@ export const SemanticSearch = injector(observer(({
 }) => {
   const inputRef = React.useRef();
   const [currentValue, setCurrentValue] = useState();
-  const min = 0;
-  const max = 100;
-  const minDiff = 0;
-  const numericRegex = /([\d.])*/g;
+  // const min = 0;
+  // const max = 100;
+  // const minDiff = 0;
+  // const numericRegex = /([\d.])*/g;
   const [from, setFrom] = useState(0);
   const [to, setTo] = useState(100);
   const updateValue = (value) => {
@@ -55,40 +55,40 @@ export const SemanticSearch = injector(observer(({
 
     updateValue(value);
   };
-  const SemanticSearchDropdown = (() => {
-    const fromChangeHandler = useCallback((e) => {
-      const val = e?.target?.value;
-      const newVal = Number(val?.match( numericRegex ).join(''));
+  // const SemanticSearchDropdown = (() => {
+  //   const fromChangeHandler = useCallback((e) => {
+  //     const val = e?.target?.value;
+  //     const newVal = Number(val?.match( numericRegex ).join(''));
 
-      setFrom(clamp(newVal, min, to - minDiff));
-    }, [min, minDiff, to]);
-    const toChangeHandler = useCallback((e) => {
-      const val = e?.target?.value;
-      const newVal = Number(val?.match( numericRegex ).join(''));
+  //     setFrom(clamp(newVal, min, to - minDiff));
+  //   }, [min, minDiff, to]);
+  //   const toChangeHandler = useCallback((e) => {
+  //     const val = e?.target?.value;
+  //     const newVal = Number(val?.match( numericRegex ).join(''));
 
-      setTo(clamp(newVal, from + minDiff, max));
-    }, [from, max, minDiff]);
+  //     setTo(clamp(newVal, from + minDiff, max));
+  //   }, [from, max, minDiff]);
 
-    return (
-      <Block name='searchDropdown'>
-        {/* <Elem name='slider'>slider placeholder</Elem> */}
-        <Elem name='container'>
-          <Elem name='description'>Similarity Range 
-            <Tooltip title="Filter results by degree of similarity">
-              <Elem name='icon'>
-                <RiInformationLine />
-              </Elem>
-            </Tooltip>
-          </Elem>
-          <Elem name='controls'>
-            <Input defaultValue={`${from}%`} min={min} max={max} onBlur={fromChangeHandler}/>
-            to
-            <Input defaultValue={`${to}%`} min={min} max={max} onBlur={toChangeHandler}/>
-          </Elem>
-        </Elem>
-      </Block>
-    );
-  });
+  //   return (
+  //     <Block name='searchDropdown'>
+  //       {/* <Elem name='slider'>slider placeholder</Elem> */}
+  //       <Elem name='container'>
+  //         <Elem name='description'>Similarity Range 
+  //           <Tooltip title="Filter results by degree of similarity">
+  //             <Elem name='icon'>
+  //               <RiInformationLine />
+  //             </Elem>
+  //           </Tooltip>
+  //         </Elem>
+  //         <Elem name='controls'>
+  //           <Input defaultValue={`${from}%`} min={min} max={max} onBlur={fromChangeHandler}/>
+  //           to
+  //           <Input defaultValue={`${to}%`} min={min} max={max} onBlur={toChangeHandler}/>
+  //         </Elem>
+  //       </Elem>
+  //     </Block>
+  //   );
+  // });
 
   useEffect(() => {
     setCurrentValue(value);
@@ -125,13 +125,14 @@ export const SemanticSearch = injector(observer(({
                   <LSPlus />
                 </Elem>
               )}
-              <Dropdown.Trigger
+              {/* temproarily removing this pending feedback on if we need threshold at all or not - at that point will restore or clear out comments */}
+              {/* <Dropdown.Trigger
                 content={<SemanticSearchDropdown />}
               >
                 <Elem name='icon' mod={{ filter: true }}>
                   <RiFilter3Line size={18} />
                 </Elem>
-              </Dropdown.Trigger>
+              </Dropdown.Trigger> */}
             </Elem>
           </Elem>
           <Elem tag={Button} name='button' look="primary">Search</Elem>

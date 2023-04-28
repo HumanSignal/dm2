@@ -13,14 +13,9 @@ import { normalizeFilterValue } from './filter_utils';
 import { TabFilter } from "./tab_filter";
 import { TabHiddenColumns } from "./tab_hidden_columns";
 import { TabSelectedItems } from "./tab_selected_items";
+import { ThresholdModel } from "./semanticsearch_threshold";
 import { History } from '../../utils/history';
 import { FF_LOPS_12, isFF } from "../../utils/feature-flags";
-
-const ThresholdModel = types
-  .model("ThresholdModel", {
-    from: types.optional(types.number, 0),
-    to: types.optional(types.number, 100),
-  });
 
 export const Tab = types
   .model("View", {
