@@ -41,7 +41,7 @@ export const SemanticSearch = injector(observer(({
     onChange?.(value);
   };
   const submitHandler = useCallback((e) => {
-    e.preventDefault();
+    e?.preventDefault();
     view.setSemanticSearch(currentValue /* , from, to */);
     onSubmit?.(currentValue/* , from, to */);
   }, [currentValue, from, to]);
@@ -54,6 +54,8 @@ export const SemanticSearch = injector(observer(({
     const value = "";
 
     updateValue(value);
+    view.setSemanticSearch(value);
+    onSubmit?.(value);
   };
   // const SemanticSearchDropdown = (() => {
   //   const fromChangeHandler = useCallback((e) => {
