@@ -244,9 +244,9 @@ export const Tab = types
       self.locked = false;
     },
 
-    setSemanticSearch(searchText, from, to) {
+    setSemanticSearch(searchText /* , from, to */) {
       self.search_text = searchText;
-      self.threshold = { from, to };
+      // self.threshold = { from, to };
       self.save();
     },
 

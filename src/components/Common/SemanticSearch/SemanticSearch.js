@@ -42,8 +42,8 @@ export const SemanticSearch = injector(observer(({
   };
   const submitHandler = useCallback((e) => {
     e.preventDefault();
-    view.setSemanticSearch(currentValue, from, to);
-    onSubmit?.(currentValue, from, to);
+    view.setSemanticSearch(currentValue /* , from, to */);
+    onSubmit?.(currentValue/* , from, to */);
   }, [currentValue, from, to]);
   const onChangeHandler = () => {
     const value = inputRef.current?.value ?? inputRef.current?.input?.value;
