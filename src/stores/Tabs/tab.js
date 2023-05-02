@@ -13,7 +13,6 @@ import { normalizeFilterValue } from './filter_utils';
 import { TabFilter } from "./tab_filter";
 import { TabHiddenColumns } from "./tab_hidden_columns";
 import { TabSelectedItems } from "./tab_selected_items";
-import { ThresholdModel } from "./semanticsearch_threshold";
 import { History } from '../../utils/history';
 import { FF_LOPS_12, isFF } from "../../utils/feature-flags";
 
@@ -51,7 +50,6 @@ export const Tab = types
     editable: true,
     deletable: true,
     search_text: types.optional(types.maybeNull(types.string), null),
-    threshold: types.optional(types.maybeNull(ThresholdModel), {}),
   })
   .volatile(() => {
     const defaultWidth = window.innerWidth * 0.35;
