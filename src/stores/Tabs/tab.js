@@ -49,7 +49,6 @@ export const Tab = types
     locked: false,
     editable: true,
     deletable: true,
-    search_text: types.optional(types.maybeNull(types.string), null),
   })
   .volatile(() => {
     const defaultWidth = window.innerWidth * 0.35;
@@ -212,8 +211,6 @@ export const Tab = types
         columnsWidth: self.columnsWidth.toPOJO(),
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
         gridWidth: self.gridWidth,
-        search_text: self.search_text,
-        threshold: getSnapshot(self.threshold),
       };
 
       if (self.saved || apiVersion === 1) {
@@ -240,12 +237,6 @@ export const Tab = types
 
     unlock() {
       self.locked = false;
-    },
-
-    setSemanticSearch(searchText /* , from, to */) {
-      self.search_text = searchText;
-      // self.threshold = { from, to };
-      self.save();
     },
 
     setType(type) {
