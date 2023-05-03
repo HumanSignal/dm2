@@ -18,7 +18,7 @@ on:
       - 'ls-release/**'
 
 env:
-  NODE: 16
+  NODE: 18
   CACHE_NAME_PREFIX: v1
 
 jobs:
