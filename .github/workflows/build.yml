@@ -5,7 +5,7 @@ on:
     branches: [master, "*/*", "*/**", "fb-**"]
 
 env:
-  NODE: 14
+  NODE: 18
   CACHE_NAME_PREFIX: v1
 
 jobs:

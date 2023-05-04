@@ -5,7 +5,6 @@ const webpack = require("webpack");
 const Dotenv = require("dotenv-webpack");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const ESLintPlugin = require('eslint-webpack-plugin');
 const { EnvironmentPlugin } = require("webpack");
 
 const workingDirectory = process.env.WORK_DIR
@@ -80,7 +79,7 @@ const optimizer = () => {
 
   if (BUILD.NO_CHUNKS) {
     result.runtimeChunk = false;
-    result.splitChunks = {cacheGroups: { default: false }}
+    result.splitChunks = { cacheGroups: { default: false } }
   }
 
   return result;
@@ -217,16 +216,11 @@ const plugins = [
 ];
 
 if (isDevelopment) {
-  plugins.push(new ESLintPlugin({
-    fix: true,
-    failOnError: true,
-  }));
-
   plugins.push(new webpack.ProgressPlugin());
 }
 
 if (isDevelopment && !BUILD.NO_SERVER) {
-  plugins.push( new HtmlWebPackPlugin({
+  plugins.push(new HtmlWebPackPlugin({
     title: "Heartex DataManager 2.0",
     template: "public/index.html",
   }));
@@ -236,7 +230,7 @@ if (isDevelopment && !BUILD.NO_SERVER) {
 
 const sourceMap = isDevelopment ? "cheap-module-source-map" : "source-map";
 
-module.exports = ({withDevServer = false} = {}) => ({
+module.exports = ({ withDevServer = false } = {}) => ({
   mode: DEFAULT_NODE_ENV || "development",
   devtool: sourceMap,
   ...(withDevServer ? devServer() : {}),

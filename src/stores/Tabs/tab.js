@@ -51,9 +51,10 @@ export const Tab = types
     deletable: true,
   })
   .volatile(() => {
-    const defaultWidth = window.innerWidth * 0.35;
+    const defaultWidth = getComputedStyle(document.body).getPropertyValue("--menu-sidebar-width").replace("px", "").trim();
+
     const labelingTableWidth = parseInt(
-      localStorage.getItem("labelingTableWidth") ?? defaultWidth,
+      localStorage.getItem("labelingTableWidth") ?? defaultWidth ?? 200,
     );
 
     return {
