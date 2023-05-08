@@ -298,7 +298,7 @@ export const Tab = types
       self.selected = ids;
     },
 
-    setSemanticSearch(searchText) {
+    setSearchText(searchText) {
       self.search_text = searchText;
       self.save();
     },
