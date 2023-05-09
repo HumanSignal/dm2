@@ -5,6 +5,11 @@ import "./CandidateTaskView.styl";
 import { getRoot } from "mobx-state-tree";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import { FF_LSDV_4711, isFF } from "../../utils/feature-flags";
+
+const imgDefaultProps = {};
+
+if (isFF(FF_LSDV_4711)) imgDefaultProps.crossOrigin = 'anonymous';
 
 const DataItemVisual = forwardRef(({ columns, dataKey, data }, imageRef) => {
   const columnDefinition = columns.find(colData => colData.alias === dataKey);
@@ -12,7 +17,7 @@ const DataItemVisual = forwardRef(({ columns, dataKey, data }, imageRef) => {
   if (columnDefinition?.currentType === "Image") {
     return (
       <Elem name="data-display" mod={{ image: true }}>
-        <img ref={imageRef} src={data} />
+        <img {...imgDefaultProps} ref={imageRef} src={data} />
       </Elem>
     );
   }
