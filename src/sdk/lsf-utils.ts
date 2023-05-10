@@ -86,7 +86,7 @@ export const adjacentTaskIds = (filteredOrderedList: { id: number }[], currentId
 export const lookupAnnotationId = (taskList: any[], taskId: string[]) => {
   const foundTask = taskList.find((task: { id: any; }) => task.id === taskId);
   
-  return foundTask.annotations_ids[0];
+  return foundTask.annotations_ids?.[0];
 };
 
 export const DEFAULT_INTERFACES = [
