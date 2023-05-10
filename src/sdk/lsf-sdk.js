@@ -661,18 +661,18 @@ export class LSFWrapper {
     this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
   }
 
-  onNextTask = async (nextTaskId, nextAnnotationId) => {
+  onNextTask = async (nextTaskId, nextAnnotationId, lookupAnnotation) => {
     const _taskHistory =  await this.datamanager.store.taskStore.loadTaskHistory({
       projectId: this.datamanager.store.project.id,
     });
     const taskList = this.datamanager.store.viewsStore.dataStore.list;
-    const annotationId = nextAnnotationId || lookupAnnotationId(taskList, nextTaskId);
+    const annotationId = nextAnnotationId || lookupAnnotation && lookupAnnotationId(taskList, nextTaskId) || null;
 
     this.loadTask(nextTaskId, annotationId, true);
   }
-  onPrevTask = (prevTaskId, prevAnnotationId) => {
+  onPrevTask = (prevTaskId, prevAnnotationId, lookupAnnotation) => {
     const taskList = this.datamanager.store.viewsStore.dataStore.list;
-    const annotationId = prevAnnotationId || lookupAnnotationId(taskList, prevTaskId);
+    const annotationId = prevAnnotationId || lookupAnnotation && lookupAnnotationId(taskList, prevTaskId) || null;
 
     this.loadTask(prevTaskId, annotationId, true);
   }
