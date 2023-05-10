@@ -49,11 +49,13 @@ export const Tab = types
     locked: false,
     editable: true,
     deletable: true,
+    search_text: types.optional(types.maybeNull(types.string), null),
   })
   .volatile(() => {
-    const defaultWidth = window.innerWidth * 0.35;
+    const defaultWidth = getComputedStyle(document.body).getPropertyValue("--menu-sidebar-width").replace("px", "").trim();
+
     const labelingTableWidth = parseInt(
-      localStorage.getItem("labelingTableWidth") ?? defaultWidth,
+      localStorage.getItem("labelingTableWidth") ?? defaultWidth ?? 200,
     );
 
     return {
@@ -211,6 +213,7 @@ export const Tab = types
         columnsWidth: self.columnsWidth.toPOJO(),
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
         gridWidth: self.gridWidth,
+        search_text: self.search_text,
       };
 
       if (self.saved || apiVersion === 1) {
@@ -293,6 +296,11 @@ export const Tab = types
 
     setSelected(ids) {
       self.selected = ids;
+    },
+
+    setSearchText(searchText) {
+      self.search_text = searchText;
+      self.save();
     },
 
     selectAll() {
