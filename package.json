@@ -17,20 +17,20 @@
   ],
   "browser": {},
   "scripts": {
-    "build:bundle": "npm run build:final",
-    "build:notsourcemap": "GENERATE_SOURCEMAP=false npm run build",
-    "build:final": "BUILD_NO_CHUNKS=true npm run build",
-    "build:no-hash": "BUILD_NO_HASH=true BUILD_NO_CHUNKS=true npm run build",
-    "build:module": "NODE_ENV=production BUILD_NO_HASH=true BUILD_NO_CHUNKS=true BUILD_MODULE=true npm run build",
-    "build:module-dev": "BUILD_NO_MINIMIZATION=true BUILD_NO_HASH=true BUILD_NO_CHUNKS=true BUILD_MODULE=true npm run build",
+    "build:bundle": "yarn run build:final",
+    "build:notsourcemap": "GENERATE_SOURCEMAP=false yarn run build",
+    "build:final": "BUILD_NO_CHUNKS=true yarn run build",
+    "build:no-hash": "BUILD_NO_HASH=true BUILD_NO_CHUNKS=true yarn run build",
+    "build:module": "NODE_ENV=production BUILD_NO_HASH=true BUILD_NO_CHUNKS=true BUILD_MODULE=true yarn run build",
+    "build:module-dev": "BUILD_NO_MINIMIZATION=true BUILD_NO_HASH=true BUILD_NO_CHUNKS=true BUILD_MODULE=true yarn run build",
     "prettier-styles": "prettier --write src/**/*.scss",
     "prettier": "prettier --write src/**/*.js",
-    "build": "npx webpack",
-    "watch": "npx webpack --watch",
+    "build": "yarn run webpack",
+    "watch": "yarn run webpack --watch",
     "start": "node dev-server.js",
     "test": "echo \"Error: no test specified\" && exit 0",
-    "lint": "npx eslint ./src"
-  },
+    "lint": "yarn run eslint ./src"
+   },
   "author": "Heartex, Inc.",
   "license": "ISC",
   "devDependencies": {
@@ -102,7 +102,7 @@
   ],
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged && npm run test"
+      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
