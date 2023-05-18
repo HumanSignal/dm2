@@ -110,7 +110,6 @@ export const DataView = injector(
     );
 
     const onSelectAll = useCallback(() => {
-      console.log('selected all');
       view.selectAll();
     }, [view]);
 

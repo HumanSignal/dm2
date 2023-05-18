@@ -10,6 +10,7 @@ export const TabSelectedItems = types
       return {
         all: self.all,
         [self.listName]: Array.from(self.list),
+        listObject: self.listObject,
       };
     },
 
@@ -43,6 +44,14 @@ export const TabSelectedItems = types
       }
     },
 
+    get listObject() {
+      return self._listObject ?? [];
+    },
+
+    set listObject(newVal) {
+      self._listObject = newVal;
+    },
+
     isSelected(id) {
       if (self.all) {
         return !self.list.includes(id);
@@ -62,37 +71,50 @@ export const TabSelectedItems = types
       }
 
       self.list = [];
+      self.listObject = [];
       self._invokeChangeEvent();
     },
 
     addItem(id) {
+      const item = getRoot(self).taskStore.list.find(rec => rec.id === id);
+
       self.list.push(id);
+      self.listObject = [...self.listObject, item];
       self._invokeChangeEvent();
     },
 
     removeItem(id) {
       self.list.splice(self.list.indexOf(id), 1);
+      self.listObject = self.listObject.filter(rec => rec.id !== id);
       self._invokeChangeEvent();
     },
 
     toggleItem(id) {
+      const item = getRoot(self).taskStore.list.find(rec => rec.id === id);
+
       if (self.list.includes(id)) {
         self.list.splice(self.list.indexOf(id), 1);
+        self.listObject = self.listObject.filter(rec => rec.id !== id);
       } else {
         self.list.push(id);
+        self.listObject = [...self.listObject, item];
       }
       self._invokeChangeEvent();
     },
 
     update(data) {
+      const taskStoreList = getRoot(self).taskStore.list;
+
       self.all = data?.all ?? self.all;
       self.list = data?.[self.listName] ?? self.list;
+      self.listObject = data?.[self.listName] ? data?.[self.listName]?.map(id => taskStoreList.find(rec => rec.id === id)) : self.listObject;
       self._invokeChangeEvent();
     },
 
     clear() {
       self.all = false;
       self.list = [];
+      self.listObject = [];
       self._invokeChangeEvent();
     },
 
@@ -101,8 +123,8 @@ export const TabSelectedItems = types
     },
   }))
   .preProcessSnapshot((sn) => {
-    const { included, excluded, all } = sn ?? {};
-    const result = { all, list: sn.list ?? (all ? excluded : included) };
+    const { included, excluded, all, listObject } = sn ?? {};
+    const result = { all, list: sn.list ?? (all ? excluded : included), listObject };
 
     return result;
   });
