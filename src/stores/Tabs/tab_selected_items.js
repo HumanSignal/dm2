@@ -3,7 +3,7 @@ import { getRoot, types } from "mobx-state-tree";
 export const TabSelectedItems = types
   .model("TabSelectedItems", {
     all: false,
-    list: types.optional(types.array( types.number), []),
+    list: types.optional(types.array(types.number), []),
   })
   .views((self) => ({
     get snapshot() {
