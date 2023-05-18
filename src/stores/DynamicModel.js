@@ -1,6 +1,5 @@
 import { types } from "mobx-state-tree";
 import { CustomJSON } from "./types";
-import { FF_LOPS_E_3, isFF } from "../utils/feature-flags";
 
 const registry = new Map();
 
@@ -36,16 +35,7 @@ export const DynamicModel = (name, columns, properties) => {
   });
 
   Object.assign(modelProperties, {
-    id: isFF(FF_LOPS_E_3) ? (types.snapshotProcessor(types.identifier, {
-      // from snapshot to instance
-      preProcessor(sn) {
-        return sn.toString();
-      },
-      // from instance to snapshot
-      postProcessor(sn) {
-        return sn.toString();
-      },
-    })) : types.identifierNumber,
+    id: types.identifierNumber,
     ...(properties ?? {}),
   });
 

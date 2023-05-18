@@ -1,10 +1,9 @@
 import { getRoot, types } from "mobx-state-tree";
-import { FF_LOPS_E_3, isFF } from "../../utils/feature-flags";
 
 export const TabSelectedItems = types
   .model("TabSelectedItems", {
     all: false,
-    list: types.optional(types.array( isFF(FF_LOPS_E_3) ? types.string : types.number ), []),
+    list: types.optional(types.array( types.number), []),
   })
   .views((self) => ({
     get snapshot() {
@@ -45,12 +44,10 @@ export const TabSelectedItems = types
     },
 
     isSelected(id) {
-      const strID = isFF(FF_LOPS_E_3) ? id.toString() : id;
-
       if (self.all) {
-        return !self.list.includes(strID);
+        return !self.list.includes(id);
       } else {
-        return self.list.includes(strID);
+        return self.list.includes(id);
       }
     },
   }))
@@ -69,26 +66,20 @@ export const TabSelectedItems = types
     },
 
     addItem(id) {
-      const strID = isFF(FF_LOPS_E_3) ? id.toString() : id;
-
-      self.list.push(strID);
+      self.list.push(id);
       self._invokeChangeEvent();
     },
 
     removeItem(id) {
-      const strID = isFF(FF_LOPS_E_3) ? id.toString() : id;
-
-      self.list.splice(self.list.indexOf(strID), 1);
+      self.list.splice(self.list.indexOf(id), 1);
       self._invokeChangeEvent();
     },
 
     toggleItem(id) {
-      const strID = isFF(FF_LOPS_E_3) ? id.toString() : id;
-
-      if (self.list.includes(strID)) {
-        self.list.splice(self.list.indexOf(strID), 1);
+      if (self.list.includes(id)) {
+        self.list.splice(self.list.indexOf(id), 1);
       } else {
-        self.list.push(strID);
+        self.list.push(id);
       }
       self._invokeChangeEvent();
     },
