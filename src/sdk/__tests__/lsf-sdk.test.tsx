@@ -51,8 +51,8 @@ describe('findInterfaces', () => {
     expect(interfaces).toContain('instruction');
   });
 
-  test('adds ground-truth interface when labelStream is truthy and datamanager hasInterface returns true for groundTruth', () => {
-    const interfaces = findInterfaces({ enable_empty_annotation: false, show_skip_button: true }, true, { hasInterface: (iface) => iface === 'groundTruth' }, 'ANNOTATOR', () => true);
+  test('adds ground-truth interface when labelStream is falsy and datamanager hasInterface returns true for groundTruth', () => {
+    const interfaces = findInterfaces({ enable_empty_annotation: false, show_skip_button: true }, null, { hasInterface: (iface) => iface === 'groundTruth' }, 'ANNOTATOR', () => true);
 
     expect(interfaces).toContain('ground-truth');
   });

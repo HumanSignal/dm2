@@ -137,7 +137,7 @@ export const findInterfaces = (
     interfaces.push("instruction");
   }
 
-  if (labelStream && datamanager.hasInterface("groundTruth")) {
+  if (!labelStream && datamanager.hasInterface("groundTruth")) {
     interfaces.push("ground-truth");
   }
 
