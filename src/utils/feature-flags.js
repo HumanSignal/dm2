@@ -29,9 +29,6 @@ export const FF_DEV_2984 = "fflag_feat_front_dev_2984_dm_draggable_columns_short
 
 export const FF_DEV_3034 = "fflag-feat-dev-3034-comments-with-drafts-short";
 
-/**
- * @link https://app.launchdarkly.com/default/production/features/fflag_fix_front_dev_1284_auto_detect_undo_281022_short
- */
 export const FF_DEV_3873 = 'fflag_feat_front_dev_3873_labeling_ui_improvements_short';
 
 /**
