@@ -25,7 +25,7 @@ import { TableBlock, TableContext, TableElem } from "./TableContext";
 import { TableHead } from "./TableHead/TableHead";
 import { TableRow } from "./TableRow/TableRow";
 import { prepareColumns } from "./utils";
-import { Block, Elem } from "../../../utils/bem";
+import { Block } from "../../../utils/bem";
 import { FieldsButton } from "../FieldsButton";
 import { LsGear, LsGearNewUI } from "../../../assets/icons";
 import { FF_DEV_3873, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
@@ -294,11 +294,9 @@ export const Table = observer(
             }}
           >
             {isFF(FF_DEV_3873) ? (
-              <Elem
-                name="button"
-                tag={FieldsButton}
-                icon={<LsGearNewUI />}
+              <FieldsButton
                 wrapper={FieldsButton.Checkbox}
+                icon={<LsGearNewUI />}
                 style={{
                   padding: '0 4px 0 0',
                   height: 42,
@@ -306,6 +304,9 @@ export const Table = observer(
                   backgroundColor: '#fff',
                   borderLeft: '1px solid rgba(137, 128, 152, 0.12)',
                   boxShadow: 'none',
+                  zIndex: 1000,
+                  borderRadius: 0,
+                  margin: "-1px",
                 }}
               />
             ):(
