@@ -234,7 +234,7 @@ export const Table = observer(
                   padding: '0 4px 0 0',
                   height: 42,
                   width: 52,
-                  backgroundColor: 'transparent',
+                  backgroundColor: '#fff',
                   borderLeft: '1px solid rgba(137, 128, 152, 0.12)',
                   boxShadow: 'none',
                 }}
