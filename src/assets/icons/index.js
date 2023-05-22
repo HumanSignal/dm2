@@ -9,6 +9,7 @@ export { default as LsStarSquare } from  './star_square.svg';
 export { default as LSPlus } from './plus.svg';
 export { default as LsRefresh } from "./refresh.svg";
 export { default as LsGear } from "./gear.svg";
+export { default as LsGearNewUI } from "./gear_new_ui.svg";
 export { default as CommentCheck } from "./comment_check.svg";
 export { default as CommentRed } from "./comment_red.svg";
 export { default as LsGrid } from "./grid.svg";
