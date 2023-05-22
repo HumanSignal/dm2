@@ -74,7 +74,6 @@
     "mobx-react": "^6",
     "mobx-state-tree": "^3.16.0",
     "nanoid": "^3.1.10",
-    "node-fetch": "^2.6.1",
     "prettier": "^2.0.5",
     "react": "^17.0.2",
     "react-datepicker": "^3.6.0",
