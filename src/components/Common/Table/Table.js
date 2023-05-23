@@ -21,8 +21,8 @@ import { TableRow } from "./TableRow/TableRow";
 import { prepareColumns } from "./utils";
 import { Block, Elem } from "../../../utils/bem";
 import { FieldsButton } from "../FieldsButton";
-import { LsGear } from "../../../assets/icons";
-import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
+import { LsGear, LsGearNewUI } from "../../../assets/icons";
+import { FF_DEV_3873, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 
 const Decorator = (decoration) => {
   return {
@@ -224,13 +224,30 @@ export const Table = observer(
       <>
         {view.root.isLabeling && (
           <Block name="column-selector">
-            <Elem
-              name="button"
-              tag={FieldsButton}
-              icon={<LsGear />}
-              wrapper={FieldsButton.Checkbox}
-              style={{ padding: 0 }}
-            />
+            {isFF(FF_DEV_3873) ? (
+              <Elem
+                name="button"
+                tag={FieldsButton}
+                icon={<LsGearNewUI />}
+                wrapper={FieldsButton.Checkbox}
+                style={{
+                  padding: '0 4px 0 0',
+                  height: 42,
+                  width: 52,
+                  backgroundColor: '#fff',
+                  borderLeft: '1px solid rgba(137, 128, 152, 0.12)',
+                  boxShadow: 'none',
+                }}
+              />
+            ):(
+              <Elem
+                name="button"
+                tag={FieldsButton}
+                icon={<LsGear />}
+                wrapper={FieldsButton.Checkbox}
+                style={{ padding: 0 }}
+              />
+            )}
           </Block>
         )}
         <TableBlock
