@@ -3,7 +3,6 @@ import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { FaCaretDown, FaChevronLeft, FaColumns } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
-import { FF_DEV_1170, isFF } from "../../utils/feature-flags";
 import { Button } from "../Common/Button/Button";
 import { FieldsButton } from "../Common/FieldsButton";
 import { Icon } from "../Common/Icon/Icon";
@@ -96,8 +95,6 @@ export const Labeling = injector(observer(({
     window.dispatchEvent(new Event("resize"));
   }, []);
 
-  const outlinerEnabled = isFF(FF_DEV_1170);
-
   return (
     <Block name="label-view" mod={{ loading }}>
       {SDK.interfaceEnabled("labelingHeader") && (
@@ -134,7 +131,6 @@ export const Labeling = injector(observer(({
             id="label-studio-dm"
             name="lsf-container"
             key="label-studio"
-            mod={{ outliner: outlinerEnabled }}
           />
         </Elem>
       </Elem>
