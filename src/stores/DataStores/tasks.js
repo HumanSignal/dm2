@@ -13,6 +13,12 @@ const fileAttributes = types.model({
   "id": types.optional(types.maybeNull(types.string), ""),
 });
 
+const exportedModel = types.model({
+  "id": types.optional(types.maybeNull(types.number), null),
+  "date": types.optional(types.maybeNull(types.string), ""),
+  "workspace": types.optional(types.maybeNull(types.string), ""),
+});
+
 export const create = (columns) => {
   const TaskModelBase = DynamicModel("TaskModelBase", columns, {
     ...(isFF(FF_DEV_2536) ? { comment_authors: types.optional(types.array(Assignee), []) } : {}),
@@ -33,6 +39,7 @@ export const create = (columns) => {
     ...(isFF(FF_LOPS_E_3) ? { 
       _additional: types.optional(fileAttributes, {}),
       candidate_task_id: types.optional(types.string, ""),
+      exported: types.optional(types.array(exportedModel), []),
     } : {}),
   })
     .views((self) => ({
@@ -101,10 +108,15 @@ export const create = (columns) => {
     }));
 
   const TaskModel = types.compose("TaskModel", TaskModelBase, DataStoreItem);
+  const AssociatedType = types.model("AssociatedModelBase", {
+    id: types.identifierNumber,
+    name: types.string,
+  });
 
   return DataStore("TasksStore", {
     apiMethod: "tasks",
     listItemType: TaskModel,
+    associatedItemType: AssociatedType,
     properties: {
       totalAnnotations: 0,
       totalPredictions: 0,

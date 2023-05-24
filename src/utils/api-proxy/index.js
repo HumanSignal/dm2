@@ -62,6 +62,7 @@ export class APIProxy {
     this.mockDisabled = options.mockDisabled ?? false;
     this.sharedParams = options.sharedParams ?? {};
     this.alwaysExpectJSON = options.alwaysExpectJSON ?? true;
+    this.endpoints = options.endpoints;
 
     this.resolveMethods(options.endpoints);
   }
@@ -312,6 +313,10 @@ export class APIProxy {
       scope: undefined,
       ...settings,
     };
+  }
+
+  getSettingsByMethodName(methodName) {
+    return this.endpoints && methodName && this.endpoints[methodName];
   }
 
   getDefaultHeaders(method) {
