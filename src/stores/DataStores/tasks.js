@@ -14,9 +14,8 @@ const fileAttributes = types.model({
 });
 
 const exportedModel = types.model({
-  "id": types.optional(types.maybeNull(types.number), null),
-  "date": types.optional(types.maybeNull(types.string), ""),
-  "workspace": types.optional(types.maybeNull(types.string), ""),
+  "project_id": types.optional(types.maybeNull(types.number), null),
+  "created_at": types.optional(types.maybeNull(types.string), ""),
 });
 
 export const create = (columns) => {
@@ -110,7 +109,8 @@ export const create = (columns) => {
   const TaskModel = types.compose("TaskModel", TaskModelBase, DataStoreItem);
   const AssociatedType = types.model("AssociatedModelBase", {
     id: types.identifierNumber,
-    name: types.string,
+    title: types.string,
+    workspace: types.optional(types.array(types.string), []),
   });
 
   return DataStore("TasksStore", {

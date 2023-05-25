@@ -117,13 +117,12 @@ export const CandidateTaskView = observer(({ item, columns }) => {
                   const associtedRecord = associatedList?.find(associatedItem => associatedItem?.id === id);
                   const clickHandler = useCallback(e => {
                     e.preventDefault();
-                    // history.replaceState({}, document.title, `/projects/${id}/data`);
                     window.open(`/projects/${id}/data`, '_self');
                   }, [id]);
                   
                   return (
                     <Block onClick={clickHandler} name='projectNav' key={index}>
-                      <Elem name='name'>{workspace} / {associtedRecord.name}</Elem>
+                      <Elem name='name'>{workspace?.length && `${workspace.join(" - ")} / `}{associtedRecord.name}</Elem>
                       {date && <Elem name='date'>Added {format(new Date(date), dateDisplayFormat)}</Elem>}
                     </Block>
                   );
