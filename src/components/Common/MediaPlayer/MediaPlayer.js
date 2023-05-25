@@ -1,4 +1,4 @@
-import { createRef, useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { createRef, useCallback, useMemo, useReducer, useRef, useState } from "react";
 import { FaPause, FaPlay } from "react-icons/fa";
 import { Block, Elem } from "../../../utils/bem";
 import { filename } from "../../../utils/helpers";
@@ -8,12 +8,6 @@ import "./MediaPlayer.styl";
 import { MediaSeeker } from "./MediaSeeker";
 import { Duration } from "./Duration";
 import { forwardRef } from "react";
-import { FF_LSDV_4711, isFF } from "../../../utils/feature-flags";
-
-
-const mediaDefaultProps = {};
-
-if (isFF(FF_LSDV_4711)) mediaDefaultProps.crossOrigin = 'anonymous';
 
 const initialState = {
   duration: 0,
@@ -23,7 +17,6 @@ const initialState = {
   loaded: false,
   playing: false,
   loading: false,
-  resetSource: 0,
 };
 
 const globalAudioRef = createRef();
@@ -32,8 +25,6 @@ export const MediaPlayer = ({ src, video = false }) => {
   /** @type {import("react").RefObject<HTMLAudioElement>} */
   const media = useRef();
   const wasPlaying = useRef(false);
-  const hasReloaded = useRef(false);
-  const currentTimeRef = useRef(0);
   const [enabled, setEnabled] = useState(false);
 
   const [state, dispatch] = useReducer((state, action) => {
@@ -41,11 +32,10 @@ export const MediaPlayer = ({ src, video = false }) => {
       case "duration": return { ...state, duration: action.payload };
       case "current": return { ...state, currentTime: action.payload };
       case "loaded": return { ...state, loaded: true };
-      case "error": return { ...state, error: true, resetSource: state.loaded ? state.resetSource + 1 : state.resetSource };
+      case "error": return { ...state, error: true };
       case "play": return { ...state, playing: true };
       case "pause": return { ...state, playing: false };
       case "buffer": return { ...state, buffer: action.payload };
-      case "resetSource": return { ...state, resetSource: 0, loaded: false, error: false };
     }
   }, initialState);
 
@@ -83,7 +73,6 @@ export const MediaPlayer = ({ src, video = false }) => {
   }, [wasPlaying]);
 
   const onSeek = useCallback((time) => {
-    currentTimeRef.current = time;
     media.current.currentTime = time;
   }, []);
 
@@ -111,39 +100,12 @@ export const MediaPlayer = ({ src, video = false }) => {
     onError: () => dispatch({ type: "error" }),
   };
 
-  useEffect(() => {
-    if (!isFF(FF_LSDV_4711)) return;
-
-    // force reload on error if the source previously loaded,
-    // as it may just require a new presigned url
-    if (state.resetSource > 0) {
-      dispatch({ type: "resetSource" });
-      hasReloaded.current = true;
-      media.current.load();
-    }
-  }, [state.resetSource]);
-
-  useEffect(() => {
-    if (!isFF(FF_LSDV_4711)) return;
-
-    // if the source was reloaded due to error, we need to wait for it to load
-    // before we can set the current time and play if it was previously playing
-    if (hasReloaded.current && state.loaded) {
-      hasReloaded.current = false;
-      media.current.currentTime = currentTimeRef.current;
-
-      if (wasPlaying.current) media.current.play();
-    }
-  }, [state.loaded]);
-
-  const showError = isFF(FF_LSDV_4711) ? !state.resetSource && state.error : state.error;
-
   return enabled ? (
     <Block name="player" mod={{ video }} onClick={e => e.stopPropagation()}>
       {video && (
-        <MediaSource type="video" onClick={togglePlay} {...mediaProps} />
+        <MediaSource type="video" onClick={togglePlay} {...mediaProps}/>
       )}
-      {showError ? (
+      {state.error ? (
         <Elem name="loading">
           Unable to play
         </Elem>
@@ -211,7 +173,7 @@ export const MediaPlayer = ({ src, video = false }) => {
 
 const MediaSource = forwardRef(({ type = "audio", src, ...props }, ref) => {
   return (
-    <Elem {...mediaDefaultProps} name="media" tag={type} ref={ref} {...props}>
+    <Elem name="media" tag={type} ref={ref} {...props}>
       <source src={src}/>
     </Elem>
   );
