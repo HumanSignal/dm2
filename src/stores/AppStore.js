@@ -1,6 +1,6 @@
 import { destroy, flow, types } from "mobx-state-tree";
 import { Modal } from "../components/Common/Modal/Modal";
-import { FF_DEV_2887, isFF } from "../utils/feature-flags";
+import { FF_DEV_2887, FF_LSDV_5177, isFF } from "../utils/feature-flags";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import { Action } from "./Action";
@@ -322,6 +322,10 @@ export const AppStore = types
           self.closeLabeling();
         }
       };
+
+      if (isFF(FF_LSDV_5177)) {
+        self.LSF?.lsf?.annotationStore?.selected?.saveDraftImmediately?.();
+      }
 
       if (isFF(FF_DEV_2887) && self.LSF?.lsf?.annotationStore?.selected?.commentStore?.hasUnsaved) {
         Modal.confirm({
