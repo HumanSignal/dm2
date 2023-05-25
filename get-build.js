@@ -7,8 +7,6 @@
 /**
  * global _dirname
  */
-const fetch = require("node-fetch");
-
 const fs = require("fs");
 const { spawn, execSync } = require("child_process");
 const path = require("path");
