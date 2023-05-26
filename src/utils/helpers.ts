@@ -114,3 +114,30 @@ export const absoluteURL = (path = "") => {
 export const isDefined = <T>(value?: T): value is NonNullable<T> => {
   return value !== null && value !== undefined;
 };
+
+export const delay = (timeout: number) =>
+  new Promise((resolve) => setTimeout(resolve, timeout));
+
+type WaitForOptions = {
+  delay: number,
+  tries: number
+}
+const defaultWaitForOptions = {
+  delay: 16,
+  tries: 15,
+};
+
+export const waitFor = (predicate:()=>boolean, options:WaitForOptions) => {
+  const opt = Object.assign({}, defaultWaitForOptions, options);
+
+  return new Promise(async (resolve) => {
+    for (let i = opt.tries;i--;){
+      if (await predicate()) {
+        return resolve(true);
+      }
+      await delay(opt.delay);
+    }
+    resolve(false);
+  });
+};
+
