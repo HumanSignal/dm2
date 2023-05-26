@@ -59,6 +59,11 @@ export const FF_LOPS_E_3 = "fflag_feat_all_lops_e_3_datasets_short";
  */
 export const FF_LSDV_4711 = 'fflag_fix_all_lsdv_4711_cors_errors_accessing_task_data_short';
 
+/**
+ * Add forced draft saving on switching between different tasks in Quick View.
+ */
+export const FF_LSDV_5177 = 'fflag_fix_front_lsdv_5177_save_draft_on_task_switch_250523_short';
+
 // Customize flags
 const flags = {};
 
