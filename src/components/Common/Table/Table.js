@@ -230,6 +230,7 @@ export const Table = observer(
                 tag={FieldsButton}
                 className={'newUi'}
                 icon={<LsGearNewUI />}
+                tooltip={'Customize Columns'}
                 style={{ padding: 0 }}
                 wrapper={FieldsButton.Checkbox}
               />
