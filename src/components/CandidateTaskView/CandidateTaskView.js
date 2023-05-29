@@ -113,17 +113,18 @@ export const CandidateTaskView = observer(({ item, columns }) => {
             <Elem name="detailContent">{
               (associatedList.length && exported.length) ? (
                 exported.map((exportedEntry, index) => {
-                  const { id, workspace, date } = exportedEntry;
-                  const associtedRecord = associatedList?.find(associatedItem => associatedItem?.id === id);
+                  const { project_id, created_at } = exportedEntry;
+                  const associtedRecord = associatedList?.find(associatedItem => associatedItem?.id === project_id);
+                  const { title, workspace } = associtedRecord;
                   const clickHandler = useCallback(e => {
                     e.preventDefault();
-                    window.open(`/projects/${id}/data`, '_self');
-                  }, [id]);
+                    window.open(`/projects/${project_id}/data`, '_self');
+                  }, [project_id]);
                   
                   return (
                     <Block onClick={clickHandler} name='projectNav' key={index}>
-                      <Elem name='name'>{workspace?.length && `${workspace.join(" - ")} / `}{associtedRecord.name}</Elem>
-                      {date && <Elem name='date'>Added {format(new Date(date), dateDisplayFormat)}</Elem>}
+                      <Elem name='name'>{workspace?.length && `${workspace.join(" - ")} / `}{title}</Elem>
+                      {created_at && <Elem name='date'>Added {format(new Date(created_at), dateDisplayFormat)}</Elem>}
                     </Block>
                   );
                 })
