@@ -110,12 +110,10 @@ export const DataView = injector(
     );
 
     const onSelectAll = useCallback(() => {
-      console.log('selected all');
       view.selectAll();
     }, [view]);
 
     const onRowSelect = useCallback((id) => {
-      console.log('selected row');
       view.toggleSelected(id);
     }, [view]);
 
