@@ -3,6 +3,7 @@ import { Block, Elem } from "../../../utils/bem";
 import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { isDefined } from "../../../utils/utils";
 import "./Button.styl";
+import { Tooltip } from "../Tooltip/Tooltip";
 
 export const Button = forwardRef(
   (
@@ -17,6 +18,8 @@ export const Button = forwardRef(
       icon,
       tag,
       look,
+      tooltip,
+      tooltipTheme = "dark",
       ...rest
     },
     ref,
@@ -47,7 +50,7 @@ export const Button = forwardRef(
       }
     }, [icon, size]);
 
-    return (
+    const buttonBody = (
       <Block
         ref={ref}
         name="button"
@@ -70,6 +73,16 @@ export const Button = forwardRef(
         </>
       </Block>
     );
+
+    if (tooltip) {
+      return (
+        <Tooltip title={tooltip} theme={tooltipTheme} ref={ref}>
+          {buttonBody}
+        </Tooltip>
+      );
+    }
+
+    return buttonBody;
   },
 );
 Button.displayName = "Button";
