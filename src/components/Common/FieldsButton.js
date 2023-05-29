@@ -4,6 +4,8 @@ import { Button } from "./Button/Button";
 import { Checkbox } from "./Checkbox/Checkbox";
 import { Dropdown } from "./Dropdown/Dropdown";
 import { Menu } from "./Menu/Menu";
+import { Tooltip } from "./Tooltip/Tooltip";
+import { Elem } from "../../utils/bem";
 
 const injector = inject(({ store }) => {
   return {
@@ -80,6 +82,20 @@ export const FieldsButton = injector(
         <React.Fragment key="f-button-title">{title}</React.Fragment>,
       );
 
+    const renderButton = () => {
+      return (
+        <Button
+          size={size}
+          icon={icon}
+          extra={trailingIcon}
+          style={style}
+          className={className}
+        >
+          {content.length ? content : null}
+        </Button>
+      );
+    };
+
     return (
       <Dropdown.Trigger
         content={(
@@ -97,17 +113,17 @@ export const FieldsButton = injector(
           overflow: 'auto',
         }}
       >
-        <Button
-          size={size}
-          icon={icon}
-          extra={trailingIcon}
-          style={style}
-          className={className}
-          tooltip={tooltip}
-          tooltipTheme={tooltipTheme}
-        >
-          {content.length ? content : null}
-        </Button>
+        {tooltip ? (
+          <Elem name={'field-button'}
+            style={{ zIndex: 1000 }}
+          >
+            <Tooltip title={tooltip} theme={tooltipTheme}>
+              {renderButton()}
+            </Tooltip>
+          </Elem>
+        ) : (
+          renderButton()
+        )}
       </Dropdown.Trigger>
     );
   },
