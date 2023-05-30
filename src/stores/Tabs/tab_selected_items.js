@@ -1,16 +1,22 @@
 import { getRoot, types } from "mobx-state-tree";
+import { DynamicModel } from "../DynamicModel";
 
 export const TabSelectedItems = types
   .model("TabSelectedItems", {
     all: false,
     list: types.optional(types.array(types.number), []),
+    listObject: types.optional(
+      types.array(
+        types.late(() => DynamicModel.get("TaskModel")),
+      )
+      , []),
   })
   .views((self) => ({
     get snapshot() {
       return {
         all: self.all,
         [self.listName]: Array.from(self.list),
-        listObject: self.listObject,
+        listObject: Array.from(self.listObject),
       };
     },
 
@@ -44,14 +50,6 @@ export const TabSelectedItems = types
       }
     },
 
-    get listObject() {
-      return self._listObject ?? [];
-    },
-
-    set listObject(newVal) {
-      self._listObject = newVal;
-    },
-
     isSelected(id) {
       if (self.all) {
         return !self.list.includes(id);
@@ -79,7 +77,7 @@ export const TabSelectedItems = types
       const item = getRoot(self).taskStore.list.find(rec => rec.id === id);
 
       self.list.push(id);
-      self.listObject = [...self.listObject, item];
+      self.listObject = [...self.listObject, item.toJSON()];
       self._invokeChangeEvent();
     },
 
@@ -97,7 +95,7 @@ export const TabSelectedItems = types
         self.listObject = self.listObject.filter(rec => rec.id !== id);
       } else {
         self.list.push(id);
-        self.listObject = [...self.listObject, item];
+        self.listObject = [...self.listObject, item.toJSON()];
       }
       self._invokeChangeEvent();
     },
