@@ -295,19 +295,11 @@ export const Table = observer(
           >
             {isFF(FF_DEV_3873) ? (
               <FieldsButton
+                className={'columns__selector__button-new'}
                 wrapper={FieldsButton.Checkbox}
                 icon={<LsGearNewUI />}
-                style={{
-                  padding: '0 4px 0 0',
-                  height: 42,
-                  width: 52,
-                  backgroundColor: '#fff',
-                  borderLeft: '1px solid rgba(137, 128, 152, 0.12)',
-                  boxShadow: 'none',
-                  zIndex: 1000,
-                  borderRadius: 0,
-                  margin: "-1px",
-                }}
+                style={{ padding: '0' }}
+                tooltip={'Customize Columns'}
               />
             ):(
               <FieldsButton
