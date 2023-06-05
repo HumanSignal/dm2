@@ -82,8 +82,6 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
 
   const isFFLOPSE3 = isFF(FF_LOPS_E_3);
 
-  console.log("did this compile?");
-
   return (
     <Dropdown.Trigger 
       content={<Elem tag={Menu} name="actionmenu" mod={{ isNewUI: isFFLOPSE3 }} size="compact">{actionButtons}</Elem>} 

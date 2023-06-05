@@ -1,5 +1,5 @@
 import { types } from "mobx-state-tree";
-import { CustomJSON } from "./types";
+import { CustomJSON, StringOrNumberID } from "./types";
 
 const registry = new Map();
 
@@ -35,7 +35,7 @@ export const DynamicModel = (name, columns, properties) => {
   });
 
   Object.assign(modelProperties, {
-    id: types.identifierNumber,
+    id: StringOrNumberID,
     ...(properties ?? {}),
   });
 

@@ -2,6 +2,7 @@ import { getRoot, types } from "mobx-state-tree";
 import { hasProperties } from "../../utils/helpers";
 import { isDefined } from "../../utils/utils";
 import { TabColumn, ViewColumnType } from "./tab_column";
+import { StringOrNumberID } from "../types";
 
 export const FilterValue = types.union(
   types.string,
@@ -78,7 +79,7 @@ export const FilterSchema = types.union({
 
 export const TabFilterType = types
   .model("TabFilterType", {
-    id: types.identifier,
+    id: StringOrNumberID,
     field: types.reference(TabColumn),
     type: ViewColumnType,
     schema: types.maybeNull(FilterSchema),

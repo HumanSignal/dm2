@@ -1,4 +1,6 @@
 import { types } from "mobx-state-tree";
+import { FF_LOPS_E_3, isFF } from "../utils/feature-flags";
+import { CustomCalback, StringOrNumberID } from "./types";
 
 const SelectOptions = types.model('SelectOptions', {
   label: types.string,
@@ -45,10 +47,14 @@ const ActionDialog = types.model("ActionDialog", {
 });
 
 export const Action = types.model("Action", {
-  id: types.identifier,
+  id: StringOrNumberID,
   dialog: types.maybeNull(ActionDialog),
   order: types.integer,
   title: types.string,
+  ...(isFF(FF_LOPS_E_3) ? {
+    children: types.optional(types.array(types.late(() => Action)), []),
+    callback: types.maybeNull(CustomCalback),
+  } : {}),
 }).volatile(() => ({
   caller: null,
 }));

@@ -1,9 +1,10 @@
 import { types } from "mobx-state-tree";
 import { User } from "./Users";
+import { StringOrNumberID } from "./types";
 
 export const Assignee = types
   .model("Assignee", {
-    id: types.identifierNumber,
+    id: StringOrNumberID,
     user: types.late(() => types.reference(User)),
     review: types.maybeNull(types.enumeration(["accepted", "rejected", "fixed"])),
     reviewed: types.maybeNull(types.boolean),
