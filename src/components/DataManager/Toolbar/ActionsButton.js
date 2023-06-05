@@ -9,6 +9,7 @@ import Form from "../../Common/Form/Form";
 import { Menu } from "../../Common/Menu/Menu";
 import { Modal } from "../../Common/Modal/ModalPopup";
 import { useState } from "react";
+import { FaChevronRight } from "react-icons/fa";
 import "./ActionsButton.styl";
 
 const injector = inject(({ store }) => ({
@@ -62,10 +63,33 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     }
   };
 
-  const actionButtons = actions.map((action) => {
+  const isFFLOPSE3 = isFF(FF_LOPS_E_3);
+
+  const ActionButton = (action) => {
     const isDeleteAction = action.id.includes("delete");
 
-    return (
+    const isFFLOPSE3 = isFF(FF_LOPS_E_3);
+    
+    return isFFLOPSE3 ? (
+      <Elem 
+        key={action.id}
+        tag={Menu.Item}
+        size={size}
+        onClick={() => {
+          // do nothing
+        }}
+        mod={{ 
+          hasSeperator: isDeleteAction,
+          hasSubMenu: action.children?.length > 0, 
+        }}
+      >
+        <Elem name='titleContainer'>
+          <Elem name='title'>{action.title}</Elem>
+          {action.children?.length ? <Elem name='icon' tag={FaChevronRight} /> : null}
+        </Elem>
+        {action.children?.length ? <Elem name='submenu' tag="ul">{action.children.map(ActionButton)}</Elem> : null}
+      </Elem>
+    ) : (
       <Menu.Item
         size={size}
         key={action.id}
@@ -78,9 +102,9 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
         {action.title}
       </Menu.Item>
     );
-  });
+  };
 
-  const isFFLOPSE3 = isFF(FF_LOPS_E_3);
+  const actionButtons = actions.map(ActionButton);
 
   return (
     <Dropdown.Trigger 

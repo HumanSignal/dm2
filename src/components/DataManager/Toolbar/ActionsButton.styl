@@ -1,4 +1,32 @@
 .menu
   &.dropdown
     &__actionmenu
-      padding 8px
+      &_isNewUI
+        li
+          &:first-child
+            .menu
+              &__item
+                margin-top 0
+          .menu
+            &__item
+              position relative
+              padding 8px
+              margin-top 8px
+            &__titleContainer
+              display flex
+              align-items center
+              height 100%
+              justify-content flex-start
+              width 100%
+              gap 8px
+            &_hasSubMenu::hover
+              background-color rgba(9, 109, 217, 0.12)
+            &_hasSeperator
+              border-top 1px solid rgba(137, 128, 152, 0.12)
+            &__title
+              flex-grow auto
+            &__submenu
+              position absolute
+              margin 0
+              left 100%
+              top 0
