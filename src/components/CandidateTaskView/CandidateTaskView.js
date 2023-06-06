@@ -65,7 +65,7 @@ export const CandidateTaskView = observer(({ item, columns }) => {
         setModified(metadata.updated ? format(new Date(metadata.updated), dateDisplayFormat) : "");
         setSize(`${new Intl.NumberFormat().format(parseInt(metadata.size))} bytes`);
         setBucket(metadata.bucket);
-        setDimensions(Object.values(imgRef.current).map(ref => `${ref.naturalWidth} x ${ref.naturalHeight} px`));
+        setDimensions(Object.values(imgRef.current).map(ref => `${ref?.naturalWidth ?? 0} x ${ref?.naturalHeight ?? 0} px`));
       }
     };
     
