@@ -50,10 +50,12 @@ export const Action = types.model("Action", {
   id: StringOrNumberID,
   dialog: types.maybeNull(ActionDialog),
   order: types.integer,
-  title: types.string,
+  title: types.union(types.string),
   ...(isFF(FF_LOPS_E_3) ? {
     children: types.optional(types.array(types.late(() => Action)), []),
     callback: types.maybeNull(CustomCalback),
+    isSeperator: types.optional(types.boolean, false),
+    isTitle: types.optional(types.boolean, false),
   } : {}),
 }).volatile(() => ({
   caller: null,
