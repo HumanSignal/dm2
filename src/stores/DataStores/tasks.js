@@ -3,7 +3,7 @@ import { DataStore, DataStoreItem } from "../../mixins/DataStore";
 import { getAnnotationSnapshot } from "../../sdk/lsf-utils";
 import { isDefined } from "../../utils/utils";
 import { Assignee } from "../Assignee";
-import { DynamicModel } from "../DynamicModel";
+import { DynamicModel, registerModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 import { FF_DEV_2536, FF_LOPS_E_3, isFF } from "../../utils/feature-flags";
 
@@ -112,6 +112,8 @@ export const create = (columns) => {
     title: types.string,
     workspace: types.optional(types.array(types.string), []),
   });
+
+  registerModel("TaskModel", TaskModel);
 
   return DataStore("TasksStore", {
     apiMethod: "tasks",
