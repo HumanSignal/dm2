@@ -69,15 +69,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     const hasChildren = !!action.children?.length;
     const submenuRef = useRef();
 
-    console.log("action", action.id, action);
     const titleContainer = (
-      <Elem name='titleContainer'>
-        <Elem name='title'>{action.title}</Elem>
-        {hasChildren ? <Elem name='icon' tag={FaChevronRight} /> : null}
-      </Elem>
-    );
-
-    return isFFLOPSE3 ? (
       <Block 
         key={action.id}
         tag={Menu.Item}
@@ -97,17 +89,24 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
         }}
         name='actionButton'
       >
-        {hasChildren ? (
-          <Dropdown.Trigger 
-            align="top-right"
-            toggle={false}
-            ref={submenuRef}
-            content={<Block name='actionButton-submenu' tag="ul">{action.children.map(ActionButton, parentRef)}</Block>}
-          >
-            {titleContainer}
-          </Dropdown.Trigger>
-        ) : titleContainer}
+        <Elem name='titleContainer'>
+          <Elem name='title'>{action.title}</Elem>
+          {hasChildren ? <Elem name='icon' tag={FaChevronRight} /> : null}
+        </Elem>
       </Block>
+    );
+
+    return isFFLOPSE3 ? (
+      hasChildren ? (
+        <Dropdown.Trigger 
+          align="top-right-outside"
+          toggle={false}
+          ref={submenuRef}
+          content={<Block name='actionButton-submenu' tag="ul">{action.children.map(ActionButton, parentRef)}</Block>}
+        >
+          {titleContainer}
+        </Dropdown.Trigger>
+      ) : titleContainer
     ) : (
       <Menu.Item
         size={size}
