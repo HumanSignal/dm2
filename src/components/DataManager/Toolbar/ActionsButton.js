@@ -63,28 +63,50 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     }
   };
 
-  const ActionButton = (action) => {
+  const ActionButton = (action, parentRef) => {
     const isDeleteAction = action.id.includes("delete");
     const isFFLOPSE3 = isFF(FF_LOPS_E_3);
-    
+    const hasChildren = !!action.children?.length;
+    const submenuRef = useRef();
+
+    console.log("action", action.id, action);
+    const titleContainer = (
+      <Elem name='titleContainer'>
+        <Elem name='title'>{action.title}</Elem>
+        {hasChildren ? <Elem name='icon' tag={FaChevronRight} /> : null}
+      </Elem>
+    );
+
     return isFFLOPSE3 ? (
       <Block 
         key={action.id}
         tag={Menu.Item}
         size={size}
-        onClick={() =>  invokeAction(action, isDeleteAction)}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          action?.callback ? action?.callback(action) : invokeAction(action, isDeleteAction);
+          parentRef?.current?.close?.();
+        }}
         danger={isDeleteAction}
         mod={{ 
           hasSeperator: isDeleteAction,
-          hasSubMenu: action.children?.length > 0, 
+          hasSubMenu: action.children?.length > 0,
+          isSeperator: action.isSeperator,
+          isTitle: action.isTitle,
         }}
         name='actionButton'
       >
-        <Elem name='titleContainer'>
-          <Elem name='title'>{action.title}</Elem>
-          {action.children?.length ? <Elem name='icon' tag={FaChevronRight} /> : null}
-        </Elem>
-        {action.children?.length ? <Elem name='submenu' tag="ul">{action.children.map(ActionButton)}</Elem> : null}
+        {hasChildren ? (
+          <Dropdown.Trigger 
+            align="top-right"
+            toggle={false}
+            ref={submenuRef}
+            content={<Block name='actionButton-submenu' tag="ul">{action.children.map(ActionButton, parentRef)}</Block>}
+          >
+            {titleContainer}
+          </Dropdown.Trigger>
+        ) : titleContainer}
       </Block>
     ) : (
       <Menu.Item

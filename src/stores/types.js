@@ -1,4 +1,5 @@
 import { types } from "mobx-state-tree";
+import { isValidElement } from "react";
 
 export const CustomJSON = types.custom({
   name: "JSON",
@@ -37,5 +38,21 @@ export const CustomCalback = types.custom({
   },
   getValidationMessage() {
     return "is not a function";
+  },
+});
+
+export const HtmlOrReact = types.custom({
+  name: "validElement",
+  toSnapshot(value) {
+    return value;
+  },
+  fromSnapshot(value) {
+    return value;
+  },
+  isTargetType(value) {
+    return isValidElement(value);
+  },
+  getValidationMessage() {
+    return "is not a valid element";
   },
 });
