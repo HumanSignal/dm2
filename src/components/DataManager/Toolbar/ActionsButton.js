@@ -63,32 +63,29 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     }
   };
 
-  const isFFLOPSE3 = isFF(FF_LOPS_E_3);
-
   const ActionButton = (action) => {
     const isDeleteAction = action.id.includes("delete");
-
     const isFFLOPSE3 = isFF(FF_LOPS_E_3);
     
     return isFFLOPSE3 ? (
-      <Elem 
+      <Block 
         key={action.id}
         tag={Menu.Item}
         size={size}
-        onClick={() => {
-          // do nothing
-        }}
+        onClick={() =>  invokeAction(action, isDeleteAction)}
+        danger={isDeleteAction}
         mod={{ 
           hasSeperator: isDeleteAction,
           hasSubMenu: action.children?.length > 0, 
         }}
+        name='actionButton'
       >
         <Elem name='titleContainer'>
           <Elem name='title'>{action.title}</Elem>
           {action.children?.length ? <Elem name='icon' tag={FaChevronRight} /> : null}
         </Elem>
         {action.children?.length ? <Elem name='submenu' tag="ul">{action.children.map(ActionButton)}</Elem> : null}
-      </Elem>
+      </Block>
     ) : (
       <Menu.Item
         size={size}
@@ -105,10 +102,11 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
   };
 
   const actionButtons = actions.map(ActionButton);
+  const isFFLOPSE3 = isFF(FF_LOPS_E_3);
 
   return (
     <Dropdown.Trigger 
-      content={<Elem tag={Menu} name="actionmenu" mod={{ isNewUI: isFFLOPSE3 }} size="compact">{actionButtons}</Elem>} 
+      content={isFFLOPSE3 ? <Block tag={Menu} name="actionmenu" size="compact">{actionButtons}</Block> : <Menu size="compact">{actionButtons}</Menu>} 
       disabled={!hasSelected}
       onToggle={(visible) => isFFLOPSE3 && setIsOpen(visible)}
     >
