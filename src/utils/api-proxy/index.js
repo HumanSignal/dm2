@@ -62,6 +62,7 @@ export class APIProxy {
     this.mockDisabled = options.mockDisabled ?? false;
     this.sharedParams = options.sharedParams ?? {};
     this.alwaysExpectJSON = options.alwaysExpectJSON ?? true;
+    this.endpoints = options.endpoints;
 
     this.resolveMethods(options.endpoints);
   }
@@ -314,6 +315,10 @@ export class APIProxy {
     };
   }
 
+  getSettingsByMethodName(methodName) {
+    return this.endpoints && methodName && this.endpoints[methodName];
+  }
+
   getDefaultHeaders(method) {
     switch (method) {
       case "POST":
@@ -504,6 +509,11 @@ export class APIProxy {
           json() {
             return Promise.resolve(response);
           },
+          text() {
+            return JSON.stringify(response);
+          },
+          headers: {},
+          status: 200,
         });
       }, this.mockDelay);
     });
