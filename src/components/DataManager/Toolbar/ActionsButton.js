@@ -80,7 +80,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
           action?.callback ? action?.callback(action) : invokeAction(action, isDeleteAction);
           parentRef?.current?.close?.();
         }}
-        danger={isDeleteAction}
+        {...(isDeleteAction ? { danger: isDeleteAction } : {})}
         mod={{ 
           hasSeperator: isDeleteAction,
           hasSubMenu: action.children?.length > 0,
@@ -99,6 +99,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     return isFFLOPSE3 ? (
       hasChildren ? (
         <Dropdown.Trigger 
+          key={action.id}
           align="top-right-outside"
           toggle={false}
           ref={submenuRef}

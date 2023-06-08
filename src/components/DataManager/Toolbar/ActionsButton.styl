@@ -6,14 +6,17 @@
     color #1F1F1F
     &.actionButton_isTitle
       color #096DD9
+    &_look_danger
+      color #d00
   &:not(.dm-menu__item_active):hover
     background-color transparent
     .menu
-      &_hasSubMenu:hover
-        background-color rgba(9, 109, 217, 0.12)
       &__titleContainer
         background-color rgba(65, 60, 74, 0.08)
 
+  &_hasSubMenu
+    .actionButton__titleContainer:hover
+      background-color rgba(9, 109, 217, 0.12)
   &__titleContainer
     display flex
     align-items center
@@ -33,8 +36,11 @@
     color #096DD9
     cursor initial
     padding 16px 8px 0
-    .actionButton__titleContainer:hover
-      background-color transparent
+    .actionButton
+      &__titleContainer:hover
+        background-color transparent
+      &__title
+        font-size 12px
     &:hover
       background-color transparent !important
       color #096DD9 !important
@@ -53,6 +59,7 @@
     border-top 1px solid rgba(137, 128, 152, 0.12)
   &__title
     flex-grow 1
+    font-size 16px
 
 .actionButton-submenu
   margin 0
