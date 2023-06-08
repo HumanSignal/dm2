@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import React, { forwardRef, useRef } from "react";
+import React, { forwardRef, useCallback, useRef } from "react";
 import { Block, Elem } from "../../utils/bem";
 import "./CandidateTaskView.styl";
 import { getRoot } from "mobx-state-tree";
@@ -39,7 +39,7 @@ const AttributeRow = (({ fieldName, value }) => {
 const dateDisplayFormat = "MMM dd, yyyy HH:mm a";
 
 export const CandidateTaskView = observer(({ item, columns }) => {
-  const { candidate_task_id, id, data } = item;
+  const { candidate_task_id, id, data, exported } = item;
   const dataset = getRoot(item)?.SDK?.dataset;
   const [fName, setFName] = useState();
   const [fType, setFType] = useState();
@@ -50,6 +50,7 @@ export const CandidateTaskView = observer(({ item, columns }) => {
   const [dimensions, setDimensions] = useState([]);
   const [bucket, setBucket] = useState();
   const imgRef = useRef({});
+  const associatedList = getRoot(item).taskStore.associatedList;
 
   useEffect(() => {
     const setDefaultMetadata = async () => {
@@ -109,7 +110,28 @@ export const CandidateTaskView = observer(({ item, columns }) => {
           </Elem>
           <Elem name="detailSubContainer">
             <Elem name="subtitle">Projects</Elem>
-            <Elem name="detailContent">This file hasn’t been imported to any projects.</Elem>
+            <Elem name="detailContent">{
+              (associatedList.length && exported.length) ? (
+                exported.map((exportedEntry, index) => {
+                  const { project_id, created_at } = exportedEntry;
+                  const associtedRecord = associatedList?.find(associatedItem => associatedItem?.id === project_id);
+                  const { title, workspace } = associtedRecord;
+                  const clickHandler = useCallback(e => {
+                    e.preventDefault();
+                    window.open(`/projects/${project_id}/data`, '_self');
+                  }, [project_id]);
+                  
+                  return (
+                    <Block onClick={clickHandler} name='projectNav' key={index}>
+                      <Elem name='name'>{workspace?.length && `${workspace.join(" - ")} / `}{title}</Elem>
+                      {created_at && <Elem name='date'>Added {format(new Date(created_at), dateDisplayFormat)}</Elem>}
+                    </Block>
+                  );
+                })
+              ) : (
+                <>This file hasn’t been imported to any projects.</>
+              )
+            }</Elem>
           </Elem>
         </Elem>
       </Elem>
