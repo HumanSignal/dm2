@@ -68,7 +68,6 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     const isFFLOPSE3 = isFF(FF_LOPS_E_3);
     const hasChildren = !!action.children?.length;
     const submenuRef = useRef();
-
     const titleContainer = (
       <Block 
         key={action.id}
@@ -77,7 +76,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          action?.callback ? action?.callback(action) : invokeAction(action, isDeleteAction);
+          action?.callback ? action?.callback(store.currentView?.selected?.selectedItems, action) : invokeAction(action, isDeleteAction);
           parentRef?.current?.close?.();
         }}
         {...(isDeleteAction ? { danger: isDeleteAction } : {})}
