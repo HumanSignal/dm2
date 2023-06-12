@@ -58,6 +58,7 @@ export const Action = types.model("Action", {
     callback: types.maybeNull(CustomCalback),
     isSeperator: types.optional(types.boolean, false),
     isTitle: types.optional(types.boolean, false),
+    newStyle: types.optional(types.boolean, false),
   } : {}),
 }).volatile(() => ({
   caller: null,

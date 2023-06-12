@@ -65,7 +65,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
 
   const ActionButton = (action, parentRef) => {
     const isDeleteAction = action.id.includes("delete");
-    const isFFLOPSE3 = isFF(FF_LOPS_E_3);
+    const isFFLOPSE3 = isFF(FF_LOPS_E_3) && action.newStyle;
     const hasChildren = !!action.children?.length;
     const submenuRef = useRef();
     const titleContainer = (
