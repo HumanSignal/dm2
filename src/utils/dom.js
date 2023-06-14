@@ -51,6 +51,10 @@ export const alignElements = (elem, target, align, padding = 0) => {
       offsetTop = pos.top - padding;
       offsetLeft = pos.horizontalRight;
       break;
+    case "top-right-outside":
+      offsetTop = pos.source.top;
+      offsetLeft = pos.source.left + pos.source.width;
+      break;
     case "bottom-center":
       offsetTop = pos.bottom + padding;
       offsetLeft = pos.horizontalCenter;

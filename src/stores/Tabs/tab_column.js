@@ -4,6 +4,7 @@ import { toStudlyCaps } from "strman";
 import { CommentCheck, CommentRed, LsAnnotation, LsBanSquare, LsSparkSquare, LsStarSquare, LsThumbsDown, LsThumbsUp } from "../../assets/icons";
 import * as CellViews from "../../components/CellViews";
 import { all } from "../../utils/utils";
+import { StringOrNumberID } from "../types";
 
 export const ViewColumnType = types.enumeration([
   "String",
@@ -79,7 +80,7 @@ export const ViewColumnTypeName = (type) => {
 
 export const TabColumn = types
   .model("ViewColumn", {
-    id: types.identifier,
+    id: StringOrNumberID,
     title: types.string,
     alias: types.string,
     type: types.optional(ViewColumnType, "String"),

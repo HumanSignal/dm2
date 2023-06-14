@@ -15,10 +15,11 @@ import { TabHiddenColumns } from "./tab_hidden_columns";
 import { TabSelectedItems } from "./tab_selected_items";
 import { History } from '../../utils/history';
 import { FF_LOPS_12, isFF } from "../../utils/feature-flags";
+import { StringOrNumberID } from "../types";
 
 export const Tab = types
   .model("View", {
-    id: types.identifierNumber,
+    id: StringOrNumberID,
 
     title: "Tasks",
     oldTitle: types.maybeNull(types.string),
