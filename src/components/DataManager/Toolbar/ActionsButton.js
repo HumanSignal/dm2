@@ -74,12 +74,6 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
         key={action.id}
         tag={Menu.Item}
         size={size}
-        // onClick={(e) => {
-        //   e.preventDefault();
-        //   e.stopPropagation();
-        //   action?.callback ? action?.callback(store.currentView?.selected?.selectedItems, action) : invokeAction(action, isDeleteAction);
-        //   parentRef?.current?.close?.();
-        // }}
         onClick={useCallback((e) => {
           e.preventDefault();
           e.stopPropagation();
