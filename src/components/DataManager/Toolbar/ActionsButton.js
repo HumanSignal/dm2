@@ -69,17 +69,18 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     const isFFLOPSE3 = isFF(FF_LOPS_E_3) && action.newStyle;
     const hasChildren = !!action.children?.length;
     const submenuRef = useRef();
+    const onClick = useCallback((e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      action?.callback ? action?.callback(store.currentView?.selected, action) : invokeAction(action, isDeleteAction);
+      parentRef?.current?.close?.();
+    }, [store.currentView?.selected]);
     const titleContainer = (
       <Block 
         key={action.id}
         tag={Menu.Item}
         size={size}
-        onClick={useCallback((e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          action?.callback ? action?.callback(store.currentView?.selected, action) : invokeAction(action, isDeleteAction);
-          parentRef?.current?.close?.();
-        }, [store.currentView?.selected])}
+        onClick={onClick}
         {...(isDeleteAction ? { danger: isDeleteAction } : {})}
         mod={{ 
           hasSeperator: isDeleteAction,
