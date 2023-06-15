@@ -72,7 +72,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     const onClick = useCallback((e) => {
       e.preventDefault();
       e.stopPropagation();
-      action?.callback ? action?.callback(store.currentView?.selected, action) : invokeAction(action, isDeleteAction);
+      action?.callback ? action?.callback(store.currentView?.selected?.snapshot, action) : invokeAction(action, isDeleteAction);
       parentRef?.current?.close?.();
     }, [store.currentView?.selected]);
     const titleContainer = (
