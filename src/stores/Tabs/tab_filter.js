@@ -9,6 +9,7 @@ import {
   FilterValueType,
   TabFilterType
 } from "./tab_filter_type";
+import { FF_LOPS_E_3, isFF } from "../../utils/feature-flags";
 
 const operatorNames = Array.from(
   new Set(
@@ -53,7 +54,11 @@ export const TabFilter = types
     },
 
     get component() {
-      return Filters[self.filter.currentType] ?? Filters.String;
+      const operatorList = Filters[self.filter.currentType] ?? Filters.String;
+
+      return (isFF(FF_LOPS_E_3) && getRoot(self)?.SDK?.type === "DE") ? operatorList.filter((op) => {
+        return op.hasMilvusSupport ?? true;
+      }) : operatorList;
     },
 
     get componentValueType() {

@@ -1,10 +1,12 @@
 import { observer } from "mobx-react";
+import { getRoot } from "mobx-state-tree";
 import React, { useCallback, useMemo } from "react";
 import { Elem } from "../../../utils/bem";
 import { debounce } from "../../../utils/debounce";
 import { FilterDropdown } from "../FilterDropdown";
 import * as FilterInputs from "../types";
 import { Common } from "../types/Common";
+import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 
 /** @typedef {{
  * type: keyof typeof FilterInputs,
@@ -51,7 +53,10 @@ export const FilterOperation = observer(
     const Input = selected?.input;
 
     const availableOperators = filter.cellView?.filterOperators;
-    const operators = types.map(({ key, label }) => ({ value: key, label }));
+    const operatorList = (isFF(FF_LOPS_E_3) && getRoot(filter)?.SDK?.type === "DE") ? types.filter((op) => {
+      return op.hasMilvusSupport ?? true;
+    }) : types;
+    const operators = operatorList.map(({ key, label }) => ({ value: key, label }));
 
     return Input ? (
       <>
