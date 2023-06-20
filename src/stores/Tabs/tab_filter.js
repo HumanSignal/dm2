@@ -2,6 +2,7 @@ import { flow, getParent, getRoot, types } from "mobx-state-tree";
 import { toStudlyCaps } from "strman";
 import * as Filters from "../../components/Filters/types";
 import * as CellViews from "../../components/CellViews";
+import { allowedFilterOperations } from "../../components/Filters/types/Utility";
 import { debounce } from "../../utils/debounce";
 import { isBlank, isDefined } from "../../utils/utils";
 import {
@@ -9,7 +10,6 @@ import {
   FilterValueType,
   TabFilterType
 } from "./tab_filter_type";
-import { FF_LOPS_E_3, isFF } from "../../utils/feature-flags";
 
 const operatorNames = Array.from(
   new Set(
@@ -54,11 +54,9 @@ export const TabFilter = types
     },
 
     get component() {
-      const operatorList = Filters[self.filter.currentType] ?? Filters.String;
+      const operationsList = Filters[self.filter.currentType] ?? Filters.String;
 
-      return (isFF(FF_LOPS_E_3) && getRoot(self)?.SDK?.type === "DE") ? operatorList.filter((op) => {
-        return op.hasMilvusSupport ?? true;
-      }) : operatorList;
+      return allowedFilterOperations(operationsList, getRoot(self)?.SDK?.type);
     },
 
     get componentValueType() {

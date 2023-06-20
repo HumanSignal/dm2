@@ -5,8 +5,8 @@ import { Elem } from "../../../utils/bem";
 import { debounce } from "../../../utils/debounce";
 import { FilterDropdown } from "../FilterDropdown";
 import * as FilterInputs from "../types";
+import { allowedFilterOperations } from "../types/Utility";
 import { Common } from "../types/Common";
-import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 
 /** @typedef {{
  * type: keyof typeof FilterInputs,
@@ -49,13 +49,9 @@ export const FilterOperation = observer(
     const onOperatorSelected = (selectedKey) => {
       filter.setOperator(selectedKey);
     };
-
-    const Input = selected?.input;
-
     const availableOperators = filter.cellView?.filterOperators;
-    const operatorList = (isFF(FF_LOPS_E_3) && getRoot(filter)?.SDK?.type === "DE") ? types.filter((op) => {
-      return op.hasMilvusSupport ?? true;
-    }) : types;
+    const Input = selected?.input;
+    const operatorList = allowedFilterOperations(types, getRoot(filter)?.SDK?.type);
     const operators = operatorList.map(({ key, label }) => ({ value: key, label }));
 
     return Input ? (
