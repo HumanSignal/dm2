@@ -388,7 +388,12 @@ export const TabStore = types
 
         const parentPath = result.join(".");
 
-        result.push(column.id);
+        if (isDefined(column?.id)) {
+          result.push(column.id);
+        } else {
+          console.warn("Column or id is not defined", column);
+          console.warn("Columns", columns);
+        }
 
         const columnPath = result.join(".");
 
