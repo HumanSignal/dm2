@@ -11,6 +11,7 @@ import { Modal } from "../../Common/Modal/ModalPopup";
 import { useState } from "react";
 import { FaChevronRight } from "react-icons/fa";
 import "./ActionsButton.styl";
+import { useCallback } from "react";
 
 const injector = inject(({ store }) => ({
   store,
@@ -68,17 +69,18 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     const isFFLOPSE3 = isFF(FF_LOPS_E_3) && action.newStyle;
     const hasChildren = !!action.children?.length;
     const submenuRef = useRef();
+    const onClick = useCallback((e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      action?.callback ? action?.callback(store.currentView?.selected?.snapshot, action) : invokeAction(action, isDeleteAction);
+      parentRef?.current?.close?.();
+    }, [store.currentView?.selected]);
     const titleContainer = (
       <Block 
         key={action.id}
         tag={Menu.Item}
         size={size}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          action?.callback ? action?.callback(store.currentView?.selected?.selectedItems, action) : invokeAction(action, isDeleteAction);
-          parentRef?.current?.close?.();
-        }}
+        onClick={onClick}
         {...(isDeleteAction ? { danger: isDeleteAction } : {})}
         mod={{ 
           hasSeperator: isDeleteAction,
