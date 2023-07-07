@@ -308,8 +308,9 @@ export class LSFWrapper {
   }
 
   setLSFTask(task, annotationID, fromHistory) {
-    this.setLoading(true);
     const hasChangedTasks = this.lsf?.task?.id !== task?.id && task?.id;
+
+    this.setLoading(true, hasChangedTasks);
     const lsfTask = taskToLSFormat(task);
     const isRejectedQueue = isDefined(task.default_selected_annotation);
     const taskList = this.datamanager.store.taskStore.list;
@@ -808,8 +809,10 @@ export class LSFWrapper {
   }
 
   /** @private */
-  setLoading(isLoading) {
+  setLoading(isLoading, shouldReset = false) {
+    if (shouldReset) this.lsf.clearApp();
     this.lsf.setFlags({ isLoading });
+    if (shouldReset) this.lsf.renderApp();
   }
 
   async withinLoadingState(callback) {
