@@ -46,6 +46,7 @@ import { unmountComponentAtNode } from "react-dom";
 import { toCamelCase } from "strman";
 import { instruments } from "../components/DataManager/Toolbar/instruments";
 import { APIProxy } from "../utils/api-proxy";
+import { FF_LSDV_4620_3_ML, isFF } from "../utils/feature-flags";
 import { objectToMap } from "../utils/helpers";
 import { packJSON } from "../utils/packJSON";
 import { isDefined } from "../utils/utils";
@@ -451,7 +452,9 @@ export class DataManager {
   }
 
   destroy(detachCallbacks = true) {
-    this.destroyLSF();
+    if (isFF(FF_LSDV_4620_3_ML)) {
+      this.destroyLSF();
+    }
     unmountComponentAtNode(this.root);
 
     if (this.store) {

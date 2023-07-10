@@ -55,6 +55,13 @@ export const FF_LOPS_12 = "fflag_feat_front_lops_12_label_ops_ui_short";
 export const FF_LOPS_E_3 = "fflag_feat_all_lops_e_3_datasets_short";
 
 /**
+ * Fixes memory leaks in label studio frontend relative to mobx-state-tree and react usage
+ *
+ * @link https://app.launchdarkly.com/default/production/features/fflag_fix_front_lsdv_4620_memory_leaks_100723_short
+ */
+export const FF_LSDV_4620_3_ML = 'fflag_fix_front_lsdv_4620_memory_leaks_100723_short';
+
+/**
  * Fixes how presigned urls are generated and accessed to remove possibility of CORS errors.
  */
 export const FF_LSDV_4711 = 'fflag_fix_all_lsdv_4711_cors_errors_accessing_task_data_short';

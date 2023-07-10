@@ -12,7 +12,16 @@
  * messages: Dict<string|Function>
  * }} LSFOptions */
 
-import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, FF_DEV_3734, isFF } from "../utils/feature-flags";
+import {
+  FF_DEV_1752,
+  FF_DEV_2186,
+  FF_DEV_2715,
+  FF_DEV_2887,
+  FF_DEV_3034,
+  FF_DEV_3734,
+  FF_LSDV_4620_3_ML,
+  isFF
+} from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
@@ -810,9 +819,9 @@ export class LSFWrapper {
 
   /** @private */
   setLoading(isLoading, shouldReset = false) {
-    if (shouldReset) this.lsf.clearApp();
+    if (isFF(FF_LSDV_4620_3_ML) && shouldReset) this.lsf.clearApp();
     this.lsf.setFlags({ isLoading });
-    if (shouldReset) this.lsf.renderApp();
+    if (isFF(FF_LSDV_4620_3_ML) && shouldReset) this.lsf.renderApp();
   }
 
   async withinLoadingState(callback) {
