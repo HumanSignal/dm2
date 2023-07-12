@@ -2,7 +2,7 @@ import { inject, observer } from "mobx-react";
 import { useRef } from "react";
 import { FaAngleDown, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
 import { Block, Elem } from "../../../utils/bem";
-import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
+import { FF_LOPS_E_10, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { Button } from "../../Common/Button/Button";
 import { Dropdown } from "../../Common/Dropdown/DropdownComponent";
 import Form from "../../Common/Form/Form";
@@ -126,6 +126,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
 
   const actionButtons = actions.map(ActionButton);
   const isFFLOPSE3 = isFF(FF_LOPS_E_3);
+  const isNewUI = isFF(FF_LOPS_E_10);
 
   return (
     <Dropdown.Trigger 
@@ -135,7 +136,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     >
       <Button size={size} disabled={!hasSelected} {...rest} >
         {selectedCount > 0 ? selectedCount + " Tasks": "Actions"}
-        {isFFLOPSE3 ? (
+        {isNewUI ? (
           isOpen ? (
             <FaChevronUp size="12" style={{ marginLeft: 4, marginRight: -7 }} />
           ) : (

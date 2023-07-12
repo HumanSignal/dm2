@@ -1,5 +1,5 @@
 import { cn } from '../../../../../utils/bem';
-import { FF_LOPS_E_3, isFF } from '../../../../../utils/feature-flags';
+import { FF_LOPS_E_10, isFF } from '../../../../../utils/feature-flags';
 import { FormField } from '../../FormField';
 import { default as Label } from '../Label/Label';
 import './Input.styl';
@@ -7,7 +7,7 @@ import './Input.styl';
 const Input = ({ label, className, validate, required, skip, labelProps, ghost, ...props }) => {
   const mods = {
     ghost,
-    newUI: isFF(FF_LOPS_E_3),
+    newUI: isFF(FF_LOPS_E_10),
   };
   const classList = [
     cn('form-input').mod(mods),

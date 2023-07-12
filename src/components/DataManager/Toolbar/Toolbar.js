@@ -1,7 +1,7 @@
 import { inject, observer } from "mobx-react";
 import React from "react";
 import { Block } from "../../../utils/bem";
-import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
+import { FF_LOPS_E_10, isFF } from "../../../utils/feature-flags";
 import { Space } from "../../Common/Space/Space";
 import "./TabPanel.styl";
 
@@ -12,7 +12,7 @@ const injector = inject(({ store }) => {
 });
 
 export const Toolbar = injector(observer(({ store }) => {
-  const isNewUI = isFF(FF_LOPS_E_3);
+  const isNewUI = isFF(FF_LOPS_E_10);
 
   return (
     <Block name="tab-panel" mod={{ newUI: isNewUI }}>

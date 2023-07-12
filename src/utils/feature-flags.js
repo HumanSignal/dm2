@@ -64,6 +64,11 @@ export const FF_LSDV_4711 = 'fflag_fix_all_lsdv_4711_cors_errors_accessing_task_
  */
 export const FF_LSDV_5035 = 'fflag_feat_back_lsdv_5035_use_created_at_from_draft_for_annotation_256052023_short';
 
+/**
+ * Updated UX with improved accessibility
+ */
+export const FF_LOPS_E_10 = "fflag_feat_front_lops_e_10_updated_ux_short";
+
 // Customize flags
 const flags = {};
 
