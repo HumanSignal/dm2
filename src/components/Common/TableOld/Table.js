@@ -245,22 +245,23 @@ export const Table = observer(
 
     const cachedScrollOffset = useRef();
 
-    const initialScrollOffset = useCallback((height) => {
+    const initialScrollOffset = useMemo(() => {
       if (isDefined(cachedScrollOffset.current)) {
         return cachedScrollOffset.current;
       }
 
-      const { rowHeight: h } = props;
+      const { rowHeight } = props;
       const index = data.indexOf(focusedItem);
 
+
       if (index >= 0) {
-        const scrollOffset = index * h - height / 2 + h / 2; // + headerHeight
+        const scrollOffset = (index+(index+1)/data.length) * rowHeight;
 
         return cachedScrollOffset.current = scrollOffset;
       } else {
         return 0;
       }
-    }, []);
+    }, [focusedItem, props.rowHeight]);
 
     const itemKey = useCallback(
       (index) => {
@@ -276,9 +277,11 @@ export const Table = observer(
       const listComponent = listRef.current?._listRef;
 
       if (listComponent) {
-        listComponent.scrollToItem(data.indexOf(focusedItem), "center");
+        const isLast = data[data.length-1].id === focusedItem?.id;
+
+        listComponent.scrollToItem(data.indexOf(focusedItem), isLast?"start":"center");
       }
-    }, [data]);
+    }, [data, focusedItem]);
     const tableWrapper = useRef();
 
     const right = tableWrapper.current?.firstChild?.firstChild.offsetWidth -
@@ -410,7 +413,7 @@ const StickyList = observer(
                   itemData={itemData}
                   itemSize={itemSize}
                   onItemsRendered={onItemsRendered}
-                  initialScrollOffset={initialScrollOffset?.(height) ?? 0}
+                  initialScrollOffset={initialScrollOffset}
                 >
                   {ItemWrapper}
                 </TableElem>

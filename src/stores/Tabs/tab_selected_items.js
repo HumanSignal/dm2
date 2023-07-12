@@ -1,5 +1,6 @@
 import { getRoot, types } from "mobx-state-tree";
 import { StringOrNumber } from "../types";
+import { isDefined } from "../../utils/utils";
 
 export const TabSelectedItems = types
   .model("TabSelectedItems", {
@@ -63,6 +64,30 @@ export const TabSelectedItems = types
       }
 
       self.list = [];
+      self._invokeChangeEvent();
+    },
+
+    selectItems(...ids){
+      for (const id of ids) {
+        if (!isDefined(id)) {
+          continue;
+        }
+        if (!self.list.includes(id)) {
+          self.list.push(id);
+        }
+      }
+      self._invokeChangeEvent();
+    },
+
+    deselectItems(...ids){
+      for (const id of ids) {
+        if (!isDefined(id)) {
+          continue;
+        }
+        if (self.list.includes(id)) {
+          self.list.splice(self.list.indexOf(id), 1);
+        }
+      }
       self._invokeChangeEvent();
     },
 

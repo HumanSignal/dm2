@@ -218,7 +218,7 @@ export const Table = observer(
       const highlightedElement = tableWrapper.current?.children[highlightedIndex];
 
       if (highlightedElement) highlightedElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, [tableWrapper.current]);
+    }, [tableWrapper.current, focusedItem]);
 
     return (
       <>
