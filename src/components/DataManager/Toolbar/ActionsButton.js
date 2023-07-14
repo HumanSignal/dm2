@@ -98,7 +98,6 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
       </Block>
     );
 
-    //&& action.newStyle
     return hasChildren  ? (
       <Dropdown.Trigger 
         key={action.id}
