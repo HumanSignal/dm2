@@ -28,7 +28,7 @@ const DataItemVisual = forwardRef(({ columns, dataKey, data }, imageRef) => {
       try {
         response = await fetch(data);
       } catch (ex) {
-        response = {};
+        response = ex;
       }
 
       if (response?.status === 200) {
