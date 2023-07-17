@@ -23,9 +23,15 @@ const DataItemVisual = forwardRef(({ columns, dataKey, data }, imageRef) => {
     if ( isUrlData && columnDefinition?.currentType === "Text" ) {
       setIsInProgress(true);
       setIsFileError(false);
-      const response = await fetch(data);
+      let response;
 
-      if (response.status === 200) {
+      try {
+        response = await fetch(data);
+      } catch (ex) {
+        response = {};
+      }
+
+      if (response?.status === 200) {
         setFileContent(response);
       } else {
         console.error("Error:", response);
