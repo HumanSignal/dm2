@@ -58,9 +58,11 @@ const DataItemVisual = forwardRef(({ columns, dataKey, data }, imageRef) => {
       </Elem>
     );
   } else if (isUrlData) {
-    <Elem name="data-display" mod={{ link: true }} >
-      <a href={data} target="_blank">{data}</a>
-    </Elem>;
+    return (
+      <Elem name="data-display" mod={{ link: true }} >
+        <Elem name="data-link" tag="a" href={data} target="_blank">{data}</Elem>
+      </Elem>
+    );
   }
   return (
     <Elem name="data-display" mod={{ [columnDefinition?.currentType ?? "text"]: true }} >
