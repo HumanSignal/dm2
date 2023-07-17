@@ -4,7 +4,7 @@ import Running from "../../assets/running";
 
 const injector = inject(({ store }) => {
   return {
-    SDK: store.SDK,
+    SDK: store?.SDK,
   };
 });
 
@@ -12,13 +12,13 @@ export const Spinner = injector(({ SDK, visible = true, ...props }) => {
   const size = React.useMemo(() => {
     switch (props.size) {
       case "large":
-        return SDK.spinnerSize?.large ?? 128;
+        return SDK?.spinnerSize?.large ?? 128;
       case "middle":
-        return SDK.spinnerSize?.middle ??48;
+        return SDK?.spinnerSize?.middle ?? 48;
       case "small":
-        return SDK.spinnerSize?.small ?? 24;
+        return SDK?.spinnerSize?.small ?? 24;
       default:
-        return SDK.spinnerSize?.middle ??48;
+        return SDK?.spinnerSize?.middle ?? 48;
     }
   }, [props.size]);
 
@@ -32,7 +32,7 @@ export const Spinner = injector(({ SDK, visible = true, ...props }) => {
     objectFit: "contain",
   };
 
-  const ExternalSpinner = SDK.spinner;
+  const ExternalSpinner = SDK?.spinner;
 
   return visible ? (
     <div

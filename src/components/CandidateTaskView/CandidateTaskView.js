@@ -1,6 +1,7 @@
 import { observer } from "mobx-react";
 import React, { forwardRef, useCallback, useRef } from "react";
 import { Block, Elem } from "../../utils/bem";
+import { Spinner } from "../Common/Spinner";
 import "./CandidateTaskView.styl";
 import { getRoot } from "mobx-state-tree";
 import { useEffect, useState } from "react";
@@ -12,7 +13,27 @@ const imgDefaultProps = {};
 if (isFF(FF_LSDV_4711)) imgDefaultProps.crossOrigin = 'anonymous';
 
 const DataItemVisual = forwardRef(({ columns, dataKey, data }, imageRef) => {
+  const [isInProgress, setIsInProgress] = useState();
+  const [fileContent, setFileContent] = useState();
+  const [isFileError, setIsFileError] = useState(false);
+  const isUrlData = /https?:\/\/.*/.test(data);
   const columnDefinition = columns.find(colData => colData.alias === dataKey);
+
+  useEffect(async () => {
+    if ( isUrlData && columnDefinition?.currentType === "Text" ) {
+      setIsInProgress(true);
+      setIsFileError(false);
+      const response = await fetch(data);
+
+      if (response.status === 200) {
+        setFileContent(response);
+      } else {
+        console.error("Error:", response);
+        setIsFileError(true);
+      }
+      setIsInProgress(false);
+    }
+  }, [isUrlData, data, columnDefinition]);
 
   if (columnDefinition?.currentType === "Image") {
     return (
@@ -20,9 +41,23 @@ const DataItemVisual = forwardRef(({ columns, dataKey, data }, imageRef) => {
         <img {...imgDefaultProps} ref={imageRef} src={data} />
       </Elem>
     );
+  } else if (columnDefinition?.currentType === "Text" && isUrlData && !isFileError) {
+    return (
+      <Elem name="data-display" mod={{ text: true }}>
+        {isInProgress ? <Spinner /> : (
+          <Elem name='textdata' tag="pre">
+            {fileContent}
+          </Elem>
+        )}
+      </Elem>
+    );
+  } else if (isUrlData) {
+    <Elem name="data-display" mod={{ link: true }} >
+      <a href={data} target="_blank">{data}</a>
+    </Elem>;
   }
   return (
-    <Elem name="data-display" mod={{ text: true }} >
+    <Elem name="data-display" mod={{ [columnDefinition?.currentType ?? "text"]: true }} >
       {data}
     </Elem>
   );
