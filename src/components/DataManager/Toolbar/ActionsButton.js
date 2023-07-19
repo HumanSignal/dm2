@@ -2,7 +2,7 @@ import { inject, observer } from "mobx-react";
 import { useRef } from "react";
 import { FaAngleDown, FaChevronDown, FaChevronUp, FaTrash } from "react-icons/fa";
 import { Block, Elem } from "../../../utils/bem";
-import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
+import { FF_LOPS_E_10, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { Button } from "../../Common/Button/Button";
 import { Dropdown } from "../../Common/Dropdown/DropdownComponent";
 import Form from "../../Common/Form/Form";
@@ -13,6 +13,8 @@ import { FaChevronRight } from "react-icons/fa";
 import "./ActionsButton.styl";
 import { useCallback } from "react";
 
+const isFFLOPSE3 = isFF(FF_LOPS_E_3);
+const isNewUI = isFF(FF_LOPS_E_10);
 const injector = inject(({ store }) => ({
   store,
   hasSelected: store.currentView?.selected?.hasSelected ?? false,
@@ -66,7 +68,6 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
 
   const ActionButton = (action, parentRef) => {
     const isDeleteAction = action.id.includes("delete");
-    const isFFLOPSE3 = isFF(FF_LOPS_E_3) && action.newStyle;
     const hasChildren = !!action.children?.length;
     const submenuRef = useRef();
     const onClick = useCallback((e) => {
@@ -81,12 +82,12 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
         tag={Menu.Item}
         size={size}
         onClick={onClick}
-        {...(isDeleteAction ? { danger: isDeleteAction } : {})}
         mod={{ 
           hasSeperator: isDeleteAction,
           hasSubMenu: action.children?.length > 0,
-          isSeperator: action.isSeperator,
+          isSeparator: action.isSeparator,
           isTitle: action.isTitle,
+          danger: isDeleteAction,
         }}
         name='actionButton'
       >
@@ -97,45 +98,55 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
       </Block>
     );
 
-    return isFFLOPSE3 ? (
-      hasChildren ? (
+    return hasChildren  ? (
+      <Dropdown.Trigger 
+        key={action.id}
+        align="top-right-outside"
+        toggle={false}
+        ref={submenuRef}
+        content={<Block name='actionButton-submenu' tag="ul" mod={{ newUI: isNewUI }}>{action.children.map(ActionButton, parentRef)}</Block>}
+      >
+        {titleContainer}
+      </Dropdown.Trigger>  
+    ) : (
+      isNewUI ? (
         <Dropdown.Trigger 
           key={action.id}
           align="top-right-outside"
           toggle={false}
           ref={submenuRef}
-          content={<Block name='actionButton-submenu' tag="ul">{action.children.map(ActionButton, parentRef)}</Block>}
+          content={<Block name='actionButton-submenu' tag="ul" mod={{ newUI: isNewUI }}>{(action?.children ?? []).map(ActionButton, parentRef)}</Block>}
         >
           {titleContainer}
         </Dropdown.Trigger>
-      ) : titleContainer
-    ) : (
-      <Menu.Item
-        size={size}
-        key={action.id}
-        danger={isDeleteAction}
-        onClick={() => {
-          invokeAction(action, isDeleteAction);
-        }}
-        icon={isDeleteAction && <FaTrash />}
-      >
-        {action.title}
-      </Menu.Item>
+      ) : (
+        <Menu.Item
+          size={size}
+          key={action.id}
+          danger={isDeleteAction}
+          onClick={() => {
+            invokeAction(action, isDeleteAction);
+          }}
+          className={`actionButton${action.isSeparator ? "_isSeparator" : (action.isTitle ? "_isTitle" : "")}`}
+          icon={isDeleteAction && <FaTrash />}
+        >
+          {action.title}
+        </Menu.Item>
+      )
     );
   };
 
   const actionButtons = actions.map(ActionButton);
-  const isFFLOPSE3 = isFF(FF_LOPS_E_3);
 
   return (
     <Dropdown.Trigger 
-      content={isFFLOPSE3 ? <Block tag={Menu} name="actionmenu" size="compact">{actionButtons}</Block> : <Menu size="compact">{actionButtons}</Menu>} 
+      content={isNewUI ? <Block tag={Menu} name="actionmenu" size="compact" mod={{ newUI: isNewUI }}>{actionButtons}</Block> : <Menu size="compact">{actionButtons}</Menu>} 
       disabled={!hasSelected}
       onToggle={(visible) => isFFLOPSE3 && setIsOpen(visible)}
     >
-      <Button size={size} disabled={!hasSelected} {...rest} >
+      <Button {...(isNewUI ? { className:"actionButtonPrime" } : {})} size={size} disabled={!hasSelected} {...rest}>
         {selectedCount > 0 ? selectedCount + " Tasks": "Actions"}
-        {isFFLOPSE3 ? (
+        {isNewUI ? (
           isOpen ? (
             <FaChevronUp size="12" style={{ marginLeft: 4, marginRight: -7 }} />
           ) : (
