@@ -85,7 +85,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
         mod={{ 
           hasSeperator: isDeleteAction,
           hasSubMenu: action.children?.length > 0,
-          isSeperator: action.isSeperator,
+          isSeparator: action.isSeparator,
           isTitle: action.isTitle,
           danger: isDeleteAction,
         }}
@@ -127,7 +127,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
           onClick={() => {
             invokeAction(action, isDeleteAction);
           }}
-          className={`actionButton${action.isSeperator ? "_isSeperator" : (action.isTitle ? "_isTitle" : "")}`}
+          className={`actionButton${action.isSeparator ? "_isSeparator" : (action.isTitle ? "_isTitle" : "")}`}
           icon={isDeleteAction && <FaTrash />}
         >
           {action.title}
