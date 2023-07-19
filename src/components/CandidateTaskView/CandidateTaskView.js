@@ -32,7 +32,7 @@ const DataItemVisual = forwardRef(({ columns, dataKey, data }, imageRef) => {
       }
 
       if (response?.status === 200) {
-        setFileContent(response);
+        setFileContent(await response.text());
       } else {
         console.error("Error:", response);
         setIsFileError(true);
