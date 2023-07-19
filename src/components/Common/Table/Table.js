@@ -22,7 +22,7 @@ import { prepareColumns } from "./utils";
 import { Block, Elem } from "../../../utils/bem";
 import { FieldsButton } from "../FieldsButton";
 import { LsGear, LsGearNewUI } from "../../../assets/icons";
-import { FF_DEV_3873, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
+import { FF_DEV_3873, FF_LOPS_E_10, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 
 const Decorator = (decoration) => {
   return {
@@ -192,7 +192,7 @@ export const Table = observer(
                   body: <TaskSourceView content={out} onTaskLoad={onTaskLoad} sdkType={type} />,
                 });
               }}
-              icon={isFF(FF_LOPS_E_3) ? <Icon icon={RiCodeLine} style={{ width: 24, height: 24 }}/> : <Icon icon={FaCode}/>}
+              icon={isFF(FF_LOPS_E_10) ? <Icon icon={RiCodeLine} style={{ width: 24, height: 24 }}/> : <Icon icon={FaCode}/>}
             />
           </Tooltip>
         );

@@ -1,5 +1,5 @@
 import { FaCaretDown, FaChevronDown } from "react-icons/fa";
-import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
+import { FF_LOPS_E_10, isFF } from "../../../utils/feature-flags";
 import { ErrorBox } from "../../Common/ErrorBox";
 import { FieldsButton } from "../../Common/FieldsButton";
 import { FiltersPane } from "../../Common/FiltersPane";
@@ -25,7 +25,7 @@ export const instruments = {
   },
   'columns': ({ size }) => {
     const iconProps = {};
-    const isNewUI = isFF(FF_LOPS_E_3);
+    const isNewUI = isFF(FF_LOPS_E_10);
     
     if (isNewUI) {
       iconProps.size = 12;
