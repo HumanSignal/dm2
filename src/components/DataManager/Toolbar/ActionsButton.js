@@ -115,7 +115,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
           align="top-right-outside"
           toggle={false}
           ref={submenuRef}
-          content={<Block name='actionButton-submenu' tag="ul" mod={{ newUI: isNewUI }}>{action.children.map(ActionButton, parentRef)}</Block>}
+          content={<Block name='actionButton-submenu' tag="ul" mod={{ newUI: isNewUI }}>{(action?.children ?? []).map(ActionButton, parentRef)}</Block>}
         >
           {titleContainer}
         </Dropdown.Trigger>
