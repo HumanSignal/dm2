@@ -1,33 +1,14 @@
 .actionButton
-  position relative
-  padding 8px
-  &.menu__item
-    height auto
-    color #1F1F1F
-    &.actionButton_isTitle
-      color #096DD9
-    &_look_danger
-      color #d00
-  &:not(.dm-menu__item_active):hover
-    background-color transparent
-    .menu
-      &__titleContainer
-        background-color rgba(65, 60, 74, 0.08)
-
-  &_hasSubMenu
-    .actionButton__titleContainer:hover
-      background-color rgba(9, 109, 217, 0.12)
+  --compact-height 32px
+  height var(--compact-height)
+  padding 0 13px
+  display flex
+  align-items center
   &__titleContainer
     display flex
     align-items center
-    height 100%
-    justify-content space-between
-    width 100%
     gap 8px
-    padding 4px 16px
-    border-radius 4px
-    &:hover
-      background-color rgba(65, 60, 74, 0.08)
+    justify-content space-between
   &_isTitle
     font-weight 500
     font-size 12px
@@ -35,7 +16,8 @@
     letter-spacing 0.5px
     color #096DD9
     cursor initial
-    padding 16px 8px 0
+    padding 16px 12px 8px
+    height var(--compact-height)
     .actionButton
       &__titleContainer:hover
         background-color transparent
@@ -44,7 +26,7 @@
     &:hover
       background-color transparent !important
       color #096DD9 !important
-  &_isSeperator
+  &_isSeparator
     cursor initial
     height 1px
     background-color rgba(137, 128, 152, 0.12) !important
@@ -60,6 +42,65 @@
   &__title
     flex-grow 1
     font-size 16px
+  
+  &_hasSubMenu
+    color rgba(0,0,0,0.6)
+    &:hover
+      color #000
+      background-color rgba(0,0,0,0.04)
+  &_danger
+    color #d00
+
+.actionButtonPrime
+  gap 8px
+
+.actionmenu,
+.actionButton-submenu
+  &_newUI
+    .actionButton
+      position relative
+      padding 8px
+      height auto
+      &.menu__item
+        height auto
+        color #1F1F1F
+        &.actionButton_isTitle
+          color #096DD9
+        &_look_danger
+          color #d00
+      &:not(.dm-menu__item_active):hover
+        background-color transparent
+        .menu
+          &__titleContainer
+            background-color rgba(65, 60, 74, 0.08)
+
+      &_hasSubMenu
+        color #1F1F1F
+        &:hover
+        color #1F1F1F
+          background-color transparent
+        .actionButton__titleContainer:hover
+          background-color rgba(9, 109, 217, 0.12)
+      &__titleContainer
+        height 100%
+        width 100%
+        padding 4px 16px
+        border-radius 4px
+        cursor pointer
+        &:hover
+          background-color rgba(65, 60, 74, 0.08)
+      &_isTitle
+        padding 16px 8px 0
+        .actionButton__titleContainer
+          cursor default
+          &:hover
+            background transparent
+      &_isSeparator
+        height 1px
+        padding 0
+        &.menu__item
+          height 1px
+          padding 0
 
 .actionButton-submenu
   margin 0
