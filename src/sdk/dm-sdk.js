@@ -46,6 +46,7 @@ import { unmountComponentAtNode } from "react-dom";
 import { toCamelCase } from "strman";
 import { instruments } from "../components/DataManager/Toolbar/instruments";
 import { APIProxy } from "../utils/api-proxy";
+import { FF_LSDV_4620_3_ML, isFF } from "../utils/feature-flags";
 import { objectToMap } from "../utils/helpers";
 import { packJSON } from "../utils/packJSON";
 import { isDefined } from "../utils/utils";
@@ -161,7 +162,7 @@ export class DataManager {
     this.panels = config.panels;
     this.spinner = config.spinner;
     this.spinnerSize = config.spinnerSize;
-    this.instruments = prepareInstruments(config.instruments ?? {}),
+    this.instruments = prepareInstruments(config.instruments ?? {});
     this.apiTransform = config.apiTransform ?? {};
     this.preload = config.preload ?? {};
     this.interfaces = objectToMap({
@@ -253,7 +254,7 @@ export class DataManager {
   }
 
   /**
-   * @param {impotr("../stores/Action.js").Action} action
+   * @param {import("../stores/Action.js").Action} action
    */
   addAction(action, callback) {
     const { id } = action;
@@ -451,6 +452,9 @@ export class DataManager {
   }
 
   destroy(detachCallbacks = true) {
+    if (isFF(FF_LSDV_4620_3_ML)) {
+      this.destroyLSF();
+    }
     unmountComponentAtNode(this.root);
 
     if (this.store) {

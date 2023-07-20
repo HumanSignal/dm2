@@ -12,7 +12,16 @@
  * messages: Dict<string|Function>
  * }} LSFOptions */
 
-import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, FF_DEV_3734, isFF } from "../utils/feature-flags";
+import {
+  FF_DEV_1752,
+  FF_DEV_2186,
+  FF_DEV_2715,
+  FF_DEV_2887,
+  FF_DEV_3034,
+  FF_DEV_3734,
+  FF_LSDV_4620_3_ML,
+  isFF
+} from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
@@ -308,8 +317,9 @@ export class LSFWrapper {
   }
 
   setLSFTask(task, annotationID, fromHistory) {
-    this.setLoading(true);
     const hasChangedTasks = this.lsf?.task?.id !== task?.id && task?.id;
+
+    this.setLoading(true, hasChangedTasks);
     const lsfTask = taskToLSFormat(task);
     const isRejectedQueue = isDefined(task.default_selected_annotation);
     const taskList = this.datamanager.store.taskStore.list;
@@ -808,8 +818,10 @@ export class LSFWrapper {
   }
 
   /** @private */
-  setLoading(isLoading) {
+  setLoading(isLoading, shouldReset = false) {
+    if (isFF(FF_LSDV_4620_3_ML) && shouldReset) this.lsf.clearApp();
     this.lsf.setFlags({ isLoading });
+    if (isFF(FF_LSDV_4620_3_ML) && shouldReset) this.lsf.renderApp();
   }
 
   async withinLoadingState(callback) {

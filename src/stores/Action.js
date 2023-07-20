@@ -56,7 +56,7 @@ export const Action = types.model("Action", {
   ...(isFFLOPSE3 ? {
     children: types.optional(types.array(types.late(() => Action)), []),
     callback: types.maybeNull(CustomCalback),
-    isSeperator: types.optional(types.boolean, false),
+    isSeparator: types.optional(types.boolean, false),
     isTitle: types.optional(types.boolean, false),
     newStyle: types.optional(types.boolean, false),
   } : {}),
