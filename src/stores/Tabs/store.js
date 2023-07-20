@@ -434,7 +434,7 @@ export const TabStore = types
 
         addedColumns.add(column.id);
 
-        if (!col.children && column.filterable) {
+        if (!col.children && column.filterable && (col?.visibility_defaults?.filter ?? true)) {
           self.availableFilters.push({
             id: `filter:${columnID}`,
             type: col.type,
