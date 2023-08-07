@@ -2,7 +2,7 @@ import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
 import { useCallback, useMemo } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
-import { useShortcut } from "../../../sdk/hotkeys";
+import { isShortcutPressed, useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";
 import { FF_DEV_2536, FF_DEV_4008, isFF } from '../../../utils/feature-flags';
 import * as CellViews from "../../CellViews";
@@ -16,6 +16,7 @@ import { GridView } from "../GridViewOld/GridView";
 import { CandidateTaskView } from "../../CandidateTaskView";
 import "./Table.styl";
 import { modal } from "../../Common/Modal/Modal";
+import { isDefined } from "../../../utils/utils";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
@@ -35,7 +36,7 @@ const injector = inject(({ store }) => {
     isLoading: dataStore?.loading ?? true,
     isLocked: currentView?.locked ?? false,
     hasData: (store.project?.task_count ?? store.project?.task_number ?? dataStore?.total ?? 0) > 0,
-    focusedItem: dataStore?.selected ?? dataStore?.highlighted,
+    focusedItem: dataStore?.scroll ?? dataStore?.selected ?? dataStore?.highlighted ?? dataStore?.list[0],
   };
 
   return props;
@@ -107,11 +108,37 @@ export const DataView = injector(
       [],
     );
 
-    const onSelectAll = useCallback(() => view.selectAll(), [view]);
+    const onSelectAll = useCallback(() => {
+      view.selectAll();
+    }, [view]);
 
-    const onRowSelect = useCallback((id) => view.toggleSelected(id), [
-      view,
-    ]);
+    const onRowSelect = useCallback((id) => {
+      const { highlightedId } = dataStore; 
+      
+      const bulk_select = isShortcutPressed("dm.bulk-select-mouse");
+      const bulk_deselect = isShortcutPressed("dm.bulk-deselect-mouse");
+
+      if(!bulk_select && !bulk_deselect){
+        view.toggleSelected(id);
+      }
+      if (isDefined(highlightedId)){
+        const ids = dataStore.list.map(({ id })=>id);
+        const _id_high = ids.indexOf(highlightedId);
+        const _id_curr = ids.indexOf(id);
+        const range = ids.slice(
+          Math.min(_id_high, _id_curr),
+          Math.max(_id_high, _id_curr)+1,
+        );
+
+        if (bulk_select){
+          view.selected.selectItems(...range);
+        } 
+        else if (bulk_deselect){        
+          view.selected.deselectItems(...range);
+        }
+      }
+      dataStore.focusItem(id, false);
+    },[view, dataStore.highlightedId, dataStore.list]);
 
     const onRowClick = useCallback(
       (item, e) => {
@@ -274,7 +301,7 @@ export const DataView = injector(
     useShortcut("dm.focus-previous", () => {
       if (document.activeElement !== document.body) return;
 
-      const task = dataStore.focusPrev();
+      const task = dataStore.focusPrev(true);
 
       if (isFF(FF_DEV_4008)) getRoot(view).startLabeling(task);
     });
@@ -282,7 +309,7 @@ export const DataView = injector(
     useShortcut("dm.focus-next", () => {
       if (document.activeElement !== document.body) return;
 
-      const task = dataStore.focusNext();
+      const task = dataStore.focusNext(true);
 
       if (isFF(FF_DEV_4008)) getRoot(view).startLabeling(task);
     });
@@ -299,7 +326,61 @@ export const DataView = injector(
       const { highlighted } = dataStore;
       // don't close QuickView by Enter
 
-      if (highlighted && !highlighted.isSelected) store.startLabeling(highlighted);
+      if (highlighted && !highlighted.isSelected){
+        store.startLabeling(highlighted);
+      }
+    });
+
+    useShortcut("dm.toggle-focused", ()=>{
+      if (document.activeElement !== document.body) return;
+
+      const { highlighted } = dataStore;
+
+      if (highlighted) onRowSelect(highlighted.id);
+    });
+
+    useShortcut("dm.select-next", ()=>{
+      if (document.activeElement !== document.body) return;
+
+      view.selected.selectItems(
+        dataStore.highlightedId, 
+        dataStore.focusNext(true).id,
+      );
+      document.getSelection().removeAllRanges();
+    });
+
+    useShortcut("dm.select-prev", ()=>{
+      if (document.activeElement !== document.body) return;
+
+      view.selected.selectItems(
+        dataStore.highlightedId,
+        dataStore.focusPrev(true).id,
+      );
+      document.getSelection().removeAllRanges();
+    });
+
+    useShortcut("dm.deselect-next", ()=>{
+      if (document.activeElement !== document.body) return;
+
+      view.selected.deselectItems(
+        dataStore.highlightedId,
+        dataStore.focusNext(true).id,
+      );
+    });
+
+    useShortcut("dm.deselect-prev", ()=>{
+      if (document.activeElement !== document.body) return;
+
+      view.selected.deselectItems(
+        dataStore.highlightedId,
+        dataStore.focusPrev(true).id,
+      );
+    });
+
+    useShortcut("dm.select-all", ()=>{
+      if (document.activeElement !== document.body) return;
+
+      onSelectAll();
     });
 
     // Render the UI for your table

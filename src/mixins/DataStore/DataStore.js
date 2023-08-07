@@ -142,6 +142,7 @@ export const DataStore = (
       list: types.optional(types.array(listItemType), []),
       selectedId: types.optional(types.maybeNull(types.number), null),
       highlightedId: types.optional(types.maybeNull(types.number), null),
+      scrollId: types.optional(types.maybeNull(types.number), null),
       ...(associatedItemType ? { associatedList: types.optional(types.array(associatedItemType), []) } : {}),
     })
     .views((self) => ({
@@ -153,12 +154,20 @@ export const DataStore = (
         return self.list.find(({ id }) => id === self.highlightedId);
       },
 
+      get scroll() {
+        return self.list.find(({ id }) => id === self.scrollId);
+      },
+
       set selected(item) {
         self.selectedId = item?.id ?? item;
       },
 
       set highlighted(item) {
         self.highlightedId = item?.id ?? item;
+      },
+
+      set scroll(item) {
+        self.scrollId = item?.id ?? item;
       },
     }))
     .volatile(() => ({
@@ -229,7 +238,7 @@ export const DataStore = (
         const data = yield getRoot(self).apiCall(apiMethod, params);
 
         // We cancel current request processing if request id
-        // cnhaged during the request. It indicates that something
+        // changed during the request. It indicates that something
         // triggered another request while current one is not yet finished
         if (requestId !== self.requestId) {
           console.log(`Request ${requestId} was cancelled by another request`);
@@ -267,25 +276,30 @@ export const DataStore = (
         yield self.fetch({ id, query, reload: true, interaction });
       }),
 
-      focusPrev() {
-        const index = Math.max(0, self.list.indexOf(self.highlighted) - 1);
-
-        self.highlighted = self.list[index];
-        self.updated = guidGenerator();
+      focusItem(item, scrollTo = false) {
+        /**
+         * item: item / itemID 
+         */
+        self.highlighted = item;
+        if (scrollTo) self.scroll = item;
+        //self.updated = guidGenerator();
 
         return self.highlighted;
       },
 
-      focusNext() {
+      focusPrev(scrollTo = false) {
+        const index = Math.max(0, self.list.indexOf(self.highlighted) - 1);
+
+        return self.focusItem(self.list[index], scrollTo);
+      },
+
+      focusNext(scrollTo = false) {
         const index = Math.min(
           self.list.length - 1,
           self.list.indexOf(self.highlighted) + 1,
         );
 
-        self.highlighted = self.list[index];
-        self.updated = guidGenerator();
-
-        return self.highlighted;
+        return self.focusItem(self.list[index], scrollTo);
       },
     }));
 

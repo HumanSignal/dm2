@@ -1,4 +1,4 @@
-import { useHotkeys } from "react-hotkeys-hook";
+import { useHotkeys, isHotkeyPressed } from "react-hotkeys-hook";
 import { toStudlyCaps } from "strman";
 import { keymap } from "./keymap";
 
@@ -9,11 +9,14 @@ export type Hotkey = {
   other?: string
 }
 
-const readableShortcut = (shortcut: string) => {
+const readableShortcut = (shortcut: string|[string]) => {
+  if (Array.isArray(shortcut)) {
+    return shortcut.map(sc=>sc.split('+').map(str => toStudlyCaps(str)).join(' + ')).join(' or ');
+  }
   return shortcut.split('+').map(str => toStudlyCaps(str)).join(' + ');
 };
 
-export const useShortcut = (
+const useShortcut = (
   actionName: keyof typeof keymap,
   callback: () => void,
   options = { showShortcut: true },
@@ -34,3 +37,14 @@ export const useShortcut = (
 
   return title;
 };
+
+const isShortcutPressed = (
+  actionName: keyof typeof keymap
+) => {
+  const action = keymap[actionName] as Hotkey;
+  const isMacos = /mac/i.test(navigator.platform);
+  const shortcut = action.shortcut ?? (isMacos ? action.macos : action.other) as string;
+  return isHotkeyPressed(shortcut);
+}
+
+export { useShortcut, isShortcutPressed };
