@@ -50,7 +50,7 @@ export const Tab = types
     locked: false,
     editable: true,
     deletable: true,
-    search_text: types.optional(types.maybeNull(types.string), null),
+    semantic_search: types.optional(types.maybeNull(types.array(types.CustomJSON)), null),
   })
   .volatile(() => {
     const defaultWidth = getComputedStyle(document.body).getPropertyValue("--menu-sidebar-width").replace("px", "").trim();
@@ -214,7 +214,7 @@ export const Tab = types
         columnsWidth: self.columnsWidth.toPOJO(),
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
         gridWidth: self.gridWidth,
-        search_text: self.search_text,
+        semantic_search: self.semantic_search,
       };
 
       if (self.saved || apiVersion === 1) {
@@ -299,8 +299,8 @@ export const Tab = types
       self.selected = ids;
     },
 
-    setSearchText(searchText) {
-      self.search_text = searchText;
+    setSemanticSearch(semanticSearchList) {
+      self.semantic_search = semanticSearchList;
       self.save();
     },
 
