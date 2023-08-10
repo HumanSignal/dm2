@@ -15,7 +15,7 @@ import { TabHiddenColumns } from "./tab_hidden_columns";
 import { TabSelectedItems } from "./tab_selected_items";
 import { History } from '../../utils/history';
 import { FF_LOPS_12, isFF } from "../../utils/feature-flags";
-import { StringOrNumberID } from "../types";
+import { CustomJSON, StringOrNumberID } from "../types";
 
 export const Tab = types
   .model("View", {
@@ -50,7 +50,7 @@ export const Tab = types
     locked: false,
     editable: true,
     deletable: true,
-    semantic_search: types.optional(types.maybeNull(types.array(types.CustomJSON)), null),
+    semantic_search: types.optional(types.array(CustomJSON), []),
   })
   .volatile(() => {
     const defaultWidth = getComputedStyle(document.body).getPropertyValue("--menu-sidebar-width").replace("px", "").trim();
@@ -214,7 +214,7 @@ export const Tab = types
         columnsWidth: self.columnsWidth.toPOJO(),
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
         gridWidth: self.gridWidth,
-        semantic_search: self.semantic_search,
+        semantic_search: self.semantic_search?.toJSON() ?? [],
       };
 
       if (self.saved || apiVersion === 1) {
@@ -300,7 +300,7 @@ export const Tab = types
     },
 
     setSemanticSearch(semanticSearchList) {
-      self.semantic_search = semanticSearchList;
+      self.semantic_search = semanticSearchList ?? [];
       self.save();
     },
 
