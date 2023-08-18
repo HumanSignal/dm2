@@ -518,8 +518,6 @@ export class LSFWrapper {
       projectId: this.datamanager.store.project.id,
     });
 
-    console.log(this.task.drafts);
-
     this.lsf.setTaskHistory(_taskHistory);
 
     await this.loadUserLabels();
