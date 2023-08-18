@@ -390,7 +390,12 @@ export class LSFWrapper {
           if (c) {
             c.history.freeze();
             console.log("Applying draft");
-            c.addVersions({ draft: draft.result });
+            const draftWithLeadTime = draft.result.map((d, i) => {
+              if (i === 0) return { ...d, leadTime: draft.lead_time };
+              return d;
+            });
+
+            c.addVersions({ draft: draftWithLeadTime });
             c.deleteAllRegions({ deleteReadOnly: true });
           } else {
             // that shouldn't happen
@@ -399,6 +404,7 @@ export class LSFWrapper {
           }
         } else {
           // Annotation not found - restore annotation from draft
+          console.log("Restoring draft", draft.leadTime);
           c = cs.addAnnotation({
             draft: draft.result,
             userGenerate: true,
@@ -407,6 +413,7 @@ export class LSFWrapper {
             createdBy: draft.created_username,
             createdAgo: draft.created_ago,
             createdDate: draft.created_at,
+            lead_time: draft.lead_time,
           });
         }
         cs.selectAnnotation(c.id);
@@ -510,6 +517,8 @@ export class LSFWrapper {
     const _taskHistory =  await this.datamanager.store.taskStore.loadTaskHistory({
       projectId: this.datamanager.store.project.id,
     });
+
+    console.log(this.task.drafts);
 
     this.lsf.setTaskHistory(_taskHistory);
 
