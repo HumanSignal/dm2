@@ -301,7 +301,7 @@ export const Tab = types
 
     setSemanticSearch(semanticSearchList) {
       self.semantic_search = semanticSearchList ?? [];
-      self.save();
+      return self.save();
     },
 
     selectAll() {
