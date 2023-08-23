@@ -801,7 +801,7 @@ export class LSFWrapper {
     
     const submittedInCurrentSession = annotation.updated_at > annotation.loadedDate;
     const sessionTime = (submittedInCurrentSession
-      ? (new Date() - annotation.updatedAt)
+      ? (new Date() - annotation.updated_at)
       : (new Date() - annotation.loadedDate));
     
     const submittedTime = Number(annotation.leadTime ?? 0);
