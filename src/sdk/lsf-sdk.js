@@ -327,7 +327,7 @@ export class LSFWrapper {
     const taskHistory = taskList
       .map(task => this.taskHistory.find(item => item.taskId === task.id))
       .filter(Boolean);
-    
+
     const extracted = taskHistory.find(item => item.taskId === task.id);
 
     if (!fromHistory && extracted) {
@@ -506,7 +506,7 @@ export class LSFWrapper {
     this.lsf = ls;
 
     if (!this.lsf.task) this.setLoading(true);
-    // console.log({ lead_time: this.task.drafts?.[0].lead_time });
+
     const _taskHistory =  await this.datamanager.store.taskStore.loadTaskHistory({
       projectId: this.datamanager.store.project.id,
     });
