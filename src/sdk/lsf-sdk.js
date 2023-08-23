@@ -406,7 +406,6 @@ export class LSFWrapper {
             createdBy: draft.created_username,
             createdAgo: draft.created_ago,
             createdDate: draft.created_at,
-            lead_time: draft.lead_time,
           });
         }
         cs.selectAnnotation(c.id);
