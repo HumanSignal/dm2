@@ -327,7 +327,7 @@ export class LSFWrapper {
     const taskHistory = taskList
       .map(task => this.taskHistory.find(item => item.taskId === task.id))
       .filter(Boolean);
-
+    
     const extracted = taskHistory.find(item => item.taskId === task.id);
 
     if (!fromHistory && extracted) {
@@ -389,13 +389,7 @@ export class LSFWrapper {
           c = cs.annotations.find(c => c.pk === draftAnnotationPk);
           if (c) {
             c.history.freeze();
-            console.log("Applying draft");
-            const draftWithLeadTime = draft.result.map((d, i) => {
-              if (i === 0) return { ...d, leadTime: draft.lead_time };
-              return d;
-            });
-
-            c.addVersions({ draft: draftWithLeadTime });
+            c.addVersions({ draft: draft.result });
             c.deleteAllRegions({ deleteReadOnly: true });
           } else {
             // that shouldn't happen
@@ -404,7 +398,6 @@ export class LSFWrapper {
           }
         } else {
           // Annotation not found - restore annotation from draft
-          console.log("Restoring draft", draft.leadTime);
           c = cs.addAnnotation({
             draft: draft.result,
             userGenerate: true,
@@ -513,7 +506,7 @@ export class LSFWrapper {
     this.lsf = ls;
 
     if (!this.lsf.task) this.setLoading(true);
-
+    // console.log({ lead_time: this.task.drafts?.[0].lead_time });
     const _taskHistory =  await this.datamanager.store.taskStore.loadTaskHistory({
       projectId: this.datamanager.store.project.id,
     });
@@ -806,11 +799,18 @@ export class LSFWrapper {
   prepareData(annotation, { includeId, draft } = {}) {
     const userGenerate =
       !annotation.userGenerate || annotation.sentUserGenerate;
+    
+    const submittedInCurrentSession = annotation.updated_at > annotation.loadedDate;
+    const sessionTime = (submittedInCurrentSession
+      ? (new Date() - annotation.updatedAt)
+      : (new Date() - annotation.loadedDate));
+    
+    const submittedTime = Number(annotation.leadTime ?? 0);
+    const draftTime = Number(this.task.drafts[0]?.lead_time ?? 0);
+    const lead_time = sessionTime + submittedTime + draftTime;
 
     const result = {
-      // task execution time, always summed up with previous values
-      lead_time: (new Date() - annotation.loadedDate) / 1000 + Number(annotation.leadTime ?? 0),
-      // don't serialize annotations twice for drafts
+      lead_time,
       result: (draft ? annotation.versions.draft : annotation.serializeAnnotation()) ?? [],
       draft_id: annotation.draftId,
       parent_prediction: annotation.parent_prediction,
