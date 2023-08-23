@@ -17,6 +17,7 @@ import { GridView } from "../GridView/GridView";
 import { CandidateTaskView } from "../../CandidateTaskView";
 import { modal } from "../../Common/Modal/Modal";
 import "./DataView.styl";
+import { Button } from "../../Common/Button/Button";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
@@ -141,6 +142,17 @@ export const DataView = injector(
         return (
           <Block name="fill-container">
             <Spinner size="large" />
+          </Block>
+        );
+      } else if (store.SDK.type === 'DE' && store.SDK.dataset?.status?.id !== 'completed') {
+        return (
+          <Block name="syncInProgress">
+            <Elem name='title' tag="h3">Hang tight! Items are syncing in the background</Elem>
+            <Elem name='text'>Press the button below to see any synced items</Elem>
+            <Button onClick={async () => {
+              await store.fetchProject({ force: true, interaction: 'refresh' });
+              await store.currentView?.reload();
+            }}>Refresh</Button>
           </Block>
         );
       } else if (total === 0 || !hasData) {
