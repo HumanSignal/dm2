@@ -25,7 +25,6 @@ import {
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
-import { getRoot } from "mobx-state-tree";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
@@ -303,9 +302,7 @@ export class LSFWrapper {
   }
 
   exitStream() {
-    const view = this.datamanager.store.viewsStore.selected;
-
-    return getRoot(view).closeLabeling();
+    return window.LSH.go("/projects");
   }
 
   selectTask(task, annotationID, fromHistory = false) {
@@ -559,9 +556,9 @@ export class LSFWrapper {
         { body },
         // don't react on duplicated annotations error
         { errorHandler: result => result.status === 409 },
-      );
+      ).then(() => { if (exitStream) this.exitStream(); });
     }, false, loadNext);
-    if (exitStream) this.exitStream();
+    
   };
 
   /** @private */
