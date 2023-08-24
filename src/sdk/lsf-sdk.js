@@ -25,6 +25,7 @@ import {
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
+import { getRoot } from "mobx-state-tree";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
@@ -301,6 +302,12 @@ export class LSFWrapper {
     await nextAction();
   }
 
+  exitStream() {
+    const view = this.datamanager.store.viewsStore.selected;
+
+    return getRoot(view).closeLabeling();
+  }
+
   selectTask(task, annotationID, fromHistory = false) {
     const needsAnnotationsMerge = task && this.task?.id === task.id;
     const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
@@ -542,6 +549,9 @@ export class LSFWrapper {
 
   /** @private */
   onSubmitAnnotation = async () => {
+    const exitStream = this.shouldExitStream();
+    const loadNext = exitStream ? false : this.shouldLoadNext();
+    
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall(
         "submitAnnotation",
@@ -550,13 +560,15 @@ export class LSFWrapper {
         // don't react on duplicated annotations error
         { errorHandler: result => result.status === 409 },
       );
-    }, false, this.shouldLoadNext());
+    }, false, loadNext);
+    if (exitStream) this.exitStream();
   };
 
   /** @private */
   onUpdateAnnotation = async (ls, annotation, extraData) => {
     const { task } = this;
     const serializedAnnotation = this.prepareData(annotation);
+    const exitStream = this.shouldExitStream();
 
     Object.assign(serializedAnnotation, extraData);
 
@@ -576,6 +588,8 @@ export class LSFWrapper {
     });
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
+
+    if (exitStream) this.exitStream();
 
     const isRejectedQueue = isDefined(task.default_selected_annotation);
 
@@ -732,6 +746,20 @@ export class LSFWrapper {
 
     return urlParam !== 'notifications';
   }
+
+  shouldExitStream = () => {
+    const paramName = "exitStream";
+    const urlParam = new URLSearchParams(location.search).get(paramName);
+    const searchParams = new URLSearchParams(window.location.search);
+
+    searchParams.delete(paramName);
+    let newRelativePathQuery = window.location.pathname;
+
+    if (searchParams.toString()) newRelativePathQuery += '?' + searchParams.toString();
+    window.history.pushState(null, '', newRelativePathQuery);
+    return !!urlParam;
+  }
+
 
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
