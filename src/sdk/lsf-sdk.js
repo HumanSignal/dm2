@@ -25,7 +25,6 @@ import {
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
-import { getRoot } from "mobx-state-tree";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
 
@@ -303,9 +302,7 @@ export class LSFWrapper {
   }
 
   exitStream() {
-    const view = this.datamanager.store.viewsStore.selected;
-
-    return getRoot(view).closeLabeling();
+    window.LSH.push("/projects");
   }
 
   selectTask(task, annotationID, fromHistory = false) {
@@ -561,7 +558,7 @@ export class LSFWrapper {
         { errorHandler: result => result.status === 409 },
       );
     }, false, loadNext);
-    if (exitStream) this.exitStream();
+    if (exitStream) this.exitStream(); 
   };
 
   /** @private */
@@ -589,7 +586,7 @@ export class LSFWrapper {
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
 
-    if (exitStream) this.exitStream();
+    if (exitStream) return  this.exitStream();
 
     const isRejectedQueue = isDefined(task.default_selected_annotation);
 
