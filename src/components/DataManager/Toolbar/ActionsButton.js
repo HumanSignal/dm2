@@ -135,7 +135,8 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
   };
 
   const actionButtons = actions.map(ActionButton);
-
+  const recordTypeLabel = isFFLOPSE3 && store.SDK.type === "DE" ? "Item" : "Task";
+  
   return (
     <Dropdown.Trigger 
       content={isNewUI ? <Block tag={Menu} name="actionmenu" size="compact" mod={{ newUI: isNewUI }}>{actionButtons}</Block> : <Menu size="compact">{actionButtons}</Menu>} 
@@ -143,7 +144,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
       onToggle={(visible) => isFFLOPSE3 && setIsOpen(visible)}
     >
       <Button {...(isNewUI ? { className:"actionButtonPrime" } : {})} size={size} disabled={!hasSelected} {...rest}>
-        {selectedCount > 0 ? selectedCount + " Tasks": "Actions"}
+        {selectedCount > 0 ? `${selectedCount} ${recordTypeLabel}s`: "Actions"}
         {isNewUI ? (
           isOpen ? (
             <FaChevronUp size="12" style={{ marginLeft: 4, marginRight: -7 }} />
