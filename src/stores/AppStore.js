@@ -454,8 +454,8 @@ export const AppStore = types
           self.project = newProject;
         }
         if ( isFF(FF_LOPS_E_3) ) {
-          const itemType = self.SDK.type === 'DE' ? 'dataset' : 'task';
-          
+          const itemType = self.SDK.type === 'DE' ? 'dataset' : 'project';
+
           self.SDK.invoke(`${itemType}Updated`, self.project);
         }
       } catch {
