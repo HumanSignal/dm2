@@ -629,6 +629,17 @@ export class LSFWrapper {
     }
   };
 
+  saveDraft = () => {
+    const selected = this.lsf?.annotationStore?.selected;
+
+    const hasChanges = !!selected?.history.undoIdx;
+
+    if (!hasChanges) return;
+    selected?.saveDraftImmediately();
+    this.datamanager.invoke("toast", "Draft saved successfully");
+
+  };
+  
   onSubmitDraft = async (studio, annotation, params = {}) => {
     const annotationDoesntExist = !annotation.pk;
     const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
@@ -742,12 +753,12 @@ export class LSFWrapper {
 
   onNextTask = (nextTaskId, nextAnnotationId) => {
     console.log(nextTaskId, nextAnnotationId);
-
+    this.saveDraft();
     this.loadTask(nextTaskId, nextAnnotationId, true);
   }
   onPrevTask = (prevTaskId, prevAnnotationId) => {
     console.log(prevTaskId, prevAnnotationId);
-
+    this.saveDraft();
     this.loadTask(prevTaskId, prevAnnotationId, true);
   }
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {

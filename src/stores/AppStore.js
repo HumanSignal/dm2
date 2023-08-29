@@ -216,6 +216,7 @@ export const AppStore = types
       if (annotationID !== undefined) {
         self.annotationStore.setSelected(annotationID);
       } else {
+        self.LSF?.saveDraft();
         self.taskStore.setSelected(taskID);
 
         yield self.taskStore.loadTask(taskID, {
