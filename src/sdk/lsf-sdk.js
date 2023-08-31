@@ -629,13 +629,13 @@ export class LSFWrapper {
     }
   };
 
-  saveDraft = async () => {
+  saveDraft = () => {
     const selected = this.lsf?.annotationStore?.selected;
 
     const hasChanges = !!selected?.history.undoIdx;
 
     if (!hasChanges || !selected) return;
-    await selected.saveDraftImmediatelyWithResults((status) => {
+    selected.saveDraftImmediatelyWithResults((status) => {
       if (status === 200 || status === 201) this.datamanager.invoke("toast", "Draft saved successfully", "info");
       else this.datamanager.invoke("toast", "There was an error saving your draft", "error");
     });
