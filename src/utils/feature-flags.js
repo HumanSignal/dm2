@@ -76,6 +76,12 @@ export const FF_LSDV_5035 = 'fflag_feat_back_lsdv_5035_use_created_at_from_draft
  */
 export const FF_LOPS_E_10 = "fflag_feat_front_lops_e_10_updated_ux_short";
 
+/**
+ * Improve load time performance of Dashboard Members page
+ */
+export const FF_OPTIC_7 = "fflag_feat_front_optic_7_optic_integration_short";
+
+
 // Customize flags
 const flags = {};
 
