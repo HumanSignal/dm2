@@ -638,7 +638,7 @@ export class LSFWrapper {
     if (!hasChanges || !selected) return;
     selected.saveDraftImmediatelyWithResults((status) => {
       if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
-      else this.datamanager.invoke("toast", "There was an error saving your draft", "error");
+      else this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
     });
   };
   
