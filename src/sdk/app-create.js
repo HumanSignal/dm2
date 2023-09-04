@@ -2,8 +2,8 @@
  * views?: any[]
  * }} AppOptions */
 
-import React from "react";
-import ReactDOM from "react-dom";
+import React, { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
 import { App } from "../components/App/App";
 import { AppStore } from "../stores/AppStore";
 import * as DataStores from "../stores/DataStores";
@@ -74,7 +74,13 @@ export const createApp = async (rootNode, datamanager) => {
 
   window.DM = appStore;
 
-  ReactDOM.render(<App app={appStore} />, rootNode);
+  const root = ReactDOM.createRoot(rootNode);
+
+  root.render(
+    <StrictMode>
+      <App app={appStore} />
+    </StrictMode>
+  );
 
   return appStore;
 };

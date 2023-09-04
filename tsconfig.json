@@ -12,8 +12,17 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
   },
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ],
   "exclude": [
     "./dist",
     "./lib",
-  ]
+  ],
+  "extends": "../../tsconfig.base.json"
 }

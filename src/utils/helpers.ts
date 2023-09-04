@@ -2,7 +2,7 @@ import { toCamelCase } from 'strman';
 
 export const formDataToJPO = (formData: FormData) => {
   if (formData instanceof FormData) {
-    const entries = formData.entries();
+    const entries = (formData as any).entries() as IterableIterator<[string, any]>
 
     return Array.from(entries).reduce((res, [key, value]) => {
       return { ...res, [key]: value };
