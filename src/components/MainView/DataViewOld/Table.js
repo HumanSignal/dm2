@@ -141,7 +141,7 @@ export const DataView = injector(
               <Spinner size="large" />
             </Block>
           );
-        } else if (store.SDK.type === 'DE' && store.SDK.dataset?.status?.id !== 'completed') {
+        } else if (store.SDK.type === 'DE' && store.project?.status?.id !== 'completed') {
           return (
             <Block name="syncInProgress">
               <Elem name='title' tag="h3">Hang tight! Items are syncing in the background</Elem>
