@@ -630,16 +630,17 @@ export class LSFWrapper {
     }
   };
 
-  saveDraft = () => {
+  saveDraft = async () => {
     const selected = this.lsf?.annotationStore?.selected;
-
     const hasChanges = !!selected?.history.undoIdx;
 
     if (!hasChanges || !selected) return;
-    selected.saveDraftImmediatelyWithResults((status) => {
-      if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
-      else this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
-    });
+    if (!hasChanges || !selected) return;
+    const res = await selected?.saveDraftImmediatelyWithResults();
+    const status = res?.$meta?.status;
+
+    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
+    else this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
   };
   
   onSubmitDraft = async (studio, annotation, params = {}) => {
