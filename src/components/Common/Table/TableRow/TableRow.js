@@ -5,6 +5,8 @@ import { Block } from "../../../../utils/bem";
 import { TableContext, TableElem } from "../TableContext";
 import { getProperty, getStyle } from "../utils";
 import "./TableRow.styl";
+import { SkeletonLoader } from "../../SkeletonLoader/SkeletonLoader";
+import { FF_LOPS_E_3, isFF } from "../../../../utils/feature-flags";
 
 const CellRenderer = observer(
   ({ col: colInput, data, decoration, cellViews }) => {
@@ -40,7 +42,7 @@ const CellRenderer = observer(
             alignItems: "center",
           }}
         >
-          {Renderer ? <Renderer {...renderProps} /> : value}
+          {(isFF(FF_LOPS_E_3) && data.loading === colInput.alias) ? <SkeletonLoader /> : (Renderer ? <Renderer {...renderProps} /> : value)}
         </div>
       </TableElem>
     );
