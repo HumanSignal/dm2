@@ -302,7 +302,7 @@ export class LSFWrapper {
   }
 
   exitStream() {
-    return window.LSH.go("/projects");
+    this.datamanager.invoke("navigate", 'projects');
   }
 
   selectTask(task, annotationID, fromHistory = false) {
@@ -550,18 +550,14 @@ export class LSFWrapper {
     const loadNext = exitStream ? false : this.shouldLoadNext();
     
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
-      const submit = await this.datamanager.apiCall(
+      return await this.datamanager.apiCall(
         "submitAnnotation",
         { taskID },
         { body },
         // don't react on duplicated annotations error
         { errorHandler: result => result.status === 409 },
       );
-
-      if (exitStream) return this.exitStream();
-      return submit;
-    }, false, loadNext);
-    
+    }, false, loadNext, exitStream);
   };
 
   /** @private */
@@ -778,7 +774,7 @@ export class LSFWrapper {
 
     this.loadTask(prevTaskId, prevAnnotationId, true);
   }
-  async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
+  async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true, exitStream) {
     const { taskID, currentAnnotation } = this;
     const unique_id = this.task.unique_lock_id;
     const serializedAnnotation = this.prepareData(currentAnnotation, { includeId });
@@ -810,11 +806,10 @@ export class LSFWrapper {
       if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName) && this.lsf?.commentStore?.persistQueuedComments) {
         await this.lsf.commentStore.persistQueuedComments();
       }
-
-      // this.history?.add(taskID, currentAnnotation.pk);
     }
 
     this.setLoading(false);
+    if (exitStream) return this.exitStream();
 
     if (!loadNext || this.datamanager.isExplorer) {
       await this.loadTask(taskID, currentAnnotation.pk, true);
