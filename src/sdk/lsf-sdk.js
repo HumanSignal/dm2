@@ -550,13 +550,16 @@ export class LSFWrapper {
     const loadNext = exitStream ? false : this.shouldLoadNext();
     
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
-      return await this.datamanager.apiCall(
+      const submit = await this.datamanager.apiCall(
         "submitAnnotation",
         { taskID },
         { body },
         // don't react on duplicated annotations error
         { errorHandler: result => result.status === 409 },
-      ).then(() => { if (exitStream) this.exitStream(); });
+      );
+
+      if (exitStream) return this.exitStream();
+      return submit;
     }, false, loadNext);
     
   };
