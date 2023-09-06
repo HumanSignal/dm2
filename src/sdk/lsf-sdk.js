@@ -302,7 +302,7 @@ export class LSFWrapper {
   }
 
   exitStream() {
-    window.LSH.push("/projects");
+    return window.LSH.go("/projects");
   }
 
   selectTask(task, annotationID, fromHistory = false) {
@@ -556,9 +556,9 @@ export class LSFWrapper {
         { body },
         // don't react on duplicated annotations error
         { errorHandler: result => result.status === 409 },
-      );
+      ).then(() => { if (exitStream) this.exitStream(); });
     }, false, loadNext);
-    if (exitStream) this.exitStream(); 
+    
   };
 
   /** @private */
