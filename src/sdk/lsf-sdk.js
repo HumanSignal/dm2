@@ -171,6 +171,8 @@ export class LSFWrapper {
       forceAutoAnnotation: this.isInteractivePreannotations,
       forceAutoAcceptSuggestions: this.isInteractivePreannotations,
       messages: options.messages,
+      queueTotal: dm.store.project.queue_total,
+
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
