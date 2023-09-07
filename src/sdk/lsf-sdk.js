@@ -636,7 +636,6 @@ export class LSFWrapper {
     const hasChanges = !!selected?.history.undoIdx;
 
     if (!hasChanges || !selected) return;
-    if (!hasChanges || !selected) return;
     const res = await selected?.saveDraftImmediatelyWithResults();
     const status = res?.$meta?.status;
 
