@@ -1,6 +1,6 @@
 import { destroy, flow, types } from "mobx-state-tree";
 import { Modal } from "../components/Common/Modal/Modal";
-import { FF_DEV_2887, FF_OPTIC_7, isFF } from "../utils/feature-flags";
+import { FF_DEV_2887, FF_LOPS_E_3, FF_OPTIC_7, isFF } from "../utils/feature-flags";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import { Action } from "./Action";
@@ -453,6 +453,11 @@ export const AppStore = types
           self.project = Object.assign(self.project ?? {}, newProject);
         } else if (JSON.stringify(newProject ?? {}) !== JSON.stringify(self.project ?? {})) {
           self.project = newProject;
+        }
+        if ( isFF(FF_LOPS_E_3) ) {
+          const itemType = self.SDK.type === 'DE' ? 'dataset' : 'project';
+
+          self.SDK.invoke(`${itemType}Updated`, self.project);
         }
       } catch {
         self.crash();
