@@ -1,21 +1,23 @@
 .skeletonLoader
+  --skeleton-light-color linear-gradient(0deg, rgba(9, 109, 217, 0.05), rgba(9, 109, 217, 0.05)), #FAFAFA
+  --skeleton-dark-color linear-gradient(0deg, rgba(9, 109, 217, 0.14), rgba(9, 109, 217, 0.14)), #FAFAFA
+  --skeleton-gap 4px
   box-sizing border-box
   display flex
   flex-direction column
   justify-content space-between
-  gap 4px
+  gap var(--skeleton-gap)
   position relative
   width 100%
-  padding 4px
   flex 0 0 auto
   margin-left 0
   z-index 1
   color transparent
-  --skeleton-light-color linear-gradient(0deg, rgba(9, 109, 217, 0.05), rgba(9, 109, 217, 0.05)), #FAFAFA
-  --skeleton-dark-color linear-gradient(0deg, rgba(9, 109, 217, 0.14), rgba(9, 109, 217, 0.14)), #FAFAFA
-  &__title
-    height 16px
-    width 60%
+  &__line
+    --line-width 60%
+    --line-height 16px
+    height var(--line-height)
+    width var(--line-width)
     min-width 20px
     border-radius 8px
     display block
@@ -25,51 +27,9 @@
     animation-duration 0.5s
     animation-iteration-count: infinite;
     animation-direction: alternate;
-  &__mainValue
-    margin-top 4px
-    height 24px
-    width 40%
-    min-width 20px
-    border-radius 8px
-    display block
-    background var(--skeleton-light-color)
-    animation-name: skeleton-animation;
-    animation-timing-function ease-in-out
-    animation-duration 0.5s
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-  &__additionalData
-    height 12px
-    width 50%
-    min-width 20px
-    border-radius 8px
-    display block
-    background var(--skeleton-light-color)
-    animation-name: skeleton-animation;
-    animation-timing-function ease-in-out
-    animation-duration 0.5s
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-    position relative
-    * {
-      display none
-    }
-    &:after
-      content ""
-      height 12px
-      margin-left 10px
-      min-width 50px
-      border-radius 8px
-      width 20%
-      display block
-      position absolute
-      left 100%
-      background var(--skeleton-light-color)
-      animation-name: skeleton-animation;
-      animation-timing-function ease-in-out
-      animation-duration 0.5s
-      animation-iteration-count: infinite;
-      animation-direction: alternate;
+  &__gap
+    --height 8px
+    height var(--height)
 
 
 @keyframes skeleton-animation

@@ -10,7 +10,7 @@ import { getProperty, prepareColumns } from "../../Common/Table/utils";
 import * as DataGroups from "../../DataGroups";
 import "./GridView.styl";
 import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
-import { SkeletonLoader } from "../../Common/SkeletonLoader/SkeletonLoader";
+import { SkeletonLoader } from "../../Common/SkeletonLoader";
 
 const GridHeader = observer(({ row, selected }) => {
   return (
