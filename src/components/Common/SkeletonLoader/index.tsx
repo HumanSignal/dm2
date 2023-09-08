@@ -1,5 +1,3 @@
-import { SkeletonLoader } from "./SkeletonLoader";
-import { SkeletonLine } from "./SkeletonLine";
-import { SkeletonGap } from "./SkeletonGap";
-
-export { SkeletonLoader, SkeletonLine, SkeletonGap };
+export { SkeletonLoader } from "./SkeletonLoader";
+export { SkeletonLine } from "./SkeletonLine";
+export { SkeletonGap } from "./SkeletonGap";
