@@ -301,6 +301,10 @@ export class LSFWrapper {
     await nextAction();
   }
 
+  exitStream() {
+    this.datamanager.invoke("navigate", 'projects');
+  }
+
   selectTask(task, annotationID, fromHistory = false) {
     const needsAnnotationsMerge = task && this.task?.id === task.id;
     const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
@@ -541,6 +545,9 @@ export class LSFWrapper {
 
   /** @private */
   onSubmitAnnotation = async () => {
+    const exitStream = this.shouldExitStream();
+    const loadNext = exitStream ? false : this.shouldLoadNext();
+    
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall(
         "submitAnnotation",
@@ -549,13 +556,14 @@ export class LSFWrapper {
         // don't react on duplicated annotations error
         { errorHandler: result => result.status === 409 },
       );
-    }, false, this.shouldLoadNext());
+    }, false, loadNext, exitStream);
   };
 
   /** @private */
   onUpdateAnnotation = async (ls, annotation, extraData) => {
     const { task } = this;
     const serializedAnnotation = this.prepareData(annotation);
+    const exitStream = this.shouldExitStream();
 
     Object.assign(serializedAnnotation, extraData);
 
@@ -575,6 +583,8 @@ export class LSFWrapper {
     });
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
+
+    if (exitStream) return  this.exitStream();
 
     const isRejectedQueue = isDefined(task.default_selected_annotation);
 
@@ -732,6 +742,20 @@ export class LSFWrapper {
     return urlParam !== 'notifications';
   }
 
+  shouldExitStream = () => {
+    const paramName = "exitStream";
+    const urlParam = new URLSearchParams(location.search).get(paramName);
+    const searchParams = new URLSearchParams(window.location.search);
+
+    searchParams.delete(paramName);
+    let newRelativePathQuery = window.location.pathname;
+
+    if (searchParams.toString()) newRelativePathQuery += '?' + searchParams.toString();
+    window.history.pushState(null, '', newRelativePathQuery);
+    return !!urlParam;
+  }
+
+
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
@@ -749,7 +773,7 @@ export class LSFWrapper {
 
     this.loadTask(prevTaskId, prevAnnotationId, true);
   }
-  async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
+  async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true, exitStream) {
     const { taskID, currentAnnotation } = this;
     const unique_id = this.task.unique_lock_id;
     const serializedAnnotation = this.prepareData(currentAnnotation, { includeId });
@@ -781,11 +805,10 @@ export class LSFWrapper {
       if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName) && this.lsf?.commentStore?.persistQueuedComments) {
         await this.lsf.commentStore.persistQueuedComments();
       }
-
-      // this.history?.add(taskID, currentAnnotation.pk);
     }
 
     this.setLoading(false);
+    if (exitStream) return this.exitStream();
 
     if (!loadNext || this.datamanager.isExplorer) {
       await this.loadTask(taskID, currentAnnotation.pk, true);
