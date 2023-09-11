@@ -389,7 +389,6 @@ export class LSFWrapper {
           c = cs.annotations.find(c => c.pk === draftAnnotationPk);
           if (c) {
             c.history.freeze();
-            console.log("Applying draft");
             c.addVersions({ draft: draft.result });
             c.deleteAllRegions({ deleteReadOnly: true });
           } else {
@@ -799,11 +798,14 @@ export class LSFWrapper {
   prepareData(annotation, { includeId, draft } = {}) {
     const userGenerate =
       !annotation.userGenerate || annotation.sentUserGenerate;
+    
+    const sessionTime = (new Date() - annotation.loadedDate) / 1000;
+    const submittedTime = Number(annotation.leadTime ?? 0);
+    const draftTime = Number(this.task.drafts[0]?.lead_time ?? 0);
+    const lead_time = sessionTime + submittedTime + draftTime;
 
     const result = {
-      // task execution time, always summed up with previous values
-      lead_time: (new Date() - annotation.loadedDate) / 1000 + Number(annotation.leadTime ?? 0),
-      // don't serialize annotations twice for drafts
+      lead_time,
       result: (draft ? annotation.versions.draft : annotation.serializeAnnotation()) ?? [],
       draft_id: annotation.draftId,
       parent_prediction: annotation.parent_prediction,
