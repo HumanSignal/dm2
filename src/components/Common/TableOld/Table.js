@@ -63,15 +63,20 @@ export const Table = observer(
     ...props
   }) => {
     const colOrderKey = 'dm:columnorder';
+    const tabColOrderKey = `dm:${window.DM.viewsStore.selected.id}:columnorder`;
+    const defaultOrder = localStorage.getItem(tabColOrderKey) ?? localStorage.getItem(colOrderKey);
     const tableHead = useRef();
-    const [colOrder, setColOrder] = useState(JSON.parse(localStorage.getItem(colOrderKey)) ?? {});
+    const [colOrder, setColOrder] = useState(defaultOrder ? JSON.parse(defaultOrder) : {});
     const listRef = useRef();
     const columns = prepareColumns(props.columns, props.hiddenColumns);
     const Decoration = useMemo(() => Decorator(decoration), [decoration]);
     const { api, type } = useSDK();
 
     useEffect(() => {
-      localStorage.setItem(colOrderKey, JSON.stringify(colOrder));
+      const stringifiedColOrder = JSON.stringify(colOrder);
+
+      localStorage.setItem(colOrderKey, stringifiedColOrder);
+      localStorage.setItem(tabColOrderKey, stringifiedColOrder);
     }, [colOrder]);
 
     if (props.onSelectAll && props.onSelectRow) {
