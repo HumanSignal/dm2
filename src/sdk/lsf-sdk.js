@@ -20,7 +20,7 @@ import {
   FF_DEV_3034,
   FF_DEV_3734,
   FF_LSDV_4620_3_ML,
-  FF_OPTIC_7,
+  FF_OPTIC_2,
   isFF
 } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
@@ -760,12 +760,12 @@ export class LSFWrapper {
 
   onNextTask = (nextTaskId, nextAnnotationId) => {
     console.log(nextTaskId, nextAnnotationId);
-    if (isFF(FF_OPTIC_7)) this.saveDraft();
+    if (isFF(FF_OPTIC_2)) this.saveDraft();
     this.loadTask(nextTaskId, nextAnnotationId, true);
   }
   onPrevTask = (prevTaskId, prevAnnotationId) => {
     console.log(prevTaskId, prevAnnotationId);
-    if (isFF(FF_OPTIC_7)) this.saveDraft();
+    if (isFF(FF_OPTIC_2)) this.saveDraft();
     this.loadTask(prevTaskId, prevAnnotationId, true);
   }
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
