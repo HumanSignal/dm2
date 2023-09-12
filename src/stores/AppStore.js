@@ -1,6 +1,6 @@
 import { destroy, flow, types } from "mobx-state-tree";
 import { Modal } from "../components/Common/Modal/Modal";
-import { FF_DEV_2887, FF_LOPS_E_3, FF_OPTIC_2, isFF } from "../utils/feature-flags";
+import { FF_DEV_2887, FF_LOPS_E_3, isFF } from "../utils/feature-flags";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import { Action } from "./Action";
@@ -216,7 +216,6 @@ export const AppStore = types
       if (annotationID !== undefined) {
         self.annotationStore.setSelected(annotationID);
       } else {
-        if (isFF(FF_OPTIC_2)) self.LSF?.saveDraft();
         self.taskStore.setSelected(taskID);
 
         yield self.taskStore.loadTask(taskID, {

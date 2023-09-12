@@ -639,8 +639,8 @@ export class LSFWrapper {
     const res = await selected?.saveDraftImmediatelyWithResults();
     const status = res?.$meta?.status;
 
-    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
-    else this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
+    if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
+    else return this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
   };
   
   onSubmitDraft = async (studio, annotation, params = {}) => {
@@ -758,12 +758,12 @@ export class LSFWrapper {
     this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
   }
 
-  onNextTask = (nextTaskId, nextAnnotationId) => {
+  onNextTask = async (nextTaskId, nextAnnotationId) => {
     console.log(nextTaskId, nextAnnotationId);
     if (isFF(FF_OPTIC_2)) this.saveDraft();
     this.loadTask(nextTaskId, nextAnnotationId, true);
   }
-  onPrevTask = (prevTaskId, prevAnnotationId) => {
+  onPrevTask = async (prevTaskId, prevAnnotationId) => {
     console.log(prevTaskId, prevAnnotationId);
     if (isFF(FF_OPTIC_2)) this.saveDraft();
     this.loadTask(prevTaskId, prevAnnotationId, true);
