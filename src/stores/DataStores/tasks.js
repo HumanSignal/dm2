@@ -38,7 +38,7 @@ export const create = (columns) => {
     ...(isFF(FF_LOPS_E_3) ? { 
       _additional: types.optional(fileAttributes, {}),
       candidate_task_id: types.optional(types.string, ""),
-      exported: types.optional(types.array(exportedModel), []),
+      project: types.optional(types.array(exportedModel), []),
     } : {}),
   })
     .views((self) => ({
