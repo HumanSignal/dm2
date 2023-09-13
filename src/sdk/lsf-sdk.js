@@ -640,8 +640,8 @@ export class LSFWrapper {
     }
   };
 
-  saveDraft = async () => {
-    const selected = this.lsf?.annotationStore?.selected;
+  saveDraft = async (target = null) => {
+    const selected = target || this.lsf?.annotationStore?.selected;
     const hasChanges = !!selected?.history.undoIdx;
 
     if (!hasChanges || !selected) return;
@@ -778,16 +778,20 @@ export class LSFWrapper {
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
   onSelectAnnotation = (prevAnnotation, nextAnnotation, options) => {
-    this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
+    if (isFF(FF_OPTIC_2) && !!nextAnnotation?.history?.undoIdx) {
+      this.saveDraft(nextAnnotation).then(() => {
+        this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
+      });
+    } else {
+      this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
+    }
   }
 
   onNextTask = async (nextTaskId, nextAnnotationId) => {
-    console.log(nextTaskId, nextAnnotationId);
     if (isFF(FF_OPTIC_2)) this.saveDraft();
     this.loadTask(nextTaskId, nextAnnotationId, true);
   }
   onPrevTask = async (prevTaskId, prevAnnotationId) => {
-    console.log(prevTaskId, prevAnnotationId);
     if (isFF(FF_OPTIC_2)) this.saveDraft();
     this.loadTask(prevTaskId, prevAnnotationId, true);
   }
