@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";
-import { FF_DEV_2536, FF_DEV_4008, isFF } from '../../../utils/feature-flags';
+import { FF_DEV_2536, FF_DEV_4008, FF_OPTIC_2, isFF } from '../../../utils/feature-flags';
 import * as CellViews from "../../CellViews";
 import { Icon } from "../../Common/Icon/Icon";
 import { DEFAULT_PAGE_SIZE, getStoredPageSize, Pagination, setStoredPageSize } from "../../Common/Pagination/Pagination";
@@ -119,7 +119,7 @@ export const DataView = injector(
     }, [view]);
 
     const onRowClick = useCallback(
-      (item, e) => {
+      async (item, e) => {
         const itemID = item.task_id ?? item.id;
 
         if (store.SDK.type === 'DE') {
@@ -131,6 +131,9 @@ export const DataView = injector(
         } else if (e.metaKey || e.ctrlKey) {
           window.open(`./?task=${itemID}`, "_blank");
         } else {
+          console.log(item);
+          if (isFF(FF_OPTIC_2)) await self.LSF?.saveDraft();
+
           getRoot(view).startLabeling(item);
         }
       },

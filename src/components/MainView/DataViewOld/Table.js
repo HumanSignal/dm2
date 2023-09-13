@@ -115,7 +115,7 @@ export const DataView = injector(
     ]);
 
     const onRowClick = useCallback(
-      (item, e) => {
+      async (item, e) => {
         const itemID = item.task_id ?? item.id;
 
         if (store.SDK.type === 'DE') {
@@ -127,6 +127,7 @@ export const DataView = injector(
         } else if (e.metaKey || e.ctrlKey) {
           window.open(`./?task=${itemID}`, "_blank");
         } else {
+          await store._sdk.lsf?.saveDraft();
           getRoot(view).startLabeling(item);
         }
       },
