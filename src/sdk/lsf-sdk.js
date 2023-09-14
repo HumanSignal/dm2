@@ -156,6 +156,10 @@ export class LSFWrapper {
 
     console.log([...interfaces]);
     console.groupEnd();
+    const queueTotal = dm.store.project.reviewer_queue_total || dm.store.project.queue_total;
+    const queueDone = dm.store.project.queue_done;
+    const queueLeft = dm.store.project.queue_left;
+    const queuePosition = queueDone ? queueDone + 1 : queueLeft ? queueTotal - queueLeft + 1 : null;
 
     const lsfProperties = {
       // ensure that we are able to distinguish at component level if the app has fully hydrated.
@@ -170,7 +174,8 @@ export class LSFWrapper {
       forceAutoAnnotation: this.isInteractivePreannotations,
       forceAutoAcceptSuggestions: this.isInteractivePreannotations,
       messages: options.messages,
-      queueTotal: dm.store.project.queue_total,
+      queueTotal,
+      queuePosition,
 
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
