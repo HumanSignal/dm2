@@ -228,6 +228,7 @@ export const Tab = types
         Object.assign(tab, data);
       }
 
+      self.root.SDK.invoke("tabTypeChanged", { tab: tab.id, type: self.type });
       return tab;
     },
   }))
@@ -245,6 +246,7 @@ export const Tab = types
 
     setType(type) {
       self.type = type;
+      self.root.SDK.invoke("tabTypeChanged", { tab: self.id, type });
       self.save();
     },
 
