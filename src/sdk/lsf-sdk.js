@@ -159,7 +159,7 @@ export class LSFWrapper {
     const queueTotal = dm.store.project.reviewer_queue_total || dm.store.project.queue_total;
     const queueDone = dm.store.project.queue_done;
     const queueLeft = dm.store.project.queue_left;
-    const queuePosition = queueDone ? queueDone + 1 : queueLeft ? queueTotal - queueLeft + 1 : null;
+    const queuePosition = queueDone ? queueDone + 1 : queueLeft ? queueTotal - queueLeft + 1 : 1;
 
     const lsfProperties = {
       // ensure that we are able to distinguish at component level if the app has fully hydrated.
