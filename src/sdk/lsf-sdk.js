@@ -20,6 +20,7 @@ import {
   FF_DEV_3034,
   FF_DEV_3734,
   FF_LSDV_4620_3_ML,
+  FF_OPTIC_2,
   isFF
 } from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
@@ -170,6 +171,7 @@ export class LSFWrapper {
       forceAutoAnnotation: this.isInteractivePreannotations,
       forceAutoAcceptSuggestions: this.isInteractivePreannotations,
       messages: options.messages,
+
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
@@ -638,6 +640,18 @@ export class LSFWrapper {
     }
   };
 
+  saveDraft = async (target = null) => {
+    const selected = target || this.lsf?.annotationStore?.selected;
+    const hasChanges = !!selected?.history.undoIdx;
+
+    if (!hasChanges || !selected) return;
+    const res = await selected?.saveDraftImmediatelyWithResults();
+    const status = res?.$meta?.status;
+
+    if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
+    else return this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
+  };
+  
   onSubmitDraft = async (studio, annotation, params = {}) => {
     const annotationDoesntExist = !annotation.pk;
     const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
@@ -648,7 +662,10 @@ export class LSFWrapper {
 
     if (annotation.draftId > 0) {
       // draft has been already created
-      return this.datamanager.apiCall("updateDraft", { draftID: annotation.draftId }, data);
+      const res = await this.datamanager.apiCall("updateDraft", { draftID: annotation.draftId }, data);
+
+      return res;
+
     } else {
       let response;
 
@@ -662,6 +679,7 @@ export class LSFWrapper {
         );
       }
       response?.id && annotation.setDraftId(response?.id);
+      return response;
     }
   };
 
@@ -760,17 +778,21 @@ export class LSFWrapper {
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
   onSelectAnnotation = (prevAnnotation, nextAnnotation, options) => {
-    this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
+    if (isFF(FF_OPTIC_2) && !!nextAnnotation?.history?.undoIdx) {
+      this.saveDraft(nextAnnotation).then(() => {
+        this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
+      });
+    } else {
+      this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
+    }
   }
 
-  onNextTask = (nextTaskId, nextAnnotationId) => {
-    console.log(nextTaskId, nextAnnotationId);
-
+  onNextTask = async (nextTaskId, nextAnnotationId) => {
+    if (isFF(FF_OPTIC_2)) this.saveDraft();
     this.loadTask(nextTaskId, nextAnnotationId, true);
   }
-  onPrevTask = (prevTaskId, prevAnnotationId) => {
-    console.log(prevTaskId, prevAnnotationId);
-
+  onPrevTask = async (prevTaskId, prevAnnotationId) => {
+    if (isFF(FF_OPTIC_2)) this.saveDraft();
     this.loadTask(prevTaskId, prevAnnotationId, true);
   }
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true, exitStream) {
