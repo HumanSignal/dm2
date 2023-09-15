@@ -135,7 +135,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
   };
 
   const actionButtons = actions.map(ActionButton);
-  const recordTypeLabel = isFFLOPSE3 && store.SDK.type === "DE" ? "Item" : "Task";
+  const recordTypeLabel = isFFLOPSE3 && store.SDK.type === "DE" ? "Record" : "Task";
   
   return (
     <Dropdown.Trigger 
