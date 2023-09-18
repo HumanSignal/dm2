@@ -5,7 +5,6 @@ const webpack = require("webpack");
 const Dotenv = require("dotenv-webpack");
 const TerserPlugin = require("terser-webpack-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const { EnvironmentPlugin } = require("webpack");
 
 const workingDirectory = process.env.WORK_DIR
   ? path.resolve(__dirname, process.env.WORK_DIR)
@@ -38,7 +37,6 @@ const LOCAL_ENV = {
   NODE_ENV: DEFAULT_NODE_ENV,
   BUILD_NO_SERVER: BUILD.NO_SERVER,
   CSS_PREFIX: "dm-",
-  API_GATEWAY: "http://localhost:8081/api/dm",
   LS_ACCESS_TOKEN: "",
 };
 
@@ -208,7 +206,6 @@ const plugins = [
     allowEmptyValues: true,
     defaults: "./.env.defaults",
   }),
-  new EnvironmentPlugin(LOCAL_ENV),
   new MiniCssExtractPlugin({
     ...cssOutput(),
   }),
