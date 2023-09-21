@@ -642,7 +642,7 @@ export class LSFWrapper {
 
   saveDraft = async (target = null) => {
     const selected = target || this.lsf?.annotationStore?.selected;
-    const hasChanges = !!selected?.history.undoIdx;
+    const hasChanges = !!selected?.history.undoIdx && !selected?.submissionStarted;
 
     if (!hasChanges || !selected) return;
     const res = await selected?.saveDraftImmediatelyWithResults();
