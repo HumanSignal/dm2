@@ -12,6 +12,7 @@ import "./GridView.styl";
 import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { SkeletonLoader } from "../../Common/SkeletonLoader";
 
+const INFINITE_LOADER_THRESHOLD = 5;
 const GridHeader = observer(({ row, selected }) => {
   return (
     <Elem name="cell-header">
@@ -170,6 +171,7 @@ export const GridView = observer(
               itemCount={itemCount}
               isItemLoaded={isItemLoaded}
               loadMoreItems={loadMore}
+              threshold={INFINITE_LOADER_THRESHOLD}
             >
               {({ onItemsRendered, ref }) => (
                 <Elem

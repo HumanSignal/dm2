@@ -30,6 +30,7 @@ import { FieldsButton } from "../FieldsButton";
 import { LsGear, LsGearNewUI } from "../../../assets/icons";
 import { FF_DEV_3873, FF_LOPS_E_10, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 
+const INFINITE_LOADER_THRESHOLD = 5;
 const Decorator = (decoration) => {
   return {
     get(col) {
@@ -398,6 +399,7 @@ const StickyList = observer(
               itemCount={totalCount}
               loadMoreItems={loadMore}
               isItemLoaded={isItemLoaded}
+              threshold={INFINITE_LOADER_THRESHOLD}
             >
               {({ onItemsRendered, ref }) => (
                 <TableElem
