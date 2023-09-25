@@ -796,9 +796,9 @@ export class LSFWrapper {
     this.loadTask(prevTaskId, prevAnnotationId, true);
   }
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true, exitStream) {
-    const { taskID, currentAnnotation } = this;
+    const { taskID, currentAnnotation, task } = this;
     const unique_id = this.task.unique_lock_id;
-    const serializedAnnotation = this.prepareData(currentAnnotation, { includeId });
+    const serializedAnnotation = this.prepareData(currentAnnotation, { includeId }, task);
 
     if (unique_id) {
       serializedAnnotation.unique_id = unique_id;
@@ -840,7 +840,7 @@ export class LSFWrapper {
   }
 
   /** @private */
-  prepareData(annotation, { includeId, draft } = {}) {
+  prepareData(annotation, { includeId, draft } = {}, task) {
     const userGenerate =
       !annotation.userGenerate || annotation.sentUserGenerate;
     
@@ -856,6 +856,18 @@ export class LSFWrapper {
       parent_prediction: annotation.parent_prediction,
       parent_annotation: annotation.parent_annotation,
     };
+
+    const dynamicResult = [];
+    const tempResult = Object.assign({}, result.result[0]);
+
+    dynamicResult.push(result.result[0]);
+    for(let i = 1; i < Object.keys(task.data).length; i++){
+      tempResult.id = `ABv-94alrf0${i+1}`;
+      tempResult.from_name = `label${i+1}`;
+      tempResult.to_name = Object.keys(task.data)[i];
+      dynamicResult.push(tempResult);
+    }
+    result.result = dynamicResult;
 
     if (includeId && userGenerate) {
       result.id = parseInt(annotation.pk);

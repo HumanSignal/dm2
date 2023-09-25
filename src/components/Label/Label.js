@@ -1,5 +1,5 @@
-import { inject } from "mobx-react";
-import { observer } from "mobx-react-lite";
+import { inject, observer } from "mobx-react";
+// import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { FaCaretDown, FaChevronLeft, FaColumns } from "react-icons/fa";
 import { Block, Elem } from "../../utils/bem";
