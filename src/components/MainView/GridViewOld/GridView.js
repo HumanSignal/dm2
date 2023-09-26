@@ -170,6 +170,8 @@ export const GridView = observer(
               itemCount={itemCount}
               isItemLoaded={isItemLoaded}
               loadMoreItems={loadMore}
+              threshold={5}
+              minimumBatchSize={30}
             >
               {({ onItemsRendered, ref }) => (
                 <Elem
