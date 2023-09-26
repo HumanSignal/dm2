@@ -261,7 +261,6 @@ export const DataStore = (
         self.loading = false;
 
         getRoot(self).SDK.invoke('dataFetched', self);
-        return data;
       }),
 
       reload: flow(function* ({ id, query, interaction } = {}) {
