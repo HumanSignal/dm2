@@ -3,7 +3,7 @@
  * }} AppOptions */
 
 import React, { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
+import ReactDOM from "react-dom";
 import { App } from "../components/App/App";
 import { AppStore } from "../stores/AppStore";
 import * as DataStores from "../stores/DataStores";
@@ -74,13 +74,7 @@ export const createApp = async (rootNode, datamanager) => {
 
   window.DM = appStore;
 
-  const root = ReactDOM.createRoot(rootNode);
-
-  root.render(
-    <StrictMode>
-      <App app={appStore} />
-    </StrictMode>
-  );
+  ReactDOM.render(<App app={appStore} />, rootNode);
 
   return appStore;
 };
