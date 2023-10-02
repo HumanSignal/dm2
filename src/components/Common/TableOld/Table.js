@@ -398,6 +398,8 @@ const StickyList = observer(
               itemCount={totalCount}
               loadMoreItems={loadMore}
               isItemLoaded={isItemLoaded}
+              threshold={5}
+              minimumBatchSize={30}
             >
               {({ onItemsRendered, ref }) => (
                 <TableElem
