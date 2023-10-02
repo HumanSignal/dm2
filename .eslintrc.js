@@ -1,8 +1,4 @@
 module.exports = {
-  env: {
-    browser: true,
-    es2021: true,
-  },
   globals: {
     process: true,
     module: true,
@@ -17,7 +13,6 @@ module.exports = {
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:@nx/react",
     "../../.eslintrc.json"
   ],
   parser: "@typescript-eslint/parser",

@@ -281,8 +281,8 @@ export const Table = observer(
     }, [data]);
     const tableWrapper = useRef();
 
-    const right = tableWrapper.current?.firstChild?.firstChild.offsetWidth -
-      tableWrapper.current?.firstChild?.firstChild?.firstChild.offsetWidth || 0;
+    const right = tableWrapper.current?.firstChild?.firstChild?.offsetWidth -
+      tableWrapper.current?.firstChild?.firstChild?.firstChild?.offsetWidth || 0;
 
     return (
       <>

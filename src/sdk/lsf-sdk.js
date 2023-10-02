@@ -317,6 +317,8 @@ export class LSFWrapper {
   }
 
   setLSFTask(task, annotationID, fromHistory) {
+    if (!this.lsf) return;
+
     const hasChangedTasks = this.lsf?.task?.id !== task?.id && task?.id;
 
     this.setLoading(true, hasChangedTasks);
