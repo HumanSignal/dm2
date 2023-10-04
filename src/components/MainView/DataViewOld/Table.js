@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";
-import { FF_DEV_2536, FF_DEV_4008, isFF } from '../../../utils/feature-flags';
+import { FF_DEV_2536, FF_DEV_4008, FF_OPTIC_2, isFF } from '../../../utils/feature-flags';
 import * as CellViews from "../../CellViews";
 import { Icon } from "../../Common/Icon/Icon";
 import { ImportButton } from "../../Common/SDKButtons";
@@ -13,9 +13,7 @@ import { Table } from "../../Common/TableOld/Table";
 import { Tag } from "../../Common/Tag/Tag";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import { GridView } from "../GridViewOld/GridView";
-import { CandidateTaskView } from "../../CandidateTaskView";
 import "./Table.styl";
-import { modal } from "../../Common/Modal/Modal";
 import { Button } from "../../Common/Button/Button";
 
 const injector = inject(({ store }) => {
@@ -63,10 +61,11 @@ export const DataView = injector(
       return props.focusedItem;
     }, [props.focusedItem]);
 
-    const loadMore = useCallback(() => {
-      if (!dataStore.hasNextPage || dataStore.loading) return;
+    const loadMore = useCallback(async () => {
+      if (!dataStore.hasNextPage || dataStore.loading) return new Promise();
 
-      dataStore.fetch({ interaction: "scroll" });
+      await dataStore.fetch({ interaction: "scroll" });
+      return new Promise();
     }, [dataStore]);
 
     const isItemLoaded = useCallback(
@@ -115,18 +114,17 @@ export const DataView = injector(
     ]);
 
     const onRowClick = useCallback(
-      (item, e) => {
+      async (item, e) => {
         const itemID = item.task_id ?? item.id;
 
         if (store.SDK.type === 'DE') {
-          modal({
-            title: `${itemID} Preview`,
-            style:{ width: `80vw` },
-            body: <CandidateTaskView item={item} columns={columns}/>,
-          });
+          store.SDK.invoke('recordPreview', item, columns, getRoot(view).taskStore.associatedList);
         } else if (e.metaKey || e.ctrlKey) {
           window.open(`./?task=${itemID}`, "_blank");
         } else {
+          if (isFF(FF_OPTIC_2)) {
+            await store._sdk.lsf?.saveDraft();
+          }
           getRoot(view).startLabeling(item);
         }
       },
