@@ -152,7 +152,6 @@ export const GridView = observer(
 
     const isItemLoaded = React.useCallback(
       (index) => {
-        console.log("item loaded", index, columnCount, data.length, view.dataStore.hasNextPage);
         const rowIndex = index * columnCount;
         const rowFullfilled =
           data.slice(rowIndex, columnCount).length === columnCount;
