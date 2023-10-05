@@ -65,7 +65,7 @@ export const DataView = injector(
       if (!dataStore.hasNextPage || dataStore.loading) return Promise.resolve();
 
       await dataStore.fetch({ interaction: "scroll" });
-      return new Promise(resolve => resolve());
+      return Promise.resolve();
     }, [dataStore]);
 
     const isItemLoaded = useCallback(
