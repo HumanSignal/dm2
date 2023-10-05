@@ -62,7 +62,7 @@ export const DataView = injector(
     }, [props.focusedItem]);
 
     const loadMore = useCallback(async () => {
-      if (!dataStore.hasNextPage || dataStore.loading) return new Promise(resolve => resolve());
+      if (!dataStore.hasNextPage || dataStore.loading) return Promise.resolve();
 
       await dataStore.fetch({ interaction: "scroll" });
       return new Promise(resolve => resolve());
