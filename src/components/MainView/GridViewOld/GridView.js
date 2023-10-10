@@ -172,7 +172,7 @@ export const GridView = observer(
               itemCount={itemCount}
               isItemLoaded={isItemLoaded}
               loadMoreItems={loadMore}
-              threshold={5}
+              threshold={Math.floor(ITEMS_PER_PAGE / 2)}
               minimumBatchSize={ITEMS_PER_PAGE}
             >
               {({ onItemsRendered, ref }) => (
@@ -183,7 +183,7 @@ export const GridView = observer(
                   height={height}
                   name="list"
                   rowHeight={rowHeight + 42}
-                  overscanRowCount={ITEMS_PER_PAGE-1}
+                  overscanRowCount={ITEMS_PER_PAGE}
                   columnCount={columnCount}
                   columnWidth={width / columnCount - 9.5}
                   rowCount={itemCount}
