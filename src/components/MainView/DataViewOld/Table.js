@@ -1,6 +1,6 @@
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";
@@ -57,16 +57,21 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
+    const [currentViewType, setCurrentViewType] = useState(view.type);
     const focusedItem = useMemo(() => {
       return props.focusedItem;
     }, [props.focusedItem]);
 
     const loadMore = useCallback(async () => {
+      if (view.type !== currentViewType) {
+        setCurrentViewType(view.type);
+        return Promise.resolve();
+      }
       if (!dataStore.hasNextPage || dataStore.loading) return Promise.resolve();
 
       await dataStore.fetch({ interaction: "scroll" });
       return Promise.resolve();
-    }, [dataStore]);
+    }, [dataStore, view, currentViewType]);
 
     const isItemLoaded = useCallback(
       (data, index) => {
