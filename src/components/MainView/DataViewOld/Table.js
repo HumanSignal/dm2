@@ -63,7 +63,9 @@ export const DataView = injector(
     }, [props.focusedItem]);
 
     const loadMore = useCallback(async () => {
-      if (view.type !== currentViewType) {
+      if (view.type !== currentViewType && view.type === "grid") {
+        /* this weird check is because how the infinite scroll library handles in grid view where it seems to over fetch too early, 
+        but seems to handle correctly in list view */
         setCurrentViewType(view.type);
         return Promise.resolve();
       }
