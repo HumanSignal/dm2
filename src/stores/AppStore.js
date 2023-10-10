@@ -432,6 +432,7 @@ export const AppStore = types
                 "task_number",
                 "annotation_count",
                 "num_tasks_with_annotations",
+                "queue_total",
               ].join(","),
             }) : null),
           }
