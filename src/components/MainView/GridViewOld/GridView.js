@@ -12,8 +12,6 @@ import "./GridView.styl";
 import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 import { SkeletonLoader } from "../../Common/SkeletonLoader";
 
-const ITEMS_PER_PAGE = 30;
-
 const GridHeader = observer(({ row, selected }) => {
   return (
     <Elem name="cell-header">
@@ -172,8 +170,8 @@ export const GridView = observer(
               itemCount={itemCount}
               isItemLoaded={isItemLoaded}
               loadMoreItems={loadMore}
-              threshold={Math.floor(ITEMS_PER_PAGE / 2)}
-              minimumBatchSize={ITEMS_PER_PAGE}
+              threshold={Math.floor(view.dataStore.pageSize / 2)}
+              minimumBatchSize={view.dataStore.pageSize}
             >
               {({ onItemsRendered, ref }) => (
                 <Elem
@@ -183,7 +181,7 @@ export const GridView = observer(
                   height={height}
                   name="list"
                   rowHeight={rowHeight + 42}
-                  overscanRowCount={ITEMS_PER_PAGE}
+                  overscanRowCount={view.dataStore.pageSize}
                   columnCount={columnCount}
                   columnWidth={width / columnCount - 9.5}
                   rowCount={itemCount}

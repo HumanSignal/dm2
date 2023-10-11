@@ -1,6 +1,6 @@
 import { inject } from "mobx-react";
 import { getRoot } from "mobx-state-tree";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";
@@ -57,23 +57,16 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
-    const [currentViewType, setCurrentViewType] = useState(view.type);
     const focusedItem = useMemo(() => {
       return props.focusedItem;
     }, [props.focusedItem]);
 
     const loadMore = useCallback(async () => {
-      if (view.type !== currentViewType && view.type === "grid") {
-        /* this weird check is because how the infinite scroll library handles in grid view where it seems to over fetch too early, 
-        but seems to handle correctly in list view */
-        setCurrentViewType(view.type);
-        return Promise.resolve();
-      }
       if (!dataStore.hasNextPage || dataStore.loading) return Promise.resolve();
 
       await dataStore.fetch({ interaction: "scroll" });
       return Promise.resolve();
-    }, [dataStore, view, currentViewType]);
+    }, [dataStore]);
 
     const isItemLoaded = useCallback(
       (data, index) => {
