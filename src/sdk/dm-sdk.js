@@ -35,7 +35,7 @@
  * toolbar?: string,
  * panels?: Record<string, any>[]
  * spinner?: import("react").ReactNode
- * apiTransform?: Record<string, Record<string, Function>
+ * apiTransform?: Record<string, Record<string, Function>>
  * tabControls?: { add?: boolean, delete?: boolean, edit?: boolean, duplicate?: boolean },
  * }} DMConfig
  */
