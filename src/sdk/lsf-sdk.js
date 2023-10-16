@@ -563,7 +563,12 @@ export class LSFWrapper {
         { body },
         // don't react on duplicated annotations error
         { errorHandler: result => result.status === 409 },
-      );
+      ).then(result => {
+        const status = result?.$meta?.status;
+
+        if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Annotation saved successfully", type: "info" });
+        else if (status !== undefined) return this.datamanager.invoke("toast", { message: "There was an error saving your Annotation", type: "error" });
+      });
     }, false, loadNext, exitStream);
   };
 
@@ -587,7 +592,12 @@ export class LSFWrapper {
         {
           body: serializedAnnotation,
         },
-      );
+      ).then(result => {
+        const status = result?.$meta?.status;
+
+        if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Annotation updated successfully", type: "info" });
+        else if (status !== undefined) return this.datamanager.invoke("toast", { message: "There was an error updating your Annotation", type: "error" });
+      });
     });
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
@@ -649,7 +659,7 @@ export class LSFWrapper {
   saveDraft = async (target = null) => {
     const selected = target || this.lsf?.annotationStore?.selected;
     const hasChanges = !!selected?.history.undoIdx && !selected?.submissionStarted;
-
+    
     if (!hasChanges || !selected) return;
     const res = await selected?.saveDraftImmediatelyWithResults();
     const status = res?.$meta?.status;
