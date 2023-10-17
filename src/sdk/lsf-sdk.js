@@ -176,6 +176,7 @@ export class LSFWrapper {
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
+      onProxyUrl: this.onProxyUrl,
       onStorageInitialized: this.onStorageInitialized,
       onSubmitAnnotation: this.onSubmitAnnotation,
       onUpdateAnnotation: this.onUpdateAnnotation,
@@ -532,6 +533,24 @@ export class LSFWrapper {
   /** @private */
   onTaskLoad = async (...args) => {
     this.datamanager.invoke("onSelectAnnotation", ...args);
+  };
+
+  /**
+   * Proxy urls to presign them if storage is connected
+   * @param {*} _ LS instance
+   * @param {string} url http/https are not proxied and returned as is
+   */
+  onProxyUrl = async (_, url) => {
+    const parsedUrl = new URL(url);
+
+    // return same url if http(s) or data
+    if (["http:", "https:"].includes(parsedUrl.protocol)) return url;
+
+    const api = this.datamanager.api;
+    const taskID = this.task.id;
+    const fileuri = btoa(url);
+
+    return api.createUrl(api.endpoints.presignUrlForTask, { taskID, fileuri });
   };
 
   onStorageInitialized = async (ls) => {

@@ -62,6 +62,9 @@ export const APIConfig = {
     /** Single annotation */
     annotation: "/tasks/:taskID/annotations/:id",
 
+    /** Presign url */
+    presignUrlForTask: "/tasks/:taskID/presign",
+
     /** Submit annotation */
     submitAnnotation: {
       path: "/../tasks/:taskID/annotations",
