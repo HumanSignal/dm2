@@ -646,14 +646,14 @@ export class LSFWrapper {
     }
   };
 
-  waitForDraftSavingToComplete = async (selected) => {
+  waitForDraftSavingToComplete = async (selected, timeInitialed) => {
     return new Promise((resolve, reject) => {
       const checkDraftSaving = async (i) => {
         if (i > 50) return reject(false);
-        if (!selected?.isDraftSaving) {
+        if (new Date(selected.draftSaved) > timeInitialed) {
           resolve(true);
         } else {
-          setTimeout(checkDraftSaving, 100);
+          setTimeout(() => checkDraftSaving(i++), 100);
         }
       };
 
@@ -667,7 +667,7 @@ export class LSFWrapper {
     let status = undefined;
 
     if (selected?.isDraftSaving) {
-      const res = await this.waitForDraftSavingToComplete(selected);
+      const res = await this.waitForDraftSavingToComplete(selected, Date.now());
 
       status = res ? 200 : 500;
     } else if (hasChanges && selected) {
