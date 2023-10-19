@@ -646,13 +646,35 @@ export class LSFWrapper {
     }
   };
 
+  waitForDraftSavingToComplete = async (selected) => {
+    return new Promise((resolve, reject) => {
+      const checkDraftSaving = async (i) => {
+        if (i > 50) return reject(false);
+        if (!selected?.isDraftSaving) {
+          resolve(true);
+        } else {
+          setTimeout(checkDraftSaving, 100);
+        }
+      };
+
+      checkDraftSaving();
+    });
+  };
+
   saveDraft = async (target = null) => {
     const selected = target || this.lsf?.annotationStore?.selected;
     const hasChanges = !!selected?.history.undoIdx && !selected?.submissionStarted;
+    let status = undefined;
 
-    if (!hasChanges || !selected) return;
-    const res = await selected?.saveDraftImmediatelyWithResults();
-    const status = res?.$meta?.status;
+    if (selected?.isDraftSaving) {
+      const res = await this.waitForDraftSavingToComplete(selected);
+
+      status = res ? 200 : 500;
+    } else if (hasChanges && selected) {
+      const res = await selected?.saveDraftImmediatelyWithResults();
+
+      status = res?.$meta?.status;
+    }
 
     if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
     else if (status !== undefined) return this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
