@@ -556,20 +556,19 @@ export class LSFWrapper {
     const exitStream = this.shouldExitStream();
     const loadNext = exitStream ? false : this.shouldLoadNext();
     
-    await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
+    const result = await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall(
         "submitAnnotation",
         { taskID },
         { body },
         // don't react on duplicated annotations error
         { errorHandler: result => result.status === 409 },
-      ).then(result => {
-        const status = result.$meta?.status;
-
-        if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Annotation saved successfully", type: "info" });
-        else if (status !== undefined) return this.datamanager.invoke("toast", { message: "There was an error saving your Annotation", type: "error" });
-      });
+      );
     }, false, loadNext, exitStream);
+    const status = result.$meta?.status;
+
+    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Annotation saved successfully", type: "info" });
+    else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error saving your Annotation", type: "error" });
   };
 
   /** @private */
@@ -592,13 +591,12 @@ export class LSFWrapper {
         {
           body: serializedAnnotation,
         },
-      ).then(result => {
-        const status = result?.$meta?.status;
-
-        if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Annotation updated successfully", type: "info" });
-        else if (status !== undefined) return this.datamanager.invoke("toast", { message: "There was an error updating your Annotation", type: "error" });
-      });
+      );
     });
+    const status = result?.$meta?.status;
+
+    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Annotation updated successfully", type: "info" });
+    else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error updating your Annotation", type: "error" });
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
 
@@ -853,6 +851,7 @@ export class LSFWrapper {
     } else {
       await this.loadTask();
     }
+    return result;
   }
 
   /** @private */
