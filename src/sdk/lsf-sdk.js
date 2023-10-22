@@ -647,13 +647,15 @@ export class LSFWrapper {
   };
 
   waitForDraftSavingToComplete = async (selected, timeInitialed) => {
+
     return new Promise((resolve, reject) => {
-      const checkDraftSaving = async (i) => {
-        if (i > 50) return reject(false);
+      const checkDraftSaving = async (i = 0) => {
+        if (i > 20) return reject(false);
+        i++;
         if (new Date(selected.draftSaved) > timeInitialed) {
           resolve(true);
         } else {
-          setTimeout(() => checkDraftSaving(i++), 100);
+          setTimeout(() => checkDraftSaving(i), 100);
         }
       };
 
@@ -663,14 +665,16 @@ export class LSFWrapper {
 
   saveDraft = async (target = null) => {
     const selected = target || this.lsf?.annotationStore?.selected;
-    const hasChanges = !!selected?.history.undoIdx && !selected?.submissionStarted;
+    const hasChanges = selected.history.hasChanges;
+    const submissionInProgress  = selected?.submissionStarted;
+    const draftIsFresh = new Date(selected.draftSaved) > new Date() - 2000;
     let status = undefined;
 
-    if (selected?.isDraftSaving) {
-      const res = await this.waitForDraftSavingToComplete(selected, Date.now());
+    if (selected?.isDraftSaving || draftIsFresh) {
+      const res = await this.waitForDraftSavingToComplete(selected, new Date());
 
       status = res ? 200 : 500;
-    } else if (hasChanges && selected) {
+    } else if (hasChanges && selected && !submissionInProgress) {
       const res = await selected?.saveDraftImmediatelyWithResults();
 
       status = res?.$meta?.status;
