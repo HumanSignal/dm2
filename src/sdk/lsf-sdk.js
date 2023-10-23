@@ -667,7 +667,7 @@ export class LSFWrapper {
     const selected = target || this.lsf?.annotationStore?.selected;
     const hasChanges = selected.history.hasChanges;
     const submissionInProgress  = selected?.submissionStarted;
-    const draftIsFresh = new Date(selected.draftSaved) > new Date() - 2000;
+    const draftIsFresh = new Date(selected.draftSaved) > new Date() - 500;
     let status = undefined;
 
     if (selected?.isDraftSaving || draftIsFresh) {
