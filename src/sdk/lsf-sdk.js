@@ -665,6 +665,7 @@ export class LSFWrapper {
 
   saveDraft = async (target = null) => {
     const selected = target || this.lsf?.annotationStore?.selected;
+    const draftSelected = selected.draftSelected;
     const hasChanges = selected.history.hasChanges;
     const submissionInProgress  = selected?.submissionStarted;
     const draftIsFresh = new Date(selected.draftSaved) > new Date() - 500;
@@ -674,7 +675,7 @@ export class LSFWrapper {
       const res = await this.waitForDraftSavingToComplete(selected, new Date());
 
       status = res ? 200 : 500;
-    } else if (hasChanges && selected && !submissionInProgress) {
+    } else if (hasChanges && selected && !submissionInProgress & draftSelected) {
       const res = await selected?.saveDraftImmediatelyWithResults();
 
       status = res?.$meta?.status;
@@ -682,6 +683,7 @@ export class LSFWrapper {
 
     if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
     else if (status !== undefined) return this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
+    return;
   };
   
   onSubmitDraft = async (studio, annotation, params = {}) => {
