@@ -17,6 +17,8 @@ import { History } from '../../utils/history';
 import { FF_LOPS_12, isFF } from "../../utils/feature-flags";
 import { CustomJSON, StringOrNumberID } from "../types";
 
+const DEFAULT_THRESHOLD = { from: 0, to: 1 };
+
 export const Tab = types
   .model("View", {
     id: StringOrNumberID,
@@ -51,6 +53,7 @@ export const Tab = types
     editable: true,
     deletable: true,
     semantic_search: types.optional(types.array(CustomJSON), []),
+    threshold: types.optional(CustomJSON, DEFAULT_THRESHOLD),
   })
   .volatile(() => {
     const defaultWidth = getComputedStyle(document.body).getPropertyValue("--menu-sidebar-width").replace("px", "").trim();
@@ -215,6 +218,7 @@ export const Tab = types
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
         gridWidth: self.gridWidth,
         semantic_search: self.semantic_search?.toJSON() ?? [],
+        threshold: self.threshold ?? DEFAULT_THRESHOLD,
       };
 
       if (self.saved || apiVersion === 1) {
@@ -303,6 +307,14 @@ export const Tab = types
 
     setSemanticSearch(semanticSearchList) {
       self.semantic_search = semanticSearchList ?? [];
+      return self.save();
+    },
+    
+    setSemanticSearchThreshold(_from, _to) {
+      const from = _from ?? self.threshold.from;
+      const to = _to ?? self.threshold.to;
+
+      self.threshold = { from, to };
       return self.save();
     },
 
