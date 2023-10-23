@@ -208,6 +208,8 @@ export class LSFWrapper {
 
       this.lsfInstance = new LSF(this.root, settings);
 
+      this.lsfInstance.on('proxyUrl', this.onProxyUrl);
+
       const names = Array.from(this.datamanager.callbacks.keys())
         .filter(k => k.startsWith('lsf:'));
 
@@ -546,7 +548,7 @@ export class LSFWrapper {
    * @param {*} _ LS instance
    * @param {string} url http/https are not proxied and returned as is
    */
-  onProxyUrl = async (_, url) => {
+  onProxyUrl = (_, url) => {
     const parsedUrl = new URL(url);
 
     // return same url if http(s) or data
@@ -556,7 +558,7 @@ export class LSFWrapper {
     const taskID = this.task.id;
     const fileuri = btoa(url);
 
-    return api.createUrl(api.endpoints.presignUrlForTask, { taskID, fileuri });
+    return api.createUrl(api.endpoints.presignUrlForTask, { taskID, fileuri }).url;
   };
 
   onStorageInitialized = async (ls) => {
@@ -574,7 +576,7 @@ export class LSFWrapper {
   onSubmitAnnotation = async () => {
     const exitStream = this.shouldExitStream();
     const loadNext = exitStream ? false : this.shouldLoadNext();
-    
+
     await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall(
         "submitAnnotation",
@@ -676,7 +678,7 @@ export class LSFWrapper {
     if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
     else if (status !== undefined) return this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
   };
-  
+
   onSubmitDraft = async (studio, annotation, params = {}) => {
     const annotationDoesntExist = !annotation.pk;
     const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
@@ -868,7 +870,7 @@ export class LSFWrapper {
   prepareData(annotation, { includeId, draft } = {}) {
     const userGenerate =
       !annotation.userGenerate || annotation.sentUserGenerate;
-    
+
     const sessionTime = (new Date() - annotation.loadedDate) / 1000;
     const submittedTime = Number(annotation.leadTime ?? 0);
     const draftTime = Number(this.task.drafts[0]?.lead_time ?? 0);
