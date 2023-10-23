@@ -683,7 +683,6 @@ export class LSFWrapper {
 
     if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
     else if (status !== undefined) return this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
-    return;
   };
   
   onSubmitDraft = async (studio, annotation, params = {}) => {
