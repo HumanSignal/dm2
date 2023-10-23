@@ -17,7 +17,7 @@ import { History } from '../../utils/history';
 import { FF_LOPS_12, isFF } from "../../utils/feature-flags";
 import { CustomJSON, StringOrNumberID } from "../types";
 
-const DEFAULT_THRESHOLD = { from: 0, to: 1 };
+const DEFAULT_THRESHOLD = { min: 0, max: 1 };
 
 export const Tab = types
   .model("View", {
@@ -310,11 +310,11 @@ export const Tab = types
       return self.save();
     },
     
-    setSemanticSearchThreshold(_from, _to) {
-      const from = _from ?? self.threshold.from;
-      const to = _to ?? self.threshold.to;
+    setSemanticSearchThreshold(_min, _max) {
+      const min = _min ?? self.threshold.min;
+      const max = _max ?? self.threshold.max;
 
-      self.threshold = { from, to };
+      self.threshold = { min, max };
       return self.save();
     },
 
