@@ -63,7 +63,10 @@ export const APIConfig = {
     annotation: "/tasks/:taskID/annotations/:id",
 
     /** Presign url */
-    presignUrlForTask: "/tasks/:taskID/presign",
+    presignUrlForTask: "/../../tasks/:taskID/presign",
+
+    /** Presign url */
+    presignUrlForProject: "/../../projects/:projectId/presign",
 
     /** Submit annotation */
     submitAnnotation: {
@@ -145,7 +148,7 @@ export const APIConfig = {
     },
 
     /** List comments ?annotation=<annotation_id> **/
-    listComments: "/../comments", 
+    listComments: "/../comments",
 
     /** Create a new comment **/
     createComment: {

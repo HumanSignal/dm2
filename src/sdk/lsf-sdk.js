@@ -182,7 +182,7 @@ export class LSFWrapper {
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
-      onProxyUrl: this.onProxyUrl,
+      onPresignUrlForProject: this.onPresignUrlForProject,
       onStorageInitialized: this.onStorageInitialized,
       onSubmitAnnotation: this.onSubmitAnnotation,
       onUpdateAnnotation: this.onUpdateAnnotation,
@@ -208,7 +208,7 @@ export class LSFWrapper {
 
       this.lsfInstance = new LSF(this.root, settings);
 
-      this.lsfInstance.on('proxyUrl', this.onProxyUrl);
+      this.lsfInstance.on('presignUrlForProject', this.onPresignUrlForProject);
 
       const names = Array.from(this.datamanager.callbacks.keys())
         .filter(k => k.startsWith('lsf:'));
@@ -548,17 +548,17 @@ export class LSFWrapper {
    * @param {*} _ LS instance
    * @param {string} url http/https are not proxied and returned as is
    */
-  onProxyUrl = (_, url) => {
+  onPresignUrlForProject = (_, url) => {
     const parsedUrl = new URL(url);
 
     // return same url if http(s) or data
     if (["http:", "https:"].includes(parsedUrl.protocol)) return url;
 
     const api = this.datamanager.api;
-    const taskID = this.task.id;
+    const projectId = this.project.id;
     const fileuri = btoa(url);
 
-    return api.createUrl(api.endpoints.presignUrlForTask, { taskID, fileuri }).url;
+    return api.createUrl(api.endpoints.presignUrlForProject, { projectId, fileuri }).url;
   };
 
   onStorageInitialized = async (ls) => {
