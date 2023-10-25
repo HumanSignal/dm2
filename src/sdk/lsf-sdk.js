@@ -28,6 +28,7 @@ import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
+import { when } from 'mobx';
 
 const DEFAULT_INTERFACES = [
   "basic",
@@ -78,6 +79,9 @@ export class LSFWrapper {
   /** @type {boolean} */
   isInteractivePreannotations = false;
 
+  /** @type {boolean} */
+  navigatingAwayFromDraft = false;
+
   /** @type {function} */
   interfacesModifier = (interfaces) => interfaces;
 
@@ -97,7 +101,7 @@ export class LSFWrapper {
     this.initialAnnotation = options.annotation;
     this.interfacesModifier = options.interfacesModifier;
     this.isInteractivePreannotations = options.isInteractivePreannotations ?? false;
-    // this.history = this.labelStream ? new LSFHistory(this) : null;
+    this.navigatingAwayFromDraft = false;
 
     let interfaces = [...DEFAULT_INTERFACES];
 
@@ -646,43 +650,31 @@ export class LSFWrapper {
     }
   };
 
-  waitForDraftSavingToComplete = async (selected, timeInitialed) => {
+  draftToast = (status) => {
 
-    return new Promise((resolve, reject) => {
-      const checkDraftSaving = async (i = 0) => {
-        if (i > 20) return reject(false);
-        i++;
-        if (new Date(selected.draftSaved) > timeInitialed) {
-          resolve(true);
-        } else {
-          setTimeout(() => checkDraftSaving(i), 100);
-        }
-      };
+    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
+    else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
 
-      checkDraftSaving();
-    });
-  };
+  }
 
   saveDraft = async (target = null) => {
     const selected = target || this.lsf?.annotationStore?.selected;
     const draftSelected = selected.draftSelected;
     const hasChanges = selected.history.hasChanges;
     const submissionInProgress  = selected?.submissionStarted;
-    const draftIsFresh = new Date(selected.draftSaved) > new Date() - 500;
-    let status = undefined;
+    const draftIsFresh = new Date(selected.draftSaved) > new Date() - selected.autosaveDelay;
 
     if (selected?.isDraftSaving || draftIsFresh) {
-      const res = await this.waitForDraftSavingToComplete(selected, new Date());
-
-      status = res ? 200 : 500;
-    } else if (hasChanges && selected && !submissionInProgress & draftSelected) {
-      const res = await selected?.saveDraftImmediatelyWithResults();
-
-      status = res?.$meta?.status;
+      await when(() => !selected.isDraftSaving);
+      this.draftToast(200);
     }
+    else if (hasChanges && selected && !submissionInProgress & draftSelected) {
+      const res = await selected?.saveDraftImmediatelyWithResults();
+      const status = res?.$meta?.status;
 
-    if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
-    else if (status !== undefined) return this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
+      this.draftToast(status);
+
+    }
   };
   
   onSubmitDraft = async (studio, annotation, params = {}) => {
