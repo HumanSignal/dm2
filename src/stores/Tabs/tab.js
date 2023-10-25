@@ -15,7 +15,7 @@ import { TabHiddenColumns } from "./tab_hidden_columns";
 import { TabSelectedItems } from "./tab_selected_items";
 import { History } from '../../utils/history';
 import { FF_DEV_1470, FF_LOPS_12, isFF } from "../../utils/feature-flags";
-import { CustomJSON, StringOrNumberID } from "../types";
+import { CustomJSON, StringOrNumberID, ThresholdType } from "../types";
 
 const DEFAULT_THRESHOLD = { min: 0, max: 1 };
 
@@ -53,7 +53,7 @@ export const Tab = types
     editable: true,
     deletable: true,
     semantic_search: types.optional(types.array(CustomJSON), []),
-    threshold: types.optional(CustomJSON, DEFAULT_THRESHOLD),
+    threshold: types.optional(ThresholdType, DEFAULT_THRESHOLD),
   })
   .volatile(() => {
     const defaultWidth = getComputedStyle(document.body).getPropertyValue("--menu-sidebar-width").replace("px", "").trim();
@@ -218,7 +218,7 @@ export const Tab = types
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
         gridWidth: self.gridWidth,
         semantic_search: self.semantic_search?.toJSON() ?? [],
-        threshold: self.threshold ?? DEFAULT_THRESHOLD,
+        threshold: self.threshold?.toJSON() ?? DEFAULT_THRESHOLD,
       };
 
       if (self.saved || apiVersion === 1) {
