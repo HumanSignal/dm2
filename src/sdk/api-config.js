@@ -65,7 +65,7 @@ export const APIConfig = {
     /** Presign url */
     presignUrlForTask: "/../../tasks/:taskID/presign",
 
-    /** Presign url */
+    /** Presign url outside of task context */
     presignUrlForProject: "/../../projects/:projectId/presign",
 
     /** Submit annotation */
