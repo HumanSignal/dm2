@@ -663,21 +663,19 @@ export class LSFWrapper {
 
   saveDraft = async (target = null) => {
     const selected = target || this.lsf?.annotationStore?.selected;
-    const draftSelected = selected.draftSelected;
     const hasChanges = selected.history.hasChanges;
     const submissionInProgress  = selected?.submissionStarted;
     const draftIsFresh = new Date(selected.draftSaved) > new Date() - selected.autosaveDelay;
-
+    
     if (selected?.isDraftSaving || draftIsFresh) {
       await when(() => !selected.isDraftSaving);
       this.draftToast(200);
     }
-    else if (hasChanges && selected && !submissionInProgress & draftSelected) {
+    else if (hasChanges && selected && !submissionInProgress) {
       const res = await selected?.saveDraftImmediatelyWithResults();
       const status = res?.$meta?.status;
-
+      
       this.draftToast(status);
-
     }
   };
   
