@@ -30,7 +30,7 @@
     "start": "node dev-server.js",
     "test": "echo \"Error: no test specified\" && exit 0",
     "lint": "yarn run eslint ./src"
-   },
+  },
   "author": "Heartex, Inc.",
   "license": "ISC",
   "devDependencies": {
@@ -80,7 +80,7 @@
     "react-dom": "^17.0.2",
     "react-hot-loader": "^4.12.20",
     "react-hotkeys-hook": "^2.4.0",
-    "react-icons": "^3.11.0",
+    "react-icons": "^4.11.0",
     "react-virtualized-auto-sizer": "^1.0.2",
     "react-window": "^1.8.6",
     "react-window-infinite-loader": "^1.0.5",

@@ -1,6 +1,6 @@
 import { observer } from "mobx-react";
 import React, { Fragment } from "react";
-import { FaTrash } from "react-icons/fa";
+import { LiaTimesSolid } from "react-icons/lia";
 import { BemWithSpecifiContext } from "../../../utils/bem";
 import { Button } from "../../Common/Button/Button";
 import { Icon } from "../../Common/Icon/Icon";
@@ -90,7 +90,7 @@ export const FilterLine = observer(({
             e.stopPropagation();
             filter.delete();
           }}
-          icon={<Icon icon={FaTrash} size={12} />}
+          icon={<Icon icon={LiaTimesSolid} size={12} />}
         />
       </Elem>
     </Block>

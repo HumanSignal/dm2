@@ -1,6 +1,8 @@
 .filters
   background-color white
   position relative
+  padding-top 15px
+  min-width 625px
 
   &:not(&_sidebar)
     padding-top 10px
@@ -37,8 +39,7 @@
 
   &__actions
     display flex
-    margin-top 10px
-    padding 0 10px 10px
+    padding 0 16px 16px
     justify-content space-between
 
   &__empty
@@ -47,7 +48,7 @@
     color #585858
 
   &__list
-    padding 0 10px
+    padding 0 10px 15px
 
     &_withFilters
       display grid
@@ -61,6 +62,17 @@
       grid-auto-flow row
       align-items center
 
+  .button
+    --button-color rgba(9, 109, 217, 1)
+    box-shadow none
+    border 1px solid rgba(9, 109, 217, 0.16)
+    height 32px
+    font-size 16px
+    font-style normal
+    font-weight 500
+    line-height 24px
+    letter-spacing 0.15px
+    padding 8px 16px
 .filter-data-tag
   margin 1px
   font-size 12px
