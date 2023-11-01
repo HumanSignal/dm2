@@ -182,6 +182,7 @@ export class LSFWrapper {
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
+      onPresignUrlForProject: this.onPresignUrlForProject,
       onStorageInitialized: this.onStorageInitialized,
       onSubmitAnnotation: this.onSubmitAnnotation,
       onUpdateAnnotation: this.onUpdateAnnotation,
@@ -206,6 +207,8 @@ export class LSFWrapper {
       const LSF = await resolveLabelStudio();
 
       this.lsfInstance = new LSF(this.root, settings);
+
+      this.lsfInstance.on('presignUrlForProject', this.onPresignUrlForProject);
 
       const names = Array.from(this.datamanager.callbacks.keys())
         .filter(k => k.startsWith('lsf:'));
@@ -540,6 +543,24 @@ export class LSFWrapper {
     this.datamanager.invoke("onSelectAnnotation", ...args);
   };
 
+  /**
+   * Proxy urls to presign them if storage is connected
+   * @param {*} _ LS instance
+   * @param {string} url http/https are not proxied and returned as is
+   */
+  onPresignUrlForProject = (_, url) => {
+    const parsedUrl = new URL(url);
+
+    // return same url if http(s)
+    if (["http:", "https:"].includes(parsedUrl.protocol)) return url;
+
+    const api = this.datamanager.api;
+    const projectId = this.project.id;
+    const fileuri = btoa(url);
+
+    return api.createUrl(api.endpoints.presignUrlForProject, { projectId, fileuri }).url;
+  };
+
   onStorageInitialized = async (ls) => {
     this.datamanager.invoke("onStorageInitialized", ls);
 
@@ -555,7 +576,7 @@ export class LSFWrapper {
   onSubmitAnnotation = async () => {
     const exitStream = this.shouldExitStream();
     const loadNext = exitStream ? false : this.shouldLoadNext();
-    
+
     const result = await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall(
         "submitAnnotation",
@@ -666,7 +687,7 @@ export class LSFWrapper {
     const hasChanges = selected.history.hasChanges;
     const submissionInProgress  = selected?.submissionStarted;
     const draftIsFresh = new Date(selected.draftSaved) > new Date() - selected.autosaveDelay;
-    
+
     if (selected?.isDraftSaving || draftIsFresh) {
       await when(() => !selected.isDraftSaving);
       this.draftToast(200);
@@ -674,11 +695,11 @@ export class LSFWrapper {
     else if (hasChanges && selected && !submissionInProgress) {
       const res = await selected?.saveDraftImmediatelyWithResults();
       const status = res?.$meta?.status;
-      
+
       this.draftToast(status);
     }
   };
-  
+
   onSubmitDraft = async (studio, annotation, params = {}) => {
     const annotationDoesntExist = !annotation.pk;
     const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
@@ -871,7 +892,7 @@ export class LSFWrapper {
   prepareData(annotation, { includeId, draft } = {}) {
     const userGenerate =
       !annotation.userGenerate || annotation.sentUserGenerate;
-    
+
     const sessionTime = (new Date() - annotation.loadedDate) / 1000;
     const submittedTime = Number(annotation.leadTime ?? 0);
     const draftTime = Number(this.task.drafts[0]?.lead_time ?? 0);
