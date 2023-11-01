@@ -28,6 +28,7 @@ import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
+import { when } from 'mobx';
 
 const DEFAULT_INTERFACES = [
   "basic",
@@ -97,7 +98,6 @@ export class LSFWrapper {
     this.initialAnnotation = options.annotation;
     this.interfacesModifier = options.interfacesModifier;
     this.isInteractivePreannotations = options.isInteractivePreannotations ?? false;
-    // this.history = this.labelStream ? new LSFHistory(this) : null;
 
     let interfaces = [...DEFAULT_INTERFACES];
 
@@ -551,7 +551,7 @@ export class LSFWrapper {
   onPresignUrlForProject = (_, url) => {
     const parsedUrl = new URL(url);
 
-    // return same url if http(s) or data
+    // return same url if http(s)
     if (["http:", "https:"].includes(parsedUrl.protocol)) return url;
 
     const api = this.datamanager.api;
@@ -577,7 +577,7 @@ export class LSFWrapper {
     const exitStream = this.shouldExitStream();
     const loadNext = exitStream ? false : this.shouldLoadNext();
 
-    await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
+    const result = await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall(
         "submitAnnotation",
         { taskID },
@@ -586,6 +586,10 @@ export class LSFWrapper {
         { errorHandler: result => result.status === 409 },
       );
     }, false, loadNext, exitStream);
+    const status = result?.$meta?.status;
+
+    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Annotation saved successfully", type: "info" });
+    else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error saving your Annotation", type: "error" });
   };
 
   /** @private */
@@ -610,6 +614,10 @@ export class LSFWrapper {
         },
       );
     });
+    const status = result?.$meta?.status;
+
+    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Annotation updated successfully", type: "info" });
+    else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error updating your Annotation", type: "error" });
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
 
@@ -667,16 +675,29 @@ export class LSFWrapper {
     }
   };
 
+  draftToast = (status) => {
+
+    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
+    else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
+
+  }
+
   saveDraft = async (target = null) => {
     const selected = target || this.lsf?.annotationStore?.selected;
-    const hasChanges = !!selected?.history.undoIdx && !selected?.submissionStarted;
+    const hasChanges = selected.history.hasChanges;
+    const submissionInProgress  = selected?.submissionStarted;
+    const draftIsFresh = new Date(selected.draftSaved) > new Date() - selected.autosaveDelay;
 
-    if (!hasChanges || !selected) return;
-    const res = await selected?.saveDraftImmediatelyWithResults();
-    const status = res?.$meta?.status;
+    if (selected?.isDraftSaving || draftIsFresh) {
+      await when(() => !selected.isDraftSaving);
+      this.draftToast(200);
+    }
+    else if (hasChanges && selected && !submissionInProgress) {
+      const res = await selected?.saveDraftImmediatelyWithResults();
+      const status = res?.$meta?.status;
 
-    if (status === 200 || status === 201) return this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
-    else if (status !== undefined) return this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
+      this.draftToast(status);
+    }
   };
 
   onSubmitDraft = async (studio, annotation, params = {}) => {
@@ -864,6 +885,7 @@ export class LSFWrapper {
     } else {
       await this.loadTask();
     }
+    return result;
   }
 
   /** @private */

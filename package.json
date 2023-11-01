@@ -96,6 +96,9 @@
     "webpack-cli": "^5.0.1",
     "webpack-dev-server": "^4.13.3"
   },
+  "resolutions": {
+    "postcss": "8.4.31"
+  },
   "nohoist": [
     "**/babel-preset-react-app/@babel/runtime"
   ],
