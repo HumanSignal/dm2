@@ -2,11 +2,10 @@
   background-color white
   position relative
   padding-top 15px
-  min-width 625px
 
   &:not(&_sidebar)
     padding-top 10px
-    min-width: 400px;
+    min-width 625px
     border-radius: 2px;
     box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12),
       0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
@@ -73,6 +72,17 @@
     line-height 24px
     letter-spacing 0.15px
     padding 8px 16px
+    &_withIcon
+      padding 0
+    .icon
+      svg
+        width 18px
+        height 18px
+
+  &__list
+    .button
+      border 0 none
+      --button-color rgba(137, 128, 152, 1)
 .filter-data-tag
   margin 1px
   font-size 12px
