@@ -20,7 +20,6 @@ export const ViewColumnType = types.enumeration([
   "HyperText",
   "TimeSeries",
   "Unknown",
-  "SemanticSearch",
 ]);
 
 export const ViewColumnTypeShort = (type) => {

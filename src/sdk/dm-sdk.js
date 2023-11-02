@@ -135,6 +135,7 @@ export class DataManager {
     edit: true,
     duplicate: true,
   }
+  customColumns = {};
 
   /** @type {"dm" | "labelops"} */
   type = "dm";
@@ -199,7 +200,7 @@ export class DataManager {
         this.actions.set(action.id, { action, callback });
       });
     }
-
+    this.customColumns = config.customColumns ?? {};
     this.type = config.type ?? "dm";
 
     this.initApp();

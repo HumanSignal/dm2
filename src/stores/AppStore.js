@@ -60,6 +60,8 @@ export const AppStore = types
     interfaces: types.map(types.boolean),
 
     toolbar: types.string,
+
+    customColumns: types.optional(CustomJSON, {}),
   })
   .views((self) => ({
     /** @returns {import("../sdk/dm-sdk").DataManager} */

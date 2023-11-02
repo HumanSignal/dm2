@@ -8,6 +8,7 @@ import { Tag } from "../../Common/Tag/Tag";
 import { FilterDropdown } from "../FilterDropdown";
 import "./FilterLine.styl";
 import { FilterOperation } from "./FilterOperation";
+import { getRoot } from "mobx-state-tree";
 
 const { Block, Elem } = BemWithSpecifiContext();
 
@@ -38,6 +39,8 @@ export const FilterLine = observer(({
   sidebar,
   dropdownClassName,
 }) => {
+  const CustomFilterLine = getRoot(view).SDK?.customColumns[filter.field.alias];
+  
   return (
     <Block name="filter-line" tag={Fragment}>
       <GroupWrapper wrap={sidebar}>
@@ -76,12 +79,22 @@ export const FilterLine = observer(({
         </Elem>
       </GroupWrapper>
       <GroupWrapper wrap={sidebar}>
-        <FilterOperation
-          filter={filter}
-          value={filter.currentValue}
-          operator={filter.operator}
-          field={filter.field}
-        />
+        {CustomFilterLine ? (
+          <CustomFilterLine 
+            filter={filter}
+            value={filter.currentValue}
+            operator={filter.operator}
+            field={filter.field} 
+            view={view} 
+          />
+        ) : (
+          <FilterOperation
+            filter={filter}
+            value={filter.currentValue}
+            operator={filter.operator}
+            field={filter.field}
+          />
+        )}
       </GroupWrapper>
       <Elem name="remove">
         <Button

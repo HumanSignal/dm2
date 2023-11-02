@@ -99,7 +99,7 @@ export const TabFilter = types
     get cellView() {
       const col = self.filter.field;
 
-      return CellViews[col.type] ?? CellViews[toStudlyCaps(col.alias)];
+      return getRoot(self).SDK?.customColumns[col.alias] ?? CellViews[col.type] ?? CellViews[toStudlyCaps(col.alias)];
     },
   }))
   .volatile(() => ({
