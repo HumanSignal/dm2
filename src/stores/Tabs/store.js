@@ -98,7 +98,7 @@ export const TabStore = types
     get columns() {
       const cols = self.columnsTargetMap ?? new Map();
 
-      return cols.get(self.selected?.target ?? "tasks") ?? [];
+      return (cols.get(self.selected?.target ?? "tasks") ?? []).filter(col => col.type !== "SemanticSearch");
     },
 
     get dataStore() {
@@ -450,6 +450,15 @@ export const TabStore = types
           }
         });
       });
+
+      if (getRoot(self).SDK.type === "DE") {
+        self.availableFilters.push({
+          id: "filter:tasks:distance",
+          type: "SemanticSearch",
+          field: "tasks:distance",
+          schema: null,
+        });
+      }
 
       self.defaultHidden = TabHiddenColumns.create(hiddenColumns);
     },
