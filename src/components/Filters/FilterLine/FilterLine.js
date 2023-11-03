@@ -80,13 +80,15 @@ export const FilterLine = observer(({
       </GroupWrapper>
       <GroupWrapper wrap={sidebar}>
         {CustomFilterLine ? (
-          <CustomFilterLine 
-            filter={filter}
-            value={filter.currentValue}
-            operator={filter.operator}
-            field={filter.field} 
-            view={view} 
-          />
+          <Elem name='column' mod={{ customFilterLine: true }}>
+            <CustomFilterLine 
+              filter={filter}
+              value={filter.currentValue}
+              operator={filter.operator}
+              field={filter.field} 
+              view={view} 
+            />
+          </Elem>
         ) : (
           <FilterOperation
             filter={filter}
