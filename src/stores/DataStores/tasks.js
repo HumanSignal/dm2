@@ -218,17 +218,19 @@ export const create = (columns) => {
       },
 
       postProcessData(data) {
-        const { total_annotations, total_predictions } = data;
+        const { total_annotations, total_predictions, similarity_score_upper_limit } = data;
 
         if (total_annotations !== null)
           self.totalAnnotations = total_annotations;
         if (total_predictions !== null)
           self.totalPredictions = total_predictions;
+        if (total_predictions !== null)
+          self.similarityUpperLimit = similarity_score_upper_limit;
       },
 
     }))
     .preProcessSnapshot((snapshot) => {
-      const { total_annotations, total_predictions, ...sn } = snapshot;
+      const { total_annotations, total_predictions, similarity_score_upper_limit, ...sn } = snapshot;
 
       return {
         ...sn,
@@ -239,6 +241,7 @@ export const create = (columns) => {
         })),
         totalAnnotations: total_annotations,
         totalPredictions: total_predictions,
+        similarityUpperLimit: similarity_score_upper_limit,
       };
     });
 };

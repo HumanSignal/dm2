@@ -11,6 +11,7 @@ import { FiltersSidebar } from "../Filters/FiltersSidebar/FilterSidebar";
 import { DataView } from "../MainView";
 import "./DataManager.styl";
 import { Toolbar } from "./Toolbar/Toolbar";
+import { DEFAULT_THRESHOLD } from "../../stores/Tabs";
 
 const injector = inject(({ store }) => {
   const { sidebarEnabled, sidebarVisible } = store.viewsStore ?? {};
@@ -38,6 +39,7 @@ const summaryInjector = inject(({ store }) => {
       totalFoundTasks: taskStore?.total ?? 0,
       totalAnnotations: taskStore?.totalAnnotations ?? 0,
       totalPredictions: taskStore?.totalPredictions ?? 0,
+      similarityUpperLimit: taskStore?.similarityUpperLimit ?? DEFAULT_THRESHOLD.max,
       cloudSync: project.target_syncing ?? project.source_syncing ?? false,
     };
   }
