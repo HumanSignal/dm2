@@ -30,16 +30,19 @@ const Conjunction = observer(({ index, view }) => {
 const GroupWrapper = ({ children, wrap = false }) => {
   return wrap ? <Elem name="group">{children}</Elem> : children;
 };
-const CustomFilterInjector = inject((props) => props);
-const CustomFilter = CustomFilterInjector(({ CustomFilterLine, ...rest }) => <CustomFilterLine {...rest} />);
+const injector = inject(({ store }) => ({
+  store,
+}));
+const CustomFilter = ({ CustomFilterLine, ...rest }) => <CustomFilterLine {...rest} />;
 
-export const FilterLine = observer(({
+export const FilterLine = injector(observer(({
   filter,
   availableFilters,
   index,
   view,
   sidebar,
   dropdownClassName,
+  store,
 }) => {
   const CustomFilterLine = getRoot(view).SDK?.customColumns(
     filter,
@@ -48,6 +51,7 @@ export const FilterLine = observer(({
     view,
     sidebar,
     dropdownClassName,
+    store,
   )?.[filter.field.alias];
 
   return (
@@ -119,4 +123,4 @@ export const FilterLine = observer(({
     </Block>
   );
 },
-);
+));
