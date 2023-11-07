@@ -1,4 +1,4 @@
-import { observer } from "mobx-react";
+import { inject, observer } from "mobx-react";
 import React, { Fragment } from "react";
 import { LiaTimesSolid } from "react-icons/lia";
 import { BemWithSpecifiContext } from "../../../utils/bem";
@@ -30,6 +30,8 @@ const Conjunction = observer(({ index, view }) => {
 const GroupWrapper = ({ children, wrap = false }) => {
   return wrap ? <Elem name="group">{children}</Elem> : children;
 };
+const CustomFilterInjector = inject((props) => props);
+const CustomFilter = CustomFilterInjector(({ CustomFilterLine, ...rest }) => <CustomFilterLine {...rest} />);
 
 export const FilterLine = observer(({
   filter,
@@ -39,8 +41,15 @@ export const FilterLine = observer(({
   sidebar,
   dropdownClassName,
 }) => {
-  const CustomFilterLine = getRoot(view).SDK?.customColumns[filter.field.alias];
-  
+  const CustomFilterLine = getRoot(view).SDK?.customColumns(
+    filter,
+    availableFilters,
+    index,
+    view,
+    sidebar,
+    dropdownClassName,
+  )?.[filter.field.alias];
+
   return (
     <Block name="filter-line" tag={Fragment}>
       <GroupWrapper wrap={sidebar}>
@@ -81,12 +90,11 @@ export const FilterLine = observer(({
       <GroupWrapper wrap={sidebar}>
         {CustomFilterLine ? (
           <Elem name='column' mod={{ customFilterLine: true }}>
-            <CustomFilterLine 
+            <CustomFilter 
               filter={filter}
-              value={filter.currentValue}
-              operator={filter.operator}
-              field={filter.field} 
+              field={filter.field}
               view={view} 
+              CustomFilterLine={CustomFilterLine}
             />
           </Elem>
         ) : (
