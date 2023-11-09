@@ -54,9 +54,10 @@ export const TabFilter = types
     },
 
     get component() {
-      const operationsList = Filters[self.filter.currentType] ?? Filters.String;
+      const rootSDK = getRoot(self)?.SDK;
+      const operationsList = rootSDK?.customColumns?.[self.filter.field.alias]?.operationsList ?? Filters[self.filter.currentType] ?? Filters.String;
 
-      return allowedFilterOperations(operationsList, getRoot(self)?.SDK?.type);
+      return allowedFilterOperations(operationsList, rootSDK?.type);
     },
 
     get componentValueType() {

@@ -44,7 +44,7 @@ export const FilterLine = injector(observer(({
   dropdownClassName,
   store,
 }) => {
-  const CustomFilterLine = getRoot(view).SDK?.customColumns(
+  const CustomFilterLine = getRoot(view).SDK?.customColumns?.[filter.field.alias]?.renderFilter?.(
     filter,
     availableFilters,
     index,
@@ -52,7 +52,7 @@ export const FilterLine = injector(observer(({
     sidebar,
     dropdownClassName,
     store,
-  )?.[filter.field.alias];
+  );
 
   return (
     <Block name="filter-line" tag={Fragment}>
@@ -72,7 +72,16 @@ export const FilterLine = injector(observer(({
             width={80}
             dropdownWidth={120}
             dropdownClassName={dropdownClassName}
-            onChange={(value) => filter.setFilterDelayed(value)}
+            onChange={(value) => {
+              const selectedAlias = value.split(":").pop();
+              const customFilter = getRoot(view).SDK?.customColumns?.[selectedAlias];
+
+              if (customFilter) {
+                console.log("Custom filter selected", customFilter);
+                
+              }
+              filter.setFilterDelayed(value);
+            }}
             optionRender={({ item: { original: filter } }) => (
               <Elem name="selector">
                 {filter.field.title}
