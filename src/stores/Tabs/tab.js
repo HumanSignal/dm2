@@ -17,8 +17,6 @@ import { History } from '../../utils/history';
 import { FF_DEV_1470, FF_LOPS_12, isFF } from "../../utils/feature-flags";
 import { CustomJSON, StringOrNumberID, ThresholdType } from "../types";
 
-export const DEFAULT_THRESHOLD = { min: 0, max: 10 };
-
 export const Tab = types
   .model("View", {
     id: StringOrNumberID,
@@ -53,7 +51,7 @@ export const Tab = types
     editable: true,
     deletable: true,
     semantic_search: types.optional(types.array(CustomJSON), []),
-    threshold: types.optional(ThresholdType, DEFAULT_THRESHOLD),
+    threshold: types.optional(types.maybeNull(ThresholdType), null),
   })
   .volatile(() => {
     const defaultWidth = getComputedStyle(document.body).getPropertyValue("--menu-sidebar-width").replace("px", "").trim();
@@ -218,7 +216,7 @@ export const Tab = types
         columnsDisplayType: self.columnsDisplayType.toPOJO(),
         gridWidth: self.gridWidth,
         semantic_search: self.semantic_search?.toJSON() ?? [],
-        threshold: self.threshold?.toJSON() ?? DEFAULT_THRESHOLD,
+        threshold: self.threshold?.toJSON(),
       };
 
       if (self.saved || apiVersion === 1) {
@@ -307,11 +305,19 @@ export const Tab = types
 
     setSemanticSearch(semanticSearchList) {
       self.semantic_search = semanticSearchList ?? [];
+      if (self.semantic_search.length === 0) {
+        self.threshold = null;
+      }
       return self.save();
     },
     
     setSemanticSearchThreshold(min, max) {
       self.threshold = { min, max };
+      return self.save();
+    },
+
+    clearSemanticSearchThreshold() {
+      self.threshold = null;
       return self.save();
     },
 
