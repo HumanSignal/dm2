@@ -44,7 +44,8 @@ export const FilterLine = injector(observer(({
   dropdownClassName,
   store,
 }) => {
-  const CustomFilterLine = getRoot(view).SDK?.customColumns?.[filter.field.alias]?.renderFilter?.(
+  const customColumn = getRoot(view).SDK?.customColumns?.[filter.field.alias];
+  const CustomFilterLine = customColumn?.renderFilter?.(
     filter,
     availableFilters,
     index,
@@ -76,10 +77,7 @@ export const FilterLine = injector(observer(({
               const selectedAlias = value.split(":").pop();
               const customFilter = getRoot(view).SDK?.customColumns?.[selectedAlias];
 
-              if (customFilter) {
-                console.log("Custom filter selected", customFilter);
-                
-              }
+              customFilter?.onFilterAdd?.(filter, view);
               filter.setFilterDelayed(value);
             }}
             optionRender={({ item: { original: filter } }) => (
@@ -124,6 +122,9 @@ export const FilterLine = injector(observer(({
           type="link"
           onClick={(e) => {
             e.stopPropagation();
+            const customFilter = getRoot(view).SDK?.customColumns?.[filter.field.alias];
+
+            customFilter?.onFilterDelete?.(filter, view);
             filter.delete();
           }}
           icon={<Icon icon={LiaTimesSolid} size={12} />}

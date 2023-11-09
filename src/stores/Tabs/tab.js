@@ -303,12 +303,12 @@ export const Tab = types
       self.selected = ids;
     },
 
-    setSemanticSearch(semanticSearchList) {
+    setSemanticSearch(semanticSearchList, save = true) {
       self.semantic_search = semanticSearchList ?? [];
       if (self.semantic_search.length === 0) {
         self.threshold = null;
       }
-      return self.save();
+      return save && self.save();
     },
     
     setSemanticSearchThreshold(min, max) {
@@ -316,9 +316,9 @@ export const Tab = types
       return self.save();
     },
 
-    clearSemanticSearchThreshold() {
+    clearSemanticSearchThreshold(save = true) {
       self.threshold = null;
-      return self.save();
+      return save && self.save();
     },
 
     selectAll() {
