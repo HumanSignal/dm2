@@ -12,6 +12,8 @@ import { DataView } from "../MainView";
 import "./DataManager.styl";
 import { Toolbar } from "./Toolbar/Toolbar";
 
+const SIMILARITY_UPPER_LIMIT_PRECISION = 10;
+
 const injector = inject(({ store }) => {
   const { sidebarEnabled, sidebarVisible } = store.viewsStore ?? {};
 
@@ -33,12 +35,17 @@ const summaryInjector = inject(({ store }) => {
       SDK,
     };
   } else {
+    const similarityUpperLimit = taskStore?.similarityUpperLimit ? 
+      (Math.ceil(taskStore?.similarityUpperLimit * SIMILARITY_UPPER_LIMIT_PRECISION) / SIMILARITY_UPPER_LIMIT_PRECISION) 
+      : 
+      null;
+      
     return {
       totalTasks: project?.task_count ?? project?.task_number ?? 0,
       totalFoundTasks: taskStore?.total ?? 0,
       totalAnnotations: taskStore?.totalAnnotations ?? 0,
       totalPredictions: taskStore?.totalPredictions ?? 0,
-      similarityUpperLimit: taskStore?.similarityUpperLimit ?? 10,
+      similarityUpperLimit,
       cloudSync: project.target_syncing ?? project.source_syncing ?? false,
     };
   }
