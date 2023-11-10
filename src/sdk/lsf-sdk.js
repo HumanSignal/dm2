@@ -576,7 +576,6 @@ export class LSFWrapper {
   onSubmitAnnotation = async () => {
     const exitStream = this.shouldExitStream();
     const loadNext = exitStream ? false : this.shouldLoadNext();
-
     const result = await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall(
         "submitAnnotation",
