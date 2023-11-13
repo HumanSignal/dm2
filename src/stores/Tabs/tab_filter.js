@@ -75,8 +75,10 @@ export const TabFilter = types
 
     get isValidFilter() {
       const { currentValue: value } = self;
-
-      if (!isDefined(value) || isBlank(value)) {
+      const rootSDK = getRoot(self)?.SDK;
+      const customFilter = rootSDK?.customColumns?.[self.filter.field.alias];
+      
+      if ((customFilter && !customFilter.isFilterValid(self)) || !isDefined(value) || isBlank(value)) {
         return false;
       } else if (FilterValueRange.is(value)) {
         return isDefined(value.min) && isDefined(value.max);
@@ -138,7 +140,7 @@ export const TabFilter = types
         self.setOperator(self.component[0].key);
       }
 
-      if (save) self.saved();
+      if (save) self.save();
     },
 
     setFilterDelayed(value) {

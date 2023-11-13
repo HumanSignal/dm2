@@ -77,8 +77,7 @@ export const FilterLine = injector(observer(({
               const selectedAlias = value.split(":").pop();
               const customFilter = getRoot(view).SDK?.customColumns?.[selectedAlias];
 
-              customFilter?.onFilterAdd?.(filter, view);
-              filter.setFilterDelayed(value);
+              customFilter ? customFilter.onFilterAdd?.(value, filter, view) : filter.setFilterDelayed(value);
             }}
             optionRender={({ item: { original: filter } }) => (
               <Elem name="selector">
