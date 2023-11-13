@@ -1,6 +1,6 @@
 import { inject } from "mobx-react";
 import React from "react";
-import { FaCaretSquareRight, FaPlus } from "react-icons/fa";
+import { BsPin } from "react-icons/bs";
 import { Block, cn, Elem } from "../../utils/bem";
 import { Button } from "../Common/Button/Button";
 import { Icon } from "../Common/Icon/Icon";
@@ -51,6 +51,28 @@ export const Filters = injector(({ views, currentView, filters }) => {
 
   return (
     <Block name="filters" mod={{ sidebar: sidebarEnabled }}>
+      <Elem name="actions">
+        <Button
+          type="primary"
+          size="small"
+          onClick={() => currentView.createFilter()}
+        >
+          Add Filter
+        </Button>
+
+        {!sidebarEnabled ? (
+          <Tooltip title="Pin to sidebar">
+            <Button
+              type="link"
+              size="small"
+              about="Pin to sidebar"
+              onClick={() => views.expandFilters()}
+              style={{ display: "inline-flex", alignItems: "center", border: "none" }}
+              icon={<Icon icon={BsPin} size={18} />}
+            />
+          </Tooltip>
+        ) : null}
+      </Elem>
       <Elem name="list" mod={{ withFilters: !!filters.length }}>
         {filters.length ? (
           filters.map((filter, i) => (
@@ -68,29 +90,6 @@ export const Filters = injector(({ views, currentView, filters }) => {
         ) : (
           <Elem name="empty">No filters applied</Elem>
         )}
-      </Elem>
-      <Elem name="actions">
-        <Button
-          type="primary"
-          size="small"
-          onClick={() => currentView.createFilter()}
-          icon={<FaPlus />}
-        >
-          Add {filters.length ? "Another Filter" : "Filter"}
-        </Button>
-
-        {!sidebarEnabled ? (
-          <Tooltip title="Pin to sidebar">
-            <Button
-              type="link"
-              size="small"
-              about="Pin to sidebar"
-              onClick={() => views.expandFilters()}
-              style={{ display: "inline-flex", alignItems: "center" }}
-              icon={<Icon icon={FaCaretSquareRight} size={18} />}
-            />
-          </Tooltip>
-        ) : null}
       </Elem>
     </Block>
   );

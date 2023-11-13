@@ -54,9 +54,10 @@ export const TabFilter = types
     },
 
     get component() {
-      const operationsList = Filters[self.filter.currentType] ?? Filters.String;
+      const rootSDK = getRoot(self)?.SDK;
+      const operationsList = rootSDK?.customColumns?.[self.filter.field.alias]?.operationsList ?? Filters[self.filter.currentType] ?? Filters.String;
 
-      return allowedFilterOperations(operationsList, getRoot(self)?.SDK?.type);
+      return allowedFilterOperations(operationsList, rootSDK?.type);
     },
 
     get componentValueType() {
@@ -74,8 +75,10 @@ export const TabFilter = types
 
     get isValidFilter() {
       const { currentValue: value } = self;
-
-      if (!isDefined(value) || isBlank(value)) {
+      const rootSDK = getRoot(self)?.SDK;
+      const customFilter = rootSDK?.customColumns?.[self.filter.field.alias];
+      
+      if ((customFilter && !customFilter.isFilterValid(self)) || !isDefined(value) || isBlank(value)) {
         return false;
       } else if (FilterValueRange.is(value)) {
         return isDefined(value.min) && isDefined(value.max);
@@ -99,7 +102,7 @@ export const TabFilter = types
     get cellView() {
       const col = self.filter.field;
 
-      return CellViews[col.type] ?? CellViews[toStudlyCaps(col.alias)];
+      return getRoot(self).SDK?.customColumns[col.alias] ?? CellViews[col.type] ?? CellViews[toStudlyCaps(col.alias)];
     },
   }))
   .volatile(() => ({
@@ -137,7 +140,7 @@ export const TabFilter = types
         self.setOperator(self.component[0].key);
       }
 
-      if (save) self.saved();
+      if (save) self.save();
     },
 
     setFilterDelayed(value) {
