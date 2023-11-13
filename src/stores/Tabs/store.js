@@ -372,6 +372,8 @@ export const TabStore = types
     fetchColumns() {
       const columns = self.columnsRaw;
       const targets = unique(columns.map((c) => c.target));
+      const rootSDK = getRoot(self).SDK;
+      const customColumns = rootSDK.customColumns ?? {};
       const hiddenColumns = {};
       const addedColumns = new Set();
 
@@ -434,7 +436,9 @@ export const TabStore = types
 
         addedColumns.add(column.id);
 
-        if (!col.children && column.filterable && (col?.visibility_defaults?.filter ?? true)) {
+        if (!col.children && column.filterable && (
+          (col?.visibility_defaults?.filter ?? true) || (customColumns[col.id]?.filterable ?? false)
+        )) {
           self.availableFilters.push({
             id: `filter:${columnID}`,
             type: col.type,
