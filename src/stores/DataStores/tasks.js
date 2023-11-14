@@ -7,6 +7,7 @@ import { DynamicModel, registerModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 import { FF_DEV_2536, FF_LOPS_E_3, isFF } from "../../utils/feature-flags";
 
+const SIMILARITY_UPPER_LIMIT_PRECISION = 10;
 const fileAttributes = types.model({
   "certainty": types.optional(types.maybeNull(types.number), 0),
   "distance": types.optional(types.maybeNull(types.number), 0),
@@ -225,7 +226,7 @@ export const create = (columns) => {
         if (total_predictions !== null)
           self.totalPredictions = total_predictions;
         if (total_predictions !== null)
-          self.similarityUpperLimit = similarity_score_upper_limit;
+          self.similarityUpperLimit = (Math.ceil(similarity_score_upper_limit * SIMILARITY_UPPER_LIMIT_PRECISION) / SIMILARITY_UPPER_LIMIT_PRECISION);
       },
 
     }))
