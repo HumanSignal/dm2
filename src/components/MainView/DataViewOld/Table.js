@@ -140,7 +140,7 @@ export const DataView = injector(
               <Spinner size="large" />
             </Block>
           );
-        } else if (store.SDK.type === 'DE' && datasetStatusID === 'failed') {
+        } else if (store.SDK.type === 'DE' && ['canceled', 'failed'].includes(datasetStatusID)) {
           return (
             <Block name="syncInProgress">
               <Elem name='title' tag="h3">Failed to sync data</Elem>
@@ -148,6 +148,13 @@ export const DataView = injector(
               <Button onClick={async () => {
                 window.open('./settings/storage');
               }}>Manage Storage</Button>
+            </Block>
+          );
+        } else if (store.SDK.type === 'DE' && (total === 0 || data.length === 0 || !hasData) && datasetStatusID === 'completed') {
+          return (
+            <Block name="syncInProgress">
+              <Elem name='title' tag="h3">Nothing found</Elem>
+              <Elem name='text'>Try adjusting the filter or semantic search parameters</Elem>
             </Block>
           );
         } else if (store.SDK.type === 'DE' && (total === 0 || data.length === 0 || !hasData)) {
