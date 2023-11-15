@@ -15,6 +15,8 @@ import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import { GridView } from "../GridViewOld/GridView";
 import "./Table.styl";
 import { Button } from "../../Common/Button/Button";
+import { useState } from "react";
+import { useEffect } from "react";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
@@ -57,6 +59,7 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
+    const [datasetStatusID, setDatasetStatusID] = useState(store.SDK.dataset?.status?.id);
     const focusedItem = useMemo(() => {
       return props.focusedItem;
     }, [props.focusedItem]);
@@ -137,7 +140,7 @@ export const DataView = injector(
               <Spinner size="large" />
             </Block>
           );
-        } else if (store.SDK.type === 'DE' && store.SDK.dataset?.status?.id === 'failed') {
+        } else if (store.SDK.type === 'DE' && datasetStatusID === 'failed') {
           return (
             <Block name="syncInProgress">
               <Elem name='title' tag="h3">Failed to sync data</Elem>
@@ -184,7 +187,7 @@ export const DataView = injector(
 
         return content;
       },
-      [hasData, isLabeling, isLoading, total],
+      [hasData, isLabeling, isLoading, total, datasetStatusID],
     );
 
     const decorationContent = (col) => {
@@ -319,6 +322,15 @@ export const DataView = injector(
 
       if (highlighted && !highlighted.isSelected) store.startLabeling(highlighted);
     });
+
+    useEffect(() => {
+      const updateDatasetStatus = (dataset) => (
+        dataset?.status?.id && setDatasetStatusID(dataset?.status?.id)
+      );
+
+      getRoot(store).SDK.on("datasetUpdated", updateDatasetStatus);
+      return () => getRoot(store).SDK.off("datasetUpdated", updateDatasetStatus);
+    }, []);
 
     // Render the UI for your table
     return (
