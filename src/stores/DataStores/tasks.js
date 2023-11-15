@@ -225,7 +225,7 @@ export const create = (columns) => {
           self.totalAnnotations = total_annotations;
         if (total_predictions !== null)
           self.totalPredictions = total_predictions;
-        if (total_predictions !== null)
+        if (similarity_score_upper_limit !== null)
           self.similarityUpperLimit = (Math.ceil(similarity_score_upper_limit * SIMILARITY_UPPER_LIMIT_PRECISION) / SIMILARITY_UPPER_LIMIT_PRECISION);
       },
 
