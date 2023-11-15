@@ -137,7 +137,17 @@ export const DataView = injector(
               <Spinner size="large" />
             </Block>
           );
-        } else if (store.SDK.type === 'DE' && (total === 0 || !hasData)) {
+        } else if (store.SDK.type === 'DE' && store.SDK.dataset?.status?.id === 'failed') {
+          return (
+            <Block name="syncInProgress">
+              <Elem name='title' tag="h3">Failed to sync data</Elem>
+              <Elem name='text'>Check your storage settings and resync to import records</Elem>
+              <Button onClick={async () => {
+                window.open('./settings/storage');
+              }}>Manage Storage</Button>
+            </Block>
+          );
+        } else if (store.SDK.type === 'DE' && (total === 0 || data.length === 0 || !hasData)) {
           return (
             <Block name="syncInProgress">
               <Elem name='title' tag="h3">Hang tight! Items are syncing in the background</Elem>
