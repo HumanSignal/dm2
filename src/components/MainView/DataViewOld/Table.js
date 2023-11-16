@@ -154,7 +154,7 @@ export const DataView = injector(
           return (
             <Block name="syncInProgress">
               <Elem name='title' tag="h3">Nothing found</Elem>
-              <Elem name='text'>Try adjusting the filter or semantic search parameters</Elem>
+              <Elem name='text'>Try adjusting the filter or similarity search parameters</Elem>
             </Block>
           );
         } else if (store.SDK.type === 'DE' && (total === 0 || data.length === 0 || !hasData)) {
