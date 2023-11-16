@@ -7,7 +7,7 @@ import { DynamicModel, registerModel } from "../DynamicModel";
 import { CustomJSON } from "../types";
 import { FF_DEV_2536, FF_LOPS_E_3, isFF } from "../../utils/feature-flags";
 
-const SIMILARITY_UPPER_LIMIT_PRECISION = 10;
+const SIMILARITY_UPPER_LIMIT_PRECISION = 1000;
 const fileAttributes = types.model({
   "certainty": types.optional(types.maybeNull(types.number), 0),
   "distance": types.optional(types.maybeNull(types.number), 0),
