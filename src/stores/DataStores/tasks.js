@@ -8,7 +8,6 @@ import { CustomJSON } from "../types";
 import { FF_DEV_2536, FF_LOPS_E_3, isFF } from "../../utils/feature-flags";
 
 const SIMILARITY_UPPER_LIMIT_PRECISION = 1000;
-const SIMILARITY_UPPER_LIMIT = 10;
 const fileAttributes = types.model({
   "certainty": types.optional(types.maybeNull(types.number), 0),
   "distance": types.optional(types.maybeNull(types.number), 0),
@@ -221,14 +220,13 @@ export const create = (columns) => {
 
       postProcessData(data) {
         const { total_annotations, total_predictions, similarity_score_upper_limit } = data;
-        const similarityUpperLimit = similarity_score_upper_limit ?? SIMILARITY_UPPER_LIMIT;
 
         if (total_annotations !== null)
           self.totalAnnotations = total_annotations;
         if (total_predictions !== null)
           self.totalPredictions = total_predictions;
         if (similarity_score_upper_limit !== null)
-          self.similarityUpperLimit = (Math.ceil(similarityUpperLimit * SIMILARITY_UPPER_LIMIT_PRECISION) / SIMILARITY_UPPER_LIMIT_PRECISION);
+          self.similarityUpperLimit = (Math.ceil(similarity_score_upper_limit * SIMILARITY_UPPER_LIMIT_PRECISION) / SIMILARITY_UPPER_LIMIT_PRECISION);
       },
 
     }))
