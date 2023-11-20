@@ -164,8 +164,9 @@ export const AppStore = types
       self.mode = mode;
     },
 
-    addActions(...actions) {
-      self.availableActions.push(...actions);
+    setActions(actions) {
+      if (!Array.isArray(actions)) throw new Error("Actions must be an array");
+      self.availableActions = actions;
     },
 
     removeAction(id) {
@@ -454,7 +455,7 @@ export const AppStore = types
         } else if (JSON.stringify(newProject ?? {}) !== JSON.stringify(self.project ?? {})) {
           self.project = newProject;
         }
-        if ( isFF(FF_LOPS_E_3) ) {
+        if (isFF(FF_LOPS_E_3)) {
           const itemType = self.SDK.type === 'DE' ? 'dataset' : 'project';
 
           self.SDK.invoke(`${itemType}Updated`, self.project);
@@ -492,8 +493,8 @@ export const AppStore = types
       ];
 
       if (!isLabelStream || (self.project?.show_annotation_history && task)) {
-        if(self.SDK.type === 'dm') {
-          requests.push(self.fetchActions()); 
+        if (self.SDK.type === 'dm') {
+          requests.push(self.fetchActions());
         }
 
         if (self.SDK.settings?.onlyVirtualTabs && self.project?.show_annotation_history && !task) {
