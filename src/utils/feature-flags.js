@@ -81,6 +81,10 @@ export const FF_LOPS_E_10 = "fflag_feat_front_lops_e_10_updated_ux_short";
  */
 export const FF_OPTIC_2 = "fflag_feat_optic_2_ensure_draft_saved_short";
 
+/**
+ * Adding the ability to toggle dataset storage editability.
+ */
+export const FF_LOPS_86 = "fflag_feat_front_lops_86_datasets_storage_edit_short";
 
 // Customize flags
 const flags = {};

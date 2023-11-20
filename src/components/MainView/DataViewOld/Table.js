@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";
-import { FF_DEV_2536, FF_DEV_4008, FF_OPTIC_2, isFF } from '../../../utils/feature-flags';
+import { FF_DEV_2536, FF_DEV_4008, FF_LOPS_86, FF_OPTIC_2, isFF } from '../../../utils/feature-flags';
 import * as CellViews from "../../CellViews";
 import { Icon } from "../../Common/Icon/Icon";
 import { ImportButton } from "../../Common/SDKButtons";
@@ -144,10 +144,16 @@ export const DataView = injector(
           return (
             <Block name="syncInProgress">
               <Elem name='title' tag="h3">Failed to sync data</Elem>
-              <Elem name='text'>Check your storage settings and resync to import records</Elem>
-              <Button onClick={async () => {
-                window.open('./settings/storage');
-              }}>Manage Storage</Button>
+              {isFF(FF_LOPS_86) ? (
+                <>
+                  <Elem name='text'>Check your storage settings and resync to import records</Elem>
+                  <Button onClick={async () => {
+                    window.open('./settings/storage');
+                  }}>Manage Storage</Button>
+                </>
+              ) : (
+                <Elem name='text'>Check your storage settings. You may need to recreate this dataset</Elem>
+              )}
             </Block>
           );
         } else if (store.SDK.type === 'DE' && (total === 0 || data.length === 0 || !hasData) && datasetStatusID === 'completed') {
