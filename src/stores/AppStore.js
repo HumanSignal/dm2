@@ -471,7 +471,7 @@ export const AppStore = types
     fetchActions: flow(function* () {
       const serverActions = yield self.apiCall("actions");
 
-      self.addActions(...(serverActions ?? []));
+      self.setActions(serverActions ?? []);
     }),
 
     fetchUsers: flow(function* () {
