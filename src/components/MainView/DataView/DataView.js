@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { FaQuestionCircle } from "react-icons/fa";
 import { useShortcut } from "../../../sdk/hotkeys";
 import { Block, Elem } from "../../../utils/bem";
-import { FF_DEV_2536, FF_DEV_4008, FF_OPTIC_2, isFF } from '../../../utils/feature-flags';
+import { FF_DEV_2536, FF_DEV_4008, FF_LOPS_86, FF_OPTIC_2, isFF } from '../../../utils/feature-flags';
 import * as CellViews from "../../CellViews";
 import { Icon } from "../../Common/Icon/Icon";
 import { DEFAULT_PAGE_SIZE, getStoredPageSize, Pagination, setStoredPageSize } from "../../Common/Pagination/Pagination";
@@ -16,6 +16,7 @@ import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import { GridView } from "../GridView/GridView";
 import "./DataView.styl";
 import { Button } from "../../Common/Button/Button";
+import { useEffect } from "react";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
@@ -58,6 +59,7 @@ export const DataView = injector(
     isLocked,
     ...props
   }) => {
+    const [datasetStatusID, setDatasetStatusID] = useState(store.SDK.dataset?.status?.id);
     const [currentPageSize, setPageSize] = useState(getStoredPageSize("tasks", DEFAULT_PAGE_SIZE));
 
     const setPage = useCallback((page, pageSize) => {
@@ -141,7 +143,30 @@ export const DataView = injector(
             <Spinner size="large" />
           </Block>
         );
-      } else if (store.SDK.type === 'DE' && (total === 0 || !hasData)) {
+      } else if (store.SDK.type === 'DE' && ['canceled', 'failed'].includes(datasetStatusID)) {
+        return (
+          <Block name="syncInProgress">
+            <Elem name='title' tag="h3">Failed to sync data</Elem>
+            {isFF(FF_LOPS_86) ? (
+              <>
+                <Elem name='text'>Check your storage settings and resync to import records</Elem>
+                <Button onClick={async () => {
+                  window.open('./settings/storage');
+                }}>Manage Storage</Button>
+              </>
+            ) : (
+              <Elem name='text'>Check your storage settings. You may need to recreate this dataset</Elem>
+            )}
+          </Block>
+        );
+      } else if (store.SDK.type === 'DE' && (total === 0 || data.length === 0 || !hasData) && datasetStatusID === 'completed') {
+        return (
+          <Block name="syncInProgress">
+            <Elem name='title' tag="h3">Nothing found</Elem>
+            <Elem name='text'>Try adjusting the filter or similarity search parameters</Elem>
+          </Block>
+        );
+      } else if (store.SDK.type === 'DE' && (total === 0 || data.length === 0 || !hasData)) {
         return (
           <Block name="syncInProgress">
             <Elem name='title' tag="h3">Hang tight! Items are syncing in the background</Elem>
@@ -309,6 +334,15 @@ export const DataView = injector(
 
       if (highlighted && !highlighted.isSelected) store.startLabeling(highlighted);
     });
+
+    useEffect(() => {
+      const updateDatasetStatus = (dataset) => (
+        dataset?.status?.id && setDatasetStatusID(dataset?.status?.id)
+      );
+
+      getRoot(store).SDK.on("datasetUpdated", updateDatasetStatus);
+      return () => getRoot(store).SDK.off("datasetUpdated", updateDatasetStatus);
+    }, []);
 
     // Render the UI for the table
     return (
