@@ -387,6 +387,8 @@ export const Tab = types
       } else if (isFF(FF_LOPS_12) && self.root.SDK.type === 'labelops') {
         yield self.dataStore.reload({ query: self.query, interaction });
       }
+
+      getRoot(self).SDK.invoke("tabReloaded", self);
     }),
 
     deleteFilter(filter) {
