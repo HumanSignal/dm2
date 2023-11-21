@@ -312,8 +312,10 @@ export const Tab = types
     },
     
     setSemanticSearchThreshold(min, max) {
-      self.threshold = { min, max };
-      return self.save();
+      if (self.semantic_search.length === 0) {
+        self.threshold = { min, max };
+        return self.save();
+      }
     },
 
     clearSemanticSearchThreshold(save = true) {
