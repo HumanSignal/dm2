@@ -82,7 +82,7 @@ const MixinBase = types
       if (withHightlight) self.highlighted = undefined;
     },
 
-    setList({ list, total, reload, associatedList = null }) {
+    setList({ list, total, reload, associatedList = [] }) {
       const newEntity = list.map((t) => ({
         ...t,
         source: JSON.stringify(t),

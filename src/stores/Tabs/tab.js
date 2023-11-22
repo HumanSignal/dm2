@@ -17,7 +17,7 @@ import { History } from '../../utils/history';
 import { FF_DEV_1470, FF_LOPS_12, isFF } from "../../utils/feature-flags";
 import { CustomJSON, StringOrNumberID, ThresholdType } from "../types";
 
-const DEFAULT_THRESHOLD = { min: 0, max: 1 };
+const DEFAULT_THRESHOLD = { min: 0, max: 10 };
 
 export const Tab = types
   .model("View", {
