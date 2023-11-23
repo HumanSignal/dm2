@@ -16,6 +16,10 @@ import { TabSelectedItems } from "./tab_selected_items";
 import { History } from '../../utils/history';
 import { FF_DEV_1470, FF_LOPS_12, isFF } from "../../utils/feature-flags";
 import { CustomJSON, StringOrNumberID, ThresholdType } from "../types";
+import { clamp } from "../../utils/helpers";
+
+const THRESHOLD_MIN = 0;
+const THRESHOLD_MIN_DIFF = 0.001;
 
 export const Tab = types
   .model("View", {
@@ -311,7 +315,9 @@ export const Tab = types
       return save && self.save();
     },
     
-    setSemanticSearchThreshold(min, max) {
+    setSemanticSearchThreshold(_min, max) {
+      const min = clamp(_min ?? THRESHOLD_MIN, THRESHOLD_MIN, max - THRESHOLD_MIN_DIFF);
+
       if (self.semantic_search?.length) {
         self.threshold = { min, max };
         return self.save();
