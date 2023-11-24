@@ -269,7 +269,7 @@ export const TabStore = types
       // so we need to take in from the list once again
       defaultView = self.views[self.views.length - 1];
       self.selected = defaultView;
-      defaultView.reload();
+      getRoot(self).SDK.hasInterface('tabs') && defaultView.reload();
     }),
 
     snapshotFromUrl(viewQueryParam) {
@@ -316,7 +316,7 @@ export const TabStore = types
         self.views.push({ ...newViewSnapshot, saved: true });
         const newView = self.views[self.views.length - 1];
 
-        newView.reload();
+        root.SDK.hasInterface('tabs') && newView.reload();
         self.setSelected(newView);
         destroy(view);
 
