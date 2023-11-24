@@ -307,6 +307,7 @@ module.exports = ({ withDevServer = false } = {}) => ({
         use: [{
           loader: '@svgr/webpack',
           options: {
+            exportType: 'named',
             ref: true,
           },
         }],
