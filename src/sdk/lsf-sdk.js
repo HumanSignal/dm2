@@ -591,6 +591,7 @@ export class LSFWrapper {
 
     if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Annotation saved successfully", type: "info" });
     else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error saving your Annotation", type: "error" });
+    // fb-optic-9: event logging: annotation submitted
   };
 
   /** @private */
@@ -619,7 +620,7 @@ export class LSFWrapper {
 
     if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Annotation updated successfully", type: "info" });
     else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error updating your Annotation", type: "error" });
-
+    //fb-optic-9: event logging: update Annotation
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
 
     if (exitStream) return  this.exitStream();

@@ -19,7 +19,7 @@ export const MediaSeeker = ({ currentTime, duration, buffer, onSeekStart, onSeek
       const { left, width } = seekerRef.current.getBoundingClientRect();
       const initialX = e.pageX - (left + 5);
       const clickedProgress = duration * Math.max(0, Math.min(initialX / width, 1));
-
+      
       const seekProgress = (e) => {
         const newX = e.pageX - (left + 5);
         const newProgress = duration * Math.max(0, Math.min(newX / width, 1));
