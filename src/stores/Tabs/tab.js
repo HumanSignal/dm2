@@ -307,12 +307,16 @@ export const Tab = types
       self.selected = ids;
     },
 
-    setSemanticSearch(semanticSearchList, save = true) {
+    setSemanticSearch(semanticSearchList, min, max) {
       self.semantic_search = semanticSearchList ?? [];
+      /* if no semantic search we have to clean up threshold */
       if (self.semantic_search.length === 0) {
         self.threshold = null;
+        return self.save();
       }
-      return save && self.save();
+      /* if we have a min and max we need to make sure we save that too.
+      this prevents firing 2 view save requests to accomplish the same thing */
+      return ( !isNaN(min) && !isNaN(max) ) ? self.setSemanticSearchThreshold(min, max) : self.save();
     },
     
     setSemanticSearchThreshold(_min, max) {
