@@ -88,12 +88,13 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
           isSeparator: action.isSeparator,
           isTitle: action.isTitle,
           danger: isDeleteAction,
+          disabled: action.disabled,
         }}
         name='actionButton'
       >
-        <Elem name='titleContainer'>
+        <Elem name='titleContainer' {...(action.disabled ? { title: action.disabledReason } : {})}>
           <Elem name='title'>{action.title}</Elem>
-          {hasChildren ? <Elem name='icon' tag={FaChevronRight} /> : null}
+          {(hasChildren && !action.disabled) ? <Elem name='icon' tag={FaChevronRight} /> : null}
         </Elem>
       </Block>
     );
@@ -104,7 +105,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
         align="top-right-outside"
         toggle={false}
         ref={submenuRef}
-        content={<Block name='actionButton-submenu' tag="ul" mod={{ newUI: isNewUI }}>{action.children.map(ActionButton, parentRef)}</Block>}
+        content={<Block name='actionButton-submenu' tag="ul" mod={{ newUI: isNewUI }}>{(!action.disabled) && action.children.map(ActionButton, parentRef)}</Block>}
       >
         {titleContainer}
       </Dropdown.Trigger>  
@@ -125,8 +126,9 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
           key={action.id}
           danger={isDeleteAction}
           onClick={onClick}
-          className={`actionButton${action.isSeparator ? "_isSeparator" : (action.isTitle ? "_isTitle" : "")}`}
+          className={`actionButton${action.isSeparator ? "_isSeparator" : (action.isTitle ? "_isTitle" : "")} ${(action.disabled) ? "actionButton_disabled" : ""}`}
           icon={isDeleteAction && <FaTrash />}
+          title={action.disabled ? action.disabledReason : null}
         >
           {action.title}
         </Menu.Item>
