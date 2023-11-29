@@ -73,6 +73,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
     const onClick = useCallback((e) => {
       e.preventDefault();
       e.stopPropagation();
+      if (action.disabled) return;
       action?.callback ? action?.callback(store.currentView?.selected?.snapshot, action) : invokeAction(action, isDeleteAction);
       parentRef?.current?.close?.();
     }, [store.currentView?.selected]);
@@ -94,7 +95,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
       >
         <Elem name='titleContainer' {...(action.disabled ? { title: action.disabledReason } : {})}>
           <Elem name='title'>{action.title}</Elem>
-          {(hasChildren && !action.disabled) ? <Elem name='icon' tag={FaChevronRight} /> : null}
+          {(hasChildren) ? <Elem name='icon' tag={FaChevronRight} /> : null}
         </Elem>
       </Block>
     );
@@ -105,7 +106,7 @@ export const ActionsButton = injector(observer(({ store, size, hasSelected, ...r
         align="top-right-outside"
         toggle={false}
         ref={submenuRef}
-        content={<Block name='actionButton-submenu' tag="ul" mod={{ newUI: isNewUI }}>{(!action.disabled) && action.children.map(ActionButton, parentRef)}</Block>}
+        content={<Block name='actionButton-submenu' tag="ul" mod={{ newUI: isNewUI }}>{action.children.map(ActionButton, parentRef)}</Block>}
       >
         {titleContainer}
       </Dropdown.Trigger>  
