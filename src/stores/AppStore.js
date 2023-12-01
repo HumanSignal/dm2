@@ -135,6 +135,7 @@ export const AppStore = types
   .volatile(() => ({
     needsDataFetch: false,
     projectFetch: false,
+    requestsInFlight: new Map(),
   }))
   .actions((self) => ({
     startPolling() {
@@ -544,12 +545,21 @@ export const AppStore = types
      * @param {{ errorHandler?: fn }} [options] additional options like errorHandler
      */
     apiCall: flow(function* (methodName, params, body, options) {
+      const controller = new AbortController();
+      const signal = controller.signal;
       const apiTransform = self.SDK.apiTransform?.[methodName];
       const requestParams = apiTransform?.params?.(params) ?? params ?? {};
-      const requestBody = apiTransform?.body?.(body) ?? body ?? undefined;
-
+      const requestBody = { signal, ...(apiTransform?.body?.(body) ?? body) };
+      const requestKey = `${methodName}_${JSON.stringify(params || {})}`;
+      
+      if (self.requestsInFlight.has(requestKey)) {
+        /* if already in flight cancel the first in favor of new one */
+        self.requestsInFlight.get(requestKey).abort();
+      }
+      self.requestsInFlight.set(requestKey, controller);
       let result = yield self.API[methodName](requestParams, requestBody);
 
+      self.requestsInFlight.delete(requestKey);
       if (result.error && result.status !== 404) {
         if (options?.errorHandler?.(result)) {
           return result;
