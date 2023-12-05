@@ -302,7 +302,7 @@ export const TabStore = types
       const apiMethod =
         !view.saved && root.apiVersion === 2 ? "createTab" : "updateTab";
 
-      const result = yield root.apiCall(apiMethod, params, body, { allowCancel: root.SDK.type === 'DE' });
+      const result = yield root.apiCall(apiMethod, params, body, { allowToCancel: root.SDK.type === 'DE' });
 
       if (result.isCanceled) {
         view.unlock();

@@ -227,7 +227,7 @@ export const DataStore = (
 
         if (interaction) Object.assign(params, { interaction });
 
-        const data = yield root.apiCall(apiMethod, params, {}, { allowCancel: root.SDK.type === 'DE' });
+        const data = yield root.apiCall(apiMethod, params, {}, { allowToCancel: root.SDK.type === 'DE' });
 
         // We cancel current request processing if request id
         // changed during the request. It indicates that something

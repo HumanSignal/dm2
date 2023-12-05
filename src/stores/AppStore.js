@@ -542,10 +542,10 @@ export const AppStore = types
      * @param {string} methodName one of the methods in api-config
      * @param {object} params url vars and query string params
      * @param {object} body for POST/PATCH requests
-     * @param {{ errorHandler?: fn, headers?: object, allowCancel?: boolean }} [options] additional options like errorHandler
+     * @param {{ errorHandler?: fn, headers?: object, allowToCancel?: boolean }} [options] additional options like errorHandler
      */
     apiCall: flow(function* (methodName, params, body, options) {
-      const isAllowCancel = options?.allowCancel;
+      const isAllowCancel = options?.allowToCancel;
       const controller = new AbortController();
       const signal = controller.signal;
       const apiTransform = self.SDK.apiTransform?.[methodName];
