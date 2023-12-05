@@ -400,7 +400,7 @@ export const Tab = types
         yield self.dataStore.reload({ query: self.query, interaction });
       }
 
-      getRoot(self).SDK.invoke("tabReloaded", self);
+      getRoot(self).SDK?.invoke?.("tabReloaded", self);
     }),
 
     deleteFilter(filter) {

@@ -305,7 +305,6 @@ export const TabStore = types
       const result = yield root.apiCall(apiMethod, params, body, { allowToCancel: root.SDK.type === 'DE' });
 
       if (result.isCanceled) {
-        view.unlock();
         return view;
       }
       const viewSnapshot = getSnapshot(view);

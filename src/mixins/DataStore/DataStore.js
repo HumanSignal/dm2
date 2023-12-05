@@ -232,7 +232,7 @@ export const DataStore = (
         // We cancel current request processing if request id
         // changed during the request. It indicates that something
         // triggered another request while current one is not yet finished
-        if (requestId !== self.requestId || data.isCancelled) {
+        if (requestId !== self.requestId || data.isCanceled) {
           console.log(`Request ${requestId} was cancelled by another request`);
           return;
         }
