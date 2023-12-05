@@ -549,18 +549,21 @@ export const AppStore = types
       const signal = controller.signal;
       const apiTransform = self.SDK.apiTransform?.[methodName];
       const requestParams = apiTransform?.params?.(params) ?? params ?? {};
-      const requestBody = { signal, ...(apiTransform?.body?.(body) ?? body) };
+      const requestBody = apiTransform?.body?.(body) ?? body ?? {};
+      const requestHeaders = { signal, ...(apiTransform?.headers?.(options?.headers) ?? options?.headers ?? {}) };
       const requestKey = `${methodName}_${JSON.stringify(params || {})}`;
       
       if (self.requestsInFlight.has(requestKey)) {
         /* if already in flight cancel the first in favor of new one */
         self.requestsInFlight.get(requestKey).abort();
+        console.log(`Request ${requestKey} canceled`);
       }
       self.requestsInFlight.set(requestKey, controller);
-      let result = yield self.API[methodName](requestParams, requestBody);
+      let result = yield self.API[methodName](requestParams, { headers: requestHeaders, body: requestBody.body ?? requestBody });
 
+      result.isCanceled = signal.aborted;
       self.requestsInFlight.delete(requestKey);
-      if (result.error && result.status !== 404) {
+      if (result.error && result.status !== 404 && !signal.aborted) {
         if (options?.errorHandler?.(result)) {
           return result;
         }

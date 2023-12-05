@@ -303,6 +303,11 @@ export const TabStore = types
         !view.saved && root.apiVersion === 2 ? "createTab" : "updateTab";
 
       const result = yield root.apiCall(apiMethod, params, body);
+
+      if (result.isCanceled) {
+        view.unlock();
+        return view;
+      }
       const viewSnapshot = getSnapshot(view);
       const newViewSnapshot = {
         ...viewSnapshot,
