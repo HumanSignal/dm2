@@ -11,6 +11,7 @@ import { FiltersSidebar } from "../Filters/FiltersSidebar/FilterSidebar";
 import { DataView } from "../MainView";
 import "./DataManager.styl";
 import { Toolbar } from "./Toolbar/Toolbar";
+import { ImageProvider } from "../../providers/ImageProvider";
 
 const injector = inject(({ store }) => {
   const { sidebarEnabled, sidebarVisible } = store.viewsStore ?? {};
@@ -127,19 +128,21 @@ const TabsSwitch = switchInjector(observer(({ sdk, views, tabs, selectedKey }) =
 
 export const DataManager = injector(({ shrinkWidth }) => {
   return (
-    <Block name="tabs-content">
-      <Elem name="tab" mod={{ shrink: shrinkWidth }}>
-        <Interface name="tabs">
-          <TabsSwitch />
-        </Interface>
+    <ImageProvider key="app-image-provider">
+      <Block name="tabs-content">
+        <Elem name="tab" mod={{ shrink: shrinkWidth }}>
+          <Interface name="tabs">
+            <TabsSwitch />
+          </Interface>
 
-        <Interface name="toolbar">
-          <Toolbar />
-        </Interface>
+          <Interface name="toolbar">
+            <Toolbar />
+          </Interface>
 
-        <DataView />
-      </Elem>
-      <FiltersSidebar />
-    </Block>
+          <DataView />
+        </Elem>
+        <FiltersSidebar />
+      </Block>
+    </ImageProvider>
   );
 });
