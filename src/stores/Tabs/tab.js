@@ -396,11 +396,11 @@ export const Tab = types
       }
       if (self.virtual) {
         yield self.dataStore.reload({ query: self.query, interaction });
-      } else if (isFF(FF_LOPS_12) && self.root.SDK.type === 'labelops') {
+      } else if (isFF(FF_LOPS_12) && self.root.SDK?.type === 'labelops') {
         yield self.dataStore.reload({ query: self.query, interaction });
       }
 
-      getRoot(self).SDK.invoke("tabReloaded", self);
+      getRoot(self).SDK?.invoke?.("tabReloaded", self);
     }),
 
     deleteFilter(filter) {
@@ -439,7 +439,7 @@ export const Tab = types
 
           History.navigate({ tab: self.key }, true);
           self.reload({ interaction });
-        } else if (isFF(FF_LOPS_12) && self.root.SDK.type === 'labelops') {
+        } else if (isFF(FF_LOPS_12) && self.root.SDK?.type === 'labelops') {
           const snapshot = self.serialize();
 
           self.key = self.parent.snapshotToUrl(snapshot);
