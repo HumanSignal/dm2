@@ -195,7 +195,6 @@ export class LSFWrapper {
       onSelectAnnotation: this.onSelectAnnotation,
       onNextTask: this.onNextTask,
       onPrevTask: this.onPrevTask,
-      panels: this.datamanager.panels,
     };
 
     this.initLabelStudio(lsfProperties);
