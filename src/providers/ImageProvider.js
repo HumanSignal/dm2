@@ -3,6 +3,43 @@ import React, { useCallback, useContext, useMemo, useRef } from "react";
 export const ImageContext = React.createContext({});
 ImageContext.displayName = "ImageContext";
 
+function registerImageProviderServiceWorker(serviceWorkerFileName) {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register(serviceWorkerFileName)
+      .then(function(registration) {
+        console.log(
+          "Service Worker registered with scope:",
+          registration.scope,
+        );
+      })
+      .catch(function(error) {
+        console.log("Service Worker registration failed:", error);
+      });
+  }
+}
+
+function awakenServiceWorker() {
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.ready.then((registration) => {
+      registration.active.postMessage({ type: "awaken" });
+    });
+  }
+}
+
+// sw.js and sw-fallback.js are part of the opensource project label-studio/label_studio/core/static/js/ directory
+// and are copied with the rest of the static files when running `python manage.py collectstatic`
+registerImageProviderServiceWorker("/image-provider-sw.js");
+
+// Wake up the service worker when the page becomes visible
+// This is needed to ensure we are cleaning up cache when the user is using the application
+// and not only when the user is closing the tab.
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) {
+    awakenServiceWorker();
+  }
+});
+
 export const ImageProvider = ({ children }) => {
   const loadedImagesRef = useRef(new Map());
   const getImage = useCallback((imgSrc) => {

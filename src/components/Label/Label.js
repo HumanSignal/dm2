@@ -11,7 +11,6 @@ import { Resizer } from "../Common/Resizer/Resizer";
 import { Space } from "../Common/Space/Space";
 import { DataView } from "../MainView";
 import "./Label.styl";
-import { ImageProvider } from "../../providers/ImageProvider";
 
 const LabelingHeader = ({ SDK, onClick, isExplorerMode }) => {
   return (
@@ -100,47 +99,45 @@ export const Labeling = injector(observer(({
   const outlinerEnabled = isFF(FF_DEV_1170);
 
   return (
-    <ImageProvider key="app-image-provider">
-      <Block name="label-view" mod={{ loading }}>
-        {SDK.interfaceEnabled("labelingHeader") && (
-          <LabelingHeader
-            SDK={SDK}
-            onClick={closeLabeling}
-            isExplorerMode={isExplorerMode}
-          />
+    <Block name="label-view" mod={{ loading }}>
+      {SDK.interfaceEnabled("labelingHeader") && (
+        <LabelingHeader
+          SDK={SDK}
+          onClick={closeLabeling}
+          isExplorerMode={isExplorerMode}
+        />
+      )}
+
+      <Elem name="content">
+        {isExplorerMode && (
+          <Elem name="table">
+            <Elem
+              tag={Resizer}
+              name="dataview"
+              minWidth={200}
+              showResizerLine={false}
+              type={'quickview'}
+              maxWidth={window.innerWidth * 0.35}
+              initialWidth={view.labelingTableWidth} // hardcoded as in main-menu-trigger
+              onResizeFinished={onResize}
+              style={{ display: "flex", flex: 1, width: '100%' }}
+            >
+              <DataView />
+            </Elem>
+          </Elem>
         )}
 
-        <Elem name="content">
-          {isExplorerMode && (
-            <Elem name="table">
-              <Elem
-                tag={Resizer}
-                name="dataview"
-                minWidth={200}
-                showResizerLine={false}
-                type={'quickview'}
-                maxWidth={window.innerWidth * 0.35}
-                initialWidth={view.labelingTableWidth} // hardcoded as in main-menu-trigger
-                onResizeFinished={onResize}
-                style={{ display: "flex", flex: 1, width: '100%' }}
-              >
-                <DataView />
-              </Elem>
-            </Elem>
-          )}
-
-          <Elem name="lsf-wrapper" mod={{ mode: isExplorerMode ? "explorer" : "labeling" }}>
-            {loading && <Elem name="waiting" mod={{ animated: true }}/>}
-            <Elem
-              ref={lsfRef}
-              id="label-studio-dm"
-              name="lsf-container"
-              key="label-studio"
-              mod={{ outliner: outlinerEnabled }}
-            />
-          </Elem>
+        <Elem name="lsf-wrapper" mod={{ mode: isExplorerMode ? "explorer" : "labeling" }}>
+          {loading && <Elem name="waiting" mod={{ animated: true }}/>}
+          <Elem
+            ref={lsfRef}
+            id="label-studio-dm"
+            name="lsf-container"
+            key="label-studio"
+            mod={{ outliner: outlinerEnabled }}
+          />
         </Elem>
-      </Block>
-    </ImageProvider>
+      </Elem>
+    </Block>
   );
 }));

@@ -1,8 +1,6 @@
 import { getRoot } from "mobx-state-tree";
 import { FF_LSDV_4711, isFF } from "../../utils/feature-flags";
 import { AnnotationPreview } from "../Common/AnnotationPreview/AnnotationPreview";
-import { useRef } from "react";
-import { useImageProvider } from "../../providers/ImageProvider";
 
 const imgDefaultProps = {};
 
@@ -15,32 +13,27 @@ export const ImageCell = (column) => {
     column: { alias },
   } = column;
   const root = getRoot(original);
-  const imgRef = useRef();
-  const { getImage } = useImageProvider();
+  const isDE = root.SDK.type === 'DE';
 
   const renderImagePreview = original.total_annotations === 0 || !root.showPreviews;
   const imgSrc = Array.isArray(value) ? value[0] : value;
 
   if (!imgSrc) return null;
-  getImage(imgSrc).then((loadedImage) => {
-    if (imgRef.current && loadedImage.loaded && loadedImage.url) {
-      imgRef.current.setAttribute("src", loadedImage.url);
-      imgRef.current.style.display = "";
-    }
-  });
+  if (isDE) {
+    imgDefaultProps.crossOrigin = 'anonymous';
+  }
 
   return renderImagePreview ? (
     <img
       {...imgDefaultProps}
-      ref={imgRef}
       key={imgSrc}
+      src={isDE ? `${imgSrc}${imgSrc.includes('?') ? '&' : '?'}isCacheable=true` : imgSrc}
       alt="Data"
       style={{
         maxHeight: "100%",
         maxWidth: "100px",
         objectFit: "contain",
         borderRadius: 3,
-        display: "none",
       }}
     />
   ) : (
