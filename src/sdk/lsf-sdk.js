@@ -686,21 +686,22 @@ export class LSFWrapper {
     (annotation.draftSaved ? new Date(annotation.history.lastAdditionTime) > new Date(annotation.draftSaved) : true);
 
   saveDraft = async (target = null) => {
-    const annotation = target || this.lsf?.annotationStore?.selected;
-    const hasChanges = this.needsDraftSave(annotation);
-    const submissionInProgress  = annotation?.submissionStarted;
+    const selected = target || this.lsf?.annotationStore?.selected;
+    const hasChanges = selected.history.hasChanges;
+    const submissionInProgress  = selected?.submissionStarted;
+    const draftIsFresh = new Date(selected.draftSaved) > new Date() - selected.autosaveDelay;
 
-    if (annotation?.isDraftSaving) {
-      await when(() => !annotation.isDraftSaving);
+    if (selected?.isDraftSaving || draftIsFresh) {
+      await when(() => !selected.isDraftSaving);
       this.draftToast(200);
     }
-    else if (hasChanges && annotation && !submissionInProgress) {
-      const res = await annotation?.saveDraftImmediatelyWithResults();
+    else if (hasChanges && selected && !submissionInProgress) {
+      const res = await selected?.saveDraftImmediatelyWithResults();
       const status = res?.$meta?.status;
 
       this.draftToast(status);
     }
-  };
+  };  
 
   onSubmitDraft = async (studio, annotation, params = {}) => {
     const annotationDoesntExist = !annotation.pk;
