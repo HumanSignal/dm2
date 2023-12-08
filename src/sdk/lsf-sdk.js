@@ -679,10 +679,11 @@ export class LSFWrapper {
   draftToast = (status) => {
     if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
     else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
-
   }
 
-  needsDraftSave = (annotation) =>  annotation?.history?.hasChanges && (annotation.draftSaved ?  new Date(annotation.history.lastAdditionTime) > new Date(annotation.draftSaved) : true);
+  needsDraftSave = (annotation) => 
+    annotation?.history?.hasChanges && 
+    (annotation.draftSaved ? new Date(annotation.history.lastAdditionTime) > new Date(annotation.draftSaved) : true);
 
   saveDraft = async (target = null) => {
     const annotation = target || this.lsf?.annotationStore?.selected;
