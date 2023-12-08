@@ -682,7 +682,7 @@ export class LSFWrapper {
 
   }
 
-  needsDraftSave = (annotation) =>  annotation?.history?.hasChanges && new Date(annotation.history.lastAdditionTime) > new Date(annotation.draftSaved);
+  needsDraftSave = (annotation) =>  annotation?.history?.hasChanges && (annotation.draftSaved ?  new Date(annotation.history.lastAdditionTime) > new Date(annotation.draftSaved) : true);
 
   saveDraft = async (target = null) => {
     const annotation = target || this.lsf?.annotationStore?.selected;
@@ -706,6 +706,8 @@ export class LSFWrapper {
     const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
     const hasChanges = this.needsDraftSave(annotation);
     const showToast = params?.useToast && hasChanges;
+
+    if (params?.useToast) delete params.useToast;
 
     Object.assign(data.body, params);
 
