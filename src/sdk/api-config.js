@@ -167,5 +167,13 @@ export const APIConfig = {
       path: "/../comments/:id",
       method: "delete",
     },
+
+    mlBackends: "/../ml",
+
+    // Test for LLM assistant
+    mlInteractive: {
+      path: "/../ml/:pk/interactive-annotating",
+      method: "post",
+    },
   },
 };

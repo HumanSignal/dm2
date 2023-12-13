@@ -183,6 +183,7 @@ export class LSFWrapper {
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
       onPresignUrlForProject: this.onPresignUrlForProject,
+      onAssistantPrompt: this.onAssistantPrompt,
       onStorageInitialized: this.onStorageInitialized,
       onSubmitAnnotation: this.onSubmitAnnotation,
       onUpdateAnnotation: this.onUpdateAnnotation,
@@ -209,6 +210,7 @@ export class LSFWrapper {
       this.lsfInstance = new LSF(this.root, settings);
 
       this.lsfInstance.on('presignUrlForProject', this.onPresignUrlForProject);
+      this.lsfInstance.on('assistantPrompt', this.onAssistantPrompt);
 
       const names = Array.from(this.datamanager.callbacks.keys())
         .filter(k => k.startsWith('lsf:'));
@@ -561,6 +563,42 @@ export class LSFWrapper {
     const fileuri = btoa(url);
 
     return api.createUrl(api.endpoints.presignUrlForProject, { projectId, fileuri }).url;
+  };
+
+  onAssistantPrompt = async (ls, prompt) => {
+    // const fields = [];
+    const annotation = ls.annotationStore.selected;
+    const user = this.lsf.user;
+    // default value just in case
+    const object = Object.keys(this.project.data_types)[0] ?? "text";
+    const result = [
+      {
+        from_name: "prompt",
+        to_name: object,
+        type: "textarea",
+        value: { text: prompt },
+      },
+    ];
+
+    const mlBackends = await this.datamanager.apiCall("mlBackends", {}, { project: this.project.id });
+
+    const interactive = (mlBackends ?? []).find(({ is_interactive }) => is_interactive);
+
+    const results = await this.datamanager.apiCall(
+      "mlInteractive",
+      { pk: interactive.id },
+      { body: {
+        task: this.task.id,
+        context: {
+          annotation_id: annotation.pk,
+          draft_id: annotation.draftId,
+          user_id: user.id,
+          result,
+        },
+      } },
+    );
+
+    console.log(results);
   };
 
   onStorageInitialized = async (ls) => {
