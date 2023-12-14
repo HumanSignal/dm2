@@ -599,6 +599,8 @@ export class LSFWrapper {
     );
 
     console.log(results);
+
+    return results.data.result;
   };
 
   onStorageInitialized = async (ls) => {
