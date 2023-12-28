@@ -681,21 +681,21 @@ export class LSFWrapper {
     else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
   }
 
-  needsDraftSave = (annotation) => 
-    annotation?.history?.hasChanges && 
-    (annotation.draftSaved ? new Date(annotation.history.lastAdditionTime) > new Date(annotation.draftSaved) : true);
+  needsDraftSave = (annotation) => {
+    if (annotation.history?.hasChanges && !annotation.draftSaved) return true;
+    if (annotation.history?.hasChanges && new Date(annotation.history.lastAdditionTime) > new Date(annotation.draftSaved)) return true;
+    return false;
+  }
 
   saveDraft = async (target = null) => {
     const selected = target || this.lsf?.annotationStore?.selected;
-    const hasChanges = selected.history.hasChanges;
-    const submissionInProgress  = selected?.submissionStarted;
-    const draftIsFresh = new Date(selected.draftSaved) > new Date() - selected.autosaveDelay;
+    const hasChanges = this.needsDraftSave(selected);
 
-    if (selected?.isDraftSaving || draftIsFresh) {
+    if (selected?.isDraftSaving) {
       await when(() => !selected.isDraftSaving);
       this.draftToast(200);
     }
-    else if (hasChanges && selected && !submissionInProgress) {
+    else if (hasChanges && selected) {
       const res = await selected?.saveDraftImmediatelyWithResults();
       const status = res?.$meta?.status;
 
@@ -708,9 +708,10 @@ export class LSFWrapper {
     const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
     const hasChanges = this.needsDraftSave(annotation);
     const showToast = params?.useToast && hasChanges;
+    // console.log('onSubmitDraft', params?.useToast, hasChanges);
 
     if (params?.useToast) delete params.useToast;
-
+    
     Object.assign(data.body, params);
 
     await this.saveUserLabels();
