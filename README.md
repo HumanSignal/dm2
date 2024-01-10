@@ -21,7 +21,7 @@ Data exploration tool for [Label Studio][ls].
 ### Quickstart
 
 ```
-npm install @heartexlabs/datamanager
+npm install @heartexlabs/datamanager 
 ```
 
 ### Features
