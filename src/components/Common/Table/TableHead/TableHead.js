@@ -17,7 +17,7 @@ import { TableCell, TableCellContent } from "../TableCell/TableCell";
 import { TableContext, TableElem } from "../TableContext";
 import { getStyle } from "../utils";
 import "./TableHead.styl";
-import { FF_DEV_2984, FF_LOPS_E_3, isFF } from "../../../../utils/feature-flags";
+import { FF_DEV_2984, FF_DEV_3873, FF_LOPS_E_10, isFF } from "../../../../utils/feature-flags";
 
 const { Block, Elem } = BemWithSpecifiContext();
 
@@ -45,7 +45,7 @@ const DropdownWrapper = observer(
       fontSize: 14,
     };
     
-    if ( isFF( FF_LOPS_E_3 ) ) {
+    if ( isFF( FF_LOPS_E_10 ) ) {
       styles.border = "0 none";
       styles.fontWeight =  500;
       styles.fontSize =  16;
@@ -248,7 +248,10 @@ export const TableHead = observer(
           <Block
             name="table-head"
             ref={ref}
-            style={style}
+            style={{
+              ...style,
+              height: isFF(FF_DEV_3873) && 42,
+            }}
             mod={{ droppable: true }}
             mix="horizontal-shadow"
             onDragOver={useCallback((e) => {

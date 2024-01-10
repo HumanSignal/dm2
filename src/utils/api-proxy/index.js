@@ -62,6 +62,7 @@ export class APIProxy {
     this.mockDisabled = options.mockDisabled ?? false;
     this.sharedParams = options.sharedParams ?? {};
     this.alwaysExpectJSON = options.alwaysExpectJSON ?? true;
+    this.endpoints = options.endpoints;
 
     this.resolveMethods(options.endpoints);
   }
@@ -247,7 +248,7 @@ export class APIProxy {
           rawResponse = await fetch(apiCallURL, requestParams);
         }
 
-        if (raw) return rawResponse;
+        if (raw || rawResponse.isCanceled) return rawResponse;
 
         responseMeta = {
           headers: new Map(Array.from(rawResponse.headers)),
@@ -312,6 +313,10 @@ export class APIProxy {
       scope: undefined,
       ...settings,
     };
+  }
+
+  getSettingsByMethodName(methodName) {
+    return this.endpoints && methodName && this.endpoints[methodName];
   }
 
   getDefaultHeaders(method) {
@@ -504,6 +509,11 @@ export class APIProxy {
           json() {
             return Promise.resolve(response);
           },
+          text() {
+            return JSON.stringify(response);
+          },
+          headers: {},
+          status: 200,
         });
       }, this.mockDelay);
     });

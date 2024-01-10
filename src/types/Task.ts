@@ -13,6 +13,7 @@ export interface APIAnnotation {
 
   created_at: DateTime;
   updated_at?: DateTime;
+  draft_created_at?: DateTime;
 
   /** How much time it took to annotate the task */
   lead_time?: number | null;

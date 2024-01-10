@@ -1,9 +1,11 @@
 import { observer } from "mobx-react";
+import { getRoot } from "mobx-state-tree";
 import React, { useCallback, useMemo } from "react";
 import { Elem } from "../../../utils/bem";
 import { debounce } from "../../../utils/debounce";
 import { FilterDropdown } from "../FilterDropdown";
 import * as FilterInputs from "../types";
+import { allowedFilterOperations } from "../types/Utility";
 import { Common } from "../types/Common";
 
 /** @typedef {{
@@ -47,11 +49,10 @@ export const FilterOperation = observer(
     const onOperatorSelected = (selectedKey) => {
       filter.setOperator(selectedKey);
     };
-
-    const Input = selected?.input;
-
     const availableOperators = filter.cellView?.filterOperators;
-    const operators = types.map(({ key, label }) => ({ value: key, label }));
+    const Input = selected?.input;
+    const operatorList = allowedFilterOperations(types, getRoot(filter)?.SDK?.type);
+    const operators = operatorList.map(({ key, label }) => ({ value: key, label }));
 
     return Input ? (
       <>

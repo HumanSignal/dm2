@@ -111,8 +111,8 @@ const assembleClass = (block: string, elem?: string, mix?: CNMix | CNMix[], mod?
   }
 
   const attachNamespace = (cls: string) => {
-    if (new RegExp(CSS_PREFIX).test(cls)) return cls;
-    else return `${CSS_PREFIX}${cls}`;
+    if (typeof cls !== 'string') console.error('Non-string classname: ', cls);
+    return String(cls).startsWith(CSS_PREFIX) ? cls : `${CSS_PREFIX}${cls}`;
   };
 
   return finalClass.map(attachNamespace).join(" ");
@@ -198,7 +198,7 @@ export const BemWithSpecifiContext = (context?: Context<CN | null>) => {
     const rootClass = cn(name);
     const finalMix = ([] as [ CNMix? ]).concat(mix).filter(cn => !!cn);
     const className = rootClass.mod(mod).mix(...(finalMix as CNMix[]), rest.className).toClassName();
-    const finalProps = { ...rest, ref, className } as any;
+    const finalProps = (tag.toString() === 'Symbol(react.fragment)') ? { ...rest, ref } : { ...rest, ref, className } as any;
 
     return createElement(Context.Provider, {
       value: rootClass,

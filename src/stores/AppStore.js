@@ -1,6 +1,6 @@
 import { destroy, flow, types } from "mobx-state-tree";
 import { Modal } from "../components/Common/Modal/Modal";
-import { FF_DEV_2887, isFF } from "../utils/feature-flags";
+import { FF_DEV_2887, FF_LOPS_E_3, isFF } from "../utils/feature-flags";
 import { History } from "../utils/history";
 import { isDefined } from "../utils/utils";
 import { Action } from "./Action";
@@ -135,6 +135,7 @@ export const AppStore = types
   .volatile(() => ({
     needsDataFetch: false,
     projectFetch: false,
+    requestsInFlight: new Map(),
   }))
   .actions((self) => ({
     startPolling() {
@@ -164,8 +165,9 @@ export const AppStore = types
       self.mode = mode;
     },
 
-    addActions(...actions) {
-      self.availableActions.push(...actions);
+    setActions(actions) {
+      if (!Array.isArray(actions)) throw new Error("Actions must be an array");
+      self.availableActions = actions;
     },
 
     removeAction(id) {
@@ -432,6 +434,7 @@ export const AppStore = types
                 "task_number",
                 "annotation_count",
                 "num_tasks_with_annotations",
+                "queue_total",
               ].join(","),
             }) : null),
           }
@@ -453,6 +456,11 @@ export const AppStore = types
         } else if (JSON.stringify(newProject ?? {}) !== JSON.stringify(self.project ?? {})) {
           self.project = newProject;
         }
+        if (isFF(FF_LOPS_E_3)) {
+          const itemType = self.SDK.type === 'DE' ? 'dataset' : 'project';
+
+          self.SDK.invoke(`${itemType}Updated`, self.project);
+        }
       } catch {
         self.crash();
         return false;
@@ -464,7 +472,11 @@ export const AppStore = types
     fetchActions: flow(function* () {
       const serverActions = yield self.apiCall("actions");
 
-      self.addActions(...(serverActions ?? []));
+      const actions = (serverActions ?? []).map((action) => {
+        return [action, undefined];
+      });
+
+      self.SDK.updateActions(actions);
     }),
 
     fetchUsers: flow(function* () {
@@ -486,8 +498,8 @@ export const AppStore = types
       ];
 
       if (!isLabelStream || (self.project?.show_annotation_history && task)) {
-        if(self.SDK.type === 'dm') {
-          requests.push(self.fetchActions()); 
+        if (self.SDK.type === 'dm') {
+          requests.push(self.fetchActions());
         }
 
         if (self.SDK.settings?.onlyVirtualTabs && self.project?.show_annotation_history && !task) {
@@ -530,25 +542,47 @@ export const AppStore = types
      * @param {string} methodName one of the methods in api-config
      * @param {object} params url vars and query string params
      * @param {object} body for POST/PATCH requests
-     * @param {{ errorHandler?: fn }} [options] additional options like errorHandler
+     * @param {{ errorHandler?: fn, headers?: object, allowToCancel?: boolean }} [options] additional options like errorHandler
      */
     apiCall: flow(function* (methodName, params, body, options) {
+      const isAllowCancel = options?.allowToCancel;
+      const controller = new AbortController();
+      const signal = controller.signal;
       const apiTransform = self.SDK.apiTransform?.[methodName];
       const requestParams = apiTransform?.params?.(params) ?? params ?? {};
-      const requestBody = apiTransform?.body?.(body) ?? body ?? undefined;
+      const requestBody = apiTransform?.body?.(body) ?? body ?? {};
+      const requestHeaders = apiTransform?.headers?.(options?.headers) ?? options?.headers ?? {};
+      const requestKey = `${methodName}_${JSON.stringify(params || {})}`;
+      
+      if (isAllowCancel) {
+        requestHeaders.signal = signal;
+        if (self.requestsInFlight.has(requestKey)) {
+          /* if already in flight cancel the first in favor of new one */
+          self.requestsInFlight.get(requestKey).abort();
+          console.log(`Request ${requestKey} canceled`);
+        }
+        self.requestsInFlight.set(requestKey, controller);
+      }
+      let result = yield self.API[methodName](requestParams, { headers: requestHeaders, body: requestBody.body ?? requestBody });
 
-      let result = yield self.API[methodName](requestParams, requestBody);
-
-      if (result.error && result.status !== 404) {
+      if (isAllowCancel) {
+        result.isCanceled = signal.aborted;
+        self.requestsInFlight.delete(requestKey);
+      }
+      if (result.error && result.status !== 404 && !signal.aborted) {
         if (options?.errorHandler?.(result)) {
           return result;
         }
 
         if (result.response) {
-          self.serverError.set(methodName, {
-            error: "Something went wrong",
-            response: result.response,
-          });
+          try {
+            self.serverError.set(methodName, {
+              error: "Something went wrong",
+              response: result.response,
+            });
+          } catch {
+            // ignore
+          }
         }
 
         console.warn({
@@ -563,7 +597,11 @@ export const AppStore = types
         //   description: result?.response?.detail ?? result.error,
         // });
       } else {
-        self.serverError.delete(methodName);
+        try {
+          self.serverError.delete(methodName);
+        } catch {
+          // ignore
+        }
       }
 
       return result;

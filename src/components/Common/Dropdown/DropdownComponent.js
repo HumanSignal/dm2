@@ -18,7 +18,7 @@ export const Dropdown = React.forwardRef(
     const { triggerRef } = React.useContext(DropdownContext) ?? {};
     const isInline = triggerRef === undefined;
 
-    const { children } = props;
+    const { children, align } = props;
     const [currentVisible, setVisible] = React.useState(visible);
     const [offset, setOffset] = React.useState({});
     const [visibility, setVisibility] = React.useState(
@@ -28,7 +28,7 @@ export const Dropdown = React.forwardRef(
     const calculatePosition = React.useCallback(() => {
       const dropdownEl = dropdown.current;
       const parent = triggerRef?.current ?? dropdownEl.parentNode;
-      const { left, top } = alignElements(parent, dropdownEl, "bottom-left");
+      const { left, top } = alignElements(parent, dropdownEl, align ?? "bottom-left");
 
       setOffset({ left, top });
     }, [triggerRef]);

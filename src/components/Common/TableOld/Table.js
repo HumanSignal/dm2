@@ -27,8 +27,8 @@ import { TableRow } from "./TableRow/TableRow";
 import { prepareColumns } from "./utils";
 import { Block } from "../../../utils/bem";
 import { FieldsButton } from "../FieldsButton";
-import { LsGear } from "../../../assets/icons";
-import { FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
+import { LsGear, LsGearNewUI } from "../../../assets/icons";
+import { FF_DEV_3873, FF_LOPS_E_10, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
 
 const Decorator = (decoration) => {
   return {
@@ -149,7 +149,7 @@ export const Table = observer(
                   body: <TaskSourceView content={out} onTaskLoad={onTaskLoad} sdkType={type} />,
                 });
               }}
-              icon={isFF(FF_LOPS_E_3) ? <Icon icon={RiCodeLine} style={{ width: 24, height: 24 }}/> : <Icon icon={FaCode}/>}
+              icon={isFF(FF_LOPS_E_10) ? <Icon icon={RiCodeLine} style={{ width: 24, height: 24 }}/> : <Icon icon={FaCode}/>}
             />
           </Tooltip>
         );
@@ -293,18 +293,28 @@ export const Table = observer(
               right,
             }}
           >
-            <FieldsButton
-              wrapper={FieldsButton.Checkbox}
-              icon={<LsGear />}
-              style={{
-                padding: 0,
-                zIndex: 1000,
-                borderRadius: 0,
-                height: "45px",
-                width: "45px",
-                margin: "-1px",
-              }}
-            />
+            {isFF(FF_DEV_3873) ? (
+              <FieldsButton
+                className={'columns__selector__button-new'}
+                wrapper={FieldsButton.Checkbox}
+                icon={<LsGearNewUI />}
+                style={{ padding: '0' }}
+                tooltip={'Customize Columns'}
+              />
+            ):(
+              <FieldsButton
+                wrapper={FieldsButton.Checkbox}
+                icon={<LsGear />}
+                style={{
+                  padding: 0,
+                  zIndex: 1000,
+                  borderRadius: 0,
+                  height: "45px",
+                  width: "45px",
+                  margin: "-1px",
+                }}
+              />
+            )}
           </Block>
         )}
         <TableBlock
@@ -388,6 +398,8 @@ const StickyList = observer(
               itemCount={totalCount}
               loadMoreItems={loadMore}
               isItemLoaded={isItemLoaded}
+              threshold={5}
+              minimumBatchSize={30}
             >
               {({ onItemsRendered, ref }) => (
                 <TableElem

@@ -12,12 +12,23 @@
  * messages: Dict<string|Function>
  * }} LSFOptions */
 
-import { FF_DEV_1752, FF_DEV_2186, FF_DEV_2715, FF_DEV_2887, FF_DEV_3034, FF_DEV_3734, isFF } from "../utils/feature-flags";
+import {
+  FF_DEV_1752,
+  FF_DEV_2186,
+  FF_DEV_2715,
+  FF_DEV_2887,
+  FF_DEV_3034,
+  FF_DEV_3734,
+  FF_LSDV_4620_3_ML,
+  FF_OPTIC_2,
+  isFF
+} from "../utils/feature-flags";
 import { isDefined } from "../utils/utils";
 import { Modal } from "../components/Common/Modal/Modal";
 import { CommentsSdk } from "./comments-sdk";
 // import { LSFHistory } from "./lsf-history";
 import { annotationToServer, taskToLSFormat } from "./lsf-utils";
+import { when } from 'mobx';
 
 const DEFAULT_INTERFACES = [
   "basic",
@@ -87,7 +98,6 @@ export class LSFWrapper {
     this.initialAnnotation = options.annotation;
     this.interfacesModifier = options.interfacesModifier;
     this.isInteractivePreannotations = options.isInteractivePreannotations ?? false;
-    // this.history = this.labelStream ? new LSFHistory(this) : null;
 
     let interfaces = [...DEFAULT_INTERFACES];
 
@@ -147,6 +157,10 @@ export class LSFWrapper {
 
     console.log([...interfaces]);
     console.groupEnd();
+    const queueTotal = dm.store.project.reviewer_queue_total || dm.store.project.queue_total;
+    const queueDone = dm.store.project.queue_done;
+    const queueLeft = dm.store.project.queue_left;
+    const queuePosition = queueDone ? queueDone + 1 : queueLeft ? queueTotal - queueLeft + 1 : 1;
 
     const lsfProperties = {
       // ensure that we are able to distinguish at component level if the app has fully hydrated.
@@ -161,10 +175,14 @@ export class LSFWrapper {
       forceAutoAnnotation: this.isInteractivePreannotations,
       forceAutoAcceptSuggestions: this.isInteractivePreannotations,
       messages: options.messages,
+      queueTotal,
+      queuePosition,
+
       /* EVENTS */
       onSubmitDraft: this.onSubmitDraft,
       onLabelStudioLoad: this.onLabelStudioLoad,
       onTaskLoad: this.onTaskLoad,
+      onPresignUrlForProject: this.onPresignUrlForProject,
       onStorageInitialized: this.onStorageInitialized,
       onSubmitAnnotation: this.onSubmitAnnotation,
       onUpdateAnnotation: this.onUpdateAnnotation,
@@ -189,6 +207,8 @@ export class LSFWrapper {
       const LSF = await resolveLabelStudio();
 
       this.lsfInstance = new LSF(this.root, settings);
+
+      this.lsfInstance.on('presignUrlForProject', this.onPresignUrlForProject);
 
       const names = Array.from(this.datamanager.callbacks.keys())
         .filter(k => k.startsWith('lsf:'));
@@ -292,6 +312,10 @@ export class LSFWrapper {
     await nextAction();
   }
 
+  exitStream() {
+    this.datamanager.invoke("navigate", 'projects');
+  }
+
   async selectTask(task, annotationID, fromHistory = false) {
     const needsAnnotationsMerge = task && this.task?.id === task.id;
     const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
@@ -308,8 +332,11 @@ export class LSFWrapper {
   }
 
   setLSFTask(task, annotationID, fromHistory) {
-    this.setLoading(true);
+    if (!this.lsf) return;
+    
     const hasChangedTasks = this.lsf?.task?.id !== task?.id && task?.id;
+
+    this.setLoading(true, hasChangedTasks);
     const lsfTask = taskToLSFormat(task);
     const isRejectedQueue = isDefined(task.default_selected_annotation);
     const taskList = this.datamanager.store.taskStore.list;
@@ -379,7 +406,6 @@ export class LSFWrapper {
           c = cs.annotations.find(c => c.pk === draftAnnotationPk);
           if (c) {
             c.history.freeze();
-            console.log("Applying draft");
             c.addVersions({ draft: draft.result });
             c.deleteAllRegions({ deleteReadOnly: true });
           } else {
@@ -519,6 +545,24 @@ export class LSFWrapper {
     this.datamanager.invoke("onSelectAnnotation", ...args);
   };
 
+  /**
+   * Proxy urls to presign them if storage is connected
+   * @param {*} _ LS instance
+   * @param {string} url http/https are not proxied and returned as is
+   */
+  onPresignUrlForProject = (_, url) => {
+    const parsedUrl = new URL(url);
+
+    // return same url if http(s)
+    if (["http:", "https:"].includes(parsedUrl.protocol)) return url;
+
+    const api = this.datamanager.api;
+    const projectId = this.project.id;
+    const fileuri = btoa(url);
+
+    return api.createUrl(api.endpoints.presignUrlForProject, { projectId, fileuri }).url;
+  };
+
   onStorageInitialized = async (ls) => {
     this.datamanager.invoke("onStorageInitialized", ls);
 
@@ -532,7 +576,9 @@ export class LSFWrapper {
 
   /** @private */
   onSubmitAnnotation = async () => {
-    await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
+    const exitStream = this.shouldExitStream();
+    const loadNext = exitStream ? false : this.shouldLoadNext();
+    const result = await this.submitCurrentAnnotation("submitAnnotation", async (taskID, body) => {
       return await this.datamanager.apiCall(
         "submitAnnotation",
         { taskID },
@@ -540,13 +586,18 @@ export class LSFWrapper {
         // don't react on duplicated annotations error
         { errorHandler: result => result.status === 409 },
       );
-    }, false, this.shouldLoadNext());
+    }, false, loadNext, exitStream);
+    const status = result?.$meta?.status;
+
+    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Annotation saved successfully", type: "info" });
+    else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error saving your Annotation", type: "error" });
   };
 
   /** @private */
   onUpdateAnnotation = async (ls, annotation, extraData) => {
     const { task } = this;
     const serializedAnnotation = await this.prepareData(annotation);
+    const exitStream = this.shouldExitStream();
 
     Object.assign(serializedAnnotation, extraData);
 
@@ -564,8 +615,14 @@ export class LSFWrapper {
         },
       );
     });
+    const status = result?.$meta?.status;
+
+    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Annotation updated successfully", type: "info" });
+    else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error updating your Annotation", type: "error" });
 
     this.datamanager.invoke("updateAnnotation", ls, annotation, result);
+
+    if (exitStream) return  this.exitStream();
 
     const isRejectedQueue = isDefined(task.default_selected_annotation);
 
@@ -619,19 +676,55 @@ export class LSFWrapper {
     }
   };
 
+  draftToast = (status) => {
+    if (status === 200 || status === 201) this.datamanager.invoke("toast", { message: "Draft saved successfully", type: "info" });
+    else if (status !== undefined) this.datamanager.invoke("toast", { message: "There was an error saving your draft", type: "error" });
+  }
+
+  needsDraftSave = (annotation) => {
+    if (annotation.history?.hasChanges && !annotation.draftSaved) return true;
+    if (annotation.history?.hasChanges && new Date(annotation.history.lastAdditionTime) > new Date(annotation.draftSaved)) return true;
+    return false;
+  }
+
+  saveDraft = async (target = null) => {
+    const selected = target || this.lsf?.annotationStore?.selected;
+    const hasChanges = this.needsDraftSave(selected);
+
+    if (selected?.isDraftSaving) {
+      await when(() => !selected.isDraftSaving);
+      this.draftToast(200);
+    }
+    else if (hasChanges && selected) {
+      const res = await selected?.saveDraftImmediatelyWithResults();
+      const status = res?.$meta?.status;
+
+      this.draftToast(status);
+    }
+  };  
+
   onSubmitDraft = async (studio, annotation, params = {}) => {
     const annotationDoesntExist = !annotation.pk;
     const data = {
-      body: await this.prepareData(annotation, { draft: true }),
+      body: await this.prepareData(annotation, { draft: true })
     }; // serializedAnnotation
+    const hasChanges = this.needsDraftSave(annotation);
+    const showToast = params?.useToast && hasChanges;
+    // console.log('onSubmitDraft', params?.useToast, hasChanges);
 
+    if (params?.useToast) delete params.useToast;
+    
     Object.assign(data.body, params);
 
     await this.saveUserLabels();
 
     if (annotation.draftId > 0) {
       // draft has been already created
-      return this.datamanager.apiCall("updateDraft", { draftID: annotation.draftId }, data);
+      const res = await this.datamanager.apiCall("updateDraft", { draftID: annotation.draftId }, data);
+      
+      showToast && this.draftToast(res?.$meta?.status);
+      return res;
+
     } else {
       let response;
 
@@ -645,6 +738,9 @@ export class LSFWrapper {
         );
       }
       response?.id && annotation.setDraftId(response?.id);
+      showToast && this.draftToast(response?.$meta?.status);
+
+      return response;
     }
   };
 
@@ -727,24 +823,42 @@ export class LSFWrapper {
     return urlParam !== 'notifications';
   }
 
+  shouldExitStream = () => {
+    const paramName = "exitStream";
+    const urlParam = new URLSearchParams(location.search).get(paramName);
+    const searchParams = new URLSearchParams(window.location.search);
+
+    searchParams.delete(paramName);
+    let newRelativePathQuery = window.location.pathname;
+
+    if (searchParams.toString()) newRelativePathQuery += '?' + searchParams.toString();
+    window.history.pushState(null, '', newRelativePathQuery);
+    return !!urlParam;
+  }
+
+
   // Proxy events that are unused by DM integration
   onEntityCreate = (...args) => this.datamanager.invoke("onEntityCreate", ...args);
   onEntityDelete = (...args) => this.datamanager.invoke("onEntityDelete", ...args);
   onSelectAnnotation = (prevAnnotation, nextAnnotation, options) => {
-    this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
+    if (isFF(FF_OPTIC_2) && !!nextAnnotation?.history?.undoIdx) {
+      this.saveDraft(nextAnnotation).then(() => {
+        this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
+      });
+    } else {
+      this.datamanager.invoke("onSelectAnnotation", prevAnnotation, nextAnnotation, options, this);
+    }
   }
 
-  onNextTask = (nextTaskId, nextAnnotationId) => {
-    console.log(nextTaskId, nextAnnotationId);
-
+  onNextTask = async (nextTaskId, nextAnnotationId) => {
+    if (isFF(FF_OPTIC_2)) this.saveDraft();
     this.loadTask(nextTaskId, nextAnnotationId, true);
   }
-  onPrevTask = (prevTaskId, prevAnnotationId) => {
-    console.log(prevTaskId, prevAnnotationId);
-
+  onPrevTask = async (prevTaskId, prevAnnotationId) => {
+    if (isFF(FF_OPTIC_2)) this.saveDraft();
     this.loadTask(prevTaskId, prevAnnotationId, true);
   }
-  async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
+  async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true, exitStream) {
     const { taskID, currentAnnotation } = this;
     const unique_id = this.task.unique_lock_id;
     const serializedAnnotation = await this.prepareData(currentAnnotation, { includeId });
@@ -776,17 +890,17 @@ export class LSFWrapper {
       if (isFF(FF_DEV_2887) && ['submitAnnotation', 'skipTask'].includes(eventName) && this.lsf?.commentStore?.persistQueuedComments) {
         await this.lsf.commentStore.persistQueuedComments();
       }
-
-      // this.history?.add(taskID, currentAnnotation.pk);
     }
 
     this.setLoading(false);
+    if (exitStream) return this.exitStream();
 
     if (!loadNext || this.datamanager.isExplorer) {
       await this.loadTask(taskID, currentAnnotation.pk, true);
     } else {
       await this.loadTask();
     }
+    return result;
   }
 
   /** @private */
@@ -794,10 +908,13 @@ export class LSFWrapper {
     const userGenerate =
       !annotation.userGenerate || annotation.sentUserGenerate;
 
+    const sessionTime = (new Date() - annotation.loadedDate) / 1000;
+    const submittedTime = Number(annotation.leadTime ?? 0);
+    const draftTime = Number(this.task.drafts[0]?.lead_time ?? 0);
+    const lead_time = sessionTime + submittedTime + draftTime;
+
     const result = {
-      // task execution time, always summed up with previous values
-      lead_time: (new Date() - annotation.loadedDate) / 1000 + Number(annotation.leadTime ?? 0),
-      // don't serialize annotations twice for drafts
+      lead_time,
       result: (draft ? annotation.versions.draft : await annotation.serializeAnnotation()) ?? [],
       draft_id: annotation.draftId,
       parent_prediction: annotation.parent_prediction,
@@ -812,8 +929,10 @@ export class LSFWrapper {
   }
 
   /** @private */
-  setLoading(isLoading) {
+  setLoading(isLoading, shouldReset = false) {
+    if (isFF(FF_LSDV_4620_3_ML) && shouldReset) this.lsf.clearApp();
     this.lsf.setFlags({ isLoading });
+    if (isFF(FF_LSDV_4620_3_ML) && shouldReset) this.lsf.renderApp();
   }
 
   async withinLoadingState(callback) {

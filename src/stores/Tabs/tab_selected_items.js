@@ -1,9 +1,10 @@
 import { getRoot, types } from "mobx-state-tree";
+import { StringOrNumber } from "../types";
 
 export const TabSelectedItems = types
   .model("TabSelectedItems", {
     all: false,
-    list: types.optional(types.array(types.number), []),
+    list: types.optional(types.array(StringOrNumber), []),
   })
   .views((self) => ({
     get snapshot() {

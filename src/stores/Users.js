@@ -1,9 +1,10 @@
 import { types } from "mobx-state-tree";
 import { camelizeKeys } from "../utils/helpers";
+import { StringOrNumberID } from "./types";
 
 export const User = types
   .model('User', {
-    id: types.identifierNumber,
+    id: StringOrNumberID,
     firstName: types.string,
     lastName: types.string,
     username: types.string,
