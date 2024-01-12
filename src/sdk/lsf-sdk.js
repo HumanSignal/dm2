@@ -706,7 +706,7 @@ export class LSFWrapper {
   onSubmitDraft = async (studio, annotation, params = {}) => {
     const annotationDoesntExist = !annotation.pk;
     const data = {
-      body: await this.prepareData(annotation, { draft: true })
+      body: await this.prepareData(annotation, { draft: true }),
     }; // serializedAnnotation
     const hasChanges = this.needsDraftSave(annotation);
     const showToast = params?.useToast && hasChanges;
