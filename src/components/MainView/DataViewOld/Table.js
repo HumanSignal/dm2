@@ -247,11 +247,11 @@ export const DataView = injector(
           },
         },
         {
-          resolver: (col) => col.type === "Image" && getRoot(col.original).SDK.type !== 'DE',
+          resolver: (col) => col.type === "Image" && col.original && getRoot(col.original)?.SDK?.type !== 'DE',
           style: { width: 150, justifyContent: "center" },
         },
         {
-          resolver: (col) => col.type === "Image" && getRoot(col.original).SDK.type === 'DE',
+          resolver: (col) => col.type === "Image" && col.original && getRoot(col.original)?.SDK?.type === 'DE',
           style: { width: 150 },
         },
         {
