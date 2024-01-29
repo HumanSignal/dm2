@@ -13,17 +13,21 @@ export const ImageCell = (column) => {
     column: { alias },
   } = column;
   const root = getRoot(original);
+  const isDE = root.SDK.type === 'DE';
 
   const renderImagePreview = original.total_annotations === 0 || !root.showPreviews;
   const imgSrc = Array.isArray(value) ? value[0] : value;
 
   if (!imgSrc) return null;
+  if (isDE) {
+    imgDefaultProps.crossOrigin = 'anonymous';
+  }
 
   return renderImagePreview ? (
     <img
       {...imgDefaultProps}
       key={imgSrc}
-      src={imgSrc}
+      src={isDE ? `${imgSrc}${imgSrc.includes('?') ? '&' : '?'}isCacheable=true` : imgSrc}
       alt="Data"
       style={{
         maxHeight: "100%",
