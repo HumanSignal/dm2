@@ -12,7 +12,7 @@ import { Spinner } from "../../Common/Spinner";
 import { Table } from "../../Common/TableOld/Table";
 import { Tag } from "../../Common/Tag/Tag";
 import { Tooltip } from "../../Common/Tooltip/Tooltip";
-import { GridView } from "../GridViewOld/GridView";
+import { GridView } from "../GridView/GridView";
 import "./Table.styl";
 import { Button } from "../../Common/Button/Button";
 import { useState } from "react";
