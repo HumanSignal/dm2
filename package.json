@@ -97,7 +97,8 @@
     "webpack-dev-server": "^4.13.3"
   },
   "resolutions": {
-    "postcss": "8.4.31"
+    "postcss": "8.4.31",
+    "follow-redirects": "1.15.4"
   },
   "nohoist": [
     "**/babel-preset-react-app/@babel/runtime"
