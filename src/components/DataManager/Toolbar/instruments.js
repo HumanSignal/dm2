@@ -13,6 +13,8 @@ import { LoadingPossum } from "./LoadingPossum";
 import { OrderButton } from "./OrderButton";
 import { RefreshButton } from "./RefreshButton";
 import { ViewToggle } from "./ViewToggle";
+import { Tooltip } from "../../Common/Tooltip/Tooltip";
+import { Block } from "../../../utils/bem";
 
 const style = {
   minWidth: '110px',
@@ -80,7 +82,17 @@ export const instruments = {
   'import-button': ({ size }) => {
     return (
       <Interface name="import">
-        <ImportButton isSelfServeExpired={isSelfServeExpired} size={size}>Import</ImportButton>
+        <Tooltip
+          title="You must upgrade your plan to import data"
+          style={{
+            maxWidth:200,
+            textAlign: "center",
+          }}
+          disabled={!isSelfServeExpired}>
+          <Block name="button-wrapper">
+            <ImportButton disabled={isSelfServeExpired} size={size}>Import</ImportButton>
+          </Block>
+        </Tooltip>
       </Interface>
     );
   },
