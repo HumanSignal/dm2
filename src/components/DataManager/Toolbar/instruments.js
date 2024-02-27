@@ -1,5 +1,5 @@
 import { FaCaretDown, FaChevronDown } from "react-icons/fa";
-import { FF_LOPS_E_10, isFF } from "../../../utils/feature-flags";
+import { FF_LOPS_E_10, FF_SELF_SERVE, isFF } from "../../../utils/feature-flags";
 import { ErrorBox } from "../../Common/ErrorBox";
 import { FieldsButton } from "../../Common/FieldsButton";
 import { FiltersPane } from "../../Common/FiltersPane";
@@ -14,10 +14,19 @@ import { OrderButton } from "./OrderButton";
 import { RefreshButton } from "./RefreshButton";
 import { ViewToggle } from "./ViewToggle";
 
-const style = { 
-  minWidth: '110px', 
-  justifyContent: 'space-between', 
+const style = {
+  minWidth: '110px',
+  justifyContent: 'space-between',
 };
+
+// Check if user is self-serve
+const isSelfServe = isFF(FF_SELF_SERVE) && window.APP_SETTINGS.billing.enterprise;
+// Check if user is self-serve and has expired trial
+const isSelfServeExpiredTrial = isSelfServe && window.APP_SETTINGS.billing.checks.is_license_expired;
+// Check if user is self-serve and has expired subscription
+const isSelfServeExpiredSubscription = isSelfServe && window.APP_SETTINGS.subscription.current_period_end && new Date(window.APP_SETTINGS.subscription.current_period_end) < new Date();
+// Check if user is self-serve and has expired trial or subscription
+const isSelfServeExpired = isSelfServeExpiredTrial || isSelfServeExpiredSubscription;
 
 export const instruments = {
   'view-toggle': ({ size }) => {
@@ -26,7 +35,7 @@ export const instruments = {
   'columns': ({ size }) => {
     const iconProps = {};
     const isNewUI = isFF(FF_LOPS_E_10);
-    
+
     if (isNewUI) {
       iconProps.size = 12;
       iconProps.style = {
@@ -71,7 +80,7 @@ export const instruments = {
   'import-button': ({ size }) => {
     return (
       <Interface name="import">
-        <ImportButton size={size}>Import</ImportButton>
+        <ImportButton isSelfServeExpired={isSelfServeExpired} size={size}>Import</ImportButton>
       </Interface>
     );
   },
