@@ -11,7 +11,7 @@ const SDKButton = ({ eventName, ...props }) => {
       onClick={() => {
         sdk.invoke(eventName);
       }}
-    />     
+    />
   ) : null;
 };
 
