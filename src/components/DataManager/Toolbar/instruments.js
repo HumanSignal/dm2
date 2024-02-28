@@ -24,7 +24,7 @@ const style = {
 // Check if user is self-serve
 const isSelfServe = isFF(FF_SELF_SERVE) && window.APP_SETTINGS.billing.enterprise;
 // Check if user is self-serve and has expired trial
-const isSelfServeExpiredTrial = isSelfServe && window.APP_SETTINGS.billing.checks.is_license_expired;
+const isSelfServeExpiredTrial = isSelfServe && window.APP_SETTINGS.billing.checks.is_license_expired && !window.APP_SETTINGS.subscription.current_period_end;
 // Check if user is self-serve and has expired subscription
 const isSelfServeExpiredSubscription = isSelfServe && window.APP_SETTINGS.subscription.current_period_end && new Date(window.APP_SETTINGS.subscription.current_period_end) < new Date();
 // Check if user is self-serve and has expired trial or subscription
