@@ -1,4 +1,5 @@
 import { FaCaretDown, FaChevronDown } from "react-icons/fa";
+import { Block } from "../../../utils/bem";
 import { FF_LOPS_E_10, FF_SELF_SERVE, isFF } from "../../../utils/feature-flags";
 import { ErrorBox } from "../../Common/ErrorBox";
 import { FieldsButton } from "../../Common/FieldsButton";
@@ -6,6 +7,7 @@ import { FiltersPane } from "../../Common/FiltersPane";
 import { Icon } from "../../Common/Icon/Icon";
 import { Interface } from "../../Common/Interface";
 import { ExportButton, ImportButton } from "../../Common/SDKButtons";
+import { Tooltip } from "../../Common/Tooltip/Tooltip";
 import { ActionsButton } from "./ActionsButton";
 import { GridWidthButton } from "./GridWidthButton";
 import { LabelButton } from "./LabelButton";
@@ -13,8 +15,6 @@ import { LoadingPossum } from "./LoadingPossum";
 import { OrderButton } from "./OrderButton";
 import { RefreshButton } from "./RefreshButton";
 import { ViewToggle } from "./ViewToggle";
-import { Tooltip } from "../../Common/Tooltip/Tooltip";
-import { Block } from "../../../utils/bem";
 
 const style = {
   minWidth: '110px',
