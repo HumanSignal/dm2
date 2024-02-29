@@ -34,6 +34,26 @@ const isSelfServeExpiredSubscription = isSelfServe && subscriptionPeriodEnd && n
 // Check if user is self-serve and has expired trial or subscription
 const isSelfServeExpired = isSelfServeExpiredTrial || isSelfServeExpiredSubscription;
 
+const WithDisabledTooltip = ({ children, ...props }) => {
+  if (!props.disabled) {
+    return children;
+  }
+
+  return (
+    <Tooltip
+      title={props.title}
+      style={{
+        maxWidth:200,
+        textAlign: "center",
+      }}>
+      <Block name="button-wrapper">
+        {children}
+      </Block>
+    </Tooltip>
+  );
+
+};
+
 export const instruments = {
   'view-toggle': ({ size }) => {
     return <ViewToggle size={size} style={style} />;
@@ -86,17 +106,11 @@ export const instruments = {
   'import-button': ({ size }) => {
     return (
       <Interface name="import">
-        <Tooltip
+        <WithDisabledTooltip
           title="You must upgrade your plan to import data"
-          style={{
-            maxWidth:200,
-            textAlign: "center",
-          }}
-          disabled={!isSelfServeExpired}>
-          <Block name="button-wrapper">
-            <ImportButton disabled={isSelfServeExpired} size={size}>Import</ImportButton>
-          </Block>
-        </Tooltip>
+          disabled={isSelfServeExpired}>
+          <ImportButton disabled={isSelfServeExpired} size={size}>Import</ImportButton>
+        </WithDisabledTooltip>
       </Interface>
     );
   },
