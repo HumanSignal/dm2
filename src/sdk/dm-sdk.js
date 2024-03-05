@@ -447,7 +447,7 @@ export class DataManager {
       const annotationID = annotation?.id ?? task.lastAnnotation?.id;
 
       // this.lsf.loadTask(task.id, annotationID);
-      this.lsf.selectTask(task, annotationID);
+      await this.lsf.selectTask(task, annotationID);
     }
   }
 

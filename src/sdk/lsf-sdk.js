@@ -254,7 +254,7 @@ export class LSFWrapper {
       // for preload it's good to always load the first one
       const annotation = task.annotations[0];
 
-      this.selectTask(task, annotation?.id, true);
+      await this.selectTask(task, annotation?.id, true);
     }
 
     return false;
@@ -290,7 +290,7 @@ export class LSFWrapper {
       });
 
       // Add new data from received task
-      if (newTask) this.selectTask(newTask, annotationID, fromHistory);
+      if (newTask) await this.selectTask(newTask, annotationID, fromHistory);
     };
 
     if (isFF(FF_DEV_2887) && this.lsf?.commentStore?.hasUnsaved) {
@@ -312,14 +312,14 @@ export class LSFWrapper {
     this.datamanager.invoke("navigate", 'projects');
   }
 
-  selectTask(task, annotationID, fromHistory = false) {
+  async selectTask(task, annotationID, fromHistory = false) {
     const needsAnnotationsMerge = task && this.task?.id === task.id;
     const annotations = needsAnnotationsMerge ? [...this.annotations] : [];
 
     this.task = task;
 
     if (needsAnnotationsMerge) {
-      this.task.mergeAnnotations(annotations);
+      await this.task.mergeAnnotations(annotations);
     }
 
     this.loadUserLabels();
@@ -588,7 +588,7 @@ export class LSFWrapper {
   /** @private */
   onUpdateAnnotation = async (ls, annotation, extraData) => {
     const { task } = this;
-    const serializedAnnotation = this.prepareData(annotation);
+    const serializedAnnotation = await this.prepareData(annotation);
     const exitStream = this.shouldExitStream();
 
     Object.assign(serializedAnnotation, extraData);
@@ -697,7 +697,9 @@ export class LSFWrapper {
 
   onSubmitDraft = async (studio, annotation, params = {}) => {
     const annotationDoesntExist = !annotation.pk;
-    const data = { body: this.prepareData(annotation, { draft: true }) }; // serializedAnnotation
+    const data = {
+      body: await this.prepareData(annotation, { draft: true }),
+    }; // serializedAnnotation
     const hasChanges = this.needsDraftSave(annotation);
     const showToast = params?.useToast && hasChanges;
     // console.log('onSubmitDraft', params?.useToast, hasChanges);
@@ -780,7 +782,9 @@ export class LSFWrapper {
             body: { annotation: null },
           });
         } else {
-          const annotationData = { body: this.prepareData(currentAnnotation) };
+          const annotationData = {
+            body: await this.prepareData(currentAnnotation),
+          };
 
           await this.datamanager.apiCall("createDraftForTask", {
             taskID: this.task.id,
@@ -849,7 +853,7 @@ export class LSFWrapper {
   async submitCurrentAnnotation(eventName, submit, includeId = false, loadNext = true) {
     const { taskID, currentAnnotation } = this;
     const unique_id = this.task.unique_lock_id;
-    const serializedAnnotation = this.prepareData(currentAnnotation, { includeId });
+    const serializedAnnotation = await this.prepareData(currentAnnotation, { includeId });
 
     if (unique_id) {
       serializedAnnotation.unique_id = unique_id;
@@ -891,7 +895,7 @@ export class LSFWrapper {
   }
 
   /** @private */
-  prepareData(annotation, { includeId, draft } = {}) {
+  async prepareData(annotation, { includeId, draft } = {}) {
     const userGenerate =
       !annotation.userGenerate || annotation.sentUserGenerate;
 
@@ -902,7 +906,7 @@ export class LSFWrapper {
 
     const result = {
       lead_time,
-      result: (draft ? annotation.versions.draft : annotation.serializeAnnotation()) ?? [],
+      result: (draft ? annotation.versions.draft : await annotation.serializeAnnotation()) ?? [],
       draft_id: annotation.draftId,
       parent_prediction: annotation.parent_prediction,
       parent_annotation: annotation.parent_annotation,
