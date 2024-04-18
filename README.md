@@ -3,7 +3,7 @@
 # This repository is deprecated 
 
 This repository has been deprecated in favor of
-https://github.com/HumanSignal/label-studio/tree/develop/web/libs/editor
+https://github.com/HumanSignal/label-studio/tree/develop/web/libs/datamanager.
 
 Now it's read-only. Address all your issues and PRs to https://github.com/HumanSignal/label-studio/.
 
